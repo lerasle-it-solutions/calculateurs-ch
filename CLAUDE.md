@@ -1,13 +1,14 @@
 # calculateurs.ch — Instructions du projet
 
-Ce fichier fait autorité. Il contient (1) les quatre règles absolues et (2) le
-document d'architecture v2 intégral. Toute décision technique doit s'y conformer.
+Ce fichier fait autorité. Il contient (1) les règles absolues (R1–R5), (2) la
+convention de nommage et son glossaire, (3) le document d'architecture v2 intégral.
+Toute décision technique doit s'y conformer.
 
 ---
 
 ## Règles absolues
 
-Ces quatre règles priment sur toute autre considération. Aucune exception sans
+Ces cinq règles priment sur toute autre considération. Aucune exception sans
 accord explicite du mainteneur.
 
 ### R1 — Aucun back-end, aucune base de données, aucun compte utilisateur
@@ -21,26 +22,133 @@ transmet au partenaire, renvoie 200 — rien n'est stocké côté serveur).
 
 Aucune valeur brute (barème, plafond, taux, seuil, coût de référence, tarif…)
 n'apparaît dans le code. Tout vit dans `src/data/`, enveloppé dans le type
-`Valeur<T>`, avec au minimum une **source** (`sourceId` présent dans
-`src/data/sources.ts`) et une **date de vérification** (`verifieLe`). Une valeur
+`Value<T>`, avec au minimum une **source** (`sourceId` présent dans
+`src/data/sources.ts`) et une **date de vérification** (`verifiedOn`). Une valeur
 sans source ni date ne peut pas entrer dans le dépôt. Les fonctions de
-`src/lib/calculs/` reçoivent leurs barèmes **en argument** et ne les importent
+`src/lib/calculations/` reçoivent leurs barèmes **en argument** et ne les importent
 jamais elles-mêmes.
 
 ### R3 — On n'invente jamais une valeur chiffrée
 
 Si une valeur chiffrée manque, on ne la déduit pas, on ne l'estime pas, on ne la
 copie pas de mémoire. On crée une entrée `TODO` explicite dans le fichier
-`src/data/` concerné (valeur marquée, `sourceId` à renseigner, `verifieLe` vide)
+`src/data/` concerné (valeur marquée, `sourceId` à renseigner, `verifiedOn` vide)
 **et on demande au mainteneur de relever la valeur** à sa source officielle. Le
 travail dépendant de cette valeur reste bloqué jusqu'à ce qu'elle soit fournie.
 
 ### R4 — Chaque fonction de calcul retourne une trace ligne par ligne
 
-Toute fonction de `src/lib/calculs/` retourne, en plus de son résultat, une
-**trace du calcul ligne par ligne** (chaque étape : libellé, opérande(s),
-opération, résultat intermédiaire, hypothèse retenue). Cette trace alimente le
-composant `DetailCalcul.astro`. Un résultat non traçable est un bug.
+Toute fonction de `src/lib/calculations/` retourne, en plus de son résultat, une
+**trace du calcul ligne par ligne** (`breakdown` : chaque étape a un libellé,
+ses opérande(s), l'opération, le résultat intermédiaire et l'hypothèse retenue).
+Cette trace alimente le composant `Breakdown.astro`. Un résultat non traçable est
+un bug.
+
+### R5 — Le code en anglais, le contenu en français
+
+Tout identifiant de code — fichiers, dossiers, types, fonctions, variables, clés
+de données, tests, messages de commit — est en anglais, en `camelCase` pour les
+identifiants et en `kebab-case` pour les noms de fichiers. Tout contenu destiné à
+l'utilisateur — URL publiques, titres, libellés, textes — est en français et
+passe par `src/i18n/fr.ts`. **Ne traduis jamais une URL en anglais.** Utilise le
+glossaire de la section suivante sans jamais inventer de synonyme. Détail complet
+et exceptions : **§ Convention de nommage** ci-dessous.
+
+---
+
+## Convention de nommage — le code en anglais, le contenu en français
+
+**Règle :** tout ce que lit une machine est en anglais, tout ce que lit un
+visiteur est en français. Cette frontière est stricte et ne souffre aucune
+exception, parce qu'une base de code à moitié traduite est pire que l'une ou
+l'autre convention prise seule : personne, ni toi ni l'IA, ne se souvient de quel
+côté se trouve un fichier donné.
+
+| En anglais — lu par la machine | En français — lu par un humain |
+| --- | --- |
+| Noms de dossiers et de fichiers du code | URL publiques : `/prevoyance/rachat-3a-retroactif/` |
+| Noms de types, fonctions, variables, composants | Titres, textes, intitulés de champs, FAQ |
+| Clés des fichiers de données (`pillar3aEmployeeCap`) | Valeurs des chaînes dans `src/i18n/fr.ts` |
+| Noms des tests et des scripts | Documents de pilotage : `DECISIONS.md`, `JOURNAL.md` |
+| Messages de commit Git | Contenu des articles |
+| Commentaires dans le code | Ce plan, la méthodologie, la politique de confidentialité |
+
+**Le point à ne pas rater : les URL restent en français.** Elles sont du contenu,
+pas du code. `/prevoyance/rachat-3a-retroactif/` contient tes mots-clés et
+s'affiche dans les résultats de recherche ; `/pension/pillar-3a-buyback/` te
+coûterait du référencement et de la crédibilité auprès d'un lecteur romand. Le
+fichier peut donc s'appeler `src/calculators/pension/pillar-3a-buyback.ts` tout en
+produisant une URL française — c'est la définition du calculateur qui porte le
+slug.
+
+> Cas particulier `src/pages/` : en routage par fichier Astro, le nom du fichier
+> **devient** le segment d'URL. Les fichiers de `src/pages/` sont donc nommés en
+> **français** (`rachat-3a-retroactif.astro`) — ils sont du contenu, pas du code.
+> Tout le reste de `src/` suit la règle anglaise.
+
+### Glossaire de référence
+
+À conserver ici pour que l'IA nomme toujours de la même façon. Ne jamais inventer
+de synonyme.
+
+| Domaine | Français | Anglais retenu |
+| --- | --- | --- |
+| Calculateur | calculateur | `calculator` |
+| Prévoyance | prévoyance | `pension` |
+| Immobilier | immobilier | `property` |
+| Énergie | énergie | `energy` |
+| Entreprise | entreprise | `business` |
+| 3e pilier | 3a | `pillar3a` / `pillar-3a` |
+| Rachat | rachat | `buyback` |
+| Lacune de cotisation | lacune | `contributionGap` |
+| Retrait en capital | retrait en capital | `capitalWithdrawal` |
+| Valeur locative | valeur locative | `imputedRentalValue` |
+| Subvention | subvention | `subsidy` |
+| Barème | barème | `taxScale` |
+| Coefficient / centimes additionnels | coefficient communal | `municipalMultiplier` |
+| Commune | commune | `municipality` |
+| Périmètre déclaré | périmètre | `scope` |
+| Trace du calcul | trace | `breakdown` |
+| Fraîcheur des données | fraîcheur | `freshness` |
+
+### Deux exceptions assumées
+
+1. **Les acronymes d'institutions et de textes légaux restent en français**, parce
+   que ce sont des noms propres, pas des mots à traduire :
+   `sourceId: "ofas-pillar-3a-caps"`, `"estv-tax-calculator"`, `"opp3-art-7a"`,
+   `"lifd-art-36"`.
+2. **Les codes de cantons restent les abréviations officielles :**
+   `VD`, `GE`, `VS`, `FR`, `NE`, `JU`.
+
+### Le type central
+
+```ts
+// src/data/schema.ts
+export type Value<T> = {
+  value: T;
+  unit?: string;
+  sourceId: string;
+  verifiedOn: string;    // ISO 8601
+  effectiveFrom: string; // ISO 8601
+};
+```
+
+### Formulation à garder pour l'IA
+
+> Convention de nommage stricte : tout identifiant de code — fichiers, dossiers,
+> types, fonctions, variables, clés de données, tests, messages de commit — est en
+> anglais, en `camelCase` pour les identifiants et en `kebab-case` pour les noms de
+> fichiers. Tout contenu destiné à l'utilisateur — URL publiques, titres,
+> libellés, textes — est en français et passe par `src/i18n/fr.ts`. Ne traduis
+> jamais une URL en anglais. Utilise le glossaire ci-dessus sans jamais inventer
+> de synonyme.
+
+### Portée sur le document d'architecture ci-dessous
+
+Le document d'architecture v2 a été rédigé avec la convention de nommage
+appliquée : dossiers, types, fonctions, clés de données et tests y sont en
+anglais ; seuls les fichiers de `src/pages/`, les URL et les textes affichés
+restent en français. En cas de contradiction résiduelle, **cette section prime**.
 
 ---
 
@@ -74,7 +182,7 @@ sont qu'une sortie parmi d'autres. Toute décision technique se tranche en faveu
 la qualité et de la traçabilité de la donnée.
 
 **P2 — Aucune donnée sans source ni date de vérification.**
-Une valeur sans `sourceUrl` et `verifieLe` ne peut pas entrer dans le dépôt.
+Une valeur sans `sourceId` et `verifiedOn` ne peut pas entrer dans le dépôt.
 Un test de build échoue si une donnée n'a pas été vérifiée depuis plus de 12 mois.
 
 **P3 — Statique par défaut.**
@@ -101,8 +209,8 @@ calculateurs.ch/
 │   └── og/                              ← images Open Graph par famille
 │
 ├── scripts/
-│   ├── verifier-donnees.ts              ← rapport de fraîcheur (CI + manuel)
-│   └── nouvelle-annee.ts                ← duplique federal/AAAA.json pour révision
+│   ├── verify-data.ts                   ← rapport de fraîcheur (CI + manuel)
+│   └── new-year.ts                      ← duplique federal/YYYY.json pour révision
 │
 ├── src/
 │   │
@@ -123,98 +231,98 @@ calculateurs.ch/
 │   │   │   ├── ne.json
 │   │   │   └── ju.json
 │   │   │
-│   │   ├── communes/
-│   │   │   ├── coefficients.json        ← coefficient d'impôt communal
-│   │   │   └── subventions.json         ← aides communales à la rénovation
+│   │   ├── municipalities/
+│   │   │   ├── multipliers.json         ← coefficient d'impôt communal
+│   │   │   └── subsidies.json           ← aides communales à la rénovation
 │   │   │
-│   │   └── energie/
-│   │       ├── subventions.json         ← Programme Bâtiments + cantonal + Pronovo
-│   │       ├── tarifs-reprise.json      ← par gestionnaire de réseau
-│   │       └── couts-reference.json     ← fourchettes PAC / PV / isolation
+│   │   └── energy/
+│   │       ├── subsidies.json           ← Programme Bâtiments + cantonal + Pronovo
+│   │       ├── feed-in-tariffs.json     ← par gestionnaire de réseau
+│   │       └── reference-costs.json     ← fourchettes PAC / PV / isolation
 │   │
 │   ├── lib/
-│   │   ├── calculs/                     ← logique pure, zéro import Astro
-│   │   │   ├── impots.ts                ← MOTEUR : taux marginal, canton + commune
-│   │   │   ├── prevoyance/
-│   │   │   │   ├── rachat-3a.ts
-│   │   │   │   ├── rachat-lpp.ts
-│   │   │   │   └── retrait-capital.ts
-│   │   │   ├── immobilier/
-│   │   │   │   ├── valeur-locative.ts
-│   │   │   │   ├── renovation-fiscale.ts
-│   │   │   │   ├── amortissement.ts
-│   │   │   │   └── capacite-achat.ts
-│   │   │   ├── energie/
-│   │   │   │   ├── subventions.ts
-│   │   │   │   ├── pompe-a-chaleur.ts
-│   │   │   │   └── photovoltaique.ts
-│   │   │   └── entreprise/
-│   │   │       └── cout-employeur.ts
+│   │   ├── calculations/                ← logique pure, zéro import Astro
+│   │   │   ├── income-tax.ts            ← MOTEUR : taux marginal, canton + commune
+│   │   │   ├── pension/
+│   │   │   │   ├── pillar-3a-buyback.ts
+│   │   │   │   ├── lpp-buyback.ts
+│   │   │   │   └── capital-withdrawal.ts
+│   │   │   ├── property/
+│   │   │   │   ├── imputed-rental-value.ts
+│   │   │   │   ├── renovation-tax.ts
+│   │   │   │   ├── amortization.ts
+│   │   │   │   └── purchase-capacity.ts
+│   │   │   ├── energy/
+│   │   │   │   ├── subsidies.ts
+│   │   │   │   ├── heat-pump.ts
+│   │   │   │   └── photovoltaic.ts
+│   │   │   └── business/
+│   │   │       └── employer-cost.ts
 │   │   │
 │   │   └── utils/
-│   │       ├── formatCHF.ts
-│   │       ├── arrondir.ts
-│   │       ├── trace.ts                 ← construit le détail du calcul affichable
-│   │       └── periode.ts               ← résolution de l'année fiscale applicable
+│   │       ├── format-chf.ts
+│   │       ├── round.ts
+│   │       ├── breakdown.ts             ← construit le détail du calcul affichable
+│   │       └── period.ts                ← résolution de l'année fiscale applicable
 │   │
-│   ├── calculateurs/                    ★ DÉFINITIONS DÉCLARATIVES
+│   ├── calculators/                     ★ DÉFINITIONS DÉCLARATIVES
 │   │   ├── types.ts
-│   │   ├── prevoyance/
-│   │   │   ├── rachat-3a.ts             ← périmètre, champs, moteur, variantes, FAQ
-│   │   │   └── economie-impot-3a.ts
-│   │   ├── immobilier/
-│   │   ├── energie/
-│   │   └── entreprise/
+│   │   ├── pension/
+│   │   │   ├── pillar-3a-buyback.ts     ← périmètre, champs, moteur, variantes, FAQ
+│   │   │   └── pillar-3a-tax-saving.ts
+│   │   ├── property/
+│   │   ├── energy/
+│   │   └── business/
 │   │
 │   ├── components/
 │   │   ├── layout/
 │   │   │   ├── Header.astro
 │   │   │   ├── Footer.astro
-│   │   │   ├── FilAriane.astro
-│   │   │   └── NavFamille.astro
-│   │   ├── calculateur/
-│   │   │   ├── Coquille.astro           ← titre, intro, périmètre, formulaire, résultat
-│   │   │   ├── PerimetreDeclare.astro   ★ bandeau, alimenté par la définition
-│   │   │   ├── DetailCalcul.astro       ★ le calcul ligne par ligne
-│   │   │   ├── CarteResultat.astro
-│   │   │   ├── FraicheurDonnees.astro   ★ "barèmes 2026, vérifiés le 12.01.2026"
-│   │   │   ├── VariantesLiees.astro
-│   │   │   └── champs/
-│   │   │       ├── Nombre.astro
+│   │   │   ├── Breadcrumb.astro
+│   │   │   └── FamilyNav.astro
+│   │   ├── calculator/
+│   │   │   ├── Shell.astro              ← titre, intro, périmètre, formulaire, résultat
+│   │   │   ├── ScopeBanner.astro        ★ bandeau, alimenté par la définition
+│   │   │   ├── Breakdown.astro          ★ le calcul ligne par ligne
+│   │   │   ├── ResultCard.astro
+│   │   │   ├── DataFreshness.astro      ★ "barèmes 2026, vérifiés le 12.01.2026"
+│   │   │   ├── RelatedVariants.astro
+│   │   │   └── fields/
+│   │   │       ├── Number.astro
 │   │   │       ├── Select.astro
 │   │   │       ├── Canton.astro
-│   │   │       └── Commune.tsx          ← island Preact (autocomplétion ~300 entrées)
+│   │   │       └── Municipality.tsx     ← island Preact (autocomplétion ~300 entrées)
 │   │   ├── conversion/
 │   │   │   ├── Lead.astro               ★ mise en relation partenaire, jamais bloquant
 │   │   │   └── Newsletter.astro
 │   │   ├── editorial/
-│   │   │   ├── CtaCalculateur.astro
-│   │   │   ├── TableMatieres.astro
+│   │   │   ├── CalculatorCta.astro
+│   │   │   ├── TableOfContents.astro
 │   │   │   └── Sources.astro
 │   │   └── seo/
-│   │       ├── SchemaCalculateur.astro
+│   │       ├── SchemaCalculator.astro
 │   │       ├── SchemaArticle.astro
 │   │       ├── SchemaFaq.astro
-│   │       └── SchemaFilAriane.astro
+│   │       └── SchemaBreadcrumb.astro
 │   │
 │   ├── layouts/
 │   │   ├── BaseLayout.astro
-│   │   ├── FamilleLayout.astro
-│   │   ├── CalculateurLayout.astro
+│   │   ├── FamilyLayout.astro
+│   │   ├── CalculatorLayout.astro
 │   │   └── ArticleLayout.astro
 │   │
 │   ├── content/
 │   │   ├── config.ts                    ← collections typées
 │   │   └── articles/
-│   │       ├── prevoyance/
-│   │       ├── immobilier/
-│   │       ├── energie/
-│   │       └── entreprise/
+│   │       ├── pension/
+│   │       ├── property/
+│   │       ├── energy/
+│   │       └── business/
 │   │
 │   ├── i18n/
 │   │   └── fr.ts                        ← toutes les chaînes UI, dès le jour 1
 │   │
-│   └── pages/
+│   └── pages/                           ← noms de fichiers en FRANÇAIS : ils deviennent l'URL
 │       ├── index.astro
 │       ├── methodologie.astro           ★ sources, formules, politique de MAJ
 │       ├── donnees.astro                ★ état de fraîcheur public, page à liens
@@ -255,8 +363,8 @@ calculateurs.ch/
 │   └── api/lead.ts                      ← Pages Function, sans état, seule exception à P3
 │
 ├── tests/
-│   ├── calculs/                         ← cas de référence par calculateur
-│   ├── donnees/                         ← fraîcheur + conformité de schéma
+│   ├── calculations/                    ← cas de référence par calculateur
+│   ├── data/                            ← fraîcheur + conformité de schéma
 │   └── regression/                      ← instantanés de résultats
 │
 ├── astro.config.mjs
@@ -269,19 +377,18 @@ calculateurs.ch/
 
 ## 1. La couche de données
 
-### 1.1 Le type `Valeur<T>`
+### 1.1 Le type `Value<T>`
 
 Aucune valeur brute dans le dépôt. Tout est enveloppé :
 
 ```ts
 // src/data/schema.ts
-export type Valeur<T> = {
-  valeur: T;
-  sourceId: string; // clé dans sources.ts
-  verifieLe: string; // ISO 8601 — date de vérification humaine
-  valableDes: string; // ISO 8601
-  valableJusqua?: string; // absent = toujours en vigueur
-  note?: string; // nuance, cas particulier, réserve
+export type Value<T> = {
+  value: T;
+  unit?: string;
+  sourceId: string;      // clé dans sources.ts
+  verifiedOn: string;    // ISO 8601 — date de vérification humaine
+  effectiveFrom: string; // ISO 8601
 };
 ```
 
@@ -290,28 +397,36 @@ Exemple réel :
 ```jsonc
 // src/data/federal/2026.json
 {
-  "annee": 2026,
-  "pilier3a": {
-    "plafondAvecLPP": {
-      "valeur": 7258,
-      "sourceId": "ofas-3a-plafonds",
-      "verifieLe": "2026-01-08",
-      "valableDes": "2026-01-01",
-      "note": "Rachat rétroactif plafonné au même montant.",
+  "year": 2026,
+  "pillar3a": {
+    "employeeCapWithLpp": {
+      "value": 7258,
+      "unit": "CHF",
+      "sourceId": "ofas-pillar-3a-caps",
+      "verifiedOn": "2026-01-08",
+      "effectiveFrom": "2026-01-01"
     },
-    "rachatRetroactif": {
-      "premiereLacuneRachetable": {
-        "valeur": 2025,
+    "retroactiveBuyback": {
+      "firstBuybackableGap": {
+        "value": 2025,
         "sourceId": "opp3-art-7a",
-        "verifieLe": "2026-01-08",
-        "valableDes": "2026-01-01",
-        "note": "Les lacunes antérieures à 2025 ne sont pas rachetables.",
+        "verifiedOn": "2026-01-08",
+        "effectiveFrom": "2026-01-01"
       },
-      "delaiAnnees": { "valeur": 10, "sourceId": "opp3-art-7a", "...": "..." },
-    },
-  },
+      "windowYears": {
+        "value": 10,
+        "sourceId": "opp3-art-7a",
+        "verifiedOn": "2026-01-08",
+        "effectiveFrom": "2026-01-01"
+      }
+    }
+  }
 }
 ```
+
+> Les lacunes antérieures à 2025 ne sont pas rachetables ; le rachat rétroactif est
+> plafonné au même montant que le plafond annuel. Ces nuances se documentent dans
+> la page méthodologie et, si besoin, dans un champ `note` du fichier de données.
 
 ### 1.2 Le registre des sources
 
@@ -319,34 +434,37 @@ Exemple réel :
 // src/data/sources.ts
 export const SOURCES = {
   "opp3-art-7a": {
-    nom: "OPP 3, art. 7a — rachats dans le pilier 3a",
+    name: "OPP 3, art. 7a — rachats dans le pilier 3a",
     url: "https://www.fedlex.admin.ch/...",
-    autorite: "Confédération",
-    cadence: "annuelle",
+    authority: "Confédération",
+    cadence: "annual",
   },
-  "vd-coefficients-communaux": {
-    nom: "Coefficients d'impôt communaux vaudois",
+  "vd-municipal-multipliers": {
+    name: "Coefficients d'impôt communaux vaudois",
     url: "https://www.vd.ch/...",
-    autorite: "Canton de Vaud",
-    cadence: "annuelle",
+    authority: "Canton de Vaud",
+    cadence: "annual",
   },
   // ...
 } as const;
 ```
 
+Les clés de l'objet (`opp3-art-7a`) et les noms de champs (`name`, `url`,
+`authority`, `cadence`) sont en anglais ; `name` et `authority` portent des libellés
+français, ce sont des noms propres (voir exceptions § Convention de nommage).
 Chaque `sourceId` référencé dans les données doit exister ici. Un test le vérifie.
 
 ### 1.3 Les tests de données
 
 ```
-tests/donnees/
+tests/data/
 ├── schema.test.ts       → tous les fichiers valident le schéma zod
 ├── sources.test.ts      → tout sourceId référencé existe dans SOURCES
-├── fraicheur.test.ts    → aucune valeur non vérifiée depuis > 12 mois
-└── couverture.test.ts   → les 6 cantons ont les mêmes clés obligatoires
+├── freshness.test.ts    → aucune valeur non vérifiée depuis > 12 mois
+└── coverage.test.ts     → les 6 cantons ont les mêmes clés obligatoires
 ```
 
-`fraicheur.test.ts` échoue le build. C'est volontaire : le seul défaut fatal du site
+`freshness.test.ts` échoue le build. C'est volontaire : le seul défaut fatal du site
 serait d'afficher un chiffre périmé avec assurance. Passer en avertissement le jour où
 ça devient trop pénible est une décision, pas un accident.
 
@@ -361,8 +479,8 @@ source, date de vérification, prochaine échéance. Trois effets :
 
 ### 1.5 Le rituel du 1er janvier
 
-`npm run nouvelle-annee` duplique `federal/2026.json` en `2027.json`, remet tous les
-`verifieLe` à zéro et sort la liste des valeurs à re-vérifier. C'est un avantage
+`npm run new-year` duplique `federal/2026.json` en `2027.json`, remet tous les
+`verifiedOn` à zéro et sort la liste des valeurs à re-vérifier. C'est un avantage
 concurrentiel : les gros sites mettent des semaines à mettre à jour leurs barèmes.
 Un déploiement le 2 janvier capte trois semaines de trafic saisonnier.
 
@@ -374,52 +492,51 @@ Le périmètre n'est plus du texte dans une page — c'est une donnée qui alime
 le bandeau, les liens de variantes, la FAQ, le JSON-LD et les tests.
 
 ```ts
-// src/calculateurs/types.ts
-export type DefinitionCalculateur = {
-  id: string;
-  famille: "prevoyance" | "immobilier" | "energie" | "entreprise";
-  url: string;
-  titre: string;
-  metaDescription: string;
+// src/calculators/types.ts
+export type CalculatorDefinition = {
+  id: string;                    // "family.name" — ex. "pension.pillar-3a-buyback"
+  family: "pension" | "property" | "energy" | "business";
+  url: string;                   // slug FRANÇAIS — URL publique
+  title: string;                 // FRANÇAIS — affiché
+  metaDescription: string;       // FRANÇAIS — affiché
 
-  perimetre: {
-    pourQui: string[]; // → bandeau, bloc "Pour qui"
-    neCouvrePas: {
-      // → bandeau, bloc "Ce que ça ne couvre pas"
-      cas: string;
-      alternative?: string; // id d'un autre calculateur
+  scope: {
+    forWhom: string[];           // FRANÇAIS → bandeau, bloc "Pour qui"
+    notCovered: {                // FRANÇAIS → bandeau, bloc "Ce que ça ne couvre pas"
+      case: string;
+      alternative?: string;      // id d'un autre calculateur
     }[];
-    hypotheses: string[]; // → bandeau + page méthodologie
-    cantonsCouverts: string[];
-    anneeReference: number;
+    assumptions: string[];       // FRANÇAIS → bandeau + page méthodologie
+    cantonsCovered: string[];    // codes officiels : VD, GE, VS, FR, NE, JU
+    referenceYear: number;
   };
 
-  champs: DefinitionChamp[];
-  moteur: string; // chemin dans lib/calculs/
-  variantes: string[]; // ids de calculateurs liés
-  faq: { question: string; reponse: string }[];
+  fields: FieldDefinition[];
+  engine: string;                // chemin dans lib/calculations/
+  variants: string[];            // ids de calculateurs liés
+  faq: { question: string; answer: string }[];  // FRANÇAIS
 
-  monetisation?: {
-    type: "lead" | "affiliation" | "aucune";
-    partenaire?: string;
-    declencheur?: string; // condition sur le résultat
+  monetization?: {
+    type: "lead" | "affiliate" | "none";
+    partner?: string;
+    trigger?: string;            // condition sur le résultat
   };
 };
 ```
 
 Bénéfice concret : un test vérifie que **chaque calculateur déclare au moins une
-entrée `neCouvrePas` avec une alternative**. Impossible de publier un outil qui laisse
+entrée `notCovered` avec une alternative**. Impossible de publier un outil qui laisse
 un utilisateur hors périmètre dans une impasse. La rigueur de la v1 devient exécutable.
 
 ---
 
 ## 3. Rendu et interactivité
 
-| Cas                                                 | Technique                          | Poids visé        |
-| --------------------------------------------------- | ---------------------------------- | ----------------- |
-| Calculateur simple (≤ 6 champs, calcul direct)      | `<script>` vanilla dans la page    | 0 kb JS framework |
-| Sélecteur de commune (~300 entrées, autocomplétion) | Island **Preact** `client:visible` | ~4 kb             |
-| Comparateur multi-cantons, graphiques               | Island Preact `client:visible`     | ~4 kb + lib       |
+| Cas | Technique | Poids visé |
+| --- | --- | --- |
+| Calculateur simple (≤ 6 champs, calcul direct) | `<script>` vanilla dans la page | 0 kb JS framework |
+| Sélecteur de commune (~300 entrées, autocomplétion) | Island **Preact** `client:visible` | ~4 kb |
+| Comparateur multi-cantons, graphiques | Island Preact `client:visible` | ~4 kb + lib |
 
 **Preact, pas React.** Même API, une fraction du poids, `@astrojs/preact` en une ligne
 de config. Aucun calculateur du périmètre année 1 ne justifie React.
@@ -439,7 +556,7 @@ Règles inscrites dans l'architecture, pas laissées au jugement du moment :
 
 - Le résultat du calcul s'affiche **toujours en entier avant** toute proposition de lead.
 - Le formulaire est facultatif, jamais un mur, jamais une pop-up.
-- Il n'apparaît que si `monetisation.declencheur` est satisfait
+- Il n'apparaît que si `monetization.trigger` est satisfait
   (ex. : montant de travaux estimé > 15'000 CHF).
 - Consentement explicite, finalité annoncée, partenaire nommé — nLPD.
 - Un seul partenaire par lead. Pas de revente en cascade.
@@ -448,11 +565,11 @@ Règles inscrites dans l'architecture, pas laissées au jugement du moment :
 
 ## 5. Mesure
 
-| Outil                         | Usage                           | Cookies |
-| ----------------------------- | ------------------------------- | ------- |
-| Cloudflare Web Analytics      | Trafic, pages, référents        | Aucun   |
-| Google Search Console         | Requêtes, positions, indexation | —       |
-| Compteurs d'événements maison | Calcul lancé, lead envoyé       | Aucun   |
+| Outil | Usage | Cookies |
+| --- | --- | --- |
+| Cloudflare Web Analytics | Trafic, pages, référents | Aucun |
+| Google Search Console | Requêtes, positions, indexation | — |
+| Compteurs d'événements maison | Calcul lancé, lead envoyé | Aucun |
 
 Aucun cookie tiers, donc **aucune bannière de consentement**. Meilleure expérience,
 meilleure conversion, conformité nLPD triviale, et un argument commercial pour le
@@ -466,16 +583,14 @@ white-label auprès des fiduciaires.
 // src/content/config.ts
 const articles = defineCollection({
   schema: z.object({
-    titre: z.string(),
-    description: z.string(),
-    famille: z.enum(["prevoyance", "immobilier", "energie", "entreprise"]),
-    publieLe: z.date(),
-    misAJourLe: z.date(),
-    calculateursLies: z.array(z.string()).min(1), // ≥ 1 obligatoire
-    sources: z
-      .array(z.object({ nom: z.string(), url: z.string().url() }))
-      .min(2),
-    validePar: z.string().optional(), // fiduciaire / conseiller
+    title: z.string(),           // FRANÇAIS
+    description: z.string(),      // FRANÇAIS
+    family: z.enum(["pension", "property", "energy", "business"]),
+    publishedOn: z.date(),
+    updatedOn: z.date(),
+    relatedCalculators: z.array(z.string()).min(1),   // ≥ 1 obligatoire
+    sources: z.array(z.object({ name: z.string(), url: z.string().url() })).min(2),
+    reviewedBy: z.string().optional(),                // fiduciaire / conseiller
     faq: z.boolean().default(false),
   }),
 });
@@ -484,7 +599,8 @@ const articles = defineCollection({
 Contraintes de schéma, donc vérifiées au build : au moins un calculateur lié, au moins
 deux sources. Un article qui ne mène nulle part ne peut pas être publié.
 
-Route : `/{famille}/guides/{slug}/`.
+Route : `/{family}/guides/{slug}/`, où `{family}` se résout en son segment d'URL
+français (`prevoyance`, `immobilier`, `energie`, `entreprise`).
 
 ---
 
@@ -492,28 +608,28 @@ Route : `/{famille}/guides/{slug}/`.
 
 52 heures disponibles. Ce qui est construit :
 
-| Ordre | Calculateur                 | URL                                        | Semaines |
-| ----- | --------------------------- | ------------------------------------------ | -------- |
-| 1     | Rachat 3a rétroactif        | `/prevoyance/rachat-3a-retroactif/`        | 5–6      |
-| 2     | Économie d'impôt 3a         | `/prevoyance/economie-impot-3a/`           | 8        |
-| 3     | Rachat LPP                  | `/prevoyance/rachat-lpp/`                  | 9        |
-| 4     | Retrait en capital LPP/3a   | `/prevoyance/retrait-capital-lpp-3a/`      | 11–12    |
-| 5     | Suppression valeur locative | `/immobilier/suppression-valeur-locative/` | 13–14    |
-| 6     | Rénover avant la réforme    | `/immobilier/renover-avant-la-reforme/`    | 16–17    |
-| 7     | Amortir ou investir         | `/immobilier/amortir-ou-investir/`         | 18       |
-| 8     | Subventions rénovation      | `/energie/subventions-renovation/`         | 21–23    |
-| 9     | Pompe à chaleur sur 15 ans  | `/energie/pompe-a-chaleur/`                | 24–25    |
+| Ordre | Calculateur | URL | Semaines |
+| --- | --- | --- | --- |
+| 1 | Rachat 3a rétroactif | `/prevoyance/rachat-3a-retroactif/` | 5–6 |
+| 2 | Économie d'impôt 3a | `/prevoyance/economie-impot-3a/` | 8 |
+| 3 | Rachat LPP | `/prevoyance/rachat-lpp/` | 9 |
+| 4 | Retrait en capital LPP/3a | `/prevoyance/retrait-capital-lpp-3a/` | 11–12 |
+| 5 | Suppression valeur locative | `/immobilier/suppression-valeur-locative/` | 13–14 |
+| 6 | Rénover avant la réforme | `/immobilier/renover-avant-la-reforme/` | 16–17 |
+| 7 | Amortir ou investir | `/immobilier/amortir-ou-investir/` | 18 |
+| 8 | Subventions rénovation | `/energie/subventions-renovation/` | 21–23 |
+| 9 | Pompe à chaleur sur 15 ans | `/energie/pompe-a-chaleur/` | 24–25 |
 
 **Ce qui n'est PAS construit en année 1**, et pourquoi — cette liste vaut la précédente :
 
-| Écarté                                            | Raison                                                                                   |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Salaire brut → net (et variantes IS / frontalier) | Requête la plus disputée, visiteur le moins monétisable                                  |
-| Pages d'impôt cantonal (`impot-vaud`, etc.)       | Les simulateurs officiels sont gratuits et font autorité. Le moteur reste, les pages non |
-| Épargne, intérêts composés, inflation             | Mathématiques universelles, aucune barrière, concurrence mondiale                        |
-| Assurances LAMal                                  | Domaine de comparis et des courtiers, budgets sans commune mesure                        |
-| Allocations, chômage, APG, pourboire              | Volume correct, valeur commerciale nulle                                                 |
-| Cantons alémaniques                               | Après validation du modèle en romand                                                     |
+| Écarté | Raison |
+| --- | --- |
+| Salaire brut → net (et variantes IS / frontalier) | Requête la plus disputée, visiteur le moins monétisable |
+| Pages d'impôt cantonal (`impot-vaud`, etc.) | Les simulateurs officiels sont gratuits et font autorité. Le moteur reste, les pages non |
+| Épargne, intérêts composés, inflation | Mathématiques universelles, aucune barrière, concurrence mondiale |
+| Assurances LAMal | Domaine de comparis et des courtiers, budgets sans commune mesure |
+| Allocations, chômage, APG, pourboire | Volume correct, valeur commerciale nulle |
+| Cantons alémaniques | Après validation du modèle en romand |
 
 Le backlog complet reste dans le catalogue v2 et dans le fichier articles v1,
 requalifiés en **réserve stratégique années 2 à 5**.
@@ -522,14 +638,18 @@ requalifiés en **réserve stratégique années 2 à 5**.
 
 ## 8. Conventions
 
-| Élément            | Convention                   | Exemple                      |
-| ------------------ | ---------------------------- | ---------------------------- |
-| Pages              | `kebab-case.astro`           | `rachat-3a-retroactif.astro` |
-| Composants         | `PascalCase.astro`           | `PerimetreDeclare.astro`     |
-| Fonctions          | `camelCase`, français        | `calculerLacune3a()`         |
-| Données            | `kebab-case.json`, par année | `federal/2026.json`          |
-| Ids de calculateur | `famille.nom`                | `prevoyance.rachat-3a`       |
-| Variables CSS      | `--calc-{nom}`               | `--calc-accent`              |
+| Élément | Convention | Exemple |
+| --- | --- | --- |
+| Fichiers et dossiers de code | `kebab-case`, **anglais** | `pillar-3a-buyback.ts` |
+| Types et composants | `PascalCase`, **anglais** | `ScopeBanner.astro` |
+| Fonctions et variables | `camelCase`, **anglais** | `calculateContributionGap()` |
+| Clés de données | `camelCase`, **anglais** | `pillar3aEmployeeCap` |
+| Fichiers de pages (`src/pages/`) | `kebab-case`, **français** (deviennent l'URL) | `rachat-3a-retroactif.astro` |
+| URL publiques | `kebab-case`, **français** | `/prevoyance/rachat-3a-retroactif/` |
+| Ids de calculateur | `family.name`, **anglais** | `pension.pillar-3a-buyback` |
+| Chaînes d'interface | **français**, dans `src/i18n/fr.ts` | — |
+| Messages de commit | **anglais** | `add pillar-3a retroactive buyback engine` |
+| Variables CSS | `--calc-{name}` | `--calc-accent` |
 
 **Toutes les chaînes d'interface dans `src/i18n/fr.ts` dès le jour 1.** Ça ne coûte
 presque rien maintenant et rend l'extension alémanique mécanique plus tard. Ne pas
@@ -577,10 +697,10 @@ export default defineConfig({
 ```jsonc
 // scripts npm
 {
-  "verifier-donnees": "tsx scripts/verifier-donnees.ts", // rapport de fraîcheur
-  "nouvelle-annee": "tsx scripts/nouvelle-annee.ts", // rituel du 1er janvier
-  "test": "vitest run",
-  "predeploy": "npm run test && astro check",
+  "verify-data": "tsx scripts/verify-data.ts",   // rapport de fraîcheur
+  "new-year":    "tsx scripts/new-year.ts",       // rituel du 1er janvier
+  "test":        "vitest run",
+  "predeploy":   "npm run test && astro check"
 }
 ```
 
@@ -589,42 +709,40 @@ export default defineConfig({
 ## 10. Séparation des responsabilités
 
 ```
-src/data/            → faits sourcés et datés. Aucune logique.
-src/lib/calculs/     → formules pures. Aucun import Astro, aucun accès direct aux JSON.
-src/calculateurs/    → définitions déclaratives : périmètre, champs, FAQ, monétisation.
-src/components/      → rendu uniquement.
-src/pages/           → assemblage.
+src/data/             → faits sourcés et datés. Aucune logique.
+src/lib/calculations/ → formules pures. Aucun import Astro, aucun accès direct aux JSON.
+src/calculators/      → définitions déclaratives : périmètre, champs, FAQ, monétisation.
+src/components/        → rendu uniquement.
+src/pages/             → assemblage. Noms de fichiers en français (ils deviennent l'URL).
 ```
 
-Règle de dépendance, testable : `lib/calculs/` reçoit ses barèmes **en argument**,
+Règle de dépendance, testable : `lib/calculations/` reçoit ses barèmes **en argument**,
 il ne les importe jamais lui-même. Chaque fonction de calcul est donc testable avec
 des valeurs fictives, et rejouable sur n'importe quelle année.
 
 ```ts
 // ✅
-export function calculerEconomie3a(
-  montant: number,
-  taux: TauxImposition,
-): Resultat;
+export function calculatePillar3aTaxSaving(amount: number, rates: TaxRates): Result;
 
 // ❌
-import taux2026 from "../../data/federal/2026.json";
+import rates2026 from "../../data/federal/2026.json";
 ```
 
 ---
 
 ## 11. Journal des décisions
 
-| #   | Décision                                   | Motif                                                                      |
-| --- | ------------------------------------------ | -------------------------------------------------------------------------- |
-| 1   | Pas de pages d'impôt cantonal              | Impossible de battre les simulateurs officiels ; le moteur suffit          |
-| 2   | 6 cantons romands, pas 26                  | Divise le travail de données par 4, permet le niveau communal              |
-| 3   | Preact plutôt que React                    | Aucun besoin justifiant 40 kb supplémentaires                              |
-| 4   | Une seule Pages Function                   | Le routage de lead ne peut pas être statique ; rien d'autre ne le justifie |
-| 5   | Aucun cookie                               | Pas de bannière, conformité nLPD triviale, argument white-label            |
-| 6   | Fraîcheur des données bloquante au build   | Le seul défaut fatal serait un chiffre périmé affiché avec assurance       |
-| 7   | i18n préparé, non implémenté               | Coût quasi nul maintenant, coût élevé plus tard                            |
-| 8   | Périmètre déclaré structuré et non textuel | Alimente 4 usages, et devient vérifiable par test                          |
+| # | Décision | Motif |
+| --- | --- | --- |
+| 1 | Pas de pages d'impôt cantonal | Impossible de battre les simulateurs officiels ; le moteur suffit |
+| 2 | 6 cantons romands, pas 26 | Divise le travail de données par 4, permet le niveau communal |
+| 3 | Preact plutôt que React | Aucun besoin justifiant 40 kb supplémentaires |
+| 4 | Une seule Pages Function | Le routage de lead ne peut pas être statique ; rien d'autre ne le justifie |
+| 5 | Aucun cookie | Pas de bannière, conformité nLPD triviale, argument white-label |
+| 6 | Fraîcheur des données bloquante au build | Le seul défaut fatal serait un chiffre périmé affiché avec assurance |
+| 7 | i18n préparé, non implémenté | Coût quasi nul maintenant, coût élevé plus tard |
+| 8 | Périmètre déclaré structuré et non textuel | Alimente 4 usages, et devient vérifiable par test |
+| 9 | Code en anglais, contenu en français, frontière stricte | Une base à moitié traduite est pire que l'une ou l'autre convention : personne ne retient de quel côté est un fichier. Les URL restent françaises, c'est du contenu |
 
 ---
 
