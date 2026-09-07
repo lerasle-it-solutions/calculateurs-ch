@@ -277,11 +277,11 @@ Aucune valeur brute dans le dépôt. Tout est enveloppé :
 // src/data/schema.ts
 export type Valeur<T> = {
   valeur: T;
-  sourceId: string;        // clé dans sources.ts
-  verifieLe: string;       // ISO 8601 — date de vérification humaine
-  valableDes: string;      // ISO 8601
-  valableJusqua?: string;  // absent = toujours en vigueur
-  note?: string;           // nuance, cas particulier, réserve
+  sourceId: string; // clé dans sources.ts
+  verifieLe: string; // ISO 8601 — date de vérification humaine
+  valableDes: string; // ISO 8601
+  valableJusqua?: string; // absent = toujours en vigueur
+  note?: string; // nuance, cas particulier, réserve
 };
 ```
 
@@ -297,7 +297,7 @@ Exemple réel :
       "sourceId": "ofas-3a-plafonds",
       "verifieLe": "2026-01-08",
       "valableDes": "2026-01-01",
-      "note": "Rachat rétroactif plafonné au même montant."
+      "note": "Rachat rétroactif plafonné au même montant.",
     },
     "rachatRetroactif": {
       "premiereLacuneRachetable": {
@@ -305,11 +305,11 @@ Exemple réel :
         "sourceId": "opp3-art-7a",
         "verifieLe": "2026-01-08",
         "valableDes": "2026-01-01",
-        "note": "Les lacunes antérieures à 2025 ne sont pas rachetables."
+        "note": "Les lacunes antérieures à 2025 ne sont pas rachetables.",
       },
-      "delaiAnnees": { "valeur": 10, "sourceId": "opp3-art-7a", "...": "..." }
-    }
-  }
+      "delaiAnnees": { "valeur": 10, "sourceId": "opp3-art-7a", "...": "..." },
+    },
+  },
 }
 ```
 
@@ -318,17 +318,17 @@ Exemple réel :
 ```ts
 // src/data/sources.ts
 export const SOURCES = {
-  'opp3-art-7a': {
-    nom: 'OPP 3, art. 7a — rachats dans le pilier 3a',
-    url: 'https://www.fedlex.admin.ch/...',
-    autorite: 'Confédération',
-    cadence: 'annuelle',
+  "opp3-art-7a": {
+    nom: "OPP 3, art. 7a — rachats dans le pilier 3a",
+    url: "https://www.fedlex.admin.ch/...",
+    autorite: "Confédération",
+    cadence: "annuelle",
   },
-  'vd-coefficients-communaux': {
-    nom: 'Coefficients d\'impôt communaux vaudois',
-    url: 'https://www.vd.ch/...',
-    autorite: 'Canton de Vaud',
-    cadence: 'annuelle',
+  "vd-coefficients-communaux": {
+    nom: "Coefficients d'impôt communaux vaudois",
+    url: "https://www.vd.ch/...",
+    autorite: "Canton de Vaud",
+    cadence: "annuelle",
   },
   // ...
 } as const;
@@ -377,31 +377,32 @@ le bandeau, les liens de variantes, la FAQ, le JSON-LD et les tests.
 // src/calculateurs/types.ts
 export type DefinitionCalculateur = {
   id: string;
-  famille: 'prevoyance' | 'immobilier' | 'energie' | 'entreprise';
+  famille: "prevoyance" | "immobilier" | "energie" | "entreprise";
   url: string;
   titre: string;
   metaDescription: string;
 
   perimetre: {
-    pourQui: string[];              // → bandeau, bloc "Pour qui"
-    neCouvrePas: {                  // → bandeau, bloc "Ce que ça ne couvre pas"
+    pourQui: string[]; // → bandeau, bloc "Pour qui"
+    neCouvrePas: {
+      // → bandeau, bloc "Ce que ça ne couvre pas"
       cas: string;
-      alternative?: string;         // id d'un autre calculateur
+      alternative?: string; // id d'un autre calculateur
     }[];
-    hypotheses: string[];           // → bandeau + page méthodologie
+    hypotheses: string[]; // → bandeau + page méthodologie
     cantonsCouverts: string[];
     anneeReference: number;
   };
 
   champs: DefinitionChamp[];
-  moteur: string;                   // chemin dans lib/calculs/
-  variantes: string[];              // ids de calculateurs liés
+  moteur: string; // chemin dans lib/calculs/
+  variantes: string[]; // ids de calculateurs liés
   faq: { question: string; reponse: string }[];
 
   monetisation?: {
-    type: 'lead' | 'affiliation' | 'aucune';
+    type: "lead" | "affiliation" | "aucune";
     partenaire?: string;
-    declencheur?: string;           // condition sur le résultat
+    declencheur?: string; // condition sur le résultat
   };
 };
 ```
@@ -414,11 +415,11 @@ un utilisateur hors périmètre dans une impasse. La rigueur de la v1 devient ex
 
 ## 3. Rendu et interactivité
 
-| Cas | Technique | Poids visé |
-|---|---|---|
-| Calculateur simple (≤ 6 champs, calcul direct) | `<script>` vanilla dans la page | 0 kb JS framework |
-| Sélecteur de commune (~300 entrées, autocomplétion) | Island **Preact** `client:visible` | ~4 kb |
-| Comparateur multi-cantons, graphiques | Island Preact `client:visible` | ~4 kb + lib |
+| Cas                                                 | Technique                          | Poids visé        |
+| --------------------------------------------------- | ---------------------------------- | ----------------- |
+| Calculateur simple (≤ 6 champs, calcul direct)      | `<script>` vanilla dans la page    | 0 kb JS framework |
+| Sélecteur de commune (~300 entrées, autocomplétion) | Island **Preact** `client:visible` | ~4 kb             |
+| Comparateur multi-cantons, graphiques               | Island Preact `client:visible`     | ~4 kb + lib       |
 
 **Preact, pas React.** Même API, une fraction du poids, `@astrojs/preact` en une ligne
 de config. Aucun calculateur du périmètre année 1 ne justifie React.
@@ -447,11 +448,11 @@ Règles inscrites dans l'architecture, pas laissées au jugement du moment :
 
 ## 5. Mesure
 
-| Outil | Usage | Cookies |
-|---|---|---|
-| Cloudflare Web Analytics | Trafic, pages, référents | Aucun |
-| Google Search Console | Requêtes, positions, indexation | — |
-| Compteurs d'événements maison | Calcul lancé, lead envoyé | Aucun |
+| Outil                         | Usage                           | Cookies |
+| ----------------------------- | ------------------------------- | ------- |
+| Cloudflare Web Analytics      | Trafic, pages, référents        | Aucun   |
+| Google Search Console         | Requêtes, positions, indexation | —       |
+| Compteurs d'événements maison | Calcul lancé, lead envoyé       | Aucun   |
 
 Aucun cookie tiers, donc **aucune bannière de consentement**. Meilleure expérience,
 meilleure conversion, conformité nLPD triviale, et un argument commercial pour le
@@ -467,12 +468,14 @@ const articles = defineCollection({
   schema: z.object({
     titre: z.string(),
     description: z.string(),
-    famille: z.enum(['prevoyance', 'immobilier', 'energie', 'entreprise']),
+    famille: z.enum(["prevoyance", "immobilier", "energie", "entreprise"]),
     publieLe: z.date(),
     misAJourLe: z.date(),
-    calculateursLies: z.array(z.string()).min(1),   // ≥ 1 obligatoire
-    sources: z.array(z.object({ nom: z.string(), url: z.string().url() })).min(2),
-    validePar: z.string().optional(),               // fiduciaire / conseiller
+    calculateursLies: z.array(z.string()).min(1), // ≥ 1 obligatoire
+    sources: z
+      .array(z.object({ nom: z.string(), url: z.string().url() }))
+      .min(2),
+    validePar: z.string().optional(), // fiduciaire / conseiller
     faq: z.boolean().default(false),
   }),
 });
@@ -489,28 +492,28 @@ Route : `/{famille}/guides/{slug}/`.
 
 52 heures disponibles. Ce qui est construit :
 
-| Ordre | Calculateur | URL | Semaines |
-|---|---|---|---|
-| 1 | Rachat 3a rétroactif | `/prevoyance/rachat-3a-retroactif/` | 5–6 |
-| 2 | Économie d'impôt 3a | `/prevoyance/economie-impot-3a/` | 8 |
-| 3 | Rachat LPP | `/prevoyance/rachat-lpp/` | 9 |
-| 4 | Retrait en capital LPP/3a | `/prevoyance/retrait-capital-lpp-3a/` | 11–12 |
-| 5 | Suppression valeur locative | `/immobilier/suppression-valeur-locative/` | 13–14 |
-| 6 | Rénover avant la réforme | `/immobilier/renover-avant-la-reforme/` | 16–17 |
-| 7 | Amortir ou investir | `/immobilier/amortir-ou-investir/` | 18 |
-| 8 | Subventions rénovation | `/energie/subventions-renovation/` | 21–23 |
-| 9 | Pompe à chaleur sur 15 ans | `/energie/pompe-a-chaleur/` | 24–25 |
+| Ordre | Calculateur                 | URL                                        | Semaines |
+| ----- | --------------------------- | ------------------------------------------ | -------- |
+| 1     | Rachat 3a rétroactif        | `/prevoyance/rachat-3a-retroactif/`        | 5–6      |
+| 2     | Économie d'impôt 3a         | `/prevoyance/economie-impot-3a/`           | 8        |
+| 3     | Rachat LPP                  | `/prevoyance/rachat-lpp/`                  | 9        |
+| 4     | Retrait en capital LPP/3a   | `/prevoyance/retrait-capital-lpp-3a/`      | 11–12    |
+| 5     | Suppression valeur locative | `/immobilier/suppression-valeur-locative/` | 13–14    |
+| 6     | Rénover avant la réforme    | `/immobilier/renover-avant-la-reforme/`    | 16–17    |
+| 7     | Amortir ou investir         | `/immobilier/amortir-ou-investir/`         | 18       |
+| 8     | Subventions rénovation      | `/energie/subventions-renovation/`         | 21–23    |
+| 9     | Pompe à chaleur sur 15 ans  | `/energie/pompe-a-chaleur/`                | 24–25    |
 
 **Ce qui n'est PAS construit en année 1**, et pourquoi — cette liste vaut la précédente :
 
-| Écarté | Raison |
-|---|---|
-| Salaire brut → net (et variantes IS / frontalier) | Requête la plus disputée, visiteur le moins monétisable |
-| Pages d'impôt cantonal (`impot-vaud`, etc.) | Les simulateurs officiels sont gratuits et font autorité. Le moteur reste, les pages non |
-| Épargne, intérêts composés, inflation | Mathématiques universelles, aucune barrière, concurrence mondiale |
-| Assurances LAMal | Domaine de comparis et des courtiers, budgets sans commune mesure |
-| Allocations, chômage, APG, pourboire | Volume correct, valeur commerciale nulle |
-| Cantons alémaniques | Après validation du modèle en romand |
+| Écarté                                            | Raison                                                                                   |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Salaire brut → net (et variantes IS / frontalier) | Requête la plus disputée, visiteur le moins monétisable                                  |
+| Pages d'impôt cantonal (`impot-vaud`, etc.)       | Les simulateurs officiels sont gratuits et font autorité. Le moteur reste, les pages non |
+| Épargne, intérêts composés, inflation             | Mathématiques universelles, aucune barrière, concurrence mondiale                        |
+| Assurances LAMal                                  | Domaine de comparis et des courtiers, budgets sans commune mesure                        |
+| Allocations, chômage, APG, pourboire              | Volume correct, valeur commerciale nulle                                                 |
+| Cantons alémaniques                               | Après validation du modèle en romand                                                     |
 
 Le backlog complet reste dans le catalogue v2 et dans le fichier articles v1,
 requalifiés en **réserve stratégique années 2 à 5**.
@@ -519,14 +522,14 @@ requalifiés en **réserve stratégique années 2 à 5**.
 
 ## 8. Conventions
 
-| Élément | Convention | Exemple |
-|---|---|---|
-| Pages | `kebab-case.astro` | `rachat-3a-retroactif.astro` |
-| Composants | `PascalCase.astro` | `PerimetreDeclare.astro` |
-| Fonctions | `camelCase`, français | `calculerLacune3a()` |
-| Données | `kebab-case.json`, par année | `federal/2026.json` |
-| Ids de calculateur | `famille.nom` | `prevoyance.rachat-3a` |
-| Variables CSS | `--calc-{nom}` | `--calc-accent` |
+| Élément            | Convention                   | Exemple                      |
+| ------------------ | ---------------------------- | ---------------------------- |
+| Pages              | `kebab-case.astro`           | `rachat-3a-retroactif.astro` |
+| Composants         | `PascalCase.astro`           | `PerimetreDeclare.astro`     |
+| Fonctions          | `camelCase`, français        | `calculerLacune3a()`         |
+| Données            | `kebab-case.json`, par année | `federal/2026.json`          |
+| Ids de calculateur | `famille.nom`                | `prevoyance.rachat-3a`       |
+| Variables CSS      | `--calc-{nom}`               | `--calc-accent`              |
 
 **Toutes les chaînes d'interface dans `src/i18n/fr.ts` dès le jour 1.** Ça ne coûte
 presque rien maintenant et rend l'extension alémanique mécanique plus tard. Ne pas
@@ -538,19 +541,19 @@ construire le routage multilingue tant que la décision n'est pas prise.
 
 ```js
 // astro.config.mjs
-import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
-import preact from '@astrojs/preact';
+import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
+import preact from "@astrojs/preact";
 
 export default defineConfig({
-  site: 'https://www.calculateurs.ch',
-  output: 'static',
+  site: "https://calculateurs.ch",
+  output: "static",
   integrations: [
-    sitemap({ changefreq: 'monthly', lastmod: new Date() }),
+    sitemap({ changefreq: "monthly", lastmod: new Date() }),
     preact({ compat: false }),
   ],
-  build: { format: 'directory' },
-  prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
+  build: { format: "directory" },
+  prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
 });
 ```
 
@@ -574,10 +577,10 @@ export default defineConfig({
 ```jsonc
 // scripts npm
 {
-  "verifier-donnees": "tsx scripts/verifier-donnees.ts",   // rapport de fraîcheur
-  "nouvelle-annee":   "tsx scripts/nouvelle-annee.ts",     // rituel du 1er janvier
-  "test":             "vitest run",
-  "predeploy":        "npm run test && astro check"
+  "verifier-donnees": "tsx scripts/verifier-donnees.ts", // rapport de fraîcheur
+  "nouvelle-annee": "tsx scripts/nouvelle-annee.ts", // rituel du 1er janvier
+  "test": "vitest run",
+  "predeploy": "npm run test && astro check",
 }
 ```
 
@@ -599,26 +602,29 @@ des valeurs fictives, et rejouable sur n'importe quelle année.
 
 ```ts
 // ✅
-export function calculerEconomie3a(montant: number, taux: TauxImposition): Resultat
+export function calculerEconomie3a(
+  montant: number,
+  taux: TauxImposition,
+): Resultat;
 
 // ❌
-import taux2026 from '../../data/federal/2026.json';
+import taux2026 from "../../data/federal/2026.json";
 ```
 
 ---
 
 ## 11. Journal des décisions
 
-| # | Décision | Motif |
-|---|---|---|
-| 1 | Pas de pages d'impôt cantonal | Impossible de battre les simulateurs officiels ; le moteur suffit |
-| 2 | 6 cantons romands, pas 26 | Divise le travail de données par 4, permet le niveau communal |
-| 3 | Preact plutôt que React | Aucun besoin justifiant 40 kb supplémentaires |
-| 4 | Une seule Pages Function | Le routage de lead ne peut pas être statique ; rien d'autre ne le justifie |
-| 5 | Aucun cookie | Pas de bannière, conformité nLPD triviale, argument white-label |
-| 6 | Fraîcheur des données bloquante au build | Le seul défaut fatal serait un chiffre périmé affiché avec assurance |
-| 7 | i18n préparé, non implémenté | Coût quasi nul maintenant, coût élevé plus tard |
-| 8 | Périmètre déclaré structuré et non textuel | Alimente 4 usages, et devient vérifiable par test |
+| #   | Décision                                   | Motif                                                                      |
+| --- | ------------------------------------------ | -------------------------------------------------------------------------- |
+| 1   | Pas de pages d'impôt cantonal              | Impossible de battre les simulateurs officiels ; le moteur suffit          |
+| 2   | 6 cantons romands, pas 26                  | Divise le travail de données par 4, permet le niveau communal              |
+| 3   | Preact plutôt que React                    | Aucun besoin justifiant 40 kb supplémentaires                              |
+| 4   | Une seule Pages Function                   | Le routage de lead ne peut pas être statique ; rien d'autre ne le justifie |
+| 5   | Aucun cookie                               | Pas de bannière, conformité nLPD triviale, argument white-label            |
+| 6   | Fraîcheur des données bloquante au build   | Le seul défaut fatal serait un chiffre périmé affiché avec assurance       |
+| 7   | i18n préparé, non implémenté               | Coût quasi nul maintenant, coût élevé plus tard                            |
+| 8   | Périmètre déclaré structuré et non textuel | Alimente 4 usages, et devient vérifiable par test                          |
 
 ---
 

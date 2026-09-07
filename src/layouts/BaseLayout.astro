@@ -1,0 +1,72 @@
+---
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="canonical" href={canonical} />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+	</head>
+	<body>
+		<main>
+			<slot />
+		</main>
+		<footer>
+			<nav aria-label="Pied de page">
+				<ul>
+					<li><a href="/methodologie/">Méthodologie</a></li>
+					<li><a href="/donnees/">Données et sources</a></li>
+					<li><a href="/protection-des-donnees/">Protection des données</a></li>
+					<li><a href="/mentions-legales/">Mentions légales</a></li>
+				</ul>
+			</nav>
+		</footer>
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+	}
+
+	body {
+		font-family: system-ui, sans-serif;
+		line-height: 1.6;
+	}
+
+	main {
+		max-width: 42rem;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	footer {
+		max-width: 42rem;
+		margin: 0 auto;
+		padding: 1rem;
+		border-top: 1px solid;
+	}
+
+	footer ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+</style>

@@ -3,7 +3,7 @@
 Calculateurs de fiscalité, prévoyance, immobilier et énergie pour la Suisse romande.
 Site statique, sans compte utilisateur, sans cookie, sans publicité.
 
-**→ https://www.calculateurs.ch**
+**→ https://calculateurs.ch**
 
 ## Pourquoi ce dépôt est public
 
@@ -40,7 +40,7 @@ Les calculs d'impôt sont testés contre le calculateur officiel de l'Administra
 ## Sources
 
 Toutes les valeurs proviennent de sources officielles : Fedlex, Office fédéral des assurances sociales, Administration fédérale des contributions, administrations fiscales cantonales, services cantonaux de l'énergie, Office fédéral de l'énergie, Office fédéral de la statistique.
-Le registre complet des sources se trouve dans `src/data/sources.ts` et l'état de fraîcheur de chaque donnée est publié sur https://www.calculateurs.ch/donnees/
+Le registre complet des sources se trouve dans `src/data/sources.ts` et l'état de fraîcheur de chaque donnée est publié sur https://calculateurs.ch/donnees/
 
 ## Structure
 

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://calculateurs.ch/sitemap-index.xml

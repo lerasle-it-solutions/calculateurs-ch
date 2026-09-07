@@ -1,11 +1,48 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = 'calculateurs.ch — calculateurs suisses romands qui affichent leurs sources';
+const description =
+	'Des calculateurs de prévoyance, immobilier, énergie et entreprise pour la Suisse romande. Chaque chiffre provient d’une source officielle datée. Aucun compte, aucun cookie.';
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout title={title} description={description}>
+	<h1>calculateurs.ch</h1>
+
+	<p>Des calculateurs suisses romands qui affichent leurs sources.</p>
+
+	<p>
+		Chaque chiffre utilisé provient d'une source officielle, avec sa date de
+		vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne
+		quittent pas votre navigateur.
+	</p>
+
+	<h2>Prévoyance</h2>
+	<ul>
+		<li>3<sup>e</sup> pilier</li>
+		<li>Rachats LPP</li>
+		<li>Retrait en capital</li>
+	</ul>
+
+	<h2>Immobilier</h2>
+	<ul>
+		<li>Valeur locative</li>
+		<li>Rénovation</li>
+		<li>Capacité d'achat</li>
+	</ul>
+
+	<h2>Énergie</h2>
+	<ul>
+		<li>Subventions cantonales et communales</li>
+		<li>Pompe à chaleur</li>
+		<li>Photovoltaïque</li>
+	</ul>
+
+	<h2>Entreprise</h2>
+	<ul>
+		<li>Coût employeur</li>
+		<li>Charges sociales</li>
+	</ul>
+
+	<p>Premiers calculateurs en ligne dès octobre 2026.</p>
+</BaseLayout>
