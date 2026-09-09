@@ -1,0 +1,34 @@
+---
+/**
+ * CantonField (couche calculateur) — un <select> des cantons romands.
+ * S'appuie sur `ui/SelectField` et sur la liste `ROMANDE_CANTONS`.
+ *
+ * `only` restreint la liste aux cantons réellement couverts par le calculateur
+ * (`scope.cantonsCovered`), fourni par CalculatorShell.
+ */
+import UiSelectField from "../../ui/SelectField.astro";
+import { ROMANDE_CANTONS } from "../../../calculators/cantons";
+import type { CantonFieldDefinition } from "../../../calculators/types";
+
+interface Props {
+	field: CantonFieldDefinition;
+	id: string;
+	only?: string[];
+}
+
+const { field, id, only } = Astro.props;
+
+const options = ROMANDE_CANTONS.filter(
+	(canton) => !only || only.length === 0 || only.includes(canton.code),
+).map((canton) => ({ value: canton.code, label: canton.name }));
+---
+
+<UiSelectField
+	id={id}
+	name={field.name}
+	label={field.label}
+	options={options}
+	value={field.defaultValue}
+	hint={field.hint}
+	required={field.required}
+/>

@@ -1,0 +1,177 @@
+---
+/**
+ * CalculatorShell — assemble une page de calculateur à partir de sa
+ * CalculatorDefinition (voir CLAUDE.md § 2).
+ *
+ * Rend, dans cet ordre : titre, intro, bandeau ScopeNotice, formulaire généré
+ * depuis les champs, ResultCard, CalculationBreakdown, DataFreshness,
+ * RelatedVariants, FAQ.
+ *
+ * Le Shell ne fait AUCUN calcul : il pose le squelette et le contrat DOM.
+ * Le calcul est écrit en JavaScript natif dans le `<script>` de la page, qui
+ * lit le formulaire à chaque frappe et émet un évènement `calc:update` :
+ *
+ *   document.dispatchEvent(new CustomEvent("calc:update", {
+ *     detail: { value: "<chaîne formatée>", breakdown: [ { label, detail?, amount, note? } ] }
+ *   }));
+ *
+ * ResultCard écoute `detail.value`, CalculationBreakdown écoute `detail.breakdown`.
+ * Rien n'est envoyé nulle part.
+ */
+import ScopeNotice from "../ui/ScopeNotice.astro";
+import ResultCard from "../ui/ResultCard.astro";
+import CalculationBreakdown from "../ui/CalculationBreakdown.astro";
+import DataFreshness from "../ui/DataFreshness.astro";
+// Champs : les primitifs génériques viennent du design system (un seul de chaque
+// pour tout le projet) ; seul le champ métier « canton » vit dans cette couche.
+import NumberField from "../ui/NumberField.astro";
+import SelectField from "../ui/SelectField.astro";
+import CantonField from "./fields/CantonField.astro";
+import RelatedVariants from "./RelatedVariants.astro";
+import type { CalculatorDefinition } from "../../calculators/types";
+
+interface Props {
+	definition: CalculatorDefinition;
+	/** Paragraphe d'introduction. FRANÇAIS. */
+	intro: string;
+	/** Libellé de la ResultCard. FRANÇAIS. */
+	resultLabel: string;
+	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
+	verifiedOn: string;
+	/**
+	 * Catalogue des calculateurs connus, pour résoudre les ids de `variants` et
+	 * de `notCovered[].alternative` en liens. Une entrée introuvable est rendue
+	 * en texte simple, jamais en lien mort.
+	 */
+	catalog?: CalculatorDefinition[];
+}
+
+const {
+	definition,
+	intro,
+	resultLabel,
+	verifiedOn,
+	catalog = [],
+} = Astro.props;
+
+const byId = new Map(catalog.map((entry) => [entry.id, entry]));
+
+const formId = definition.id.replace(/[^a-z0-9]+/gi, "-");
+const fieldId = (name: string) => `${formId}-${name}`;
+
+const notCovered = definition.scope.notCovered.map((entry) => {
+	const alternative = entry.alternative ? byId.get(entry.alternative) : undefined;
+	return {
+		case: entry.case,
+		alternative: alternative
+			? { label: alternative.title, url: alternative.slug }
+			: undefined,
+	};
+});
+
+const variants = definition.variants
+	.map((id) => byId.get(id))
+	.filter((entry): entry is CalculatorDefinition => Boolean(entry))
+	.map((entry) => ({ slug: entry.slug, title: entry.title }));
+
+const resultFor = definition.fields
+	.map((field) => fieldId(field.name))
+	.join(" ");
+---
+
+<article class="flex flex-col gap-2xl">
+	<header class="flex max-w-reading flex-col gap-md">
+		<h1 class="text-title">{definition.title}</h1>
+		<p class="text-body">{intro}</p>
+	</header>
+
+	<ScopeNotice
+		forWhom={definition.scope.forWhom}
+		notCovered={notCovered}
+		assumptions={definition.scope.assumptions}
+	/>
+
+	<div class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+		<form
+			data-calculator
+			id={formId}
+			class="flex min-w-0 flex-col gap-lg lg:self-start"
+			novalidate
+		>
+			{
+				definition.fields.map((field) =>
+					field.kind === "number" ? (
+						<NumberField
+							id={fieldId(field.name)}
+							name={field.name}
+							label={field.label}
+							value={field.defaultValue}
+							min={field.min}
+							max={field.max}
+							step={field.step}
+							unit={field.unit}
+							hint={field.hint}
+							required={field.required}
+						/>
+					) : field.kind === "select" ? (
+						<SelectField
+							id={fieldId(field.name)}
+							name={field.name}
+							label={field.label}
+							options={field.options}
+							value={field.defaultValue}
+							hint={field.hint}
+							required={field.required}
+						/>
+					) : (
+						<CantonField
+							field={field}
+							id={fieldId(field.name)}
+							only={definition.scope.cantonsCovered}
+						/>
+					),
+				)
+			}
+		</form>
+
+		<div class="flex min-w-0 flex-col gap-lg">
+			<div class="sticky bottom-0 z-10 lg:top-lg lg:bottom-auto">
+				<ResultCard
+					id={`${formId}-result`}
+					for={resultFor}
+					label={resultLabel}
+					value="—"
+				/>
+			</div>
+		</div>
+
+		<div class="lg:col-span-2">
+			<CalculationBreakdown open={true} />
+		</div>
+	</div>
+
+	<DataFreshness
+		referenceYear={definition.scope.referenceYear}
+		verifiedOn={verifiedOn}
+	/>
+
+	<RelatedVariants variants={variants} />
+
+	{
+		definition.faq.length > 0 && (
+			<section class="flex max-w-reading flex-col gap-sm">
+				<h2 class="text-heading">Questions fréquentes</h2>
+				<div class="border-b border-rule">
+					{definition.faq.map((item) => (
+						<details class="border-t border-rule">
+							<summary class="cursor-pointer py-md text-label">
+								{item.question}
+							</summary>
+							<p class="pb-md text-body">{item.answer}</p>
+						</details>
+					))}
+				</div>
+			</section>
+		)
+	}
+</article>

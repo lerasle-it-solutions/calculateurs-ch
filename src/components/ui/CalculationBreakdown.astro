@@ -1,11 +1,16 @@
 ---
 /**
  * CalculationBreakdown — la trace du calcul, ligne par ligne (règle R4).
- * Éléments natifs : <details><summary> + <table>. Aucun JavaScript :
- * le repli est celui du navigateur, pas un accordéon maison.
+ * Éléments natifs : <details><summary> + <table>. Le repli est celui du
+ * navigateur, pas un accordéon maison.
  *
  * Présentation en registre : libellé à gauche, montant aligné à droite,
  * comme un décompte officiel.
+ *
+ * JavaScript : le composant écoute l'évènement `calc:update` émis par le
+ * `<script>` de la page et reconstruit les lignes depuis `detail.breakdown`.
+ * Il ne contient aucune formule. Sans JavaScript, il affiche les `rows`
+ * fournies au rendu (ou l'état vide).
  */
 interface Row {
 	/** Libellé de l'étape. */
@@ -20,18 +25,30 @@ interface Row {
 
 interface Props {
 	summary?: string;
-	rows: Row[];
+	rows?: Row[];
 	open?: boolean;
+	/** Nom de l'évènement écouté. */
+	event?: string;
+	/** Texte affiché tant qu'aucune ligne n'est disponible. FRANÇAIS. */
+	emptyLabel?: string;
 }
 
 const {
 	summary = "Voir le calcul ligne par ligne",
-	rows,
+	rows = [],
 	open = false,
+	event = "calc:update",
+	emptyLabel = "Renseignez les champs pour voir le détail du calcul.",
 } = Astro.props;
 ---
 
-<details open={open} class="border border-rule">
+<details
+	open={open}
+	data-breakdown
+	data-event={event}
+	data-empty-label={emptyLabel}
+	class="border border-rule"
+>
 	<summary class="cursor-pointer bg-tint px-lg py-md text-label">
 		{summary}
 	</summary>
@@ -44,7 +61,16 @@ const {
 					<th scope="col" class="px-lg py-sm text-right font-normal">Montant</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody data-breakdown-body>
+				{
+					rows.length === 0 && (
+						<tr class="border-t border-rule">
+							<td colspan="2" class="px-lg py-md text-fine">
+								{emptyLabel}
+							</td>
+						</tr>
+					)
+				}
 				{
 					rows.map((row) => (
 						<tr class="border-t border-rule align-top">
@@ -65,3 +91,46 @@ const {
 		</table>
 	</div>
 </details>
+
+<script>
+	type Row = { label: string; detail?: string; amount: string; note?: string };
+
+	const escapeHtml = (value: string) =>
+		value.replace(
+			/[&<>"]/g,
+			(char) =>
+				({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] as string,
+		);
+
+	const rowHtml = (row: Row) =>
+		`<tr class="border-t border-rule align-top">` +
+		`<td class="px-lg py-md">` +
+		`<span class="block">${escapeHtml(row.label)}</span>` +
+		(row.detail
+			? `<span class="block text-fine tabular-nums">${escapeHtml(row.detail)}</span>`
+			: "") +
+		(row.note
+			? `<span class="block font-serif text-fine">${escapeHtml(row.note)}</span>`
+			: "") +
+		`</td>` +
+		`<td class="px-lg py-md text-right tabular-nums">${escapeHtml(row.amount)}</td>` +
+		`</tr>`;
+
+	const emptyRowHtml = (label: string) =>
+		`<tr class="border-t border-rule"><td colspan="2" class="px-lg py-md text-fine">${escapeHtml(label)}</td></tr>`;
+
+	for (const el of document.querySelectorAll<HTMLElement>("[data-breakdown]")) {
+		const eventName = el.dataset.event ?? "calc:update";
+		const emptyLabel = el.dataset.emptyLabel ?? "";
+		const body = el.querySelector<HTMLElement>("[data-breakdown-body]");
+		if (!body) continue;
+
+		document.addEventListener(eventName, (raw) => {
+			const detail = (raw as CustomEvent<{ breakdown?: Row[] }>).detail;
+			if (!detail || !Array.isArray(detail.breakdown)) return;
+			body.innerHTML = detail.breakdown.length
+				? detail.breakdown.map(rowHtml).join("")
+				: emptyRowHtml(emptyLabel);
+		});
+	}
+</script>

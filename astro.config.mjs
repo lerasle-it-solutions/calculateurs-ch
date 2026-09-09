@@ -10,7 +10,14 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://calculateurs.ch",
   output: "static",
-  integrations: [sitemap({ changefreq: "monthly", lastmod: new Date() })],
+  integrations: [
+    sitemap({
+      changefreq: "monthly",
+      lastmod: new Date(),
+      // Les pages internes de démonstration ne sont ni indexées ni listées.
+      filter: (page) => !page.includes("/demo-"),
+    }),
+  ],
   build: { format: "directory" },
   prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
   vite: {

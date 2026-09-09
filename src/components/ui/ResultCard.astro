@@ -28,7 +28,7 @@ const {
 	label,
 	value = "—",
 	caption,
-	event = "calc:result",
+	event = "calc:update",
 } = Astro.props;
 ---
 
@@ -46,7 +46,7 @@ const {
 
 <script>
 	for (const card of document.querySelectorAll<HTMLElement>("[data-result-card]")) {
-		const eventName = card.dataset.event ?? "calc:result";
+		const eventName = card.dataset.event ?? "calc:update";
 		const target = card.querySelector<HTMLElement>("[data-result-value]");
 		if (!target) continue;
 

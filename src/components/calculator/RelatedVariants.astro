@@ -1,0 +1,32 @@
+---
+/**
+ * RelatedVariants — les calculateurs liés (« variants » de la définition,
+ * résolus en {slug, title} par CalculatorShell). Élément natif : <nav>.
+ * Aucun rendu si la liste est vide.
+ */
+interface Variant {
+	slug: string;
+	title: string;
+}
+
+interface Props {
+	variants: Variant[];
+}
+
+const { variants } = Astro.props;
+---
+
+{
+	variants.length > 0 && (
+		<nav class="flex max-w-reading flex-col gap-sm" aria-label="Variantes de ce calculateur">
+			<h2 class="text-heading">Variantes</h2>
+			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+				{variants.map((variant) => (
+					<li>
+						<a href={variant.slug}>{variant.title}</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)
+}

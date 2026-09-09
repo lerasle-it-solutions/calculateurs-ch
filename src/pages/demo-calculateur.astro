@@ -1,0 +1,202 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculatorShell from "../components/calculator/CalculatorShell.astro";
+import type { CalculatorDefinition } from "../calculators/types";
+
+// Page interne de contrôle — NON liée depuis le site, noindex.
+// Le calculateur est factice : le « taux marginal » est saisi par l'utilisateur,
+// aucune valeur fiscale n'est codée (R2/R3).
+
+const buybackDemo: CalculatorDefinition = {
+	id: "pension.demo-buyback",
+	family: "pension",
+	slug: "/demo-calculateur/",
+	title: "Calculateur factice — économie d'impôt d'un rachat",
+	metaDescription: "Page interne de démonstration du CalculatorShell.",
+	scope: {
+		forWhom: [
+			"Personne salariée assujettie à l'impôt en Suisse romande",
+			"Disposant d'une lacune de cotisation rachetable",
+		],
+		notCovered: [
+			{ case: "Rachats dans la LPP (2e pilier)", alternative: "pension.demo-lpp" },
+			{ case: "Personnes sans activité lucrative" },
+		],
+		assumptions: [
+			"Le taux marginal est saisi par l'utilisateur, jamais calculé.",
+			"Aucun barème cantonal ou communal n'intervient dans cette démonstration.",
+		],
+		cantonsCovered: ["VD", "GE", "VS", "FR", "NE", "JU"],
+		referenceYear: 2026,
+	},
+	fields: [
+		{
+			kind: "number",
+			name: "buybackAmount",
+			label: "Montant du rachat",
+			unit: "CHF",
+			min: 0,
+			step: 100,
+			defaultValue: 12000,
+			hint: "Montant que vous envisagez de verser.",
+			required: true,
+		},
+		{
+			kind: "number",
+			name: "marginalRate",
+			label: "Votre taux marginal d'imposition",
+			unit: "%",
+			min: 0,
+			max: 60,
+			step: 0.1,
+			defaultValue: 26,
+			hint: "À relever sur votre dernière taxation. Saisi, jamais deviné.",
+			required: true,
+		},
+		{
+			kind: "canton",
+			name: "canton",
+			label: "Canton de domicile",
+			defaultValue: "VD",
+			hint: "Sert ici uniquement à l'affichage du périmètre.",
+		},
+		{
+			kind: "select",
+			name: "filing",
+			label: "Situation de famille",
+			options: [
+				{ value: "single", label: "Personne seule" },
+				{ value: "married", label: "Marié·e, imposition commune" },
+			],
+			defaultValue: "single",
+		},
+	],
+	engine: "pension/demo-buyback",
+	variants: ["pension.demo-lpp"],
+	faq: [
+		{
+			question: "Ce calculateur est-il officiel ?",
+			answer:
+				"Non. C'est une démonstration destinée au contrôle visuel du CalculatorShell et de ses composants.",
+		},
+		{
+			question: "Mes données sont-elles envoyées quelque part ?",
+			answer:
+				"Non. Tout le calcul se fait dans votre navigateur, à chaque frappe, et rien n'est transmis.",
+		},
+	],
+};
+
+// Deuxième définition, seulement pour résoudre le lien de variante et l'alternative.
+const lppDemo: CalculatorDefinition = {
+	id: "pension.demo-lpp",
+	family: "pension",
+	slug: "/demo-calculateur/",
+	title: "Calculateur factice — rachat LPP",
+	metaDescription: "Entrée de catalogue de démonstration.",
+	scope: {
+		forWhom: [],
+		notCovered: [],
+		assumptions: [],
+		cantonsCovered: ["VD", "GE", "VS", "FR", "NE", "JU"],
+		referenceYear: 2026,
+	},
+	fields: [],
+	engine: "",
+	variants: [],
+	faq: [],
+};
+
+const catalog = [buybackDemo, lppDemo];
+---
+
+<BaseLayout
+	title="Démonstration — CalculatorShell — calculateurs.ch"
+	description="Page interne de contrôle visuel du CalculatorShell."
+	noindex={true}
+	wide={true}
+>
+	<div class="flex flex-col gap-2xl">
+		<p class="max-w-reading font-serif text-fine">
+			Page interne de démonstration. Le calculateur ci-dessous est factice et sert
+			à vérifier le rendu du CalculatorShell à partir d'une CalculatorDefinition.
+		</p>
+
+		<CalculatorShell
+			definition={buybackDemo}
+			intro="Estimez l'économie d'impôt d'un rachat en indiquant votre taux marginal. Le calcul se met à jour à chaque frappe et reste dans votre navigateur."
+			resultLabel="Économie d'impôt estimée"
+			verifiedOn="2026-01-08"
+			catalog={catalog}
+		/>
+	</div>
+</BaseLayout>
+
+<script>
+	// Moteur factice, en JavaScript natif, dans la page (aucun framework).
+	// resultat = montant × (taux / 100). Les deux opérandes sont saisis :
+	// aucune valeur fiscale n'est codée. Rien n'est envoyé nulle part.
+	type BreakdownRow = {
+		label: string;
+		detail?: string;
+		amount: string;
+		note?: string;
+	};
+
+	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
+
+	if (form) {
+		const chf = new Intl.NumberFormat("fr-CH", {
+			style: "currency",
+			currency: "CHF",
+			maximumFractionDigits: 0,
+		});
+		const percent = new Intl.NumberFormat("fr-CH", {
+			style: "percent",
+			minimumFractionDigits: 1,
+			maximumFractionDigits: 1,
+		});
+
+		const compute = (amount: number, rate: number) => {
+			const saving = Math.round(amount * (rate / 100));
+			const breakdown: BreakdownRow[] = [
+				{ label: "Montant du rachat", detail: "Saisi", amount: chf.format(amount) },
+				{
+					label: "Taux marginal retenu",
+					detail: "Saisi",
+					amount: percent.format(rate / 100),
+					note: "Valeur fournie par l'utilisateur — aucune interpolation de barème.",
+				},
+				{
+					label: "Économie d'impôt estimée",
+					detail: `${chf.format(amount)} × ${percent.format(rate / 100)}`,
+					amount: chf.format(saving),
+				},
+			];
+			return { value: chf.format(saving), breakdown };
+		};
+
+		const update = () => {
+			const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+			const amount = Number(data.buybackAmount);
+			const rate = Number(data.marginalRate);
+			const valid =
+				Number.isFinite(amount) &&
+				Number.isFinite(rate) &&
+				amount >= 0 &&
+				rate >= 0;
+
+			const result = valid
+				? compute(amount, rate)
+				: { value: "—", breakdown: [] as BreakdownRow[] };
+
+			document.dispatchEvent(
+				new CustomEvent("calc:update", { detail: result }),
+			);
+		};
+
+		form.addEventListener("input", update);
+		// Laisse ResultCard et CalculationBreakdown s'abonner avant le premier calcul.
+		requestAnimationFrame(update);
+	}
+</script>
