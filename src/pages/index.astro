@@ -4,45 +4,58 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const title = 'calculateurs.ch — calculateurs suisses romands qui affichent leurs sources';
 const description =
 	'Des calculateurs de prévoyance, immobilier, énergie et entreprise pour la Suisse romande. Chaque chiffre provient d’une source officielle datée. Aucun compte, aucun cookie.';
+
+const families = [
+	{
+		name: 'Prévoyance',
+		items: ['3e pilier', 'Rachats LPP', 'Retrait en capital'],
+	},
+	{
+		name: 'Immobilier',
+		items: ['Valeur locative', 'Rénovation', 'Capacité d’achat'],
+	},
+	{
+		name: 'Énergie',
+		items: ['Subventions cantonales et communales', 'Pompe à chaleur', 'Photovoltaïque'],
+	},
+	{
+		name: 'Entreprise',
+		items: ['Coût employeur', 'Charges sociales'],
+	},
+];
 ---
 
 <BaseLayout title={title} description={description}>
-	<h1>calculateurs.ch</h1>
+	<div class="flex flex-col gap-2xl">
+		<header class="flex flex-col gap-md">
+			<h1 class="text-title">calculateurs.ch</h1>
+			<p class="text-body">
+				Des calculateurs suisses romands qui affichent leurs sources.
+			</p>
+			<p class="text-body">
+				Chaque chiffre utilisé provient d'une source officielle, avec sa date de
+				vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne
+				quittent pas votre navigateur.
+			</p>
+		</header>
 
-	<p>Des calculateurs suisses romands qui affichent leurs sources.</p>
+		<div class="flex flex-col gap-xl">
+			{
+				families.map((family) => (
+					<section class="flex flex-col gap-sm">
+						<h2 class="text-heading">{family.name}</h2>
+						<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+							{family.items.map((item) => (
+								<li>{item}</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</div>
 
-	<p>
-		Chaque chiffre utilisé provient d'une source officielle, avec sa date de
-		vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne
-		quittent pas votre navigateur.
-	</p>
-
-	<h2>Prévoyance</h2>
-	<ul>
-		<li>3<sup>e</sup> pilier</li>
-		<li>Rachats LPP</li>
-		<li>Retrait en capital</li>
-	</ul>
-
-	<h2>Immobilier</h2>
-	<ul>
-		<li>Valeur locative</li>
-		<li>Rénovation</li>
-		<li>Capacité d'achat</li>
-	</ul>
-
-	<h2>Énergie</h2>
-	<ul>
-		<li>Subventions cantonales et communales</li>
-		<li>Pompe à chaleur</li>
-		<li>Photovoltaïque</li>
-	</ul>
-
-	<h2>Entreprise</h2>
-	<ul>
-		<li>Coût employeur</li>
-		<li>Charges sociales</li>
-	</ul>
-
-	<p>Premiers calculateurs en ligne dès octobre 2026.</p>
+		<p class="border-t border-rule pt-lg font-serif text-fine">
+			Premiers calculateurs en ligne dès octobre 2026.
+		</p>
+	</div>
 </BaseLayout>

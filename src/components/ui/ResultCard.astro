@@ -1,0 +1,60 @@
+---
+/**
+ * ResultCard — le résultat du calcul. Élément natif : <output>.
+ *
+ * C'est le seul endroit, avec les liens, où `accent` apparaît, et l'élément
+ * le plus grand de la page (`text-display`). Le reste de l'interface s'efface
+ * devant lui.
+ *
+ * JavaScript autorisé ici : le composant écoute un évènement émis par le
+ * `<script>` de la page (calcul en JavaScript natif) et met à jour la valeur
+ * affichée et son état. Il ne contient aucune formule.
+ */
+interface Props {
+	id: string;
+	/** Liste d'ids des champs qui alimentent ce résultat (attribut `for` natif). */
+	for: string;
+	label: string;
+	/** Valeur initiale, affichée avant tout calcul. */
+	value?: string;
+	caption?: string;
+	/** Nom de l'évènement écouté ; son `detail.value` (chaîne déjà formatée) remplace le contenu. */
+	event?: string;
+}
+
+const {
+	id,
+	for: forAttr,
+	label,
+	value = "—",
+	caption,
+	event = "calc:result",
+} = Astro.props;
+---
+
+<output
+	id={id}
+	for={forAttr}
+	data-result-card
+	data-event={event}
+	class="flex flex-col gap-sm border border-rule bg-tint p-xl"
+>
+	<span class="text-label">{label}</span>
+	<span data-result-value class="text-display text-accent tabular-nums">{value}</span>
+	{caption && <span class="text-fine">{caption}</span>}
+</output>
+
+<script>
+	for (const card of document.querySelectorAll<HTMLElement>("[data-result-card]")) {
+		const eventName = card.dataset.event ?? "calc:result";
+		const target = card.querySelector<HTMLElement>("[data-result-value]");
+		if (!target) continue;
+
+		document.addEventListener(eventName, (raw) => {
+			const detail = (raw as CustomEvent<{ value?: string }>).detail;
+			if (detail && typeof detail.value === "string") {
+				target.textContent = detail.value;
+			}
+		});
+	}
+</script>

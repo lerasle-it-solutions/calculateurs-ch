@@ -1,0 +1,132 @@
+---
+/**
+ * LeadForm — mise en relation avec un partenaire. Élément natif : <form>.
+ *
+ * JavaScript autorisé ici : validation en ligne et envoi sans rechargement
+ * vers la Pages Function `functions/api/lead.ts`. Sans JavaScript, le formulaire
+ * reste un POST classique fonctionnel.
+ *
+ * Règles inscrites dans l'architecture (§ 4) :
+ *  - le résultat complet du calcul s'affiche toujours AVANT ce formulaire ;
+ *  - facultatif, jamais un mur, jamais une pop-up ;
+ *  - consentement explicite, finalité annoncée, un seul partenaire nommé.
+ * `accent` n'apparaît pas ici : il est réservé au résultat et aux liens.
+ */
+interface Props {
+	/** Nom du partenaire unique vers qui la demande est transmise. */
+	partner: string;
+	/** Finalité annoncée du traitement (nLPD). */
+	purpose: string;
+	action?: string;
+}
+
+const { partner, purpose, action = "/api/lead" } = Astro.props;
+---
+
+<form
+	data-lead-form
+	method="post"
+	action={action}
+	class="flex max-w-reading flex-col gap-lg border border-rule bg-paper p-lg"
+>
+	<div class="flex flex-col gap-sm">
+		<h2 class="text-heading">Être mis en relation avec {partner}</h2>
+		<p class="text-fine">{purpose}</p>
+	</div>
+
+	<div class="flex flex-col gap-xs">
+		<label for="lead-name" class="text-label">Nom et prénom *</label>
+		<input
+			type="text"
+			id="lead-name"
+			name="name"
+			required
+			autocomplete="name"
+			class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
+		/>
+	</div>
+
+	<div class="flex flex-col gap-xs">
+		<label for="lead-email" class="text-label">Adresse e-mail *</label>
+		<input
+			type="email"
+			id="lead-email"
+			name="email"
+			required
+			autocomplete="email"
+			class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
+		/>
+	</div>
+
+	<div class="flex flex-col gap-xs">
+		<label for="lead-phone" class="text-label">Téléphone</label>
+		<input
+			type="tel"
+			id="lead-phone"
+			name="phone"
+			autocomplete="tel"
+			class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body tabular-nums"
+		/>
+	</div>
+
+	<div class="flex gap-sm">
+		<input
+			type="checkbox"
+			id="lead-consent"
+			name="consent"
+			required
+			value="yes"
+			class="mt-2xs"
+		/>
+		<label for="lead-consent" class="text-fine">
+			J'accepte que mes coordonnées soient transmises à {partner} dans le seul but
+			indiqué ci-dessus. Aucune autre transmission, aucune revente.
+		</label>
+	</div>
+
+	<button
+		type="submit"
+		class="self-start border border-ink rounded-control bg-ink px-lg py-sm text-label text-paper"
+	>
+		Envoyer la demande
+	</button>
+
+	<p data-lead-status role="status" aria-live="polite" class="text-fine" hidden></p>
+</form>
+
+<script>
+	for (const form of document.querySelectorAll<HTMLFormElement>("[data-lead-form]")) {
+		const status = form.querySelector<HTMLElement>("[data-lead-status]");
+
+		const say = (message: string) => {
+			if (!status) return;
+			status.textContent = message;
+			status.hidden = false;
+		};
+
+		form.addEventListener("submit", async (event) => {
+			if (!form.reportValidity()) return;
+			event.preventDefault();
+
+			const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+			if (button) button.disabled = true;
+			say("Envoi en cours…");
+
+			try {
+				const response = await fetch(form.action, {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify(Object.fromEntries(new FormData(form))),
+				});
+				if (!response.ok) throw new Error(String(response.status));
+				form.reset();
+				say("Demande envoyée. Le partenaire vous recontacte directement.");
+			} catch {
+				say(
+					"L'envoi a échoué. Réessayez plus tard — votre résultat reste affiché ci-dessus.",
+				);
+				if (button) button.disabled = false;
+			}
+		});
+	}
+</script>

@@ -1,0 +1,331 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NumberField from "../components/ui/NumberField.astro";
+import SelectField from "../components/ui/SelectField.astro";
+import MunicipalityField from "../components/ui/MunicipalityField.astro";
+import ResultCard from "../components/ui/ResultCard.astro";
+import CalculationBreakdown from "../components/ui/CalculationBreakdown.astro";
+import ScopeNotice from "../components/ui/ScopeNotice.astro";
+import DataFreshness from "../components/ui/DataFreshness.astro";
+import LeadForm from "../components/ui/LeadForm.astro";
+
+// Page de démonstration du design system — NON liée depuis le site, noindex.
+// Aucune valeur fiscale n'est codée ici : le calculateur factice multiplie
+// un montant saisi par un taux marginal, lui aussi saisi par l'utilisateur.
+
+const cantons = [
+	{ value: "VD", label: "Vaud" },
+	{ value: "GE", label: "Genève" },
+	{ value: "VS", label: "Valais" },
+	{ value: "FR", label: "Fribourg" },
+	{ value: "NE", label: "Neuchâtel" },
+	{ value: "JU", label: "Jura" },
+];
+
+const municipalities = [
+	"Lausanne",
+	"Renens",
+	"Nyon",
+	"Morges",
+	"Yverdon-les-Bains",
+	"Pully",
+	"Montreux",
+];
+---
+
+<BaseLayout
+	title="Démonstration du design system — calculateurs.ch"
+	description="Page interne de contrôle visuel des composants d'interface."
+	noindex={true}
+	wide={true}
+>
+	<div class="flex min-w-0 flex-col gap-3xl wrap-break-word">
+		<header class="flex max-w-reading flex-col gap-sm">
+			<h1 class="text-title">Démonstration du design system</h1>
+			<p class="text-body">
+				Contrôle visuel des huit composants de <code>src/components/ui/</code> et
+				d'un calculateur factice complet. Page non référencée, absente de la
+				navigation.
+			</p>
+		</header>
+
+		<!-- ============================================================ -->
+		<!-- Calculateur factice complet                                   -->
+		<!-- ============================================================ -->
+		<section class="flex flex-col gap-xl">
+			<h2 class="text-heading">Calculateur factice — assemblage complet</h2>
+
+			<ScopeNotice
+				forWhom={[
+					"Personne salariée assujettie à l'impôt en Suisse romande",
+					"Disposant d'une lacune de cotisation 3a rachetable",
+				]}
+				notCovered={[
+					{
+						case: "Rachats dans la LPP (2e pilier)",
+						alternative: { label: "Calculateur de rachat LPP", url: "/prevoyance/rachat-lpp/" },
+					},
+					{
+						case: "Personnes sans activité lucrative",
+						alternative: { label: "Économie d'impôt 3a", url: "/prevoyance/economie-impot-3a/" },
+					},
+				]}
+				assumptions={[
+					"Le taux marginal est saisi par l'utilisateur, non calculé.",
+					"Aucun barème cantonal ou communal n'intervient dans cette démonstration.",
+				]}
+			/>
+
+			<DataFreshness referenceYear={2026} verifiedOn="2026-01-08" />
+
+			<div class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+				<form
+					data-fake-calculator
+					class="flex min-w-0 flex-col gap-lg lg:self-start"
+					novalidate
+				>
+					<NumberField
+						id="buyback-amount"
+						name="buybackAmount"
+						label="Montant du rachat 3a"
+						value="12000"
+						min={0}
+						step={100}
+						unit="CHF"
+						hint="Montant que vous envisagez de verser rétroactivement."
+						required
+					/>
+
+					<NumberField
+						id="marginal-rate"
+						name="marginalRate"
+						label="Votre taux marginal d'imposition"
+						value="26"
+						min={0}
+						max={60}
+						step="0.1"
+						unit="%"
+						hint="À relever sur votre dernière taxation. Saisi, jamais deviné."
+						required
+					/>
+
+					<SelectField
+						id="canton"
+						name="canton"
+						label="Canton de domicile"
+						options={cantons}
+						value="VD"
+						hint="Sert ici uniquement à l'affichage du périmètre."
+					/>
+
+					<MunicipalityField
+						id="municipality"
+						name="municipality"
+						label="Commune de domicile"
+						options={municipalities}
+						hint="Commencez à taper : l'autocomplétion est native."
+					/>
+				</form>
+
+				<div class="flex min-w-0 flex-col gap-lg">
+					<div class="sticky bottom-0 z-10 lg:top-lg lg:bottom-auto">
+						<ResultCard
+							id="tax-saving-result"
+							for="buyback-amount marginal-rate"
+							label="Économie d'impôt estimée"
+							value="—"
+							caption="Estimation de démonstration, sans valeur fiscale."
+						/>
+					</div>
+				</div>
+
+				<div class="lg:col-span-2">
+					<CalculationBreakdown
+						open={true}
+						rows={[
+							{
+								label: "Montant du rachat",
+								detail: "Saisi",
+								amount: "12 000 CHF",
+							},
+							{
+								label: "Taux marginal retenu",
+								detail: "Saisi",
+								amount: "26,0 %",
+								note: "Valeur fournie par l'utilisateur — aucune interpolation de barème.",
+							},
+							{
+								label: "Économie d'impôt estimée",
+								detail: "12 000 × 26,0 %",
+								amount: "3 120 CHF",
+							},
+						]}
+					/>
+				</div>
+			</div>
+
+			<LeadForm
+				partner="un conseiller en prévoyance partenaire"
+				purpose="Vous faire recontacter pour vérifier l'éligibilité du rachat et son échelonnement. Dans un vrai calculateur, ce bloc n'apparaît que si le résultat dépasse le seuil défini dans la définition du calculateur."
+			/>
+		</section>
+
+		<!-- ============================================================ -->
+		<!-- Catalogue des composants, un par un                           -->
+		<!-- ============================================================ -->
+		<section class="flex max-w-reading flex-col gap-2xl border-t border-rule pt-2xl">
+			<h2 class="text-heading">Les huit composants isolés</h2>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">NumberField — <code>&lt;input type="number"&gt;</code></h3>
+				<NumberField
+					id="demo-number"
+					name="demoNumber"
+					label="Revenu net imposable"
+					value="85000"
+					unit="CHF"
+					hint="Ligne 650 de la déclaration."
+					required
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">SelectField — <code>&lt;select&gt;</code></h3>
+				<SelectField
+					id="demo-select"
+					name="demoSelect"
+					label="Situation de famille"
+					options={[
+						{ value: "single", label: "Personne seule" },
+						{ value: "married", label: "Marié·e, imposition commune" },
+						{ value: "family", label: "Famille monoparentale" },
+					]}
+					value="married"
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">
+					MunicipalityField — <code>&lt;input list&gt;</code> + <code>&lt;datalist&gt;</code>
+				</h3>
+				<MunicipalityField
+					id="demo-municipality"
+					name="demoMunicipality"
+					label="Commune"
+					options={municipalities}
+					hint="Autocomplétion native, sans îlot hydraté."
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">ResultCard — <code>&lt;output&gt;</code></h3>
+				<ResultCard
+					id="demo-result"
+					for="demo-number"
+					label="Impôt cantonal et communal"
+					value="9 480 CHF"
+					caption="Le chiffre est le héros : plus grand élément, seul usage de l'accent."
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">
+					CalculationBreakdown — <code>&lt;details&gt;</code> + <code>&lt;table&gt;</code>
+				</h3>
+				<CalculationBreakdown
+					rows={[
+						{ label: "Revenu imposable", detail: "Saisi", amount: "85 000 CHF" },
+						{
+							label: "Déduction 3a",
+							detail: "85 000 − 7 258",
+							amount: "77 742 CHF",
+							note: "Plafond 3a avec LPP, barème fédéral 2026.",
+						},
+						{ label: "Impôt dû", detail: "Barème appliqué", amount: "9 480 CHF" },
+					]}
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">ScopeNotice — <code>&lt;aside&gt;</code></h3>
+				<ScopeNotice
+					forWhom={["Propriétaire d'un logement en résidence principale"]}
+					notCovered={[
+						{
+							case: "Immeubles de rendement",
+							alternative: { label: "Gains immobiliers", url: "/immobilier/gains-immobiliers/" },
+						},
+					]}
+					assumptions={["Valeur locative selon la dernière estimation cantonale."]}
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">
+					ScopeNotice, variante <code>reinforced</code> (calculateurs A4, B3, C1)
+				</h3>
+				<ScopeNotice
+					reinforced={true}
+					forWhom={["Personne envisageant un retrait en capital du 2e pilier"]}
+					notCovered={[
+						{
+							case: "Rentes viagères",
+							alternative: { label: "Rachat LPP", url: "/prevoyance/rachat-lpp/" },
+						},
+					]}
+					assumptions={[
+						"Un retrait en capital est irréversible et modifie durablement la rente.",
+					]}
+				/>
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">
+					DataFreshness — <code>&lt;p&gt;</code> + <code>&lt;time datetime&gt;</code>
+				</h3>
+				<DataFreshness referenceYear={2026} verifiedOn="2026-01-08" />
+			</article>
+
+			<article class="flex flex-col gap-sm">
+				<h3 class="text-label">LeadForm — <code>&lt;form&gt;</code></h3>
+				<LeadForm
+					partner="une fiduciaire partenaire"
+					purpose="Vous mettre en relation pour un bilan fiscal complet. Un seul partenaire, aucune revente."
+				/>
+			</article>
+		</section>
+	</div>
+</BaseLayout>
+
+<script>
+	// Calculateur factice : montant saisi × taux marginal saisi.
+	// Aucune valeur fiscale codée ; formatage fr-CH uniquement.
+	// Seule la ResultCard se met à jour en direct (évènement calc:result) ;
+	// la trace du calcul reste un composant sans JavaScript.
+	const form = document.querySelector<HTMLFormElement>("[data-fake-calculator]");
+	if (form) {
+		const chf = new Intl.NumberFormat("fr-CH", {
+			style: "currency",
+			currency: "CHF",
+			maximumFractionDigits: 0,
+		});
+		const amountField = form.querySelector<HTMLInputElement>("#buyback-amount");
+		const rateField = form.querySelector<HTMLInputElement>("#marginal-rate");
+
+		const recompute = () => {
+			const amount = Number(amountField?.value ?? "");
+			const rate = Number(rateField?.value ?? "");
+			const valid = Number.isFinite(amount) && Number.isFinite(rate) && amount >= 0;
+
+			document.dispatchEvent(
+				new CustomEvent("calc:result", {
+					detail: { value: valid ? chf.format(Math.round((amount * rate) / 100)) : "—" },
+				}),
+			);
+		};
+
+		form.addEventListener("input", recompute);
+		// Léger différé : laisse la ResultCard s'abonner à l'évènement avant le premier calcul.
+		requestAnimationFrame(recompute);
+	}
+</script>

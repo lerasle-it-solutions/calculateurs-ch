@@ -1,0 +1,71 @@
+---
+/**
+ * NumberField — un champ numérique. Élément natif : <input type="number">.
+ * Aucun JavaScript.
+ */
+interface Props {
+	id: string;
+	name: string;
+	label: string;
+	value?: number | string;
+	min?: number;
+	max?: number;
+	step?: number | string;
+	unit?: string;
+	hint?: string;
+	required?: boolean;
+}
+
+const {
+	id,
+	name,
+	label,
+	value,
+	min,
+	max,
+	step,
+	unit,
+	hint,
+	required = false,
+} = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+---
+
+<div class="flex flex-col gap-xs">
+	<label for={id} class="text-label">
+		{label}
+		{required && <span aria-hidden="true"> *</span>}
+	</label>
+
+	<div class="flex min-w-0 items-stretch border border-rule rounded-control bg-paper focus-within:outline focus-within:outline-accent focus-within:outline-offset-2">
+		<input
+			type="number"
+			id={id}
+			name={name}
+			value={value}
+			min={min}
+			max={max}
+			step={step}
+			required={required}
+			inputmode="decimal"
+			aria-describedby={hintId}
+			class="w-full min-w-0 bg-paper px-md py-sm text-body tabular-nums outline-none"
+		/>
+		{
+			unit && (
+				<span class="flex items-center border-l border-rule bg-tint px-md text-label">
+					{unit}
+				</span>
+			)
+		}
+	</div>
+
+	{
+		hint && (
+			<p id={hintId} class="text-fine">
+				{hint}
+			</p>
+		)
+	}
+</div>

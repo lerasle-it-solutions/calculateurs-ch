@@ -1,0 +1,27 @@
+---
+/**
+ * DataFreshness — la fraîcheur des barèmes utilisés.
+ * Éléments natifs : <p> + <time datetime>. Aucun JavaScript :
+ * la date est formatée au build.
+ *
+ * Rendu en serif : c'est de l'appareil de sources, pas un produit du calcul.
+ */
+interface Props {
+	referenceYear: number;
+	/** Date de vérification humaine, ISO 8601. */
+	verifiedOn: string;
+}
+
+const { referenceYear, verifiedOn } = Astro.props;
+
+const verifiedLabel = new Intl.DateTimeFormat("fr-CH", {
+	day: "2-digit",
+	month: "2-digit",
+	year: "numeric",
+}).format(new Date(verifiedOn));
+---
+
+<p class="font-serif text-fine">
+	Barèmes <time datetime={String(referenceYear)}>{referenceYear}</time>, vérifiés le{" "}
+	<time datetime={verifiedOn}>{verifiedLabel}</time>.
+</p>

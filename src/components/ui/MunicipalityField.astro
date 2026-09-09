@@ -1,0 +1,73 @@
+---
+/**
+ * MunicipalityField — saisie d'une commune avec autocomplétion native.
+ * Éléments natifs : <input list> + <datalist>. Aucun JavaScript, aucun îlot.
+ *
+ * L'attribut `list` relie l'input au datalist ; le navigateur fournit
+ * l'autocomplétion et le filtrage sans une ligne de script.
+ */
+interface Option {
+	value: string;
+	label?: string;
+}
+
+interface Props {
+	id: string;
+	name: string;
+	label: string;
+	options: (string | Option)[];
+	value?: string;
+	hint?: string;
+	required?: boolean;
+}
+
+const {
+	id,
+	name,
+	label,
+	options,
+	value,
+	hint,
+	required = false,
+} = Astro.props;
+
+const listId = `${id}-list`;
+const hintId = hint ? `${id}-hint` : undefined;
+const normalized: Option[] = options.map((option) =>
+	typeof option === "string" ? { value: option } : option,
+);
+---
+
+<div class="flex flex-col gap-xs">
+	<label for={id} class="text-label">
+		{label}
+		{required && <span aria-hidden="true"> *</span>}
+	</label>
+
+	<input
+		type="text"
+		id={id}
+		name={name}
+		list={listId}
+		value={value}
+		required={required}
+		autocomplete="off"
+		aria-describedby={hintId}
+		class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
+	/>
+	<datalist id={listId}>
+		{
+			normalized.map((option) => (
+				<option value={option.value}>{option.label}</option>
+			))
+		}
+	</datalist>
+
+	{
+		hint && (
+			<p id={hintId} class="text-fine">
+				{hint}
+			</p>
+		)
+	}
+</div>

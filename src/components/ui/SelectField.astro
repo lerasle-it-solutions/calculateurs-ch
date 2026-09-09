@@ -1,0 +1,54 @@
+---
+/**
+ * SelectField — une liste de choix fermée. Élément natif : <select>.
+ * Aucun JavaScript, aucune liste déroulante réimplémentée.
+ */
+interface Option {
+	value: string;
+	label: string;
+}
+
+interface Props {
+	id: string;
+	name: string;
+	label: string;
+	options: Option[];
+	value?: string;
+	hint?: string;
+	required?: boolean;
+}
+
+const { id, name, label, options, value, hint, required = false } = Astro.props;
+const hintId = hint ? `${id}-hint` : undefined;
+---
+
+<div class="flex flex-col gap-xs">
+	<label for={id} class="text-label">
+		{label}
+		{required && <span aria-hidden="true"> *</span>}
+	</label>
+
+	<select
+		id={id}
+		name={name}
+		required={required}
+		aria-describedby={hintId}
+		class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
+	>
+		{
+			options.map((option) => (
+				<option value={option.value} selected={option.value === value}>
+					{option.label}
+				</option>
+			))
+		}
+	</select>
+
+	{
+		hint && (
+			<p id={hintId} class="text-fine">
+				{hint}
+			</p>
+		)
+	}
+</div>

@@ -1,0 +1,77 @@
+---
+/**
+ * ScopeNotice — le périmètre déclaré, affiché AVANT la saisie (principe P5).
+ * Élément natif : <aside>. Aucun JavaScript.
+ *
+ * `reinforced` : réservé aux avertissements renforcés des calculateurs A4, B3
+ * et C1 — bascule le filet et le titre en `warning`. Jamais décoratif.
+ */
+interface NotCovered {
+	case: string;
+	alternative?: { label: string; url: string };
+}
+
+interface Props {
+	forWhom: string[];
+	notCovered: NotCovered[];
+	assumptions?: string[];
+	reinforced?: boolean;
+}
+
+const {
+	forWhom,
+	notCovered,
+	assumptions = [],
+	reinforced = false,
+} = Astro.props;
+---
+
+<aside
+	class:list={[
+		"flex flex-col gap-lg border bg-paper p-lg",
+		reinforced ? "border-warning" : "border-rule",
+	]}
+>
+	<section class="flex flex-col gap-sm">
+		<h2 class:list={["text-heading", reinforced && "text-warning"]}>Pour qui</h2>
+		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg text-body">
+			{forWhom.map((item) => <li>{item}</li>)}
+		</ul>
+	</section>
+
+	<section class="flex flex-col gap-sm border-t border-rule pt-lg">
+		<h2 class:list={["text-heading", reinforced && "text-warning"]}>
+			Ce que ça ne couvre pas
+		</h2>
+		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg text-body">
+			{
+				notCovered.map((item) => (
+					<li>
+						{item.case}
+						{item.alternative && (
+							<>
+								{" — "}
+								<a href={item.alternative.url}>{item.alternative.label}</a>
+							</>
+						)}
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	{
+		assumptions.length > 0 && (
+			<section class="flex flex-col gap-sm border-t border-rule pt-lg">
+				<h2 class:list={["text-heading", reinforced && "text-warning"]}>
+					Hypothèses retenues
+				</h2>
+				<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg font-serif text-body">
+					{assumptions.map((item) => (
+						<li>{item}</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+</aside>

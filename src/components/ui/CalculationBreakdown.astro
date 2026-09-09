@@ -1,0 +1,67 @@
+---
+/**
+ * CalculationBreakdown — la trace du calcul, ligne par ligne (règle R4).
+ * Éléments natifs : <details><summary> + <table>. Aucun JavaScript :
+ * le repli est celui du navigateur, pas un accordéon maison.
+ *
+ * Présentation en registre : libellé à gauche, montant aligné à droite,
+ * comme un décompte officiel.
+ */
+interface Row {
+	/** Libellé de l'étape. */
+	label: string;
+	/** Opérande(s) et opération, p. ex. « 12 000 × 13 % ». */
+	detail?: string;
+	/** Résultat intermédiaire, déjà formaté. */
+	amount: string;
+	/** Hypothèse retenue ou référence de barème (rendue en serif). */
+	note?: string;
+}
+
+interface Props {
+	summary?: string;
+	rows: Row[];
+	open?: boolean;
+}
+
+const {
+	summary = "Voir le calcul ligne par ligne",
+	rows,
+	open = false,
+} = Astro.props;
+---
+
+<details open={open} class="border border-rule">
+	<summary class="cursor-pointer bg-tint px-lg py-md text-label">
+		{summary}
+	</summary>
+
+	<div class="overflow-x-auto">
+		<table class="w-full border-collapse text-body">
+			<thead>
+				<tr class="border-t border-rule bg-tint text-label">
+					<th scope="col" class="px-lg py-sm text-left font-normal">Étape</th>
+					<th scope="col" class="px-lg py-sm text-right font-normal">Montant</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					rows.map((row) => (
+						<tr class="border-t border-rule align-top">
+							<td class="px-lg py-md">
+								<span class="block">{row.label}</span>
+								{row.detail && (
+									<span class="block text-fine tabular-nums">{row.detail}</span>
+								)}
+								{row.note && (
+									<span class="block font-serif text-fine">{row.note}</span>
+								)}
+							</td>
+							<td class="px-lg py-md text-right tabular-nums">{row.amount}</td>
+						</tr>
+					))
+				}
+			</tbody>
+		</table>
+	</div>
+</details>

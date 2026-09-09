@@ -1,10 +1,25 @@
 ---
+import "../styles/tokens.css";
+
+// Polices auto-hébergées via Fontsource — aucune requête vers un domaine tiers.
+// IBM Plex Sans : interface et chiffres. IBM Plex Serif : appareil de sources.
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+import "@fontsource/ibm-plex-sans/latin-ext-400.css";
+import "@fontsource/ibm-plex-sans/latin-ext-600.css";
+import "@fontsource/ibm-plex-serif/latin-400.css";
+import "@fontsource/ibm-plex-serif/latin-ext-400.css";
+
 interface Props {
 	title: string;
 	description: string;
+	noindex?: boolean;
+	/** Gabarit large, pour les pages de calculateur en deux colonnes. */
+	wide?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false, wide = false } = Astro.props;
+const container = wide ? "max-w-page" : "max-w-reading";
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -17,16 +32,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		<link rel="icon" href="/favicon.ico" />
 		<link rel="canonical" href={canonical} />
 		<meta name="generator" content={Astro.generator} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<title>{title}</title>
 		<meta name="description" content={description} />
 	</head>
-	<body>
-		<main>
+	<body class="bg-paper text-ink">
+		<main class:list={["mx-auto px-lg py-2xl", container]}>
 			<slot />
 		</main>
-		<footer>
+		<footer class:list={["mx-auto border-t border-rule px-lg py-lg", container]}>
 			<nav aria-label="Pied de page">
-				<ul>
+				<ul class="flex flex-wrap gap-lg text-fine">
 					<li><a href="/methodologie/">Méthodologie</a></li>
 					<li><a href="/donnees/">Données et sources</a></li>
 					<li><a href="/protection-des-donnees/">Protection des données</a></li>
@@ -36,37 +52,3 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		</footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-	}
-
-	body {
-		font-family: system-ui, sans-serif;
-		line-height: 1.6;
-	}
-
-	main {
-		max-width: 42rem;
-		margin: 0 auto;
-		padding: 2rem 1rem;
-	}
-
-	footer {
-		max-width: 42rem;
-		margin: 0 auto;
-		padding: 1rem;
-		border-top: 1px solid;
-	}
-
-	footer ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
-</style>

@@ -1,0 +1,162 @@
+/*
+ * tokens.css — source unique des valeurs du design system (voir CLAUDE.md § Design system).
+ *
+ * Aucune valeur littérale de couleur, de taille, de graisse ou d'espacement ne doit
+ * apparaître ailleurs que dans ce fichier. Les composants et les pages n'utilisent
+ * que les utilitaires Tailwind générés à partir des tokens ci-dessous
+ * (bg-paper, text-ink, text-display, p-lg, rounded-control, font-serif, …).
+ *
+ * Registre visuel de référence : notice fiscale cantonale, barème officiel,
+ * formulaire de déclaration. Le chiffre est le héros ; tout le reste est discret.
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* ------------------------------------------------------------------ *
+   * Couleur — six rôles, pas un de plus.
+   *
+   * ink     : encre bleu-ardoise profonde, jamais un noir pur.
+   * paper   : fond de page, blanc.
+   * tint    : trame très pâle pour les panneaux et les en-têtes de tableau.
+   * rule    : filet gris-bleu d'un pixel, comme les séparations d'un formulaire.
+   * accent  : vert sapin profond, réservé au résultat du calcul et aux liens.
+   * warning : ocre sombre, réservé aux avertissements renforcés. Jamais décoratif.
+   *
+   * Contrastes WCAG (voir le rapport dans la réponse) :
+   *   ink     sur paper  14.57:1  AAA
+   *   ink     sur tint   13.42:1  AAA
+   *   accent  sur paper   9.17:1  AAA
+   *   accent  sur tint    8.45:1  AAA
+   *   warning sur paper   5.91:1  AA
+   *   warning sur tint    5.44:1  AA
+   *   paper   sur accent   9.17:1  AAA   (texte blanc sur bouton accent)
+   *   paper   sur warning  5.91:1  AA    (texte blanc sur bandeau warning)
+   *   rule    sur paper    3.29:1  — élément non textuel, seuil 3:1 atteint
+   *   rule    sur tint     3.03:1  — élément non textuel, seuil 3:1 atteint
+   * ------------------------------------------------------------------ */
+  --color-ink: #1c2a3a;
+  --color-paper: #ffffff;
+  --color-tint: #f3f6f8;
+  --color-rule: #7e90a0;
+  --color-accent: #1e5138;
+  --color-warning: #8a5a16;
+
+  /* ------------------------------------------------------------------ *
+   * Familles de police — auto-hébergées via Fontsource, importées dans
+   * BaseLayout.astro. Aucune requête vers un domaine tiers.
+   *
+   * sans  : IBM Plex Sans — interface, libellés, corps de texte, tous les chiffres.
+   * serif : IBM Plex Serif — appareil de sources uniquement (article de loi,
+   *         référence de barème, date de vérification). Le serif encode
+   *         l'information : « provient d'un texte officiel ».
+   * ------------------------------------------------------------------ */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+
+  /* ------------------------------------------------------------------ *
+   * Typographie — six niveaux.
+   *
+   * display : le résultat du calculateur. L'élément le plus grand de la page.
+   * title   : titre de page (h1).
+   * heading : titre de section (h2).
+   * body    : corps de texte, longueur de ligne < 70 caractères.
+   * label   : intitulés de champs, métadonnées d'interface.
+   * fine    : appareil de sources, date de vérification, mentions.
+   * ------------------------------------------------------------------ */
+  --text-display: 3rem;
+  --text-display--line-height: 1.05;
+  --text-display--font-weight: var(--font-weight-semibold);
+
+  --text-title: 1.875rem;
+  --text-title--line-height: 1.2;
+  --text-title--font-weight: var(--font-weight-semibold);
+
+  --text-heading: 1.25rem;
+  --text-heading--line-height: 1.3;
+  --text-heading--font-weight: var(--font-weight-semibold);
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
+
+  --text-label: 0.9375rem;
+  --text-label--line-height: 1.4;
+
+  --text-fine: 0.8125rem;
+  --text-fine--line-height: 1.5;
+
+  /* ------------------------------------------------------------------ *
+   * Espacement — une échelle unique, du filet interne à la respiration
+   * entre blocs. Les composants n'utilisent que ces pas (p-md, gap-lg, …).
+   * ------------------------------------------------------------------ */
+  --spacing-2xs: 0.125rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  --spacing-2xl: 2rem;
+  --spacing-3xl: 3rem;
+
+  /* ------------------------------------------------------------------ *
+   * Largeurs de contenu.
+   *
+   * reading : texte courant, longueur de ligne < 70 caractères.
+   * page    : gabarit large des pages de calculateur (deux colonnes).
+   * ------------------------------------------------------------------ */
+  --container-reading: 40rem;
+  --container-page: 68rem;
+
+  /* ------------------------------------------------------------------ *
+   * Rayon — deux valeurs, jamais le même rayon partout.
+   *
+   * control : 2px sur les champs et les boutons.
+   * panel   : 0 sur les panneaux, tableaux et bandeaux.
+   * ------------------------------------------------------------------ */
+  --radius-control: 2px;
+  --radius-panel: 0px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Base — s'appuie uniquement sur les tokens ci-dessus.
+ * ------------------------------------------------------------------ */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-paper);
+  }
+
+  body {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  /* Chiffres alignés partout : montants, pourcentages, années. */
+  :where(input, output, table, time, [data-numeric]) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Les contrôles héritent de la police de l'interface. */
+  :where(input, select, textarea, button) {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Focus clavier visible sur tout élément interactif. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: var(--spacing-2xs) solid var(--color-accent);
+    outline-offset: var(--spacing-2xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
