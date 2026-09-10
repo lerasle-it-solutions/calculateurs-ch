@@ -1,0 +1,36 @@
+---
+/**
+ * FaqSchema — JSON-LD schema.org/FAQPage, alimenté depuis `definition.faq`.
+ * Ne rend rien si la définition ne déclare aucune question.
+ */
+import type { CalculatorDefinition } from "../../calculators/types";
+import { jsonLd } from "../../lib/utils/json-ld";
+
+interface Props {
+	definition: CalculatorDefinition;
+}
+
+const { definition } = Astro.props;
+
+const schema =
+	definition.faq.length > 0
+		? {
+				"@context": "https://schema.org",
+				"@type": "FAQPage",
+				mainEntity: definition.faq.map((item) => ({
+					"@type": "Question",
+					name: item.question,
+					acceptedAnswer: {
+						"@type": "Answer",
+						text: item.answer,
+					},
+				})),
+			}
+		: null;
+---
+
+{
+	schema && (
+		<script type="application/ld+json" is:inline set:html={jsonLd(schema)} />
+	)
+}

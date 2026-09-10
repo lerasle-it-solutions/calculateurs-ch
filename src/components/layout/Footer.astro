@@ -1,0 +1,28 @@
+---
+/**
+ * Footer — liens de pilotage : méthodologie, données, mentions légales, contact.
+ * Aucun JavaScript.
+ */
+import { fr } from "../../i18n/fr";
+
+const links = [
+	{ label: fr.footer.methodology, url: "/methodologie/" },
+	{ label: fr.footer.data, url: "/donnees/" },
+	{ label: fr.footer.legal, url: "/mentions-legales/" },
+	{ label: fr.footer.contact, url: "/contact/" },
+];
+---
+
+<footer class="mx-auto max-w-page border-t border-rule px-lg py-lg">
+	<nav aria-label={fr.footer.navLabel}>
+		<ul class="flex flex-wrap gap-lg text-fine">
+			{
+				links.map((link) => (
+					<li>
+						<a href={link.url}>{link.label}</a>
+					</li>
+				))
+			}
+		</ul>
+	</nav>
+</footer>

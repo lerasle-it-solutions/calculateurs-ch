@@ -3,6 +3,8 @@
  * NumberField — un champ numérique. Élément natif : <input type="number">.
  * Aucun JavaScript.
  */
+import { fr } from "../../i18n/fr";
+
 interface Props {
 	id: string;
 	name: string;
@@ -35,7 +37,7 @@ const hintId = hint ? `${id}-hint` : undefined;
 <div class="flex flex-col gap-xs">
 	<label for={id} class="text-label">
 		{label}
-		{required && <span aria-hidden="true"> *</span>}
+		{required && <span aria-hidden="true">{fr.common.requiredMark}</span>}
 	</label>
 
 	<div class="flex min-w-0 items-stretch border border-rule rounded-control bg-paper focus-within:outline focus-within:outline-accent focus-within:outline-offset-2">

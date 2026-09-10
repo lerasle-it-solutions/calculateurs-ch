@@ -6,6 +6,8 @@
  * `reinforced` : réservé aux avertissements renforcés des calculateurs A4, B3
  * et C1 — bascule le filet et le titre en `warning`. Jamais décoratif.
  */
+import { fr } from "../../i18n/fr";
+
 interface NotCovered {
 	case: string;
 	alternative?: { label: string; url: string };
@@ -33,7 +35,9 @@ const {
 	]}
 >
 	<section class="flex flex-col gap-sm">
-		<h2 class:list={["text-heading", reinforced && "text-warning"]}>Pour qui</h2>
+		<h2 class:list={["text-heading", reinforced && "text-warning"]}>
+			{fr.scopeNotice.forWhom}
+		</h2>
 		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg text-body">
 			{forWhom.map((item) => <li>{item}</li>)}
 		</ul>
@@ -41,7 +45,7 @@ const {
 
 	<section class="flex flex-col gap-sm border-t border-rule pt-lg">
 		<h2 class:list={["text-heading", reinforced && "text-warning"]}>
-			Ce que ça ne couvre pas
+			{fr.scopeNotice.notCovered}
 		</h2>
 		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg text-body">
 			{
@@ -64,7 +68,7 @@ const {
 		assumptions.length > 0 && (
 			<section class="flex flex-col gap-sm border-t border-rule pt-lg">
 				<h2 class:list={["text-heading", reinforced && "text-warning"]}>
-					Hypothèses retenues
+					{fr.scopeNotice.assumptions}
 				</h2>
 				<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg font-serif text-body">
 					{assumptions.map((item) => (

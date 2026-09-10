@@ -10,6 +10,10 @@ import "@fontsource/ibm-plex-sans/latin-ext-600.css";
 import "@fontsource/ibm-plex-serif/latin-400.css";
 import "@fontsource/ibm-plex-serif/latin-ext-400.css";
 
+import Header from "../components/layout/Header.astro";
+import Footer from "../components/layout/Footer.astro";
+import { fr } from "../i18n/fr";
+
 interface Props {
 	title: string;
 	description: string;
@@ -19,8 +23,8 @@ interface Props {
 }
 
 const { title, description, noindex = false, wide = false } = Astro.props;
-const container = wide ? "max-w-page" : "max-w-reading";
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const container = wide ? "max-w-page" : "max-w-reading";
 ---
 
 <!doctype html>
@@ -35,20 +39,22 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<slot name="head" />
 	</head>
 	<body class="bg-paper text-ink">
-		<main class:list={["mx-auto px-lg py-2xl", container]}>
+		<a
+			href="#main"
+			class="sr-only focus:not-sr-only focus:absolute focus:left-lg focus:top-lg focus:z-20 focus:border focus:border-rule focus:bg-paper focus:px-md focus:py-sm focus:text-label"
+		>
+			{fr.common.skipToContent}
+		</a>
+
+		<Header />
+
+		<main id="main" class:list={["mx-auto px-lg py-2xl", container]}>
 			<slot />
 		</main>
-		<footer class:list={["mx-auto border-t border-rule px-lg py-lg", container]}>
-			<nav aria-label="Pied de page">
-				<ul class="flex flex-wrap gap-lg text-fine">
-					<li><a href="/methodologie/">Méthodologie</a></li>
-					<li><a href="/donnees/">Données et sources</a></li>
-					<li><a href="/protection-des-donnees/">Protection des données</a></li>
-					<li><a href="/mentions-legales/">Mentions légales</a></li>
-				</ul>
-			</nav>
-		</footer>
+
+		<Footer />
 	</body>
 </html>

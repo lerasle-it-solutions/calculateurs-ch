@@ -1,0 +1,27 @@
+---
+/**
+ * BreadcrumbSchema — JSON-LD schema.org/BreadcrumbList.
+ * Reçoit le même `trail` que le composant visible `layout/Breadcrumb.astro`.
+ */
+import { jsonLd } from "../../lib/utils/json-ld";
+import type { Crumb } from "../layout/Breadcrumb.astro";
+
+interface Props {
+	trail: Crumb[];
+}
+
+const { trail } = Astro.props;
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "BreadcrumbList",
+	itemListElement: trail.map((crumb, index) => ({
+		"@type": "ListItem",
+		position: index + 1,
+		name: crumb.label,
+		item: new URL(crumb.url, Astro.site).href,
+	})),
+};
+---
+
+<script type="application/ld+json" is:inline set:html={jsonLd(schema)} />

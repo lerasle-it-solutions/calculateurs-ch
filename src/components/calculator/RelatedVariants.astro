@@ -4,6 +4,8 @@
  * résolus en {slug, title} par CalculatorShell). Élément natif : <nav>.
  * Aucun rendu si la liste est vide.
  */
+import { fr } from "../../i18n/fr";
+
 interface Variant {
 	slug: string;
 	title: string;
@@ -18,8 +20,8 @@ const { variants } = Astro.props;
 
 {
 	variants.length > 0 && (
-		<nav class="flex max-w-reading flex-col gap-sm" aria-label="Variantes de ce calculateur">
-			<h2 class="text-heading">Variantes</h2>
+		<nav class="flex max-w-reading flex-col gap-sm" aria-label={fr.relatedVariants.navLabel}>
+			<h2 class="text-heading">{fr.relatedVariants.title}</h2>
 			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
 				{variants.map((variant) => (
 					<li>

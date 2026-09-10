@@ -10,6 +10,8 @@
  * `<script>` de la page (calcul en JavaScript natif) et met à jour la valeur
  * affichée et son état. Il ne contient aucune formule.
  */
+import { fr } from "../../i18n/fr";
+
 interface Props {
 	id: string;
 	/** Liste d'ids des champs qui alimentent ce résultat (attribut `for` natif). */
@@ -26,7 +28,7 @@ const {
 	id,
 	for: forAttr,
 	label,
-	value = "—",
+	value = fr.common.emptyValue,
 	caption,
 	event = "calc:update",
 } = Astro.props;

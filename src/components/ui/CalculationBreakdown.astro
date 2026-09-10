@@ -12,6 +12,8 @@
  * Il ne contient aucune formule. Sans JavaScript, il affiche les `rows`
  * fournies au rendu (ou l'état vide).
  */
+import { fr } from "../../i18n/fr";
+
 interface Row {
 	/** Libellé de l'étape. */
 	label: string;
@@ -34,11 +36,11 @@ interface Props {
 }
 
 const {
-	summary = "Voir le calcul ligne par ligne",
+	summary = fr.breakdown.summary,
 	rows = [],
 	open = false,
 	event = "calc:update",
-	emptyLabel = "Renseignez les champs pour voir le détail du calcul.",
+	emptyLabel = fr.breakdown.empty,
 } = Astro.props;
 ---
 
@@ -57,8 +59,12 @@ const {
 		<table class="w-full border-collapse text-body">
 			<thead>
 				<tr class="border-t border-rule bg-tint text-label">
-					<th scope="col" class="px-lg py-sm text-left font-normal">Étape</th>
-					<th scope="col" class="px-lg py-sm text-right font-normal">Montant</th>
+					<th scope="col" class="px-lg py-sm text-left font-normal">
+						{fr.breakdown.stepColumn}
+					</th>
+					<th scope="col" class="px-lg py-sm text-right font-normal">
+						{fr.breakdown.amountColumn}
+					</th>
 				</tr>
 			</thead>
 			<tbody data-breakdown-body>

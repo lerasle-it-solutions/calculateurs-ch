@@ -28,6 +28,7 @@ import NumberField from "../ui/NumberField.astro";
 import SelectField from "../ui/SelectField.astro";
 import CantonField from "./fields/CantonField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
+import { fr } from "../../i18n/fr";
 import type { CalculatorDefinition } from "../../calculators/types";
 
 interface Props {
@@ -160,7 +161,7 @@ const resultFor = definition.fields
 	{
 		definition.faq.length > 0 && (
 			<section class="flex max-w-reading flex-col gap-sm">
-				<h2 class="text-heading">Questions fréquentes</h2>
+				<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
 				<div class="border-b border-rule">
 					{definition.faq.map((item) => (
 						<details class="border-t border-rule">

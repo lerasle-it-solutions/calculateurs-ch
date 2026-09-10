@@ -6,6 +6,8 @@
  *
  * Rendu en serif : c'est de l'appareil de sources, pas un produit du calcul.
  */
+import { fr } from "../../i18n/fr";
+
 interface Props {
 	referenceYear: number;
 	/** Date de vérification humaine, ISO 8601. */
@@ -22,6 +24,8 @@ const verifiedLabel = new Intl.DateTimeFormat("fr-CH", {
 ---
 
 <p class="font-serif text-fine">
-	Barèmes <time datetime={String(referenceYear)}>{referenceYear}</time>, vérifiés le{" "}
+	{fr.dataFreshness.scalesLabel}{" "}
+	<time datetime={String(referenceYear)}>{referenceYear}</time>,{" "}
+	{fr.dataFreshness.verifiedLabel}{" "}
 	<time datetime={verifiedOn}>{verifiedLabel}</time>.
 </p>

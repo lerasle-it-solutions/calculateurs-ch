@@ -1,37 +1,31 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fr } from "../i18n/fr";
+import { FAMILY_ORDER, familyUrl } from "../calculators/families";
 
-const title = 'calculateurs.ch — calculateurs suisses romands qui affichent leurs sources';
+const title = `${fr.site.name} — calculateurs suisses romands qui affichent leurs sources`;
 const description =
-	'Des calculateurs de prévoyance, immobilier, énergie et entreprise pour la Suisse romande. Chaque chiffre provient d’une source officielle datée. Aucun compte, aucun cookie.';
+	"Des calculateurs de prévoyance, immobilier, énergie et entreprise pour la Suisse romande. Chaque chiffre provient d’une source officielle datée. Aucun compte, aucun cookie.";
 
-const families = [
-	{
-		name: 'Prévoyance',
-		items: ['3e pilier', 'Rachats LPP', 'Retrait en capital'],
-	},
-	{
-		name: 'Immobilier',
-		items: ['Valeur locative', 'Rénovation', 'Capacité d’achat'],
-	},
-	{
-		name: 'Énergie',
-		items: ['Subventions cantonales et communales', 'Pompe à chaleur', 'Photovoltaïque'],
-	},
-	{
-		name: 'Entreprise',
-		items: ['Coût employeur', 'Charges sociales'],
-	},
-];
+// Aperçu éditorial par famille. Les libellés viennent de l'i18n (cohérence avec
+// le Header) ; les listes ci-dessous sont du contenu de page.
+const previews: Record<(typeof FAMILY_ORDER)[number], string[]> = {
+	pension: ["3e pilier", "Rachats LPP", "Retrait en capital"],
+	property: ["Valeur locative", "Rénovation", "Capacité d’achat"],
+	energy: [
+		"Subventions cantonales et communales",
+		"Pompe à chaleur",
+		"Photovoltaïque",
+	],
+	business: ["Coût employeur", "Charges sociales"],
+};
 ---
 
 <BaseLayout title={title} description={description}>
 	<div class="flex flex-col gap-2xl">
 		<header class="flex flex-col gap-md">
-			<h1 class="text-title">calculateurs.ch</h1>
-			<p class="text-body">
-				Des calculateurs suisses romands qui affichent leurs sources.
-			</p>
+			<h1 class="text-title">{fr.site.name}</h1>
+			<p class="text-body">{fr.site.baseline}</p>
 			<p class="text-body">
 				Chaque chiffre utilisé provient d'une source officielle, avec sa date de
 				vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne
@@ -41,11 +35,13 @@ const families = [
 
 		<div class="flex flex-col gap-xl">
 			{
-				families.map((family) => (
+				FAMILY_ORDER.map((family) => (
 					<section class="flex flex-col gap-sm">
-						<h2 class="text-heading">{family.name}</h2>
+						<h2 class="text-heading">
+							<a href={familyUrl(family)}>{fr.family[family]}</a>
+						</h2>
 						<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
-							{family.items.map((item) => (
+							{previews[family].map((item) => (
 								<li>{item}</li>
 							))}
 						</ul>

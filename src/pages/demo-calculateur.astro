@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculatorLayout from "../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../components/calculator/CalculatorShell.astro";
 import type { CalculatorDefinition } from "../calculators/types";
 
@@ -110,27 +110,21 @@ const lppDemo: CalculatorDefinition = {
 const catalog = [buybackDemo, lppDemo];
 ---
 
-<BaseLayout
-	title="Démonstration — CalculatorShell — calculateurs.ch"
-	description="Page interne de contrôle visuel du CalculatorShell."
-	noindex={true}
-	wide={true}
->
-	<div class="flex flex-col gap-2xl">
-		<p class="max-w-reading font-serif text-fine">
-			Page interne de démonstration. Le calculateur ci-dessous est factice et sert
-			à vérifier le rendu du CalculatorShell à partir d'une CalculatorDefinition.
-		</p>
+<CalculatorLayout definition={buybackDemo} noindex={true}>
+	<p class="max-w-reading font-serif text-fine">
+		Page interne de démonstration. Le calculateur ci-dessous est factice et sert
+		à vérifier le rendu du CalculatorShell et de CalculatorLayout à partir d'une
+		CalculatorDefinition.
+	</p>
 
-		<CalculatorShell
-			definition={buybackDemo}
-			intro="Estimez l'économie d'impôt d'un rachat en indiquant votre taux marginal. Le calcul se met à jour à chaque frappe et reste dans votre navigateur."
-			resultLabel="Économie d'impôt estimée"
-			verifiedOn="2026-01-08"
-			catalog={catalog}
-		/>
-	</div>
-</BaseLayout>
+	<CalculatorShell
+		definition={buybackDemo}
+		intro="Estimez l'économie d'impôt d'un rachat en indiquant votre taux marginal. Le calcul se met à jour à chaque frappe et reste dans votre navigateur."
+		resultLabel="Économie d'impôt estimée"
+		verifiedOn="2026-01-08"
+		catalog={catalog}
+	/>
+</CalculatorLayout>
 
 <script>
 	// Moteur factice, en JavaScript natif, dans la page (aucun framework).

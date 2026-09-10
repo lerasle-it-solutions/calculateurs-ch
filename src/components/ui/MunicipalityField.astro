@@ -6,6 +6,8 @@
  * L'attribut `list` relie l'input au datalist ; le navigateur fournit
  * l'autocomplétion et le filtrage sans une ligne de script.
  */
+import { fr } from "../../i18n/fr";
+
 interface Option {
 	value: string;
 	label?: string;
@@ -41,7 +43,7 @@ const normalized: Option[] = options.map((option) =>
 <div class="flex flex-col gap-xs">
 	<label for={id} class="text-label">
 		{label}
-		{required && <span aria-hidden="true"> *</span>}
+		{required && <span aria-hidden="true">{fr.common.requiredMark}</span>}
 	</label>
 
 	<input

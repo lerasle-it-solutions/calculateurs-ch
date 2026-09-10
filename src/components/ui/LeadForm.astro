@@ -12,6 +12,8 @@
  *  - consentement explicite, finalité annoncée, un seul partenaire nommé.
  * `accent` n'apparaît pas ici : il est réservé au résultat et aux liens.
  */
+import { fr } from "../../i18n/fr";
+
 interface Props {
 	/** Nom du partenaire unique vers qui la demande est transmise. */
 	partner: string;
@@ -30,12 +32,14 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 	class="flex max-w-reading flex-col gap-lg border border-rule bg-paper p-lg"
 >
 	<div class="flex flex-col gap-sm">
-		<h2 class="text-heading">Être mis en relation avec {partner}</h2>
+		<h2 class="text-heading">{fr.leadForm.heading(partner)}</h2>
 		<p class="text-fine">{purpose}</p>
 	</div>
 
 	<div class="flex flex-col gap-xs">
-		<label for="lead-name" class="text-label">Nom et prénom *</label>
+		<label for="lead-name" class="text-label">
+			{fr.leadForm.name}<span aria-hidden="true">{fr.common.requiredMark}</span>
+		</label>
 		<input
 			type="text"
 			id="lead-name"
@@ -47,7 +51,9 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 	</div>
 
 	<div class="flex flex-col gap-xs">
-		<label for="lead-email" class="text-label">Adresse e-mail *</label>
+		<label for="lead-email" class="text-label">
+			{fr.leadForm.email}<span aria-hidden="true">{fr.common.requiredMark}</span>
+		</label>
 		<input
 			type="email"
 			id="lead-email"
@@ -59,7 +65,7 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 	</div>
 
 	<div class="flex flex-col gap-xs">
-		<label for="lead-phone" class="text-label">Téléphone</label>
+		<label for="lead-phone" class="text-label">{fr.leadForm.phone}</label>
 		<input
 			type="tel"
 			id="lead-phone"
@@ -79,8 +85,7 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 			class="mt-2xs"
 		/>
 		<label for="lead-consent" class="text-fine">
-			J'accepte que mes coordonnées soient transmises à {partner} dans le seul but
-			indiqué ci-dessus. Aucune autre transmission, aucune revente.
+			{fr.leadForm.consent(partner)}
 		</label>
 	</div>
 
@@ -88,13 +93,15 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 		type="submit"
 		class="self-start border border-ink rounded-control bg-ink px-lg py-sm text-label text-paper"
 	>
-		Envoyer la demande
+		{fr.leadForm.submit}
 	</button>
 
 	<p data-lead-status role="status" aria-live="polite" class="text-fine" hidden></p>
 </form>
 
 <script>
+	import { fr } from "../../i18n/fr";
+
 	for (const form of document.querySelectorAll<HTMLFormElement>("[data-lead-form]")) {
 		const status = form.querySelector<HTMLElement>("[data-lead-status]");
 
@@ -110,7 +117,7 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 
 			const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
 			if (button) button.disabled = true;
-			say("Envoi en cours…");
+			say(fr.leadForm.sending);
 
 			try {
 				const response = await fetch(form.action, {
@@ -120,11 +127,9 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 				});
 				if (!response.ok) throw new Error(String(response.status));
 				form.reset();
-				say("Demande envoyée. Le partenaire vous recontacte directement.");
+				say(fr.leadForm.sent);
 			} catch {
-				say(
-					"L'envoi a échoué. Réessayez plus tard — votre résultat reste affiché ci-dessus.",
-				);
+				say(fr.leadForm.failed);
 				if (button) button.disabled = false;
 			}
 		});

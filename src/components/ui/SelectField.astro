@@ -3,6 +3,8 @@
  * SelectField — une liste de choix fermée. Élément natif : <select>.
  * Aucun JavaScript, aucune liste déroulante réimplémentée.
  */
+import { fr } from "../../i18n/fr";
+
 interface Option {
 	value: string;
 	label: string;
@@ -25,7 +27,7 @@ const hintId = hint ? `${id}-hint` : undefined;
 <div class="flex flex-col gap-xs">
 	<label for={id} class="text-label">
 		{label}
-		{required && <span aria-hidden="true"> *</span>}
+		{required && <span aria-hidden="true">{fr.common.requiredMark}</span>}
 	</label>
 
 	<select

@@ -1,0 +1,37 @@
+---
+/**
+ * Header — nom du site + navigation des quatre familles.
+ * Discret, registre « en-tête de formulaire officiel ». Aucun JavaScript.
+ */
+import { fr } from "../../i18n/fr";
+import { FAMILY_ORDER, familyUrl } from "../../calculators/families";
+
+const families = FAMILY_ORDER.map((family) => ({
+	label: fr.family[family],
+	url: familyUrl(family),
+}));
+
+const path = Astro.url.pathname;
+---
+
+<header class="border-b border-rule">
+	<div class="mx-auto flex max-w-page flex-col gap-sm px-lg py-md">
+		<a href="/" class="text-heading">{fr.site.name}</a>
+		<nav aria-label={fr.header.familiesNavLabel}>
+			<ul class="flex flex-wrap gap-lg text-label">
+				{
+					families.map((family) => (
+						<li>
+							<a
+								href={family.url}
+								aria-current={path.startsWith(family.url) ? "page" : undefined}
+							>
+								{family.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+</header>

@@ -1,0 +1,36 @@
+---
+/**
+ * CalculatorSchema — JSON-LD schema.org/WebApplication pour une page de
+ * calculateur, alimenté depuis la CalculatorDefinition.
+ */
+import type { CalculatorDefinition } from "../../calculators/types";
+import { jsonLd } from "../../lib/utils/json-ld";
+import { fr } from "../../i18n/fr";
+
+interface Props {
+	definition: CalculatorDefinition;
+}
+
+const { definition } = Astro.props;
+
+const url = new URL(definition.slug, Astro.site).href;
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "WebApplication",
+	name: definition.title,
+	description: definition.metaDescription,
+	url,
+	applicationCategory: "FinanceApplication",
+	operatingSystem: "Web",
+	inLanguage: "fr-CH",
+	isAccessibleForFree: true,
+	publisher: {
+		"@type": "Organization",
+		name: fr.site.name,
+		url: new URL("/", Astro.site).href,
+	},
+};
+---
+
+<script type="application/ld+json" is:inline set:html={jsonLd(schema)} />

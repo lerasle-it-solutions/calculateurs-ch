@@ -1,0 +1,54 @@
+---
+/**
+ * CalculatorLayout — gabarit d'une page de calculateur.
+ *
+ * À partir de la seule CalculatorDefinition : titre et méta de <head>, fil
+ * d'Ariane (Accueil › Famille › Calculateur) et les trois blocs JSON-LD
+ * (WebApplication, FAQPage, BreadcrumbList). Le contenu — assemblé par
+ * `CalculatorShell` — est passé en slot par défaut.
+ *
+ * URL en dossiers : la page vit dans `src/pages/<famille>/<slug>.astro` et
+ * `definition.slug` porte l'URL publique « /prevoyance/rachat-3a-retroactif/ ».
+ */
+import BaseLayout from "./BaseLayout.astro";
+import Breadcrumb from "../components/layout/Breadcrumb.astro";
+import type { Crumb } from "../components/layout/Breadcrumb.astro";
+import CalculatorSchema from "../components/seo/CalculatorSchema.astro";
+import FaqSchema from "../components/seo/FaqSchema.astro";
+import BreadcrumbSchema from "../components/seo/BreadcrumbSchema.astro";
+import { familyUrl } from "../calculators/families";
+import { fr } from "../i18n/fr";
+import type { CalculatorDefinition } from "../calculators/types";
+
+interface Props {
+	definition: CalculatorDefinition;
+	/** Page interne de démonstration : ni indexée, ni dans le sitemap. */
+	noindex?: boolean;
+}
+
+const { definition, noindex = false } = Astro.props;
+
+const trail: Crumb[] = [
+	{ label: fr.common.home, url: "/" },
+	{ label: fr.family[definition.family], url: familyUrl(definition.family) },
+	{ label: definition.title, url: definition.slug },
+];
+---
+
+<BaseLayout
+	title={definition.title}
+	description={definition.metaDescription}
+	noindex={noindex}
+	wide={true}
+>
+	<Fragment slot="head">
+		<CalculatorSchema definition={definition} />
+		<FaqSchema definition={definition} />
+		<BreadcrumbSchema trail={trail} />
+	</Fragment>
+
+	<div class="flex flex-col gap-2xl">
+		<Breadcrumb trail={trail} />
+		<slot />
+	</div>
+</BaseLayout>
