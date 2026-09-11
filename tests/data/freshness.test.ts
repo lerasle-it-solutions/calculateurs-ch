@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { allDataFiles, eachValue } from "../../src/data";
+import { DATA_FRESHNESS_LIMIT_MONTHS } from "../../src/data/schema";
 
 /**
  * Fraîcheur des données (CLAUDE.md P2, décision 6). Ce test échoue le build si
  * une valeur n'a pas été re-vérifiée à sa source depuis plus de 12 mois. Le seul
  * défaut fatal du site serait d'afficher un chiffre périmé avec assurance.
  */
-const MAX_AGE_MONTHS = 12;
+const MAX_AGE_MONTHS = DATA_FRESHNESS_LIMIT_MONTHS;
 
 describe("fraîcheur des données", () => {
 	const now = new Date();

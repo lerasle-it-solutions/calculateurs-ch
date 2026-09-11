@@ -8,6 +8,12 @@
  */
 import { z } from "zod";
 
+/**
+ * Âge maximal d'une valeur avant re-vérification obligatoire (CLAUDE.md P2,
+ * décision 6). Au-delà, `tests/data/freshness.test.ts` échoue le build.
+ */
+export const DATA_FRESHNESS_LIMIT_MONTHS = 12;
+
 /** Date ISO 8601, forme AAAA-MM-JJ. */
 export const isoDateSchema = z
 	.string()

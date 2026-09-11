@@ -1,0 +1,111 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fr } from "../i18n/fr";
+import { dataFreshnessReport } from "../lib/data-report";
+
+const rows = dataFreshnessReport();
+const overdueCount = rows.filter((row) => row.overdue).length;
+
+const dateFormat = new Intl.DateTimeFormat("fr-CH", {
+	day: "2-digit",
+	month: "2-digit",
+	year: "numeric",
+});
+const numberFormat = new Intl.NumberFormat("fr-CH");
+
+const formatDate = (isoDate: string): string =>
+	dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
+
+const formatValue = (value: unknown, unit?: string): string => {
+	const rendered =
+		typeof value === "number" ? numberFormat.format(value) : String(value);
+	return unit ? `${rendered} ${unit}` : rendered;
+};
+---
+
+<BaseLayout
+	title={`${fr.dataPage.title} — ${fr.site.name}`}
+	description={fr.dataPage.lead}
+	wide={true}
+>
+	<div class="flex flex-col gap-2xl">
+		<header class="flex max-w-reading flex-col gap-md">
+			<h1 class="text-title">{fr.dataPage.title}</h1>
+			<p class="text-body">{fr.dataPage.lead}</p>
+			{
+				rows.length > 0 && (
+					<p class="font-serif text-fine">
+						{fr.dataPage.summary(rows.length, overdueCount)}
+					</p>
+				)
+			}
+		</header>
+
+		{
+			rows.length === 0 ? (
+				<p class="max-w-reading text-body">{fr.dataPage.empty}</p>
+			) : (
+				<div class="overflow-x-auto border border-rule">
+					<table class="w-full border-collapse text-body">
+						<thead>
+							<tr class="border-b border-rule bg-tint text-label">
+								<th scope="col" class="px-lg py-sm text-left font-normal">
+									{fr.dataPage.columnName}
+								</th>
+								<th scope="col" class="px-lg py-sm text-right font-normal">
+									{fr.dataPage.columnValue}
+								</th>
+								<th scope="col" class="px-lg py-sm text-left font-normal">
+									{fr.dataPage.columnSource}
+								</th>
+								<th scope="col" class="px-lg py-sm text-left font-normal">
+									{fr.dataPage.columnVerifiedOn}
+								</th>
+								<th scope="col" class="px-lg py-sm text-left font-normal">
+									{fr.dataPage.columnDueOn}
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{rows.map((row) => (
+								<tr class="border-t border-rule align-top">
+									<td class="px-lg py-md">
+										<span class="block">{row.path}</span>
+										<span class="block font-serif text-fine">{row.file}</span>
+									</td>
+									<td class="px-lg py-md text-right tabular-nums">
+										{formatValue(row.value, row.unit)}
+									</td>
+									<td class="px-lg py-md">
+										{row.source ? (
+											<a href={row.source.url} class="font-serif">
+												{row.source.name}
+											</a>
+										) : (
+											<span class="font-serif text-fine">
+												{row.sourceId} — {fr.dataPage.sourceUnknown}
+											</span>
+										)}
+									</td>
+									<td class="px-lg py-md tabular-nums">
+										<time datetime={row.verifiedOn}>
+											{formatDate(row.verifiedOn)}
+										</time>
+									</td>
+									<td class="px-lg py-md tabular-nums">
+										<time datetime={row.dueOn}>{formatDate(row.dueOn)}</time>
+										{row.overdue && (
+											<span class="block font-serif text-fine text-warning">
+												{fr.dataPage.overdue}
+											</span>
+										)}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			)
+		}
+	</div>
+</BaseLayout>

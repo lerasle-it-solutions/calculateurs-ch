@@ -1,0 +1,177 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fr } from "../i18n/fr";
+
+const title = `${fr.footer.methodology} — ${fr.site.name}`;
+const description =
+	"Comment les barèmes sont relevés et sourcés, comment les résultats sont testés contre le calculateur officiel de l'Administration fédérale des contributions, la politique de mise à jour et de correction d'erreur, et les trois niveaux d'avertissement.";
+---
+
+<BaseLayout title={title} description={description}>
+	<div class="flex flex-col gap-2xl">
+		<header class="flex flex-col gap-md">
+			<h1 class="text-title">{fr.footer.methodology}</h1>
+			<p class="text-body">
+				Ce site n'est pas un formulaire à devis déguisé. Chaque résultat est
+				accompagné du détail ligne par ligne du calcul et de ses hypothèses, et
+				chaque chiffre utilisé provient d'une source officielle datée. Cette page
+				décrit comment.
+			</p>
+			<p class="text-body">
+				Le code et les données sont publics sur <a
+					href="https://github.com/lerasle-it-solutions/calculateurs-ch"
+					>GitHub</a
+				> — vous pouvez y vérifier vous-même chaque valeur et chaque formule.
+			</p>
+		</header>
+
+		<section class="flex flex-col gap-sm">
+			<h2 class="text-heading">Comment les barèmes sont relevés</h2>
+			<p class="text-body">
+				Aucune valeur chiffrée — barème, plafond, taux, seuil, coût de référence,
+				tarif — n'est écrite en dur dans le code du site. Toutes vivent dans une
+				couche de données séparée, où chaque valeur est enveloppée avec, au
+				minimum :
+			</p>
+			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+				<li>la valeur elle-même et son unité ;</li>
+				<li>
+					un identifiant de source pointant vers un texte officiel enregistré
+					dans un registre central ;
+				</li>
+				<li>la date à laquelle un humain a relevé cette valeur à sa source ;</li>
+				<li>la date d'entrée en vigueur.</li>
+			</ul>
+			<p class="text-body">
+				Les sources sont les publications de la Confédération (Fedlex pour les
+				textes légaux, Office fédéral des assurances sociales pour l'AVS et la
+				prévoyance, Administration fédérale des contributions pour l'impôt
+				fédéral, Office fédéral de l'énergie et Office fédéral de la statistique)
+				et les administrations cantonales et communales pour les barèmes qui en
+				dépendent. Une valeur est toujours relevée directement à sa source : on
+				ne la déduit pas, on ne l'estime pas, on ne la recopie pas de mémoire. Si
+				une valeur manque, le calculateur qui en dépend reste bloqué jusqu'à ce
+				qu'elle soit relevée — il n'est jamais publié avec un chiffre approché.
+			</p>
+		</section>
+
+		<section class="flex flex-col gap-sm">
+			<h2 class="text-heading">
+				Test contre le calculateur officiel de l'Administration fédérale des
+				contributions
+			</h2>
+			<p class="text-body">
+				Là où un simulateur officiel existe, il fait autorité et nous ne
+				cherchons pas à le battre. Les calculs d'impôt sur le revenu sont testés
+				contre le calculateur de l'<a href="https://www.estv.admin.ch/"
+					>Administration fédérale des contributions (AFC)</a
+				>, sur dix-huit profils de référence répartis sur les six cantons
+				romands. Ces cas sont rejoués à chaque modification du moteur de calcul
+				ou des barèmes ; un écart supérieur à 1&nbsp;% fait échouer la
+				construction du site. L'objectif n'est pas de produire un chiffre
+				différent de celui de l'AFC, mais de le rendre lisible : montrer d'où il
+				vient, quelles hypothèses il retient, et à quoi il sert dans une
+				décision.
+			</p>
+		</section>
+
+		<section class="flex flex-col gap-sm">
+			<h2 class="text-heading">Politique de mise à jour</h2>
+			<p class="text-body">
+				La couche de données porte une dette de fraîcheur, et cette dette est
+				publique : la page <a href="/donnees/">Données et sources</a> liste
+				chaque valeur, sa date de vérification et l'échéance de sa prochaine
+				relecture, triées par urgence.
+			</p>
+			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+				<li>
+					Un test de build échoue si une valeur n'a pas été re-vérifiée à sa
+					source depuis plus de douze mois. Afficher un chiffre périmé avec
+					assurance serait le seul défaut fatal du site ; le build refuse donc de
+					passer.
+				</li>
+				<li>
+					Chaque 1<sup>er</sup> janvier, les barèmes fédéraux de l'année sont
+					dupliqués pour l'année suivante, toutes les dates de vérification sont
+					remises à zéro et la liste des valeurs à re-contrôler est produite.
+				</li>
+				<li>
+					Les révisions cantonales et communales sont suivies au fil des
+					publications officielles, selon la cadence propre à chaque source.
+				</li>
+			</ul>
+		</section>
+
+		<section class="flex flex-col gap-sm">
+			<h2 class="text-heading">Politique de correction d'erreur</h2>
+			<p class="text-body">
+				Une erreur peut porter sur une valeur relevée, sur une formule ou sur une
+				hypothèse. Dans les trois cas :
+			</p>
+			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+				<li>
+					toute erreur signalée sur une valeur officielle est corrigée sous 48
+					heures ;
+				</li>
+				<li>
+					la correction est publiée avec sa date, et la valeur ou la formule
+					concernée est re-vérifiée à sa source officielle ;
+				</li>
+				<li>
+					si une valeur erronée a pu fausser un résultat, les calculateurs
+					concernés le signalent le temps que la correction soit vérifiée ;
+				</li>
+				<li>
+					les corrections sont consignées, de sorte qu'on puisse toujours savoir
+					ce qui a changé et quand.
+				</li>
+			</ul>
+			<p class="text-body">
+				Pour signaler une erreur : ouvrez <a
+					href="https://github.com/lerasle-it-solutions/calculateurs-ch/issues"
+					>une issue sur GitHub</a
+				> ou passez par la <a href="/contact/">page de contact</a>.
+			</p>
+		</section>
+
+		<section class="flex flex-col gap-sm">
+			<h2 class="text-heading">Les trois niveaux d'avertissement</h2>
+			<p class="text-body">
+				Un calculateur annonce ses limites avant la saisie, jamais après. Trois
+				niveaux se superposent, du plus général au plus spécifique.
+			</p>
+
+			<div class="flex flex-col gap-md">
+				<div class="flex flex-col gap-2xs">
+					<h3 class="text-label">Niveau 1 — avertissement général du site</h3>
+					<p class="text-body">
+						Présent sur chaque calculateur : le résultat est une estimation
+						indicative fondée sur des barèmes officiels datés. Il ne remplace ni
+						une décision de taxation, ni l'avis d'un professionnel tenant compte
+						de votre situation complète.
+					</p>
+				</div>
+
+				<div class="flex flex-col gap-2xs">
+					<h3 class="text-label">Niveau 2 — périmètre déclaré du calculateur</h3>
+					<p class="text-body">
+						Un bandeau au-dessus de chaque formulaire indique pour qui le
+						calculateur est fait, ce qu'il ne couvre pas — avec un lien vers une
+						alternative — et les hypothèses qu'il retient. Il s'affiche avant
+						toute saisie.
+					</p>
+				</div>
+
+				<div class="flex flex-col gap-2xs">
+					<h3 class="text-label">Niveau 3 — avertissement renforcé</h3>
+					<p class="text-body">
+						Pour les calculateurs qui portent sur une décision difficilement
+						réversible — un retrait en capital du 2<sup>e</sup> pilier, par
+						exemple — un encart distinct rappelle que la décision est durable et
+						invite explicitement à consulter un conseiller avant d'agir.
+					</p>
+				</div>
+			</div>
+		</section>
+	</div>
+</BaseLayout>

@@ -77,6 +77,22 @@ export const fr = {
 		faqTitle: "Questions fréquentes",
 	},
 
+	dataPage: {
+		title: "Données et sources",
+		lead: "Chaque valeur chiffrée utilisée sur le site, avec sa source officielle, sa date de vérification et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
+		summary: (tracked: number, overdue: number): string =>
+			`${tracked} valeur${tracked > 1 ? "s" : ""} suivie${tracked > 1 ? "s" : ""}, dont ${overdue} en retard.`,
+		columnName: "Donnée",
+		columnValue: "Valeur",
+		columnSource: "Source",
+		columnVerifiedOn: "Vérifié le",
+		columnDueOn: "Prochaine échéance",
+		overdue: "En retard",
+		sourceUnknown: "source non enregistrée",
+		empty:
+			"Aucune valeur chiffrée n'est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
+	},
+
 	leadForm: {
 		heading: (partner: string): string => `Être mis en relation avec ${partner}`,
 		name: "Nom et prénom",
