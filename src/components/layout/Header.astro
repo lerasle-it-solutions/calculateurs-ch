@@ -16,7 +16,7 @@ const path = Astro.url.pathname;
 
 <header class="border-b border-rule">
 	<div class="mx-auto flex max-w-page flex-col gap-sm px-lg py-md">
-		<a href="/" class="text-heading">{fr.site.name}</a>
+		<a href="/" class="text-heading no-underline">{fr.site.name}</a>
 		<nav aria-label={fr.header.familiesNavLabel}>
 			<ul class="flex flex-wrap gap-lg text-label">
 				{
@@ -24,6 +24,7 @@ const path = Astro.url.pathname;
 						<li>
 							<a
 								href={family.url}
+								class="no-underline"
 								aria-current={path.startsWith(family.url) ? "page" : undefined}
 							>
 								{family.label}

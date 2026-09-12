@@ -1,0 +1,8 @@
+# Cloudflare Pages : en-têtes pour les fichiers statiques.
+# Le corps d'une route API (src/pages/**/*.ts) est écrit tel quel au build,
+# mais ses en-têtes de réponse ne survivent pas à l'export statique — Cloudflare
+# doit les recevoir ici pour les servir sur le fichier généré.
+
+/donnees/coefficients-communaux.csv
+  Content-Type: text/csv; charset=utf-8
+  Content-Disposition: attachment; filename="coefficients-communaux.csv"

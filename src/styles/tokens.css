@@ -143,6 +143,22 @@
     color: inherit;
   }
 
+  /*
+   * « accent est réservé au résultat du calcul et aux liens. » Le reset
+   * Tailwind neutralise la couleur de lien par défaut du navigateur avec un
+   * sélecteur `a` simple (`color: inherit`, spécificité 0,0,1) : `:where(a)`
+   * (spécificité nulle) ne le emporterait jamais, d'où le sélecteur `a` simple
+   * ici aussi. Soulignés par défaut (WCAG 1.4.1 — la couleur seule ne doit pas
+   * porter l'information) ; les liens de navigation (Header, Footer,
+   * Breadcrumb) enlèvent le soulignement au cas par cas, la position dans la
+   * page suffisant à les identifier.
+   */
+  a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
   /* Focus clavier visible sur tout élément interactif. */
   :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
     outline: var(--spacing-2xs) solid var(--color-accent);

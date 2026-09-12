@@ -79,18 +79,33 @@ export const fr = {
 
 	dataPage: {
 		title: "Données et sources",
-		lead: "Chaque valeur chiffrée utilisée sur le site, avec sa source officielle, sa date de vérification et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
+		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu'elle alimente et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
 		summary: (tracked: number, overdue: number): string =>
-			`${tracked} valeur${tracked > 1 ? "s" : ""} suivie${tracked > 1 ? "s" : ""}, dont ${overdue} en retard.`,
-		columnName: "Donnée",
-		columnValue: "Valeur",
+			`${tracked} source${tracked > 1 ? "s" : ""}, dont ${overdue} en retard.`,
 		columnSource: "Source",
-		columnVerifiedOn: "Vérifié le",
+		columnAuthority: "Autorité",
+		columnCadence: "Cadence",
+		columnTracked: "Valeurs suivies",
+		columnVerifiedOn: "Vérification la plus ancienne",
 		columnDueOn: "Prochaine échéance",
 		overdue: "En retard",
 		sourceUnknown: "source non enregistrée",
 		empty:
 			"Aucune valeur chiffrée n'est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
+		cadence: {
+			annual: "Annuelle",
+			quarterly: "Trimestrielle",
+			monthly: "Mensuelle",
+			irregular: "Irrégulière",
+		},
+		municipalCsv: {
+			heading: "Détail communal",
+			intro: (count: number): string =>
+				`Les coefficients communaux (${count} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
+			downloadLabel: "Télécharger les coefficients communaux (CSV)",
+			unitCaveat:
+				"Les coefficients sont repris tels que reçus de l'AFC ; leur unité (points d'indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant usage dans un calculateur — voir la méthodologie.",
+		},
 	},
 
 	leadForm: {

@@ -1,10 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { fr } from "../i18n/fr";
-import { dataFreshnessReport } from "../lib/data-report";
+import { sourceFreshnessReport } from "../lib/data-report";
+import { getMunicipalMultipliers } from "../data";
 
-const rows = dataFreshnessReport();
-const overdueCount = rows.filter((row) => row.overdue).length;
+const rows = sourceFreshnessReport();
+const overdueCount = rows.filter((row) => row.overdueCount > 0).length;
+
+const multipliers = getMunicipalMultipliers();
 
 const dateFormat = new Intl.DateTimeFormat("fr-CH", {
 	day: "2-digit",
@@ -15,12 +18,6 @@ const numberFormat = new Intl.NumberFormat("fr-CH");
 
 const formatDate = (isoDate: string): string =>
 	dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
-
-const formatValue = (value: unknown, unit?: string): string => {
-	const rendered =
-		typeof value === "number" ? numberFormat.format(value) : String(value);
-	return unit ? `${rendered} ${unit}` : rendered;
-};
 ---
 
 <BaseLayout
@@ -50,13 +47,16 @@ const formatValue = (value: unknown, unit?: string): string => {
 						<thead>
 							<tr class="border-b border-rule bg-tint text-label">
 								<th scope="col" class="px-lg py-sm text-left font-normal">
-									{fr.dataPage.columnName}
-								</th>
-								<th scope="col" class="px-lg py-sm text-right font-normal">
-									{fr.dataPage.columnValue}
+									{fr.dataPage.columnSource}
 								</th>
 								<th scope="col" class="px-lg py-sm text-left font-normal">
-									{fr.dataPage.columnSource}
+									{fr.dataPage.columnAuthority}
+								</th>
+								<th scope="col" class="px-lg py-sm text-left font-normal">
+									{fr.dataPage.columnCadence}
+								</th>
+								<th scope="col" class="px-lg py-sm text-right font-normal">
+									{fr.dataPage.columnTracked}
 								</th>
 								<th scope="col" class="px-lg py-sm text-left font-normal">
 									{fr.dataPage.columnVerifiedOn}
@@ -70,13 +70,6 @@ const formatValue = (value: unknown, unit?: string): string => {
 							{rows.map((row) => (
 								<tr class="border-t border-rule align-top">
 									<td class="px-lg py-md">
-										<span class="block">{row.path}</span>
-										<span class="block font-serif text-fine">{row.file}</span>
-									</td>
-									<td class="px-lg py-md text-right tabular-nums">
-										{formatValue(row.value, row.unit)}
-									</td>
-									<td class="px-lg py-md">
 										{row.source ? (
 											<a href={row.source.url} class="font-serif">
 												{row.source.name}
@@ -87,16 +80,27 @@ const formatValue = (value: unknown, unit?: string): string => {
 											</span>
 										)}
 									</td>
+									<td class="px-lg py-md font-serif text-fine">
+										{row.source?.authority ?? fr.dataPage.sourceUnknown}
+									</td>
+									<td class="px-lg py-md text-fine">
+										{row.source ? fr.dataPage.cadence[row.source.cadence] : "—"}
+									</td>
+									<td class="px-lg py-md text-right tabular-nums">
+										{numberFormat.format(row.trackedValues)}
+									</td>
 									<td class="px-lg py-md tabular-nums">
-										<time datetime={row.verifiedOn}>
-											{formatDate(row.verifiedOn)}
+										<time datetime={row.oldestVerifiedOn}>
+											{formatDate(row.oldestVerifiedOn)}
 										</time>
 									</td>
 									<td class="px-lg py-md tabular-nums">
-										<time datetime={row.dueOn}>{formatDate(row.dueOn)}</time>
-										{row.overdue && (
+										<time datetime={row.nextDueOn}>
+											{formatDate(row.nextDueOn)}
+										</time>
+										{row.overdueCount > 0 && (
 											<span class="block font-serif text-fine text-warning">
-												{fr.dataPage.overdue}
+												{fr.dataPage.overdue} ({row.overdueCount})
 											</span>
 										)}
 									</td>
@@ -105,6 +109,23 @@ const formatValue = (value: unknown, unit?: string): string => {
 						</tbody>
 					</table>
 				</div>
+			)
+		}
+
+		{
+			multipliers && multipliers.multipliers.length > 0 && (
+				<section class="flex max-w-reading flex-col gap-sm border-t border-rule pt-lg">
+					<h2 class="text-heading">{fr.dataPage.municipalCsv.heading}</h2>
+					<p class="text-body">
+						{fr.dataPage.municipalCsv.intro(multipliers.multipliers.length)}
+					</p>
+					<p>
+						<a href="/donnees/coefficients-communaux.csv">
+							{fr.dataPage.municipalCsv.downloadLabel}
+						</a>
+					</p>
+					<p class="font-serif text-fine">{fr.dataPage.municipalCsv.unitCaveat}</p>
+				</section>
 			)
 		}
 	</div>

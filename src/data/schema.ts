@@ -95,19 +95,69 @@ export type FederalData = z.infer<typeof federalDataSchema>;
 // Fichiers cantonaux — src/data/cantons/xx.json (CLAUDE.md § 1, structure)
 // ---------------------------------------------------------------------------
 
+/**
+ * Codes des 6 cantons romands — abréviations officielles (exception R5).
+ * Dupliqué délibérément avec `calculators/cantons.ts` (qui porte en plus les
+ * noms affichés) : `src/data/` ne dépend jamais de `src/calculators/` (§ 10).
+ */
+export const CANTON_CODES = ["VD", "GE", "VS", "FR", "NE", "JU"] as const;
+
+/** Palier d'un barème : seuil et taux marginal, tous deux sourcés. */
 const taxBracketSchema = z
 	.object({
-		from: valueSchema(z.number()),
-		rate: valueSchema(z.number()),
+		from: valueSchema(z.number()), // seuil inférieur du palier
+		rate: valueSchema(z.number()), // taux marginal applicable au palier
 	})
 	.passthrough();
 
-const taxScaleSchema = z.array(taxBracketSchema);
+/**
+ * Un barème n'est jamais une liste plate de paliers : il varie selon le statut
+ * (seul·e, marié·e, avec enfants…) et le niveau (canton, commune, église).
+ * Une table par combinaison statut × niveau — forme confirmée à la lecture des
+ * exports réels de swisstaxcalculator.estv.admin.ch (voir
+ * scripts/import-estv-tax-data.ts).
+ */
+const taxScaleTableSchema = z
+	.object({
+		target: z.enum(["BUND", "KANTON", "GEMEINDE", "KIRCHE"]),
+		/** Statuts concernés, p. ex. ["VERHEIRATET"] ou ["LEDIG_ALLEINE", "LEDIG_MIT_KINDER"]. */
+		group: z.array(z.string().min(1)).min(1),
+		splitting: z.number(),
+		brackets: z.array(taxBracketSchema).min(1),
+		/** Convention de calcul ESTV d'origine (BUND, FREIBURG, ZUERICH…) — traçabilité. */
+		tableType: z.string().optional(),
+	})
+	.passthrough();
+
+const taxScaleSchema = z.array(taxScaleTableSchema);
+
+/** Une déduction principale, avec son libellé officiel multilingue. */
+const deductionEntrySchema = z
+	.object({
+		id: z.string().min(1),
+		target: z.enum(["BUND", "KANTON", "GEMEINDE", "KIRCHE"]),
+		minimum: valueSchema(z.number()),
+		maximum: valueSchema(z.number()),
+		percent: valueSchema(z.number()),
+		amount: valueSchema(z.number()),
+		format: z.array(z.enum(["MAXIMUM", "MINIMUM", "PERCENT", "STANDARDIZED"])),
+		name: z
+			.object({
+				de: z.string(),
+				en: z.string(),
+				fr: z.string(), // FRANÇAIS — libellé officiel
+				it: z.string(),
+			})
+			.strict(),
+	})
+	.passthrough();
 
 /**
  * Clés obligatoires d'un fichier canton. Les 6 cantons romands doivent porter
  * exactement le même jeu de clés — vérifié par `tests/data/coverage.test.ts`.
- * Codes cantons : abréviations officielles (exception R5).
+ * `mainDeductions` est un complément optionnel (pas une clé obligatoire) :
+ * alimenté par `scripts/import-estv-tax-data.ts`, absent tant qu'il n'a pas
+ * encore été importé.
  */
 export const REQUIRED_CANTON_KEYS = [
 	"canton",
@@ -121,13 +171,38 @@ export const REQUIRED_CANTON_KEYS = [
 
 export const cantonDataSchema = z
 	.object({
-		canton: z.enum(["VD", "GE", "VS", "FR", "NE", "JU"]),
+		canton: z.enum(CANTON_CODES),
 		year: z.number().int(),
 		incomeTaxScale: taxScaleSchema,
 		wealthTaxScale: taxScaleSchema,
 		realEstateGainsTax: z.record(z.unknown()),
-		capitalWithdrawalTax: z.record(z.unknown()),
+		capitalWithdrawalTax: taxScaleSchema,
 		imputedRentalValue: z.record(z.unknown()),
+		mainDeductions: z.array(deductionEntrySchema).optional(),
 	})
 	.passthrough();
 export type CantonData = z.infer<typeof cantonDataSchema>;
+
+// ---------------------------------------------------------------------------
+// Coefficients communaux — src/data/municipalities/multipliers.json
+// ---------------------------------------------------------------------------
+
+const municipalMultiplierEntrySchema = z
+	.object({
+		bfsId: z.number().int(),
+		municipality: z.string().min(1), // nom officiel de la commune
+		canton: z.enum(CANTON_CODES),
+		cantonalMultiplier: valueSchema(z.number()),
+		municipalMultiplier: valueSchema(z.number()), // coefficient communal
+	})
+	.passthrough();
+
+export const municipalMultipliersDataSchema = z
+	.object({
+		year: z.number().int(),
+		multipliers: z.array(municipalMultiplierEntrySchema),
+	})
+	.passthrough();
+export type MunicipalMultipliersData = z.infer<
+	typeof municipalMultipliersDataSchema
+>;

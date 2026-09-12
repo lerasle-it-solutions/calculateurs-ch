@@ -7,8 +7,9 @@
  * nommage) ; `name` et `authority` portent des libellés français, ce sont des
  * noms propres.
  *
- * Registre vide pour l'instant : chaque valeur chiffrée entrera avec sa source
- * (R2). On n'invente jamais une entrée (R3).
+ * Une seule entrée pour l'instant : celle qu'alimente
+ * `scripts/import-estv-tax-data.ts`. Chaque autre valeur chiffrée entrera avec
+ * sa propre source (R2). On n'invente jamais une entrée (R3).
  *
  * Exemple d'entrée à venir :
  *   "opp3-art-7a": {
@@ -20,7 +21,14 @@
  */
 import type { SourceEntry } from "./schema";
 
-export const SOURCES = {} satisfies Record<string, SourceEntry>;
+export const SOURCES = {
+	"estv-swisstaxcalculator": {
+		name: "Calculateur d'impôt — barèmes, coefficients communaux et déductions",
+		url: "https://swisstaxcalculator.estv.admin.ch/",
+		authority: "Administration fédérale des contributions",
+		cadence: "annual",
+	},
+} satisfies Record<string, SourceEntry>;
 
 /** Union des identifiants de source connus (`never` tant que le registre est vide). */
 export type SourceId = keyof typeof SOURCES;

@@ -4,6 +4,7 @@ import { allDataFiles } from "../../src/data";
 import {
 	cantonDataSchema,
 	federalDataSchema,
+	municipalMultipliersDataSchema,
 	valueSchema,
 } from "../../src/data/schema";
 import { z } from "zod";
@@ -41,6 +42,11 @@ describe("conformité de schéma des fichiers de données", () => {
 				);
 			} else if (file.path.startsWith("cantons/")) {
 				const result = cantonDataSchema.safeParse(file.data);
+				expect(result.success, `${file.path} : ${result.error?.message}`).toBe(
+					true,
+				);
+			} else if (file.path.startsWith("municipalities/")) {
+				const result = municipalMultipliersDataSchema.safeParse(file.data);
 				expect(result.success, `${file.path} : ${result.error?.message}`).toBe(
 					true,
 				);

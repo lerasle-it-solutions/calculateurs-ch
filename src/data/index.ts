@@ -9,8 +9,10 @@
 import {
 	cantonDataSchema,
 	federalDataSchema,
+	municipalMultipliersDataSchema,
 	type CantonData,
 	type FederalData,
+	type MunicipalMultipliersData,
 	type Value,
 } from "./schema";
 
@@ -22,6 +24,10 @@ const federalModules = import.meta.glob<RawModule>("./federal/*.json", {
 const cantonModules = import.meta.glob<RawModule>("./cantons/*.json", {
 	eager: true,
 });
+const municipalityModules = import.meta.glob<RawModule>(
+	"./municipalities/*.json",
+	{ eager: true },
+);
 
 const toPath = (globKey: string): string => globKey.replace(/^\.\//, "");
 
@@ -43,9 +49,11 @@ export interface CantonFile {
 
 /** Tous les fichiers de données, sans validation. */
 export const allDataFiles = (): DataFile[] =>
-	[...Object.entries(federalModules), ...Object.entries(cantonModules)].map(
-		([key, mod]) => ({ path: toPath(key), data: mod.default }),
-	);
+	[
+		...Object.entries(federalModules),
+		...Object.entries(cantonModules),
+		...Object.entries(municipalityModules),
+	].map(([key, mod]) => ({ path: toPath(key), data: mod.default }));
 
 /** Les fichiers cantonaux, sans validation. */
 export const cantonFiles = (): CantonFile[] =>
@@ -152,4 +160,17 @@ export const getCantonData = (code: string): CantonData => {
 		throw new Error(`Aucune donnée pour le canton « ${code} ».`);
 	}
 	return data;
+};
+
+let municipalMultipliers: MunicipalMultipliersData | null | undefined;
+
+/**
+ * Les coefficients communaux, si le fichier a déjà été importé
+ * (voir `scripts/import-estv-tax-data.ts`). `undefined` tant qu'il n'existe pas.
+ */
+export const getMunicipalMultipliers = (): MunicipalMultipliersData | undefined => {
+	if (municipalMultipliers !== undefined) return municipalMultipliers ?? undefined;
+	const [mod] = Object.values(municipalityModules);
+	municipalMultipliers = mod ? municipalMultipliersDataSchema.parse(mod.default) : null;
+	return municipalMultipliers ?? undefined;
 };

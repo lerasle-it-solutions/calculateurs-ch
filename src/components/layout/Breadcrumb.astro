@@ -25,7 +25,7 @@ const { trail } = Astro.props;
 				<li class="flex items-center gap-xs">
 					{index > 0 && <span aria-hidden="true">{fr.breadcrumb.separator}</span>}
 					{index < trail.length - 1 ? (
-						<a href={crumb.url}>{crumb.label}</a>
+						<a href={crumb.url} class="no-underline">{crumb.label}</a>
 					) : (
 						<span aria-current="page">{crumb.label}</span>
 					)}

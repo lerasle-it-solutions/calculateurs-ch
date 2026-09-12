@@ -73,3 +73,52 @@ export const dataFreshnessReport = (now: Date = new Date()): DataReportRow[] => 
 
 	return rows.sort((a, b) => a.dueOn.localeCompare(b.dueOn));
 };
+
+export interface SourceReportRow {
+	sourceId: string;
+	/** Entrée du registre, si `sourceId` y figure. */
+	source?: SourceEntry;
+	/** Nombre de valeurs que cette source alimente, quel que soit leur nombre. */
+	trackedValues: number;
+	/** ISO 8601 — vérification la plus ancienne parmi ces valeurs. */
+	oldestVerifiedOn: string;
+	/** ISO 8601 — échéance la plus proche parmi ces valeurs. */
+	nextDueOn: string;
+	overdueCount: number;
+}
+
+/**
+ * Une ligne par SOURCE (pas par valeur) : le nombre de valeurs qu'elle alimente
+ * reste invisible dans le décompte de lignes de la page. Une source qui
+ * alimente 700 communes ou 3 plafonds fédéraux occupe la même unique ligne —
+ * c'est ce qui garde `/donnees/` lisible quelle que soit la taille d'un jeu de
+ * données en amont (voir le détail communal, exporté en CSV à part).
+ */
+export const sourceFreshnessReport = (now: Date = new Date()): SourceReportRow[] => {
+	const bySource = new Map<string, SourceReportRow>();
+
+	for (const value of dataFreshnessReport(now)) {
+		const existing = bySource.get(value.sourceId);
+		if (!existing) {
+			bySource.set(value.sourceId, {
+				sourceId: value.sourceId,
+				source: value.source,
+				trackedValues: 1,
+				oldestVerifiedOn: value.verifiedOn,
+				nextDueOn: value.dueOn,
+				overdueCount: value.overdue ? 1 : 0,
+			});
+			continue;
+		}
+		existing.trackedValues += 1;
+		if (value.verifiedOn < existing.oldestVerifiedOn) {
+			existing.oldestVerifiedOn = value.verifiedOn;
+		}
+		if (value.dueOn < existing.nextDueOn) {
+			existing.nextDueOn = value.dueOn;
+		}
+		if (value.overdue) existing.overdueCount += 1;
+	}
+
+	return [...bySource.values()].sort((a, b) => a.nextDueOn.localeCompare(b.nextDueOn));
+};
