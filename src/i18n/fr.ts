@@ -41,6 +41,7 @@ export const fr = {
 		methodology: "Méthodologie",
 		data: "Données et sources",
 		legal: "Mentions légales",
+		privacy: "Politique de confidentialité",
 		contact: "Contact",
 	},
 

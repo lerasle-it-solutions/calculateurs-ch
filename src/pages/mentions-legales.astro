@@ -1,0 +1,163 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fr } from "../i18n/fr";
+
+const title = `${fr.footer.legal} — ${fr.site.name}`;
+const description =
+  "Éditeur du site, hébergement, nature des résultats fournis, responsabilité, indépendance et financement, propriété intellectuelle.";
+---
+
+<BaseLayout title={title} description={description} noindex>
+  <div class="flex flex-col gap-2xl">
+    <header class="flex flex-col gap-md">
+      <h1 class="text-title">{fr.footer.legal}</h1>
+      <p class="text-fine">Dernière mise à jour : [JJ.MM.2026]</p>
+    </header>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Éditeur du site</h2>
+      <p class="text-body">Le site calculateurs.ch est édité par :</p>
+      <p class="text-body">
+        Lerasle IT Solutions
+        <br />
+        Chemin des Ormeaux 38<br />
+        1066 Epalinges, Vaud<br />
+        Suisse
+      </p>
+      <p class="text-body">
+        E-mail : <a href="mailto:contact@calculateurs.ch"
+          >contact@calculateurs.ch</a
+        ><br />
+        Numéro IDE : CHE-327.707.921<br />
+        Registre du commerce : inscrite au registre du commerce du canton de Vaud<br
+        />
+      </p>
+      <p class="text-body">Responsable du contenu : [Prénom] [Nom]</p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Hébergement</h2>
+      <p class="text-body">
+        Le site est hébergé par Cloudflare, Inc., 101 Townsend Street, San
+        Francisco, CA 94107, États-Unis (service Cloudflare Pages).
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Objet du site</h2>
+      <p class="text-body">
+        calculateurs.ch a pour objet de mettre à disposition gratuitement des
+        calculateurs et des contenus d'information sur la prévoyance, la
+        fiscalité, l'immobilier et l'énergie en Suisse romande. L'utilisation
+        des calculateurs ne nécessite ni inscription ni compte utilisateur.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Nature des résultats et absence de conseil</h2>
+      <p class="text-body">
+        Les résultats fournis par les calculateurs sont des estimations
+        indicatives. Ils reposent sur les barèmes, les taux et les règles en
+        vigueur à la date de vérification indiquée sur chaque page, ainsi que
+        sur les données saisies par l'utilisateur. Ils ne constituent en aucun
+        cas un conseil fiscal, juridique, financier, en placement ou en
+        assurance personnalisé. Ils ne constituent pas non plus une décision ou
+        un engagement d'une autorité, d'une caisse de pension, d'un
+        établissement bancaire ou d'un organisme de subvention.
+      </p>
+      <p class="text-body">
+        Seules les décisions des autorités compétentes font foi. Avant toute
+        décision importante, en particulier une décision irréversible (retrait
+        de capital, rachat, travaux, financement), l'utilisateur est invité à
+        consulter un professionnel qualifié ou l'autorité compétente. La
+        méthodologie, les sources et les dates de vérification des données sont
+        publiées sur les pages <a href="/methodologie/">Méthodologie</a> et
+        <a href="/donnees/">Données</a>.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Responsabilité</h2>
+      <p class="text-body">
+        L'éditeur apporte le plus grand soin à l'exactitude et à la mise à jour
+        des informations publiées. Il ne peut toutefois garantir qu'elles soient
+        exactes, complètes et actuelles en tout temps, notamment en raison de
+        modifications législatives ou réglementaires.
+      </p>
+      <p class="text-body">
+        Dans les limites autorisées par le droit suisse, l'éditeur décline toute
+        responsabilité pour les dommages directs ou indirects résultant de
+        l'utilisation du site, de l'impossibilité d'y accéder ou de décisions
+        prises sur la base des résultats des calculateurs. Demeure réservée la
+        responsabilité pour dol ou faute grave.
+      </p>
+      <p class="text-body">
+        Toute erreur constatée peut être signalée par e-mail à <a
+          href="mailto:contact@calculateurs.ch">contact@calculateurs.ch</a
+        >. Elle sera examinée et, le cas échéant, corrigée dans les meilleurs
+        délais.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Liens vers des sites tiers</h2>
+      <p class="text-body">
+        Le site contient des liens vers des sites externes, notamment des
+        sources officielles fédérales et cantonales. L'éditeur n'exerce aucun
+        contrôle sur ces sites. Il décline toute responsabilité quant à leur
+        contenu, leur disponibilité et leurs pratiques en matière de protection
+        des données.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Indépendance et financement</h2>
+      <p class="text-body">
+        Le site est gratuit pour ses utilisateurs. À ce jour, il ne contient ni
+        publicité, ni lien d'affiliation, ni mise en relation rémunérée avec des
+        professionnels. Si un mode de financement de ce type est introduit, il
+        sera signalé sur cette page et sur les pages concernées avant sa mise en
+        place.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Propriété intellectuelle</h2>
+      <p class="text-body">
+        Les textes, la structure et la présentation du site sont protégés par la
+        loi fédérale sur le droit d'auteur (LDA). Toute reproduction ou
+        réutilisation, totale ou partielle, sans autorisation écrite préalable
+        est interdite. Demeurent réservées les exceptions légales, notamment le
+        droit de citation avec indication de la source.
+      </p>
+      <p class="text-body">
+        Le code source du site est publié sur GitHub à l'adresse <a
+          href="https://github.com/lerasle-it-solutions/calculateurs-ch"
+          >github.com/lerasle-it-solutions/calculateurs-ch</a
+        >, code sous licence AGPL-3.0, données sous licence CC BY 4.0.
+      </p>
+      <p class="text-body">
+        Les textes légaux, barèmes et données officielles cités restent la
+        propriété de leurs auteurs respectifs ; leur source est indiquée.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Protection des données</h2>
+      <p class="text-body">
+        Le site n'utilise aucun cookie. La mesure d'audience est effectuée sans
+        cookie et sans identifiant. Il ne comporte aucun formulaire. Les détails
+        figurent dans la Politique de confidentialité.
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-sm">
+      <h2 class="text-heading">Droit applicable et for</h2>
+      <p class="text-body">
+        Les présentes mentions légales et l'utilisation du site sont soumises au
+        droit suisse. Le for est à [Localité], sous réserve des fors impératifs
+        prévus par la loi, notamment en faveur des consommateurs.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

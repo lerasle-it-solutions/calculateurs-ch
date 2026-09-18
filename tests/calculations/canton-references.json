@@ -1,0 +1,1063 @@
+{
+  "$comment": "Cas de référence officiels — semaine 4, session B. Valeurs relevées manuellement sur le calculateur d'impôts de l'Administration fédérale des contributions. Ne jamais modifier une valeur pour faire passer un test.",
+  "meta": {
+    "taxYear": 2026,
+    "source": {
+      "sourceId": "estv-tax-calculator",
+      "authority": "Administration fédérale des contributions (AFC)",
+      "url": "https://swisstaxcalculator.estv.admin.ch",
+      "calculation": "Impôt sur le revenu et la fortune",
+      "capturedOn": "2026-09-18",
+      "capturedBy": "relevé manuel",
+      "revision": 4
+    },
+    "tolerance": {
+      "relative": 0.01,
+      "appliesTo": [
+        "cantonalTax",
+        "municipalTax",
+        "federalTax",
+        "totalTax"
+      ],
+      "exactMatch": [
+        "personalTax",
+        "churchTax"
+      ],
+      "absoluteFloorChf": 1
+    },
+    "notes": [
+      "Les 18 cas sont arithmétiquement cohérents : totalTax = cantonalTax + municipalTax + personalTax + federalTax + churchTax.",
+      "Le moteur est testé sur engineInput (revenu imposable) et non sur grossInput (revenu brut) : la conversion du brut vers l'imposable relève d'un module distinct, grossToTaxableIncome, avec ses propres tests.",
+      "estvIntermediate documente les hypothèses de cotisations sociales du calculateur de l'AFC. Ces valeurs ne sont pas testées par la suite de référence du moteur fiscal ; elles servent de cas de référence au module grossToTaxableIncome.",
+      "Pour les cas mariés, les cotisations sociales sont exprimées par conjoint (deductionsArePerSpouse = true) ; le revenu net est également par conjoint.",
+      "personalTax : taxe personnelle fixe, 24 CHF en Valais et 25 CHF à Genève. Aucun autre canton romand n'en prélève. Comparaison exacte, sans tolérance.",
+      "churchTax = 0 : confession « autre / sans » dans les 18 relevés.",
+      "Les écarts de fortune imposable entre cantons à fortune nette identique proviennent des déductions sociales cantonales sur la fortune ; ce sont des résultats, pas des entrées.",
+      "estvMarginalRate : taux marginaux affichés par le calculateur de l'AFC sous le résultat. À relever pour les 18 cas (deux nombres par cas). Ils servent de second oracle, comparé au taux marginal calculé par le moteur avec une tolérance de 0,5 point de pourcentage.",
+      "L'âge des enfants est une entrée du calculateur de l'AFC et influence certaines déductions : il est conservé dans taxpayer.childrenAges et doit être transmis au moteur, pas seulement leur nombre.",
+      "Les 36 taux marginaux ont été relevés en mode « revenu brut », seul mode où l'AFC affiche l'encadré correspondant. Ils portent néanmoins sur le revenu imposable. estvAverageRateOnGrossPercent porte en revanche sur le revenu brut : les 18 valeurs égalent totalTax / grossIncome."
+    ],
+    "todo": [
+      "Semaine 5 : relever les 6 cas différentiels de meta.marginalRateCases en mode « revenu imposable », en saisissant directement dans ce fichier depuis l'écran, sans document intermédiaire.",
+      "Semaine 5 ou 8 : capturer la vue détaillée (deux colonnes Canton/Confédération) des 18 cas — série de référence du module grossToTaxableIncome."
+    ],
+    "marginalRateCases": {
+      "status": "à compléter en semaine 5, session A",
+      "why": "Le calculateur A1 n'affiche pas un niveau d'impôt mais une économie : la différence entre l'impôt dû et l'impôt dû après déduction du rachat. Les 18 cas valident le niveau, pas la pente. Le calculateur de l'AFC affiche directement un taux marginal sur le revenu et sur la fortune : c'est un oracle gratuit pour la pente, mais il ne remplace pas les cas différentiels, car l'économie porte sur un montant discret qui peut franchir une limite de barème ou un seuil de déduction sociale.",
+      "howTo": "Méthode préférée : rejouer chacun des six cas single80 dans le mode détaillé du calculateur de l'AFC en saisissant une cotisation au 3e pilier a égale au plafond de l'année, et relever le nouveau total. L'économie est la différence des deux totaux. Si le mode détaillé n'offre pas de champ 3a, se rabattre sur une réduction équivalente du revenu brut, en corrigeant l'effet des cotisations sociales.",
+      "expectedShape": {
+        "id": "delta-01",
+        "municipality": {
+          "name": "Lausanne",
+          "canton": "VD",
+          "ofsId": 5586
+        },
+        "baseCaseId": "case-01",
+        "buybackAmount": "plafond 3a de l'année, à relever à la source",
+        "expected": {
+          "totalTaxBefore": null,
+          "totalTaxAfter": null,
+          "taxSaving": null,
+          "effectiveSavingRatePercent": null
+        }
+      },
+      "cases": [],
+      "basisCheck": {
+        "question": "Le taux marginal affiché par l'AFC porte-t-il sur un franc de revenu BRUT ou sur un franc de revenu IMPOSABLE ?",
+        "whyItMatters": "Un versement 3a réduit le revenu imposable franc pour franc. Seul un taux marginal exprimé sur le revenu imposable peut être multiplié par le montant du rachat.",
+        "howTo": "Rejouer le cas 18 avec un revenu brut de 201 000 CHF et noter le total. Une hausse d'environ 407 CHF indique une base brute ; une hausse sensiblement supérieure indique une base imposable.",
+        "observedCase18": {
+          "grossIncome": 200000,
+          "totalTax": 54888,
+          "marginalIncomeRatePercent": 40.7,
+          "averageRateOnGrossPercent": 27.44,
+          "note": "27,44 % = 54 888 / 200 000, donc le taux MOYEN est exprimé sur le brut."
+        },
+        "resolvedOn": "2026-09-18",
+        "conclusion": "BASE = REVENU IMPOSABLE. Le cas 18 rejoué à 201 000 CHF de revenu brut donne un total de 55 255 CHF, soit +367 CHF pour +1 000 CHF de brut : 36,7 % sur le brut, ce qui exclut cette base (il faudrait 407 CHF). Les deux revenus imposables passent de 173 639 à 174 551 (canton) et de 174 339 à 175 251 (Confédération), soit +912 CHF dans les deux cas : 367 / 912 = 40,2 %, contre 40,7 % affichés à 200 000 et 41,0 % à 201 000. L'écart de quelques dixièmes s'explique par l'arrondi à la centaine de francs des étapes intermédiaires. Le taux marginal affiché par l'AFC porte donc sur le revenu imposable.",
+        "practicalConsequence": "Le taux marginal est utilisable comme oracle de pente, mais pas comme méthode de calcul : un versement 3a réduit le revenu imposable franc pour franc (7 258), alors qu'un franc de salaire brut ne fait monter l'imposable que de 0,912 franc. computeTaxSavingOnDeduction reste la seule méthode correcte pour A1, A2, A3 et B2."
+      }
+    },
+    "taxableEntryMode": {
+      "finding": "Le calculateur de l'AFC permet aussi de partir directement du revenu imposable, sans passer par le brut.",
+      "decision": "Ne pas rejouer les 18 cas. Ils sont déjà corrects pour ce qu'ils testent : engineInput contient les revenus imposables calculés par l'AFC, et expected les impôts correspondants. Les ressaisir en mode imposable donnerait exactement les mêmes attentes.",
+      "whyKeepTheGrossRuns": "Le bloc estvIntermediate est la seule série de référence disponible pour le futur module grossToTaxableIncome (semaine 8). La refonte en mode imposable la détruirait.",
+      "useItFor": [
+        "Les 6 cas différentiels d'A1 : saisir le revenu imposable, puis le même diminué du rachat, et lire les deux totaux. Méthode exacte, sans contorsion sur le brut.",
+        "Les cas limites : limites de barème, revenu très bas, revenu très haut, fortune nulle — difficiles à atteindre depuis le brut.",
+        "Les futurs calculateurs B1, B3 et A4, dont l'entrée naturelle est le revenu imposable."
+      ],
+      "controlBeforeUse": {
+        "why": "Vérifier que l'AFC interprète le revenu imposable comme le moteur : un seul montant ou deux (cantonal et fédéral) ?",
+        "howTo": "Rejouer trois cas en mode imposable — case-01, case-08 et case-18 — avec les valeurs de engineInput, et comparer aux impôts de expected. Si le mode ne demande qu'un seul revenu imposable, noter lequel (cantonal ou fédéral) et comment l'autre est dérivé.",
+        "ifItDiverges": "Alors et alors seulement, rejouer l'ensemble des 18 cas en mode imposable, en conservant les 18 séries brutes dans un fichier distinct gross-to-taxable-references.json.",
+        "resolvedOn": "2026-09-18",
+        "conclusion": "MODE VALIDÉ, ET IL DEMANDE DEUX REVENUS IMPOSABLES. Le formulaire présente séparément « Revenu imposable canton » et « Revenu imposable Confédération », plus la fortune imposable : le contrat d'entrée du moteur (federalTaxableIncome + cantonalTaxableIncome + taxableWealth) correspond exactement. Les trois cas de contrôle reproduisent les valeurs attendues au franc près : case-01 Lausanne 7 131 / 3 802 / 0 / 0 / 906 = 11 839 ; case-08 Genève 5 488 / 1 909 / 0 / 25 / 582 = 8 004 ; case-18 Neuchâtel 29 615 / 15 524 / 0 / 0 / 9 749 = 54 888. Ce mode devient l'outil de référence pour les cas différentiels d'A1, les cas limites, B1, B3 et A4.",
+        "sideFindings": [
+          "Le taux moyen affiché en mode imposable porte sur le REVENU IMPOSABLE CANTONAL, et non sur le brut : 11 839 / 65 167 = 18,17 % ; 8 004 / 80 160 = 9,99 % ; 54 888 / 173 639 = 31,61 %. En mode brut, il portait sur le brut.",
+          "L'encadré du taux marginal ne s'affiche pas en mode imposable : les taux marginaux se relèvent en mode brut."
+        ],
+        "openQuestion": {
+          "issue": "Écart apparent sur le nombre d'enfants du cas 08.",
+          "resolvedOn": "2026-09-18",
+          "conclusion": "Résolu : il s'agissait d'une erreur de transcription du document de relevé, pas d'un champ inerte. Le profil married120 comporte 1 enfant de 2 ans. Voir meta.correctedInputs. Le champ « enfants » du calculateur de l'AFC agit donc bien sur le résultat, y compris en mode revenu imposable."
+        }
+      }
+    },
+    "engineStructureConfirmed": {
+      "source": "Vue détaillée du calculateur de l'AFC, cas 18 rejoué le 18.09.2026",
+      "multipliers": {
+        "cantonalIncome": 1.24,
+        "cantonalWealth": 1.24,
+        "municipalIncome": 0.65,
+        "municipalWealth": 0.65,
+        "municipality": "Neuchâtel",
+        "taxYear": 2026
+      },
+      "check": "Impôt cantonal affiché 29 791 / 1,24 = 24 025 d'impôt cantonal de base. 24 025 × 0,65 = 15 616,25, soit exactement l'impôt communal affiché (15 616). La chaîne à trois étages du §3.5 est confirmée : un impôt de base unique, puis des coefficients distincts par collectivité, et non deux barèmes indépendants.",
+      "note": "Les coefficients s'appliquent identiquement au revenu et à la fortune dans ce canton ; à vérifier canton par canton."
+    },
+    "deductionChain": {
+      "finding": "La vue détaillée de l'AFC expose la chaîne de déductions ligne par ligne, en DEUX COLONNES distinctes (Canton / Confédération). C'est la série de référence idéale du module grossToTaxableIncome : elle évite de reconstruire les montants à partir des lois.",
+      "example_case18_201k": {
+        "netSalary": 181051,
+        "lines": [
+          {
+            "label": "Autres frais professionnels liés à l'activité principale",
+            "canton": -4000,
+            "federal": -4000
+          },
+          {
+            "label": "Primes d'assurances et intérêts de capitaux d'épargne",
+            "canton": 0,
+            "federal": -1800
+          },
+          {
+            "label": "Déduction ass. privées, intérêt épargne",
+            "canton": -2500,
+            "federal": 0
+          }
+        ],
+        "taxableIncome": {
+          "canton": 174551,
+          "federal": 175251
+        },
+        "note": "L'écart de 700 CHF entre les deux bases vient entièrement de la différence 2 500 (NE) contre 1 800 (LIFD) sur la déduction d'assurances."
+      },
+      "socialContributionsObserved": {
+        "ahvIvEoRate": 0.053,
+        "ahvIvEoCapped": false,
+        "alvRate": 0.011,
+        "nbuRate": 0.004,
+        "impliedCeilingChf": 148200,
+        "note": "AC et LAA non professionnel plafonnés à un salaire d'environ 148 200 CHF ; AVS/AI/APG sans plafond. À confirmer à la source (mémentos OFAS / LAA) et par année.",
+        "bvg": "Hypothèse propre au calculateur de l'AFC, non légale : la cotisation LPP reste une entrée utilisateur."
+      }
+    },
+    "correctedInputs": [
+      {
+        "field": "taxpayer.children (profil married120, cas 07 à 12)",
+        "was": 2,
+        "now": 1,
+        "childrenAges": [
+          2
+        ],
+        "reason": "Erreur de transcription du document de relevé, qui indiquait « 2 enfants » alors que les simulations ont été jouées avec 1 enfant de 2 ans — l'âge a été confondu avec le nombre.",
+        "evidence": "Le contrôle de case-08 en mode revenu imposable, saisi avec 1 enfant, reproduit exactement le total documenté de 8 004 CHF. À Genève les charges de famille agissent sur l'impôt via le rabais d'impôt : 1 et 2 enfants ne peuvent pas donner le même franc. La saisie réelle comportait donc bien 1 enfant.",
+        "correctedOn": "2026-09-18",
+        "residualCheck": "Levé le 18.09.2026 : case-07 (Lausanne) rejoué en mode revenu imposable avec 1 enfant de 2 ans donne 8 520 / 4 535 / 0 / 0 / 582 = 13 637 CHF, soit exactement la valeur attendue. Le profil married120 est confirmé sur deux cantons (VD et GE). Sujet clos."
+      }
+    ],
+    "municipalityIds": {
+      "verifiedOn": "2026-09-18",
+      "against": "Répertoire officiel des communes de Suisse, Office fédéral de la statistique",
+      "result": "Les six numéros OFS des chefs-lieux sont confirmés : Fribourg 2196, Lausanne 5586, Sion 6266, Neuchâtel 6458, Genève 6621, Delémont 6711.",
+      "note": "Le numéro OFS est la clé primaire de toute la couche communale. À revérifier chaque 1er janvier : les fusions de communes modifient et retirent des numéros."
+    },
+    "status": "Jeu de référence figé. 18 cas, 36 taux marginaux, 6 numéros OFS vérifiés, profil marié corrigé et confirmé sur deux cantons. Prêt pour les tests du moteur."
+  },
+  "cases": [
+    {
+      "id": "case-01",
+      "profileId": "single80",
+      "label": "Lausanne — Célibataire, 35 ans, sans enfant, revenu brut 80 000, fortune nette 50 000",
+      "municipality": {
+        "name": "Lausanne",
+        "canton": "VD",
+        "ofsId": 5586
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 35,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 80000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 4240,
+        "alvContribution": 880,
+        "nonOccupationalAccidentContribution": 320,
+        "bvgContribution": 2677,
+        "netIncome": 71883
+      },
+      "engineInput": {
+        "federalTaxableIncome": 67927,
+        "cantonalTaxableIncome": 65167,
+        "taxableWealth": 50000
+      },
+      "expected": {
+        "cantonalTax": 7131,
+        "municipalTax": 3802,
+        "personalTax": 0,
+        "federalTax": 906,
+        "churchTax": 0,
+        "totalTax": 11839
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 25.3,
+        "wealthRatePercent": 0.77,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 14.8
+    },
+    {
+      "id": "case-02",
+      "profileId": "single80",
+      "label": "Delémont — Célibataire, 35 ans, sans enfant, revenu brut 80 000, fortune nette 50 000",
+      "municipality": {
+        "name": "Delémont",
+        "canton": "JU",
+        "ofsId": 6711
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 35,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 80000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 4240,
+        "alvContribution": 880,
+        "nonOccupationalAccidentContribution": 320,
+        "bvgContribution": 2677,
+        "netIncome": 71883
+      },
+      "engineInput": {
+        "federalTaxableIncome": 67927,
+        "cantonalTaxableIncome": 62583,
+        "taxableWealth": 21500
+      },
+      "expected": {
+        "cantonalTax": 5809,
+        "municipalTax": 3873,
+        "personalTax": 0,
+        "federalTax": 906,
+        "churchTax": 0,
+        "totalTax": 10588
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 26.0,
+        "wealthRatePercent": 0.0,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 13.23
+    },
+    {
+      "id": "case-03",
+      "profileId": "single80",
+      "label": "Sion — Célibataire, 35 ans, sans enfant, revenu brut 80 000, fortune nette 50 000",
+      "municipality": {
+        "name": "Sion",
+        "canton": "VS",
+        "ofsId": 6266
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 35,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 80000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 4240,
+        "alvContribution": 880,
+        "nonOccupationalAccidentContribution": 320,
+        "bvgContribution": 2677,
+        "netIncome": 71883
+      },
+      "engineInput": {
+        "federalTaxableIncome": 67927,
+        "cantonalTaxableIncome": 65927,
+        "taxableWealth": 5000
+      },
+      "expected": {
+        "cantonalTax": 4220,
+        "municipalTax": 4348,
+        "personalTax": 24,
+        "federalTax": 906,
+        "churchTax": 0,
+        "totalTax": 9498
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 21.9,
+        "wealthRatePercent": 0.27,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 11.87
+    },
+    {
+      "id": "case-04",
+      "profileId": "single80",
+      "label": "Genève — Célibataire, 35 ans, sans enfant, revenu brut 80 000, fortune nette 50 000",
+      "municipality": {
+        "name": "Genève",
+        "canton": "GE",
+        "ofsId": 6621
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 35,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 80000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 4240,
+        "alvContribution": 880,
+        "nonOccupationalAccidentContribution": 320,
+        "bvgContribution": 2677,
+        "netIncome": 71883
+      },
+      "engineInput": {
+        "federalTaxableIncome": 67927,
+        "cantonalTaxableIncome": 65506,
+        "taxableWealth": 0
+      },
+      "expected": {
+        "cantonalTax": 7065,
+        "municipalTax": 2457,
+        "personalTax": 25,
+        "federalTax": 906,
+        "churchTax": 0,
+        "totalTax": 10453
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 26.0,
+        "wealthRatePercent": 0.0,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 13.07
+    },
+    {
+      "id": "case-05",
+      "profileId": "single80",
+      "label": "Fribourg — Célibataire, 35 ans, sans enfant, revenu brut 80 000, fortune nette 50 000",
+      "municipality": {
+        "name": "Fribourg",
+        "canton": "FR",
+        "ofsId": 2196
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 35,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 80000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 4240,
+        "alvContribution": 880,
+        "nonOccupationalAccidentContribution": 320,
+        "bvgContribution": 2677,
+        "netIncome": 71883
+      },
+      "engineInput": {
+        "federalTaxableIncome": 67927,
+        "cantonalTaxableIncome": 65167,
+        "taxableWealth": 0
+      },
+      "expected": {
+        "cantonalTax": 5742,
+        "municipalTax": 4785,
+        "personalTax": 0,
+        "federalTax": 906,
+        "churchTax": 0,
+        "totalTax": 11433
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 26.2,
+        "wealthRatePercent": 0.05,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 14.29
+    },
+    {
+      "id": "case-06",
+      "profileId": "single80",
+      "label": "Neuchâtel — Célibataire, 35 ans, sans enfant, revenu brut 80 000, fortune nette 50 000",
+      "municipality": {
+        "name": "Neuchâtel",
+        "canton": "NE",
+        "ofsId": 6458
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 35,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 80000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 4240,
+        "alvContribution": 880,
+        "nonOccupationalAccidentContribution": 320,
+        "bvgContribution": 2677,
+        "netIncome": 71883
+      },
+      "engineInput": {
+        "federalTaxableIncome": 67927,
+        "cantonalTaxableIncome": 67227,
+        "taxableWealth": 50000
+      },
+      "expected": {
+        "cantonalTax": 7847,
+        "municipalTax": 4113,
+        "personalTax": 0,
+        "federalTax": 906,
+        "churchTax": 0,
+        "totalTax": 12866
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 25.1,
+        "wealthRatePercent": 0.57,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 16.08
+    },
+    {
+      "id": "case-07",
+      "profileId": "married120",
+      "label": "Lausanne — Marié, 1 enfant de 2 ans, 40 ans chacun, revenu brut 120 000 (60 000 chacun), fortune nette 150 000",
+      "municipality": {
+        "name": "Lausanne",
+        "canton": "VD",
+        "ofsId": 5586
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [
+          2
+        ]
+      },
+      "grossInput": {
+        "grossIncome": 120000,
+        "netWealth": 150000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 3180,
+        "alvContribution": 660,
+        "nonOccupationalAccidentContribution": 240,
+        "bvgContribution": 1677,
+        "netIncome": 54243
+      },
+      "engineInput": {
+        "federalTaxableIncome": 76386,
+        "cantonalTaxableIncome": 90166,
+        "taxableWealth": 150000
+      },
+      "expected": {
+        "cantonalTax": 8520,
+        "municipalTax": 4535,
+        "personalTax": 0,
+        "federalTax": 582,
+        "churchTax": 0,
+        "totalTax": 13637
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 21.6,
+        "wealthRatePercent": 0.41,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 11.36
+    },
+    {
+      "id": "case-08",
+      "profileId": "married120",
+      "label": "Genève — Marié, 1 enfant de 2 ans, 40 ans chacun, revenu brut 120 000 (60 000 chacun), fortune nette 150 000",
+      "municipality": {
+        "name": "Genève",
+        "canton": "GE",
+        "ofsId": 6621
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [
+          2
+        ]
+      },
+      "grossInput": {
+        "grossIncome": 120000,
+        "netWealth": 150000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 3180,
+        "alvContribution": 660,
+        "nonOccupationalAccidentContribution": 240,
+        "bvgContribution": 1677,
+        "netIncome": 54243
+      },
+      "engineInput": {
+        "federalTaxableIncome": 76386,
+        "cantonalTaxableIncome": 80160,
+        "taxableWealth": 0
+      },
+      "expected": {
+        "cantonalTax": 5488,
+        "municipalTax": 1909,
+        "personalTax": 25,
+        "federalTax": 582,
+        "churchTax": 0,
+        "totalTax": 8004
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 24.0,
+        "wealthRatePercent": 0.0,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 6.67
+    },
+    {
+      "id": "case-09",
+      "profileId": "married120",
+      "label": "Delémont — Marié, 1 enfant de 2 ans, 40 ans chacun, revenu brut 120 000 (60 000 chacun), fortune nette 150 000",
+      "municipality": {
+        "name": "Delémont",
+        "canton": "JU",
+        "ofsId": 6711
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [
+          2
+        ]
+      },
+      "grossInput": {
+        "grossIncome": 120000,
+        "netWealth": 150000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 3180,
+        "alvContribution": 660,
+        "nonOccupationalAccidentContribution": 240,
+        "bvgContribution": 1677,
+        "netIncome": 54243
+      },
+      "engineInput": {
+        "federalTaxableIncome": 76386,
+        "cantonalTaxableIncome": 80366,
+        "taxableWealth": 64500
+      },
+      "expected": {
+        "cantonalTax": 6471,
+        "municipalTax": 4314,
+        "personalTax": 0,
+        "federalTax": 582,
+        "churchTax": 0,
+        "totalTax": 11367
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 22.7,
+        "wealthRatePercent": 0.23,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 9.47
+    },
+    {
+      "id": "case-10",
+      "profileId": "married120",
+      "label": "Sion — Marié, 1 enfant de 2 ans, 40 ans chacun, revenu brut 120 000 (60 000 chacun), fortune nette 150 000",
+      "municipality": {
+        "name": "Sion",
+        "canton": "VS",
+        "ofsId": 6266
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [
+          2
+        ]
+      },
+      "grossInput": {
+        "grossIncome": 120000,
+        "netWealth": 150000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 3180,
+        "alvContribution": 660,
+        "nonOccupationalAccidentContribution": 240,
+        "bvgContribution": 1677,
+        "netIncome": 54243
+      },
+      "engineInput": {
+        "federalTaxableIncome": 76386,
+        "cantonalTaxableIncome": 77766,
+        "taxableWealth": 60000
+      },
+      "expected": {
+        "cantonalTax": 3448,
+        "municipalTax": 3757,
+        "personalTax": 24,
+        "federalTax": 582,
+        "churchTax": 0,
+        "totalTax": 7811
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 18.7,
+        "wealthRatePercent": 0.36,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 6.51
+    },
+    {
+      "id": "case-11",
+      "profileId": "married120",
+      "label": "Fribourg — Marié, 1 enfant de 2 ans, 40 ans chacun, revenu brut 120 000 (60 000 chacun), fortune nette 150 000",
+      "municipality": {
+        "name": "Fribourg",
+        "canton": "FR",
+        "ofsId": 2196
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [
+          2
+        ]
+      },
+      "grossInput": {
+        "grossIncome": 120000,
+        "netWealth": 150000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 3180,
+        "alvContribution": 660,
+        "nonOccupationalAccidentContribution": 240,
+        "bvgContribution": 1677,
+        "netIncome": 54243
+      },
+      "engineInput": {
+        "federalTaxableIncome": 76386,
+        "cantonalTaxableIncome": 86566,
+        "taxableWealth": 65000
+      },
+      "expected": {
+        "cantonalTax": 6261,
+        "municipalTax": 5217,
+        "personalTax": 0,
+        "federalTax": 582,
+        "churchTax": 0,
+        "totalTax": 12060
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 24.5,
+        "wealthRatePercent": 0.2,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 10.05
+    },
+    {
+      "id": "case-12",
+      "profileId": "married120",
+      "label": "Neuchâtel — Marié, 1 enfant de 2 ans, 40 ans chacun, revenu brut 120 000 (60 000 chacun), fortune nette 150 000",
+      "municipality": {
+        "name": "Neuchâtel",
+        "canton": "NE",
+        "ofsId": 6458
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [
+          2
+        ]
+      },
+      "grossInput": {
+        "grossIncome": 120000,
+        "netWealth": 150000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 3180,
+        "alvContribution": 660,
+        "nonOccupationalAccidentContribution": 240,
+        "bvgContribution": 1677,
+        "netIncome": 54243
+      },
+      "engineInput": {
+        "federalTaxableIncome": 76386,
+        "cantonalTaxableIncome": 91386,
+        "taxableWealth": 150000
+      },
+      "expected": {
+        "cantonalTax": 9107,
+        "municipalTax": 4879,
+        "personalTax": 0,
+        "federalTax": 582,
+        "churchTax": 0,
+        "totalTax": 14568
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 25.7,
+        "wealthRatePercent": 0.58,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 12.14
+    },
+    {
+      "id": "case-13",
+      "profileId": "single200",
+      "label": "Lausanne — Célibataire, 40 ans, sans enfant, revenu brut 200 000, fortune nette 500 000",
+      "municipality": {
+        "name": "Lausanne",
+        "canton": "VD",
+        "ofsId": 5586
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 40,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 200000,
+        "netWealth": 500000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 10600,
+        "alvContribution": 1630,
+        "nonOccupationalAccidentContribution": 593,
+        "bvgContribution": 7038,
+        "netIncome": 180139
+      },
+      "engineInput": {
+        "federalTaxableIncome": 174339,
+        "cantonalTaxableIncome": 171579,
+        "taxableWealth": 500000
+      },
+      "expected": {
+        "cantonalTax": 27910,
+        "municipalTax": 14834,
+        "personalTax": 0,
+        "federalTax": 9749,
+        "churchTax": 0,
+        "totalTax": 52493
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 41.5,
+        "wealthRatePercent": 0.73,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 26.25
+    },
+    {
+      "id": "case-14",
+      "profileId": "single200",
+      "label": "Genève — Célibataire, 40 ans, sans enfant, revenu brut 200 000, fortune nette 500 000",
+      "municipality": {
+        "name": "Genève",
+        "canton": "GE",
+        "ofsId": 6621
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 40,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 200000,
+        "netWealth": 500000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 10600,
+        "alvContribution": 1630,
+        "nonOccupationalAccidentContribution": 593,
+        "bvgContribution": 7038,
+        "netIncome": 180139
+      },
+      "engineInput": {
+        "federalTaxableIncome": 174339,
+        "cantonalTaxableIncome": 173762,
+        "taxableWealth": 412128
+      },
+      "expected": {
+        "cantonalTax": 28781,
+        "municipalTax": 9945,
+        "personalTax": 25,
+        "federalTax": 9749,
+        "churchTax": 0,
+        "totalTax": 48500
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 38.5,
+        "wealthRatePercent": 0.53,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 24.25
+    },
+    {
+      "id": "case-15",
+      "profileId": "single200",
+      "label": "Sion — Célibataire, 40 ans, sans enfant, revenu brut 200 000, fortune nette 500 000",
+      "municipality": {
+        "name": "Sion",
+        "canton": "VS",
+        "ofsId": 6266
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 40,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 200000,
+        "netWealth": 500000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 10600,
+        "alvContribution": 1630,
+        "nonOccupationalAccidentContribution": 593,
+        "bvgContribution": 7038,
+        "netIncome": 180139
+      },
+      "engineInput": {
+        "federalTaxableIncome": 174339,
+        "cantonalTaxableIncome": 172339,
+        "taxableWealth": 455000
+      },
+      "expected": {
+        "cantonalTax": 23702,
+        "municipalTax": 17909,
+        "personalTax": 24,
+        "federalTax": 9749,
+        "churchTax": 0,
+        "totalTax": 51384
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 38.4,
+        "wealthRatePercent": 0.46,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 25.69
+    },
+    {
+      "id": "case-16",
+      "profileId": "single200",
+      "label": "Fribourg — Célibataire, 40 ans, sans enfant, revenu brut 200 000, fortune nette 500 000",
+      "municipality": {
+        "name": "Fribourg",
+        "canton": "FR",
+        "ofsId": 2196
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 40,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 200000,
+        "netWealth": 500000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 10600,
+        "alvContribution": 1630,
+        "nonOccupationalAccidentContribution": 593,
+        "bvgContribution": 7038,
+        "netIncome": 180139
+      },
+      "engineInput": {
+        "federalTaxableIncome": 174339,
+        "cantonalTaxableIncome": 171579,
+        "taxableWealth": 500000
+      },
+      "expected": {
+        "cantonalTax": 22295,
+        "municipalTax": 18543,
+        "personalTax": 0,
+        "federalTax": 9749,
+        "churchTax": 0,
+        "totalTax": 50587
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 40.6,
+        "wealthRatePercent": 0.56,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 25.29
+    },
+    {
+      "id": "case-17",
+      "profileId": "single200",
+      "label": "Delémont — Célibataire, 40 ans, sans enfant, revenu brut 200 000, fortune nette 500 000",
+      "municipality": {
+        "name": "Delémont",
+        "canton": "JU",
+        "ofsId": 6711
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 40,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 200000,
+        "netWealth": 500000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 10600,
+        "alvContribution": 1630,
+        "nonOccupationalAccidentContribution": 593,
+        "bvgContribution": 7038,
+        "netIncome": 180139
+      },
+      "engineInput": {
+        "federalTaxableIncome": 174339,
+        "cantonalTaxableIncome": 170839,
+        "taxableWealth": 471500
+      },
+      "expected": {
+        "cantonalTax": 23346,
+        "municipalTax": 15563,
+        "personalTax": 0,
+        "federalTax": 9749,
+        "churchTax": 0,
+        "totalTax": 48658
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 37.4,
+        "wealthRatePercent": 0.45,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 24.33
+    },
+    {
+      "id": "case-18",
+      "profileId": "single200",
+      "label": "Neuchâtel — Célibataire, 40 ans, sans enfant, revenu brut 200 000, fortune nette 500 000",
+      "municipality": {
+        "name": "Neuchâtel",
+        "canton": "NE",
+        "ofsId": 6458
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 40,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 200000,
+        "netWealth": 500000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 10600,
+        "alvContribution": 1630,
+        "nonOccupationalAccidentContribution": 593,
+        "bvgContribution": 7038,
+        "netIncome": 180139
+      },
+      "engineInput": {
+        "federalTaxableIncome": 174339,
+        "cantonalTaxableIncome": 173639,
+        "taxableWealth": 500000
+      },
+      "expected": {
+        "cantonalTax": 29615,
+        "municipalTax": 15524,
+        "personalTax": 0,
+        "federalTax": 9749,
+        "churchTax": 0,
+        "totalTax": 54888
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 40.7,
+        "wealthRatePercent": 0.68,
+        "basis": "revenu imposable — démontré le 18.09.2026, voir meta.marginalRateCases.basisCheck. Relevé en mode « revenu brut » : l'encadré du taux marginal ne s'affiche pas en mode « revenu imposable »."
+      },
+      "estvAverageRateOnGrossPercent": 27.44
+    }
+  ]
+}

@@ -23,10 +23,9 @@ const formatDate = (isoDate: string): string =>
 <BaseLayout
 	title={`${fr.dataPage.title} — ${fr.site.name}`}
 	description={fr.dataPage.lead}
-	wide={true}
 >
 	<div class="flex flex-col gap-2xl">
-		<header class="flex max-w-reading flex-col gap-md">
+		<header class="flex flex-col gap-md">
 			<h1 class="text-title">{fr.dataPage.title}</h1>
 			<p class="text-body">{fr.dataPage.lead}</p>
 			{
@@ -40,7 +39,7 @@ const formatDate = (isoDate: string): string =>
 
 		{
 			rows.length === 0 ? (
-				<p class="max-w-reading text-body">{fr.dataPage.empty}</p>
+				<p class="text-body">{fr.dataPage.empty}</p>
 			) : (
 				<div class="overflow-x-auto border border-rule">
 					<table class="w-full border-collapse text-body">
@@ -114,7 +113,7 @@ const formatDate = (isoDate: string): string =>
 
 		{
 			multipliers && multipliers.multipliers.length > 0 && (
-				<section class="flex max-w-reading flex-col gap-sm border-t border-rule pt-lg">
+				<section class="flex flex-col gap-sm border-t border-rule pt-lg">
 					<h2 class="text-heading">{fr.dataPage.municipalCsv.heading}</h2>
 					<p class="text-body">
 						{fr.dataPage.municipalCsv.intro(multipliers.multipliers.length)}

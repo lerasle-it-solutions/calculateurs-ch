@@ -41,7 +41,7 @@ const container = wide ? "max-w-page" : "max-w-reading";
 		<meta name="description" content={description} />
 		<slot name="head" />
 	</head>
-	<body class="bg-paper text-ink">
+	<body class="flex min-h-screen flex-col bg-paper text-ink">
 		<a
 			href="#main"
 			class="sr-only focus:not-sr-only focus:absolute focus:left-lg focus:top-lg focus:z-20 focus:border focus:border-rule focus:bg-paper focus:px-md focus:py-sm focus:text-label"
@@ -51,7 +51,10 @@ const container = wide ? "max-w-page" : "max-w-reading";
 
 		<Header />
 
-		<main id="main" class:list={["mx-auto px-lg py-2xl", container]}>
+		<main
+			id="main"
+			class:list={["mx-auto w-full flex-1 px-lg py-2xl", container]}
+		>
 			<slot />
 		</main>
 
