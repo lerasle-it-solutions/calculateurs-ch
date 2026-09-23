@@ -29,19 +29,15 @@
  * L'URL de base, les 3 endpoints et le schéma de réponse ont été confirmés en
  * interrogeant l'API en direct pendant l'écriture de ce script.
  *
- * ⚠️ Licence des données : le README de gendx/fetch-ch-tax-rates signale que
- * les conditions d'utilisation par défaut de la Confédération exigent
- * l'accord écrit préalable du détenteur des droits pour la réédition de ce
- * jeu de données (pas de licence open data explicite). Avant de publier des
- * chiffres importés par ce script sur calculateurs.ch, vérifie ce point —
- * ce script ne préjuge pas de la réponse. C'est pour cette raison précise
- * qu'il ne propose et n'écrit JAMAIS la réponse brute de l'AFC nulle part :
- * il ne persiste que les valeurs qu'il a lui-même transformées, filtrées aux
- * 6 cantons romands et enveloppées dans `Value<T>` — jamais un export complet
- * ou tel-quel du jeu de données ESTV. Le site n'offre pas non plus de
- * téléchargement de cet export brut ; le seul CSV public (coefficients
- * communaux, sur `/donnees/`) ne contient que les deux champs transformés que
- * ce script écrit, pas les autres champs de la réponse d'origine.
+ * ⚠️ Situation actuelle : l'AFC a indiqué par écrit que les données de base
+ * du simulateur fiscal (barèmes, déductions, coefficients communaux) sont
+ * réutilisables à condition de citer la source, sans garantie de sa part
+ * quant à leur exactitude. En revanche, aucun accès programmatique aux
+ * serveurs du simulateur n'est autorisé : les données de base se
+ * téléchargent désormais à la main, depuis le module « Rechercher des
+ * données de base » de l'interface web. Ce script est donc désactivé — voir
+ * la garde ci-dessous et DECISIONS.md pour le détail et le plan de
+ * conversion (semaine 17).
  *
  * Chaque requête porte un User-Agent identifiant ce script et un contact
  * joignable (voir `USER_AGENT` ci-dessous) — jamais une identité de navigateur.
@@ -82,6 +78,16 @@ if (process.env.CF_PAGES || process.env.NODE_ENV === "production") {
 }
 
 // ---------------------------------------------------------------------------
+// Garde : script désactivé (voir l'en-tête). Les schémas zod et la logique
+// « rien n'est écrit si rien n'est compris » restent en place pour la
+// conversion prévue en semaine 17.
+// ---------------------------------------------------------------------------
+console.error(
+	"Script désactivé : l'AFC a indiqué par écrit que les données du simulateur fiscal se consultent exclusivement par son interface web. Les données de base se téléchargent à la main depuis le module Rechercher des données de base. Conversion prévue en semaine 17 — voir DECISIONS.md.",
+);
+process.exit(1);
+
+// ---------------------------------------------------------------------------
 // Argument : l'année à importer. Jamais de valeur par défaut devinée (R3).
 // ---------------------------------------------------------------------------
 const yearArg = process.argv[2];
@@ -99,12 +105,6 @@ const EFFECTIVE_FROM = `${YEAR}-01-01`;
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const dataDir = join(scriptDir, "..", "src", "data");
-
-console.log(
-	"⚠️  Rappel de licence : ce jeu de données ESTV n'est pas explicitement sous\n" +
-		"   licence ouverte (voir l'en-tête de ce fichier). Vérifie les conditions\n" +
-		"   d'utilisation avant de publier les valeurs importées.\n",
-);
 
 // ---------------------------------------------------------------------------
 // Schéma de la réponse brute de l'API ESTV (confirmé en interrogeant l'API en

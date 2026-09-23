@@ -24,3 +24,24 @@ pnpm-debug.log*
 .idea/
 
 src/pdf/**
+# données privées et plan
+docs/plan/
+src/data/private/
+tests/calculations/private/
+imports/
+sources/pdf/
+
+# documents de pilotage
+DECISIONS.md
+JOURNAL.md
+PARTNERS.md
+
+# secrets
+.env
+.env.*
+.dev.vars
+
+# build
+dist/
+node_modules/
+.astro/
