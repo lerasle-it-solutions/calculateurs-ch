@@ -1,0 +1,127 @@
+{
+  "$comment": "CAS FICTIFS. Ces deux cas respectent la structure de canton-references.json mais toutes leurs valeurs sont inventées : ce ne sont pas des résultats du calculateur de l'AFC. Ils ne servent qu'au test d'intégrité quand les références privées sont absentes. Ne jamais les utiliser pour valider le moteur.",
+  "meta": {
+    "taxYear": 2026,
+    "source": {
+      "sourceId": "estv-tax-calculator",
+      "authority": "Administration fédérale des contributions (AFC)",
+      "url": "https://swisstaxcalculator.estv.admin.ch",
+      "calculation": "Impôt sur le revenu et la fortune",
+      "capturedOn": "2026-01-01",
+      "capturedBy": "fictif",
+      "revision": 0
+    },
+    "tolerance": {
+      "relative": 0.01,
+      "appliesTo": ["cantonalTax", "municipalTax", "federalTax", "totalTax"],
+      "exactMatch": ["personalTax", "churchTax"],
+      "absoluteFloorChf": 1
+    },
+    "notes": ["Jeu fictif : totalTax = cantonalTax + municipalTax + personalTax + federalTax + churchTax pour les deux cas."],
+    "todo": [],
+    "marginalRateCases": {
+      "status": "fictif",
+      "cases": []
+    },
+    "status": "Jeu d'exemple fictif, public."
+  },
+  "cases": [
+    {
+      "id": "example-01",
+      "profileId": "exampleSingle",
+      "label": "Commune fictive A — Célibataire, 30 ans, sans enfant, revenu brut 100 000, fortune nette 10 000",
+      "municipality": {
+        "name": "Commune fictive A",
+        "canton": "VD",
+        "ofsId": 99901
+      },
+      "taxpayer": {
+        "maritalStatus": "single",
+        "age": 30,
+        "children": 0,
+        "denomination": "none"
+      },
+      "grossInput": {
+        "grossIncome": 100000,
+        "netWealth": 10000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": false
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 1000,
+        "alvContribution": 100,
+        "nonOccupationalAccidentContribution": 100,
+        "bvgContribution": 1000,
+        "netIncome": 97800
+      },
+      "engineInput": {
+        "federalTaxableIncome": 90000,
+        "cantonalTaxableIncome": 89000,
+        "taxableWealth": 10000
+      },
+      "expected": {
+        "cantonalTax": 5000,
+        "municipalTax": 3000,
+        "personalTax": 0,
+        "federalTax": 1000,
+        "churchTax": 0,
+        "totalTax": 9000
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 20.0,
+        "wealthRatePercent": 0.1,
+        "basis": "fictif"
+      },
+      "estvAverageRateOnGrossPercent": 9.0
+    },
+    {
+      "id": "example-02",
+      "profileId": "exampleMarried",
+      "label": "Commune fictive B — Marié, 1 enfant de 5 ans, 40 ans chacun, revenu brut 150 000 (75 000 chacun), fortune nette 50 000",
+      "municipality": {
+        "name": "Commune fictive B",
+        "canton": "GE",
+        "ofsId": 99902
+      },
+      "taxpayer": {
+        "maritalStatus": "married",
+        "age": 40,
+        "children": 1,
+        "denomination": "none",
+        "childrenAges": [5]
+      },
+      "grossInput": {
+        "grossIncome": 150000,
+        "netWealth": 50000,
+        "currency": "CHF",
+        "deductionsArePerSpouse": true
+      },
+      "estvIntermediate": {
+        "ahvIvEoContribution": 2000,
+        "alvContribution": 500,
+        "nonOccupationalAccidentContribution": 200,
+        "bvgContribution": 1500,
+        "netIncome": 70800
+      },
+      "engineInput": {
+        "federalTaxableIncome": 120000,
+        "cantonalTaxableIncome": 118000,
+        "taxableWealth": 20000
+      },
+      "expected": {
+        "cantonalTax": 6000,
+        "municipalTax": 2000,
+        "personalTax": 10,
+        "federalTax": 2000,
+        "churchTax": 0,
+        "totalTax": 10010
+      },
+      "estvMarginalRate": {
+        "incomeRatePercent": 25.0,
+        "wealthRatePercent": 0.2,
+        "basis": "fictif"
+      },
+      "estvAverageRateOnGrossPercent": 6.67
+    }
+  ]
+}

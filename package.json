@@ -7,9 +7,11 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "tsx scripts/fetch-private-data.ts",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "pretest": "tsx scripts/fetch-private-data.ts",
     "test": "vitest run",
     "predeploy": "npm run test && astro check",
     "import:estv-tax-data": "tsx scripts/import-estv-tax-data.ts"
