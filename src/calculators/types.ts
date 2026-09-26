@@ -79,6 +79,8 @@ export type CalculatorDefinition = {
 	fields: FieldDefinition[];
 	/** Chemin dans `lib/calculations/`. */
 	engine: string;
+	/** Identifiants du registre des sources : alimente /methodologie/ et le test d'attribution. */
+	sourceIds: string[];
 	/** ids de calculateurs liés. */
 	variants: string[];
 	/** FRANÇAIS. */

@@ -67,6 +67,8 @@ export const fr = {
 		/** Rendu : « Barèmes 2026, vérifiés le 08.01.2026. » */
 		scalesLabel: "Barèmes",
 		verifiedLabel: "vérifiés le",
+		/** Rendu : « Barèmes 2026, jamais vérifiés. » */
+		neverVerified: "jamais vérifiés",
 	},
 
 	relatedVariants: {
@@ -90,14 +92,17 @@ export const fr = {
 		columnVerifiedOn: "Vérification la plus ancienne",
 		columnDueOn: "Prochaine échéance",
 		overdue: "En retard",
+		neverVerified: "Jamais vérifiée",
 		sourceUnknown: "source non enregistrée",
 		empty:
 			"Aucune valeur chiffrée n'est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
 		cadence: {
 			annual: "Annuelle",
+			biennial: "Biennale",
 			quarterly: "Trimestrielle",
 			monthly: "Mensuelle",
 			irregular: "Irrégulière",
+			event: "Événementielle",
 		},
 		municipalCsv: {
 			heading: "Détail communal",

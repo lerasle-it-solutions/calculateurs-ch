@@ -5,27 +5,40 @@
  * la date est formatée au build.
  *
  * Rendu en serif : c'est de l'appareil de sources, pas un produit du calcul.
+ * Un `verifiedOn` vide veut dire « jamais vérifiée » (R3) : aucune date n'est
+ * formatée.
  */
 import { fr } from "../../i18n/fr";
 
 interface Props {
 	referenceYear: number;
-	/** Date de vérification humaine, ISO 8601. */
+	/** Date de vérification humaine, ISO 8601 ; vide si jamais vérifiée. */
 	verifiedOn: string;
 }
 
 const { referenceYear, verifiedOn } = Astro.props;
 
-const verifiedLabel = new Intl.DateTimeFormat("fr-CH", {
-	day: "2-digit",
-	month: "2-digit",
-	year: "numeric",
-}).format(new Date(verifiedOn));
+const verifiedLabel =
+	verifiedOn === ""
+		? null
+		: new Intl.DateTimeFormat("fr-CH", {
+				day: "2-digit",
+				month: "2-digit",
+				year: "numeric",
+			}).format(new Date(verifiedOn));
 ---
 
 <p class="font-serif text-fine">
 	{fr.dataFreshness.scalesLabel}{" "}
 	<time datetime={String(referenceYear)}>{referenceYear}</time>,{" "}
-	{fr.dataFreshness.verifiedLabel}{" "}
-	<time datetime={verifiedOn}>{verifiedLabel}</time>.
+	{
+		verifiedLabel === null ? (
+			<span class="text-warning">{fr.dataFreshness.neverVerified}</span>
+		) : (
+			<>
+				{fr.dataFreshness.verifiedLabel}{" "}
+				<time datetime={verifiedOn}>{verifiedLabel}</time>
+			</>
+		)
+	}.
 </p>

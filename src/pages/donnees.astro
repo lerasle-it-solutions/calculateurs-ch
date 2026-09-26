@@ -5,7 +5,9 @@ import { sourceFreshnessReport } from "../lib/data-report";
 import { getMunicipalMultipliers } from "../data";
 
 const rows = sourceFreshnessReport();
-const overdueCount = rows.filter((row) => row.overdueCount > 0).length;
+const overdueCount = rows.filter(
+	(row) => row.overdueCount > 0 || row.neverVerifiedCount > 0,
+).length;
 
 const multipliers = getMunicipalMultipliers();
 
@@ -89,14 +91,22 @@ const formatDate = (isoDate: string): string =>
 										{numberFormat.format(row.trackedValues)}
 									</td>
 									<td class="px-lg py-md tabular-nums">
-										<time datetime={row.oldestVerifiedOn}>
-											{formatDate(row.oldestVerifiedOn)}
-										</time>
+										{row.oldestVerifiedOn === null ? (
+											<span class="text-warning">{fr.dataPage.neverVerified}</span>
+										) : (
+											<time datetime={row.oldestVerifiedOn}>
+												{formatDate(row.oldestVerifiedOn)}
+											</time>
+										)}
 									</td>
 									<td class="px-lg py-md tabular-nums">
-										<time datetime={row.nextDueOn}>
-											{formatDate(row.nextDueOn)}
-										</time>
+										{row.nextDueOn === null ? (
+											fr.common.emptyValue
+										) : (
+											<time datetime={row.nextDueOn}>
+												{formatDate(row.nextDueOn)}
+											</time>
+										)}
 										{row.overdueCount > 0 && (
 											<span class="block font-serif text-fine text-warning">
 												{fr.dataPage.overdue} ({row.overdueCount})

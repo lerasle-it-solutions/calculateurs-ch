@@ -4,10 +4,16 @@
  * Parcourt tous les `Value<T>` du dépôt, y associe leur source et calcule
  * l'échéance de la prochaine relecture. Alimente la page publique `/donnees/`
  * (et, plus tard, `scripts/verify-data.ts`).
+ *
+ * Un `verifiedOn` vide veut dire « jamais vérifiée » (R3) : la date et
+ * l'échéance valent alors `null`, jamais une date calculée.
  */
-import { allDataFiles, eachValue } from "../data";
-import { SOURCES } from "../data/sources";
-import { DATA_FRESHNESS_LIMIT_MONTHS, type SourceEntry } from "../data/schema";
+import { allDataFiles, eachValue, sourceRegistry, type DataFile } from "../data";
+import {
+	DATA_FRESHNESS_LIMIT_MONTHS,
+	type Source,
+	type SourceCadence,
+} from "../data/schema";
 
 export interface DataReportRow {
 	/** Fichier d'origine, relatif à `src/data/`. */
@@ -18,20 +24,22 @@ export interface DataReportRow {
 	unit?: string;
 	sourceId: string;
 	/** Entrée du registre, si `sourceId` y figure. */
-	source?: SourceEntry;
-	/** ISO 8601. */
-	verifiedOn: string;
-	/** ISO 8601 — date à laquelle la valeur doit être re-vérifiée. */
-	dueOn: string;
+	source?: Source;
+	/** ISO 8601 ; `null` si la valeur n'a jamais été vérifiée. */
+	verifiedOn: string | null;
+	/** ISO 8601 — date de re-vérification ; `null` si jamais vérifiée. */
+	dueOn: string | null;
 	overdue: boolean;
 }
 
 /** Nombre de mois avant re-vérification selon la cadence de la source. */
-const cadenceMonths: Record<SourceEntry["cadence"], number> = {
+const cadenceMonths: Record<SourceCadence, number> = {
 	monthly: 1,
 	quarterly: 3,
 	annual: 12,
+	biennial: 24,
 	irregular: DATA_FRESHNESS_LIMIT_MONTHS,
+	event: DATA_FRESHNESS_LIMIT_MONTHS,
 };
 
 const addMonths = (isoDate: string, months: number): string => {
@@ -40,22 +48,39 @@ const addMonths = (isoDate: string, months: number): string => {
 	return date.toISOString().slice(0, 10);
 };
 
+/** Ordre d'urgence : une date absente (jamais vérifiée) passe avant toute date. */
+const byUrgency = (a: string | null, b: string | null): number => {
+	if (a === null || b === null) return (a === null ? 0 : 1) - (b === null ? 0 : 1);
+	return a.localeCompare(b);
+};
+
+const mostUrgent = (a: string | null, b: string | null): string | null =>
+	byUrgency(a, b) <= 0 ? a : b;
+
 /**
  * Une ligne par valeur chiffrée du dépôt, triée par échéance croissante
- * (la plus urgente d'abord).
+ * (la plus urgente d'abord, les valeurs jamais vérifiées en tête). Les sources
+ * `reference-tool` ne servent qu'aux tests et n'apparaissent jamais sur une
+ * page publique : leurs valeurs sont écartées du rapport.
  */
-export const dataFreshnessReport = (now: Date = new Date()): DataReportRow[] => {
-	const registry = SOURCES as Record<string, SourceEntry | undefined>;
+export const dataFreshnessReport = (
+	now: Date = new Date(),
+	files: DataFile[] = allDataFiles(),
+): DataReportRow[] => {
+	const registry = sourceRegistry();
 	const rows: DataReportRow[] = [];
 
-	for (const file of allDataFiles()) {
+	for (const file of files) {
 		eachValue(file.data, (value, path) => {
-			const source = registry[value.sourceId];
+			const source = registry.get(value.sourceId);
+			if (source?.nature === "reference-tool") return;
+
+			const verifiedOn = value.verifiedOn === "" ? null : value.verifiedOn;
 			const months = Math.min(
 				source ? cadenceMonths[source.cadence] : DATA_FRESHNESS_LIMIT_MONTHS,
 				DATA_FRESHNESS_LIMIT_MONTHS,
 			);
-			const dueOn = addMonths(value.verifiedOn, months);
+			const dueOn = verifiedOn === null ? null : addMonths(verifiedOn, months);
 
 			rows.push({
 				file: file.path,
@@ -64,27 +89,29 @@ export const dataFreshnessReport = (now: Date = new Date()): DataReportRow[] => 
 				unit: value.unit,
 				sourceId: value.sourceId,
 				source,
-				verifiedOn: value.verifiedOn,
+				verifiedOn,
 				dueOn,
-				overdue: new Date(`${dueOn}T00:00:00Z`).getTime() < now.getTime(),
+				overdue:
+					dueOn !== null && new Date(`${dueOn}T00:00:00Z`).getTime() < now.getTime(),
 			});
 		});
 	}
 
-	return rows.sort((a, b) => a.dueOn.localeCompare(b.dueOn));
+	return rows.sort((a, b) => byUrgency(a.dueOn, b.dueOn));
 };
 
 export interface SourceReportRow {
 	sourceId: string;
 	/** Entrée du registre, si `sourceId` y figure. */
-	source?: SourceEntry;
+	source?: Source;
 	/** Nombre de valeurs que cette source alimente, quel que soit leur nombre. */
 	trackedValues: number;
-	/** ISO 8601 — vérification la plus ancienne parmi ces valeurs. */
-	oldestVerifiedOn: string;
-	/** ISO 8601 — échéance la plus proche parmi ces valeurs. */
-	nextDueOn: string;
+	/** ISO 8601 — vérification la plus ancienne ; `null` si une valeur n'a jamais été vérifiée. */
+	oldestVerifiedOn: string | null;
+	/** ISO 8601 — échéance la plus proche ; `null` si une valeur n'a jamais été vérifiée. */
+	nextDueOn: string | null;
 	overdueCount: number;
+	neverVerifiedCount: number;
 }
 
 /**
@@ -94,10 +121,14 @@ export interface SourceReportRow {
  * c'est ce qui garde `/donnees/` lisible quelle que soit la taille d'un jeu de
  * données en amont (voir le détail communal, exporté en CSV à part).
  */
-export const sourceFreshnessReport = (now: Date = new Date()): SourceReportRow[] => {
+export const sourceFreshnessReport = (
+	now: Date = new Date(),
+	files: DataFile[] = allDataFiles(),
+): SourceReportRow[] => {
 	const bySource = new Map<string, SourceReportRow>();
 
-	for (const value of dataFreshnessReport(now)) {
+	for (const value of dataFreshnessReport(now, files)) {
+		const neverVerified = value.verifiedOn === null ? 1 : 0;
 		const existing = bySource.get(value.sourceId);
 		if (!existing) {
 			bySource.set(value.sourceId, {
@@ -107,18 +138,16 @@ export const sourceFreshnessReport = (now: Date = new Date()): SourceReportRow[]
 				oldestVerifiedOn: value.verifiedOn,
 				nextDueOn: value.dueOn,
 				overdueCount: value.overdue ? 1 : 0,
+				neverVerifiedCount: neverVerified,
 			});
 			continue;
 		}
 		existing.trackedValues += 1;
-		if (value.verifiedOn < existing.oldestVerifiedOn) {
-			existing.oldestVerifiedOn = value.verifiedOn;
-		}
-		if (value.dueOn < existing.nextDueOn) {
-			existing.nextDueOn = value.dueOn;
-		}
+		existing.oldestVerifiedOn = mostUrgent(existing.oldestVerifiedOn, value.verifiedOn);
+		existing.nextDueOn = mostUrgent(existing.nextDueOn, value.dueOn);
 		if (value.overdue) existing.overdueCount += 1;
+		existing.neverVerifiedCount += neverVerified;
 	}
 
-	return [...bySource.values()].sort((a, b) => a.nextDueOn.localeCompare(b.nextDueOn));
+	return [...bySource.values()].sort((a, b) => byUrgency(a.nextDueOn, b.nextDueOn));
 };

@@ -26,9 +26,10 @@ export const isoDateSchema = z
 export type Value<T> = {
 	value: T;
 	unit?: string;
-	sourceId: string; // clé dans sources.ts
+	sourceId: string; // acte officiel, présent dans le registre
 	verifiedOn: string; // ISO 8601 — date de vérification humaine
 	effectiveFrom: string; // ISO 8601
+	collectedFrom?: string; // outil de collecte, distinct de la source
 	note?: string;
 };
 
@@ -41,31 +42,65 @@ export const valueSchema = <T extends z.ZodTypeAny>(inner: T) =>
 			sourceId: z.string().min(1),
 			verifiedOn: isoDateSchema,
 			effectiveFrom: isoDateSchema,
+			collectedFrom: z.string().min(1).optional(),
 			note: z.string().min(1).optional(),
 		})
 		.strict();
 
 // ---------------------------------------------------------------------------
-// Registre des sources (CLAUDE.md § 1.2)
+// Registre des sources (docs/plan/sources.md § 2.7)
 // ---------------------------------------------------------------------------
 
-export const sourceCadenceSchema = z.enum([
-	"annual",
-	"quarterly",
-	"monthly",
-	"irregular",
-]);
-export type SourceCadence = z.infer<typeof sourceCadenceSchema>;
+/**
+ * Une source du registre, telle que définie au § 2.7 du plan. Seul ajout :
+ * `note`, qui porte les « particularités à coder » du relevé.
+ */
+export type Source = {
+	id: string; // kebab-case anglais, stable, jamais renommé
+	name: string; // nom officiel, en français
+	authority: string; // autorité émettrice
+	url: string; // page ou acte, pas un article de presse
+	legalReference?: string; // « RS 831.461.3, art. 7a » — obligatoire pour un acte légal
+	cadence: "annual" | "biennial" | "quarterly" | "monthly" | "irregular" | "event";
+	verifiedOn: string; // ISO 8601 — date de la dernière consultation
+	dataClass: "public" | "compiled";
+	requiresAttribution: boolean;
+	attributionText?: string; // obligatoire si requiresAttribution
+	nature: "official" | "self-regulation" | "industry" | "association" | "reference-tool";
+	usedBy: string[]; // identifiants de calculateurs, 'tax-engine', 'tests'
+	collectedFrom?: string; // outil de collecte distinct de la source, ex. module de l'AFC
+	note?: string;
+};
 
-export const sourceEntrySchema = z
+export type SourceCadence = Source["cadence"];
+
+export const sourceSchema: z.ZodType<Source> = z
 	.object({
-		name: z.string().min(1), // FRANÇAIS — nom propre (voir § Convention de nommage)
+		id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "identifiant kebab-case attendu"),
+		name: z.string().min(1),
+		authority: z.string().min(1),
 		url: z.string().url(),
-		authority: z.string().min(1), // FRANÇAIS — nom propre
-		cadence: sourceCadenceSchema,
+		legalReference: z.string().min(1).optional(),
+		cadence: z.enum(["annual", "biennial", "quarterly", "monthly", "irregular", "event"]),
+		verifiedOn: isoDateSchema.or(z.literal("")), // vide : pas encore vérifiée à la source (R3)
+		dataClass: z.enum(["public", "compiled"]),
+		requiresAttribution: z.boolean(),
+		attributionText: z.string().min(1).optional(),
+		nature: z.enum(["official", "self-regulation", "industry", "association", "reference-tool"]),
+		usedBy: z.array(z.string().min(1)),
+		collectedFrom: z.string().min(1).optional(),
+		note: z.string().min(1).optional(),
 	})
-	.strict();
-export type SourceEntry = z.infer<typeof sourceEntrySchema>;
+	.strict()
+	.superRefine((source, context) => {
+		if (source.requiresAttribution && !source.attributionText) {
+			context.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["attributionText"],
+				message: "attributionText obligatoire quand requiresAttribution vaut true",
+			});
+		}
+	});
 
 // ---------------------------------------------------------------------------
 // Fichiers fédéraux — src/data/federal/AAAA.json (CLAUDE.md § 1.1)

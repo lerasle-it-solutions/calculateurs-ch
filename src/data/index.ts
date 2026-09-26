@@ -10,13 +10,51 @@ import {
 	cantonDataSchema,
 	federalDataSchema,
 	municipalMultipliersDataSchema,
+	sourceSchema,
 	type CantonData,
 	type FederalData,
 	type MunicipalMultipliersData,
+	type Source,
 	type Value,
 } from "./schema";
+import { SOURCES } from "./sources";
 
 type RawModule = { default: unknown };
+
+// --- Registre des sources : public + privé, fusionnés à la construction ------
+
+// Le registre privé est injecté depuis le dépôt privé et absent d'un clone
+// public : le glob renvoie alors un objet vide au lieu de casser le build.
+const privateSourceModules = import.meta.glob<{
+	PRIVATE_SOURCES: readonly Source[];
+}>("./private/sources.private.ts", { eager: true });
+
+/** Toutes les sources, publiques puis privées, sans dédoublonnage. */
+export const allSources = (): readonly Source[] => [
+	...SOURCES,
+	...Object.values(privateSourceModules).flatMap((mod) => mod.PRIVATE_SOURCES),
+];
+
+let registry: ReadonlyMap<string, Source> | null = null;
+
+/**
+ * Le registre fusionné, indexé par identifiant. Chaque entrée est validée ; un
+ * identifiant déclaré deux fois arrête la construction.
+ */
+export const sourceRegistry = (): ReadonlyMap<string, Source> => {
+	if (registry) return registry;
+	const merged = new Map<string, Source>();
+	for (const source of allSources()) {
+		if (merged.has(source.id)) {
+			throw new Error(
+				`Source « ${source.id} » déclarée deux fois dans le registre fusionné.`,
+			);
+		}
+		merged.set(source.id, sourceSchema.parse(source));
+	}
+	registry = merged;
+	return merged;
+};
 
 const federalModules = import.meta.glob<RawModule>("./federal/*.json", {
 	eager: true,
