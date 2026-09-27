@@ -59,9 +59,14 @@ export const sourceRegistry = (): ReadonlyMap<string, Source> => {
 const federalModules = import.meta.glob<RawModule>("./federal/*.json", {
 	eager: true,
 });
-const cantonModules = import.meta.glob<RawModule>("./cantons/*.json", {
+// Deux lettres : les fichiers cantonaux (vd.json…), pas les fichiers transverses du dossier.
+const cantonModules = import.meta.glob<RawModule>("./cantons/??.json", {
 	eager: true,
 });
+const capitalWithdrawalDerivationModules = import.meta.glob<RawModule>(
+	"./cantons/capital-withdrawal-derivation.json",
+	{ eager: true },
+);
 const municipalityModules = import.meta.glob<RawModule>(
 	"./municipalities/*.json",
 	{ eager: true },
@@ -90,6 +95,7 @@ export const allDataFiles = (): DataFile[] =>
 	[
 		...Object.entries(federalModules),
 		...Object.entries(cantonModules),
+		...Object.entries(capitalWithdrawalDerivationModules),
 		...Object.entries(municipalityModules),
 	].map(([key, mod]) => ({ path: toPath(key), data: mod.default }));
 

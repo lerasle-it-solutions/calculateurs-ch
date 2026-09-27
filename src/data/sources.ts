@@ -429,12 +429,12 @@ export const SOURCES = defineSources([
 		legalReference:
 			"BLV 642.00.011024.2 — loi du 1er octobre 2024 sur l'impôt 2026, art. 2 : coefficient annuel fixé à 155 % de l'impôt de base (art. 47, 49, 59, 105, 111, 118 et 126 LI), applicable aussi à l'impôt d'après la dépense",
 		cadence: "annual",
-		verifiedOn: "",
+		verifiedOn: "2026-09-26",
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine"],
-		note: "Numéro identifié : 642.00.011024.2 (loi du 01.10.2024 sur l'impôt 2026), et non 642.00.031023.1 qui visait l'exercice 2024. URL construite sur le schéma de ton lien vaudois qui fonctionnait : à ouvrir pour confirmer. Si le recueil ne la sert pas ainsi, passer par la recherche de la Base législative vaudoise sur le numéro. Ne pas utiliser lexfind.ch : agrégateur privé, il ne peut pas fonder un sourceId — il reste utile pour retrouver un numéro, comme ici. Acte annuel : nouvelle loi, nouveau numéro et nouvelle URL chaque année. Le rituel du 1er janvier doit la RECHERCHER, pas rouvrir un lien.",
+		note: "Numéro identifié : 642.00.011024.2 (loi du 01.10.2024 sur l'impôt 2026), et non 642.00.031023.1 qui visait l'exercice 2024. Ne pas utiliser lexfind.ch : agrégateur privé, il ne peut pas fonder un sourceId — il reste utile pour retrouver un numéro, comme ici. Version consultée le 26.09.2026 : en vigueur dès le 01.01.2026 jusqu'au 31.12.2026. Acte annuel, borné à l'exercice : à rechercher à nouveau au rituel du 1er janvier, le numéro et l'URL changeant chaque année.",
 	},
 	{
 		id: "vd-licom",
@@ -616,7 +616,7 @@ type CantonSourceIds = {
 	incomeScale: SourceId;
 	wealthScale: SourceId;
 	capitalScale: SourceId;
-	cantonalMultiplier: SourceId | null;
+	cantonalMultiplier: SourceId;
 	municipalMultipliers: SourceId;
 	communalScale: SourceId | null;
 	baseTaxReduction: SourceId | null;
@@ -655,7 +655,7 @@ export const SOURCE_BY_CANTON = {
 		incomeScale: "vs-lf",
 		wealthScale: "vs-lf",
 		capitalScale: "vs-lf",
-		cantonalMultiplier: null,
+		cantonalMultiplier: "vs-lf",
 		municipalMultipliers: "vs-municipal-multipliers",
 		communalScale: "vs-communal-scale",
 		baseTaxReduction: null,

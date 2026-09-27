@@ -137,70 +137,145 @@ export type FederalData = z.infer<typeof federalDataSchema>;
  */
 export const CANTON_CODES = ["VD", "GE", "VS", "FR", "NE", "JU"] as const;
 
-/** Palier d'un barème : seuil et taux marginal, tous deux sourcés. */
-const taxBracketSchema = z
-	.object({
-		from: valueSchema(z.number()), // seuil inférieur du palier
-		rate: valueSchema(z.number()), // taux marginal applicable au palier
-	})
-	.passthrough();
 
 /**
- * Un barème n'est jamais une liste plate de paliers : il varie selon le statut
- * (seul·e, marié·e, avec enfants…) et le niveau (canton, commune, église).
- * Une table par combinaison statut × niveau — forme confirmée à la lecture des
- * exports réels de swisstaxcalculator.estv.admin.ch (voir
- * scripts/import-estv-tax-data.ts).
+ * Valeur à relever (R3) : pas un `Value<T>`, donc jamais lue comme une donnée
+ * ni comptée dans la fraîcheur. `sourceId` vaut `null` tant que la source
+ * n'est pas inscrite au registre.
  */
+export const todoSchema = z
+	.object({
+		todo: z.string().min(1),
+		sourceId: z.string().min(1).nullable(),
+	})
+	.strict();
+export type Todo = z.infer<typeof todoSchema>;
+
+/**
+ * Une table de barème lue dans les exports du module « Rechercher des données
+ * de base » de l'AFC, pour un sujet fiscal, sous une forme unique quel que soit
+ * le format de l'export. `scaleType` appartient à la table, jamais au canton —
+ * un même canton peut combiner les deux familles (Fribourg : revenu à taux moyen,
+ * fortune marginale). Il est déclaré table par table, jamais deviné :
+ * - `marginal` : l'impôt vaut base + (assiette − seuil) × taux ;
+ * - `averageRate` : le taux s'applique au revenu entier, sans montant de base.
+ */
+export const SCALE_TYPES = ["marginal", "averageRate"] as const;
+
 const taxScaleTableSchema = z
 	.object({
-		target: z.enum(["BUND", "KANTON", "GEMEINDE", "KIRCHE"]),
-		/** Statuts concernés, p. ex. ["VERHEIRATET"] ou ["LEDIG_ALLEINE", "LEDIG_MIT_KINDER"]. */
-		group: z.array(z.string().min(1)).min(1),
-		splitting: z.number(),
-		brackets: z.array(taxBracketSchema).min(1),
-		/** Convention de calcul ESTV d'origine (BUND, FREIBURG, ZUERICH…) — traçabilité. */
-		tableType: z.string().optional(),
+		scaleType: z.enum(SCALE_TYPES),
+		thresholdLabel: z.string().min(1),
+		rateSplittingDivisor: z.number().positive().nullable(),
+		brackets: z
+			.array(
+				z
+					.object({
+						threshold: z.number(),
+						ratePercent: z.number(),
+						baseAmount: z.number(),
+					})
+					.strict(),
+			)
+			.min(1),
 	})
-	.passthrough();
+	.strict()
+	.superRefine((table, context) => {
+		const allBasesZero = table.brackets.every((bracket) => bracket.baseAmount === 0);
+		if (table.scaleType === "marginal" && allBasesZero) {
+			context.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "barème marginal dont tous les montants de base valent 0",
+			});
+		}
+		if (table.scaleType === "averageRate" && !allBasesZero) {
+			context.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "barème à taux moyen avec un montant de base non nul",
+			});
+		}
+	});
 
-const taxScaleSchema = z.array(taxScaleTableSchema);
-
-/** Une déduction principale, avec son libellé officiel multilingue. */
-const deductionEntrySchema = z
-	.object({
-		id: z.string().min(1),
-		target: z.enum(["BUND", "KANTON", "GEMEINDE", "KIRCHE"]),
-		minimum: valueSchema(z.number()),
-		maximum: valueSchema(z.number()),
-		percent: valueSchema(z.number()),
-		amount: valueSchema(z.number()),
-		format: z.array(z.enum(["MAXIMUM", "MINIMUM", "PERCENT", "STANDARDIZED"])),
-		name: z
+const taxScaleSchema = z
+	.array(
+		z
 			.object({
-				de: z.string(),
-				en: z.string(),
-				fr: z.string(), // FRANÇAIS — libellé officiel
-				it: z.string(),
+				taxpayerGroup: z.string().min(1), // « Sujet fiscal » de l'export, en français
+				table: valueSchema(taxScaleTableSchema),
 			})
 			.strict(),
+	)
+	.min(1);
+
+/**
+ * Règles de dérivation des prestations en capital, écrites à la main dans
+ * src/data/cantons/capital-withdrawal-derivation.json : pour les cantons dont la
+ * loi dérive ce barème de celui du revenu.
+ */
+export const CAPITAL_WITHDRAWAL_DERIVATION_FILE = "cantons/capital-withdrawal-derivation.json";
+
+export const capitalWithdrawalDerivationFileSchema = z
+	.object({
+		$comment: z.string().optional(),
+		cantons: z.record(
+			z.enum(CANTON_CODES),
+			z
+				.object({
+					derivedFrom: z.literal("incomeTaxScale"),
+					factor: valueSchema(z.number()).optional(),
+					minimumRatePercent: valueSchema(z.number()).optional(),
+					maximumRatePercent: valueSchema(z.number()).optional(),
+					coupleReduction: todoSchema.optional(),
+				})
+				.strict(),
+		),
 	})
-	.passthrough();
+	.strict();
+export type CapitalWithdrawalDerivationFile = z.infer<typeof capitalWithdrawalDerivationFileSchema>;
+
+/** Dans le fichier cantonal : renvoi au fichier des règles, pour les cantons sans barème exporté. */
+const capitalWithdrawalReferenceSchema = z
+	.object({ definedIn: z.literal(CAPITAL_WITHDRAWAL_DERIVATION_FILE) })
+	.strict();
+
+const deductionSchema = z
+	.object({
+		taxType: z.string().min(1),
+		name: z.string().min(1), // libellé officiel, en français
+		amount: z.number(),
+		percent: z.number(),
+		minimum: z.number(),
+		maximum: z.number(),
+	})
+	.strict();
+
+/** Déduction dégressive : montant par seuil de revenu net ou de fortune nette, seuils croissants. */
+const degressiveDeductionSchema = z
+	.object({
+		taxType: z.string().min(1),
+		name: z.string().min(1),
+		authority: z.string().min(1),
+		thresholdLabel: z.string().min(1),
+		steps: z.array(z.object({ threshold: z.number(), amount: z.number() }).strict()).min(1),
+	})
+	.strict();
 
 /**
  * Clés obligatoires d'un fichier canton. Les 6 cantons romands doivent porter
  * exactement le même jeu de clés — vérifié par `tests/data/coverage.test.ts`.
- * `mainDeductions` est un complément optionnel (pas une clé obligatoire) :
- * alimenté par `scripts/import-estv-tax-data.ts`, absent tant qu'il n'a pas
- * encore été importé.
+ * `otherDeductions` est facultative : Vaud n'a pas d'export « Autres déductions ».
  */
 export const REQUIRED_CANTON_KEYS = [
 	"canton",
 	"year",
 	"incomeTaxScale", // barème revenu
 	"wealthTaxScale", // barème fortune
-	"realEstateGainsTax", // gains immobiliers
 	"capitalWithdrawalTax", // prestation en capital
+	"cantonalMultiplier", // coefficient cantonal ; 100 % s'il est neutre
+	"baseTaxReduction", // réduction de l'impôt de base, null si aucune
+	"communalScale", // barème communal propre (Valais), null ailleurs
+	"deductions", // déductions
+	"realEstateGainsTax", // gains immobiliers
 	"imputedRentalValue", // valeur locative
 ] as const;
 
@@ -210,34 +285,61 @@ export const cantonDataSchema = z
 		year: z.number().int(),
 		incomeTaxScale: taxScaleSchema,
 		wealthTaxScale: taxScaleSchema,
-		realEstateGainsTax: z.record(z.unknown()),
-		capitalWithdrawalTax: taxScaleSchema,
-		imputedRentalValue: z.record(z.unknown()),
-		mainDeductions: z.array(deductionEntrySchema).optional(),
+		capitalWithdrawalTax: z.union([taxScaleSchema, capitalWithdrawalReferenceSchema]),
+		cantonalMultiplier: z
+			.object({ income: valueSchema(z.number()), wealth: valueSchema(z.number()) })
+			.strict(),
+		baseTaxReduction: todoSchema.nullable(),
+		// Valais (art. 178 LF) : revenu et fortune ; la fortune reste TODO tant que l'export ne la livre pas
+		communalScale: z
+			.object({ income: taxScaleSchema, wealth: z.union([taxScaleSchema, todoSchema]) })
+			.strict()
+			.nullable(),
+		deductions: valueSchema(z.array(deductionSchema).min(1)),
+		otherDeductions: valueSchema(z.array(degressiveDeductionSchema).min(1)).optional(),
+		realEstateGainsTax: todoSchema,
+		imputedRentalValue: todoSchema,
 	})
-	.passthrough();
+	.strict();
 export type CantonData = z.infer<typeof cantonDataSchema>;
 
 // ---------------------------------------------------------------------------
 // Coefficients communaux — src/data/municipalities/multipliers.json
 // ---------------------------------------------------------------------------
 
+/** Coefficients paroissiaux, clés alignées sur `denomination` du moteur. */
+const churchMultipliersSchema = z
+	.object({
+		protestant: valueSchema(z.number()),
+		catholic: valueSchema(z.number()),
+		christianCatholic: valueSchema(z.number()),
+	})
+	.strict();
+
+const multipliersByTaxSchema = z
+	.object({
+		municipal: valueSchema(z.number()), // coefficient communal, en %
+		church: churchMultipliersSchema,
+	})
+	.strict();
+
+/** Une commune, clé `bfsId` (numéro OFS). Le coefficient cantonal vit dans le fichier du canton. */
 const municipalMultiplierEntrySchema = z
 	.object({
 		bfsId: z.number().int(),
 		municipality: z.string().min(1), // nom officiel de la commune
 		canton: z.enum(CANTON_CODES),
-		cantonalMultiplier: valueSchema(z.number()),
-		municipalMultiplier: valueSchema(z.number()), // coefficient communal
+		income: multipliersByTaxSchema,
+		wealth: multipliersByTaxSchema,
 	})
-	.passthrough();
+	.strict();
 
 export const municipalMultipliersDataSchema = z
 	.object({
 		year: z.number().int(),
 		multipliers: z.array(municipalMultiplierEntrySchema),
 	})
-	.passthrough();
+	.strict();
 export type MunicipalMultipliersData = z.infer<
 	typeof municipalMultipliersDataSchema
 >;

@@ -1,0 +1,1041 @@
+{
+	"canton": "FR",
+	"year": 2026,
+	"incomeTaxScale": [
+		{
+			"taxpayerGroup": "Personne vivant seule, sans enfant",
+			"table": {
+				"value": {
+					"scaleType": "averageRate",
+					"thresholdLabel": "Revenu imposable Confédération",
+					"rateSplittingDivisor": 2,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 5199,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 5200,
+							"ratePercent": 1,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 17500,
+							"ratePercent": 4.1745,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 31400,
+							"ratePercent": 6.2139,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 48300,
+							"ratePercent": 8.0352,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 63800,
+							"ratePercent": 9.1042,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 77600,
+							"ratePercent": 9.9846,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 102100,
+							"ratePercent": 10.8662,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 128700,
+							"ratePercent": 11.7172,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 156000,
+							"ratePercent": 12.5355,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 181000,
+							"ratePercent": 13.1097,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 207100,
+							"ratePercent": 13.5,
+							"baseAmount": 0
+						}
+					]
+				},
+				"sourceId": "fr-licd",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		},
+		{
+			"taxpayerGroup": "Personne mariée / vivant seule, avec enfant",
+			"table": {
+				"value": {
+					"scaleType": "averageRate",
+					"thresholdLabel": "Revenu imposable Confédération",
+					"rateSplittingDivisor": 2,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 5199,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 5200,
+							"ratePercent": 1,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 10500,
+							"ratePercent": 1,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 35000,
+							"ratePercent": 4.1745,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 62800,
+							"ratePercent": 6.2139,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 96600,
+							"ratePercent": 8.0352,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 127600,
+							"ratePercent": 9.1042,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 155200,
+							"ratePercent": 9.9846,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 204200,
+							"ratePercent": 10.8662,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 257400,
+							"ratePercent": 11.7172,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 312000,
+							"ratePercent": 12.5355,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 362000,
+							"ratePercent": 13.1097,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 414200,
+							"ratePercent": 13.5,
+							"baseAmount": 0
+						}
+					]
+				},
+				"sourceId": "fr-licd",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"wealthTaxScale": [
+		{
+			"taxpayerGroup": "Tous",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Fortune imposable CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0.05,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 50001,
+							"ratePercent": 0.11,
+							"baseAmount": 25
+						},
+						{
+							"threshold": 100001,
+							"ratePercent": 0.18,
+							"baseAmount": 80
+						},
+						{
+							"threshold": 200001,
+							"ratePercent": 0.25,
+							"baseAmount": 260
+						},
+						{
+							"threshold": 400001,
+							"ratePercent": 0.31,
+							"baseAmount": 760
+						},
+						{
+							"threshold": 700001,
+							"ratePercent": 0.35,
+							"baseAmount": 1690
+						},
+						{
+							"threshold": 1000001,
+							"ratePercent": 0.37,
+							"baseAmount": 2740
+						},
+						{
+							"threshold": 1200001,
+							"ratePercent": 0.29,
+							"baseAmount": 3480
+						}
+					]
+				},
+				"sourceId": "fr-licd",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"capitalWithdrawalTax": [
+		{
+			"taxpayerGroup": "Tous",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Versement du capital CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 10001,
+							"ratePercent": 1,
+							"baseAmount": 100
+						},
+						{
+							"threshold": 50000,
+							"ratePercent": 2,
+							"baseAmount": 500
+						},
+						{
+							"threshold": 100000,
+							"ratePercent": 3,
+							"baseAmount": 1500
+						},
+						{
+							"threshold": 150000,
+							"ratePercent": 4,
+							"baseAmount": 3000
+						},
+						{
+							"threshold": 200000,
+							"ratePercent": 5,
+							"baseAmount": 5000
+						}
+					]
+				},
+				"sourceId": "fr-licd",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"cantonalMultiplier": {
+		"income": {
+			"value": 96,
+			"sourceId": "fr-lca-2026",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module"
+		},
+		"wealth": {
+			"value": 100,
+			"sourceId": "fr-lca-2026",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module"
+		}
+	},
+	"baseTaxReduction": null,
+	"communalScale": null,
+	"deductions": {
+		"value": [
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais de déplacement revenu principal",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 12000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour dépenses professionnelles du revenu accessoire",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 800,
+				"maximum": 2400
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour autres frais professionnels",
+				"amount": 0,
+				"percent": 3,
+				"minimum": 2000,
+				"maximum": 4000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour les frais d'entretien des biens immobiliers jusqu'à 10 ans",
+				"amount": 0,
+				"percent": 10,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire des frais d'entretien pour les immeubles de plus de 10 ans",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance maladie, personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 9620
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance maladie, personnes célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 4810
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance maladie, enfant mineur",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1140
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance maladie, jeunes adultes en formation",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 4210
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des intérêts de capitaux d'épargne, personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 300
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des intérêts de capitaux d'épargne, personnes célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 150
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour les assurances privées, personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1500
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour les assurances privées, personnes célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 750
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour couple à deux revenus",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 500
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais de garde des enfants par des tiers",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 12000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour enfant, 1er et 2ème enfant",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 7100,
+				"maximum": 8600
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction enfants dès 3 enfants",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 8100,
+				"maximum": 9600
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a avec solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 7258
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a sans solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 36288
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Taux d'intérêt technique maximal Prime unique en CHF FINMA",
+				"amount": 0,
+				"percent": 350,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas sans subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3200
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas avec subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1600
+			}
+		],
+		"sourceId": "fr-licd",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"otherDeductions": {
+		"value": [
+			{
+				"taxType": "Impôt sur la fortune",
+				"name": "Déductions pour les personnes mariées ou les familles monoparentales",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 105000
+					},
+					{
+						"threshold": 125001,
+						"amount": 85000
+					},
+					{
+						"threshold": 160001,
+						"amount": 65000
+					},
+					{
+						"threshold": 195001,
+						"amount": 45000
+					},
+					{
+						"threshold": 230001,
+						"amount": 25000
+					},
+					{
+						"threshold": 265001,
+						"amount": 5000
+					},
+					{
+						"threshold": 300001,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur la fortune",
+				"name": "Déduction pour les personnes seules sans enfants",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 55000
+					},
+					{
+						"threshold": 75001,
+						"amount": 45000
+					},
+					{
+						"threshold": 100001,
+						"amount": 35000
+					},
+					{
+						"threshold": 125001,
+						"amount": 25000
+					},
+					{
+						"threshold": 150001,
+						"amount": 15000
+					},
+					{
+						"threshold": 175001,
+						"amount": 5000
+					},
+					{
+						"threshold": 200001,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour revenus modestes, célibataires sans enfants",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 4100
+					},
+					{
+						"threshold": 20301,
+						"amount": 3900
+					},
+					{
+						"threshold": 21301,
+						"amount": 3700
+					},
+					{
+						"threshold": 22301,
+						"amount": 3500
+					},
+					{
+						"threshold": 23301,
+						"amount": 3300
+					},
+					{
+						"threshold": 24301,
+						"amount": 3100
+					},
+					{
+						"threshold": 25301,
+						"amount": 2900
+					},
+					{
+						"threshold": 26301,
+						"amount": 2700
+					},
+					{
+						"threshold": 27301,
+						"amount": 2500
+					},
+					{
+						"threshold": 28301,
+						"amount": 2300
+					},
+					{
+						"threshold": 29301,
+						"amount": 2100
+					},
+					{
+						"threshold": 30301,
+						"amount": 1900
+					},
+					{
+						"threshold": 31301,
+						"amount": 1700
+					},
+					{
+						"threshold": 32301,
+						"amount": 1500
+					},
+					{
+						"threshold": 33301,
+						"amount": 1300
+					},
+					{
+						"threshold": 34301,
+						"amount": 1100
+					},
+					{
+						"threshold": 35301,
+						"amount": 900
+					},
+					{
+						"threshold": 36301,
+						"amount": 700
+					},
+					{
+						"threshold": 37301,
+						"amount": 500
+					},
+					{
+						"threshold": 38301,
+						"amount": 300
+					},
+					{
+						"threshold": 39301,
+						"amount": 100
+					},
+					{
+						"threshold": 40301,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour revenus modestes, famille monoparentale ou les personnes mariées",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 5100
+					},
+					{
+						"threshold": 24301,
+						"amount": 4900
+					},
+					{
+						"threshold": 25301,
+						"amount": 4700
+					},
+					{
+						"threshold": 26301,
+						"amount": 4500
+					},
+					{
+						"threshold": 27301,
+						"amount": 4300
+					},
+					{
+						"threshold": 28301,
+						"amount": 4100
+					},
+					{
+						"threshold": 29301,
+						"amount": 3900
+					},
+					{
+						"threshold": 30301,
+						"amount": 3700
+					},
+					{
+						"threshold": 31301,
+						"amount": 3500
+					},
+					{
+						"threshold": 32301,
+						"amount": 3300
+					},
+					{
+						"threshold": 33301,
+						"amount": 3100
+					},
+					{
+						"threshold": 34301,
+						"amount": 2900
+					},
+					{
+						"threshold": 35301,
+						"amount": 2700
+					},
+					{
+						"threshold": 36301,
+						"amount": 2500
+					},
+					{
+						"threshold": 37301,
+						"amount": 2300
+					},
+					{
+						"threshold": 38301,
+						"amount": 2100
+					},
+					{
+						"threshold": 39301,
+						"amount": 1900
+					},
+					{
+						"threshold": 40301,
+						"amount": 1700
+					},
+					{
+						"threshold": 41301,
+						"amount": 1500
+					},
+					{
+						"threshold": 42301,
+						"amount": 1300
+					},
+					{
+						"threshold": 43301,
+						"amount": 1100
+					},
+					{
+						"threshold": 44301,
+						"amount": 900
+					},
+					{
+						"threshold": 45301,
+						"amount": 700
+					},
+					{
+						"threshold": 46301,
+						"amount": 500
+					},
+					{
+						"threshold": 47301,
+						"amount": 300
+					},
+					{
+						"threshold": 48301,
+						"amount": 100
+					},
+					{
+						"threshold": 49301,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers AVS/AI, avec devoir de soutien",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 11100
+					},
+					{
+						"threshold": 30301,
+						"amount": 10700
+					},
+					{
+						"threshold": 31301,
+						"amount": 10300
+					},
+					{
+						"threshold": 32301,
+						"amount": 9900
+					},
+					{
+						"threshold": 33301,
+						"amount": 9500
+					},
+					{
+						"threshold": 34301,
+						"amount": 9100
+					},
+					{
+						"threshold": 35301,
+						"amount": 8700
+					},
+					{
+						"threshold": 36301,
+						"amount": 8300
+					},
+					{
+						"threshold": 37301,
+						"amount": 7900
+					},
+					{
+						"threshold": 38301,
+						"amount": 7500
+					},
+					{
+						"threshold": 39301,
+						"amount": 7100
+					},
+					{
+						"threshold": 40301,
+						"amount": 6700
+					},
+					{
+						"threshold": 41301,
+						"amount": 6300
+					},
+					{
+						"threshold": 42301,
+						"amount": 5900
+					},
+					{
+						"threshold": 43301,
+						"amount": 5500
+					},
+					{
+						"threshold": 44301,
+						"amount": 5100
+					},
+					{
+						"threshold": 45301,
+						"amount": 4700
+					},
+					{
+						"threshold": 46301,
+						"amount": 4300
+					},
+					{
+						"threshold": 47301,
+						"amount": 3900
+					},
+					{
+						"threshold": 48301,
+						"amount": 3500
+					},
+					{
+						"threshold": 49301,
+						"amount": 3100
+					},
+					{
+						"threshold": 50301,
+						"amount": 2700
+					},
+					{
+						"threshold": 51301,
+						"amount": 2300
+					},
+					{
+						"threshold": 52301,
+						"amount": 1900
+					},
+					{
+						"threshold": 53301,
+						"amount": 1500
+					},
+					{
+						"threshold": 54301,
+						"amount": 1100
+					},
+					{
+						"threshold": 55301,
+						"amount": 700
+					},
+					{
+						"threshold": 56301,
+						"amount": 300
+					},
+					{
+						"threshold": 57301,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers AVS/AI, sans devoir de soutien",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 9100
+					},
+					{
+						"threshold": 24301,
+						"amount": 8800
+					},
+					{
+						"threshold": 25301,
+						"amount": 8500
+					},
+					{
+						"threshold": 26301,
+						"amount": 8200
+					},
+					{
+						"threshold": 27301,
+						"amount": 7900
+					},
+					{
+						"threshold": 28301,
+						"amount": 7600
+					},
+					{
+						"threshold": 29301,
+						"amount": 7300
+					},
+					{
+						"threshold": 30301,
+						"amount": 7000
+					},
+					{
+						"threshold": 31301,
+						"amount": 6700
+					},
+					{
+						"threshold": 32301,
+						"amount": 6400
+					},
+					{
+						"threshold": 33301,
+						"amount": 6100
+					},
+					{
+						"threshold": 34301,
+						"amount": 5800
+					},
+					{
+						"threshold": 35301,
+						"amount": 5500
+					},
+					{
+						"threshold": 36301,
+						"amount": 5200
+					},
+					{
+						"threshold": 37301,
+						"amount": 4900
+					},
+					{
+						"threshold": 38301,
+						"amount": 4600
+					},
+					{
+						"threshold": 39301,
+						"amount": 4300
+					},
+					{
+						"threshold": 40301,
+						"amount": 4000
+					},
+					{
+						"threshold": 41301,
+						"amount": 3700
+					},
+					{
+						"threshold": 42301,
+						"amount": 3400
+					},
+					{
+						"threshold": 43301,
+						"amount": 3100
+					},
+					{
+						"threshold": 44301,
+						"amount": 2800
+					},
+					{
+						"threshold": 45301,
+						"amount": 2500
+					},
+					{
+						"threshold": 46301,
+						"amount": 2200
+					},
+					{
+						"threshold": 47301,
+						"amount": 1900
+					},
+					{
+						"threshold": 48301,
+						"amount": 1600
+					},
+					{
+						"threshold": 49301,
+						"amount": 1300
+					},
+					{
+						"threshold": 50301,
+						"amount": 1000
+					},
+					{
+						"threshold": 51301,
+						"amount": 700
+					},
+					{
+						"threshold": 52301,
+						"amount": 400
+					},
+					{
+						"threshold": 53301,
+						"amount": 100
+					},
+					{
+						"threshold": 54301,
+						"amount": 0
+					}
+				]
+			}
+		],
+		"sourceId": "fr-licd",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"realEstateGainsTax": {
+		"todo": "Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.",
+		"sourceId": null
+	},
+	"imputedRentalValue": {
+		"todo": "Valeur locative : source à inscrire au registre, méthode à relever.",
+		"sourceId": null
+	}
+}

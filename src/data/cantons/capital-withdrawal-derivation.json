@@ -1,0 +1,58 @@
+{
+	"$comment": "Écrit et maintenu à la main. Règles de dérivation du barème des prestations en capital pour les cantons dont la loi le dérive du barème du revenu. Lu et validé par scripts/read-estv-exports.ts, jamais réécrit par lui. sourceId : rôle taxLaw de SOURCE_BY_CANTON.",
+	"cantons": {
+		"VD": {
+			"derivedFrom": "incomeTaxScale",
+			"factor": {
+				"value": 0.2,
+				"sourceId": "vd-li",
+				"verifiedOn": "2026-09-24",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 49 LI : un cinquième des taux du barème du revenu."
+			}
+		},
+		"GE": {
+			"derivedFrom": "incomeTaxScale",
+			"factor": {
+				"value": 0.2,
+				"sourceId": "ge-lipp",
+				"verifiedOn": "2026-09-24",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 45 LIPP : un cinquième du barème du revenu."
+			}
+		},
+		"NE": {
+			"derivedFrom": "incomeTaxScale",
+			"factor": {
+				"value": 0.25,
+				"sourceId": "ne-lcdir",
+				"verifiedOn": "2026-09-24",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 42 LCdir : le quart du barème du revenu."
+			},
+			"minimumRatePercent": {
+				"value": 2.5,
+				"unit": "%",
+				"sourceId": "ne-lcdir",
+				"verifiedOn": "2026-09-24",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 42 LCdir : taux de base minimal."
+			}
+		},
+		"VS": {
+			"derivedFrom": "incomeTaxScale",
+			"maximumRatePercent": {
+				"value": 4,
+				"unit": "%",
+				"sourceId": "vs-lf",
+				"verifiedOn": "2026-09-24",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 33b LF : taux applicable aux prestations périodiques, plafonné. Pas de facteur : l'art. 33b al. 1 LF applique le taux des prestations périodiques, plafonné à 4 % (al. 4), avec une réduction de 2 % pour les couples mariés, au maximum 2 450 CHF. Cette réduction n'est pas encore modélisée."
+			},
+			"coupleReduction": {
+				"todo": "Réduction pour les couples mariés (art. 33b LF), décrite dans la note de maximumRatePercent : à saisir en valeur sourcée et à modéliser dans le moteur.",
+				"sourceId": "vs-lf"
+			}
+		}
+	}
+}

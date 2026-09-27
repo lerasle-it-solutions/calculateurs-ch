@@ -1,0 +1,807 @@
+{
+	"canton": "JU",
+	"year": 2026,
+	"incomeTaxScale": [
+		{
+			"taxpayerGroup": "Personne vivant seule, sans enfant",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Pour les prochains CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 6900,
+							"ratePercent": 1.66702,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 14700,
+							"ratePercent": 3.14902,
+							"baseAmount": 130.02756
+						},
+						{
+							"threshold": 28700,
+							"ratePercent": 4.02902,
+							"baseAmount": 570.89036
+						},
+						{
+							"threshold": 50500,
+							"ratePercent": 4.90902,
+							"baseAmount": 1449.21672
+						},
+						{
+							"threshold": 92700,
+							"ratePercent": 5.558,
+							"baseAmount": 3520.82316
+						},
+						{
+							"threshold": 205200,
+							"ratePercent": 5.78902,
+							"baseAmount": 9773.57316
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module",
+				"note": "derivedFrom: \"bracketWidths\" — seuils et montants de base calculés à la lecture, par cumul des largeurs de tranches de l'export."
+			}
+		},
+		{
+			"taxpayerGroup": "Personne mariée / vivant seule, avec enfant (pas en concubinage)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Pour les prochains CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 12600,
+							"ratePercent": 0.88,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 18800,
+							"ratePercent": 2.26902,
+							"baseAmount": 54.56
+						},
+						{
+							"threshold": 28100,
+							"ratePercent": 3.242,
+							"baseAmount": 265.57886
+						},
+						{
+							"threshold": 48400,
+							"ratePercent": 4.122,
+							"baseAmount": 923.70486
+						},
+						{
+							"threshold": 90600,
+							"ratePercent": 4.77102,
+							"baseAmount": 2663.18886
+						},
+						{
+							"threshold": 203100,
+							"ratePercent": 5.69702,
+							"baseAmount": 8030.58636
+						},
+						{
+							"threshold": 437600,
+							"ratePercent": 5.78902,
+							"baseAmount": 21390.09826
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module",
+				"note": "derivedFrom: \"bracketWidths\" — seuils et montants de base calculés à la lecture, par cumul des largeurs de tranches de l'export."
+			}
+		},
+		{
+			"taxpayerGroup": "Personne vivant seule, avec enfant (en concubinage)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Pour les prochains CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 6900,
+							"ratePercent": 1.66702,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 14700,
+							"ratePercent": 3.14902,
+							"baseAmount": 130.02756
+						},
+						{
+							"threshold": 28700,
+							"ratePercent": 4.02902,
+							"baseAmount": 570.89036
+						},
+						{
+							"threshold": 50500,
+							"ratePercent": 4.90902,
+							"baseAmount": 1449.21672
+						},
+						{
+							"threshold": 92700,
+							"ratePercent": 5.558,
+							"baseAmount": 3520.82316
+						},
+						{
+							"threshold": 205200,
+							"ratePercent": 5.78902,
+							"baseAmount": 9773.57316
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module",
+				"note": "derivedFrom: \"bracketWidths\" — seuils et montants de base calculés à la lecture, par cumul des largeurs de tranches de l'export."
+			}
+		}
+	],
+	"wealthTaxScale": [
+		{
+			"taxpayerGroup": "Tous",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Fortune imposable CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 58000,
+							"ratePercent": 0.05,
+							"baseAmount": 29
+						},
+						{
+							"threshold": 112000,
+							"ratePercent": 0.075,
+							"baseAmount": 56
+						},
+						{
+							"threshold": 449000,
+							"ratePercent": 0.095,
+							"baseAmount": 308.75
+						},
+						{
+							"threshold": 842000,
+							"ratePercent": 0.11,
+							"baseAmount": 682.1
+						},
+						{
+							"threshold": 1685000,
+							"ratePercent": 0.12,
+							"baseAmount": 1609.4
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"capitalWithdrawalTax": [
+		{
+			"taxpayerGroup": "Personne vivant seule, sans enfant",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Pour les prochains CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 1.1,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 56700,
+							"ratePercent": 1.3,
+							"baseAmount": 623.7
+						},
+						{
+							"threshold": 113400,
+							"ratePercent": 1.7,
+							"baseAmount": 1360.8
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module",
+				"note": "derivedFrom: \"bracketWidths\" — seuils et montants de base calculés à la lecture, par cumul des largeurs de tranches de l'export."
+			}
+		},
+		{
+			"taxpayerGroup": "Personne mariée / vivant seule, avec enfant (pas en concubinage)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Pour les prochains CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0.9,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 56700,
+							"ratePercent": 1.1,
+							"baseAmount": 510.3
+						},
+						{
+							"threshold": 113400,
+							"ratePercent": 1.3,
+							"baseAmount": 1134
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module",
+				"note": "derivedFrom: \"bracketWidths\" — seuils et montants de base calculés à la lecture, par cumul des largeurs de tranches de l'export."
+			}
+		},
+		{
+			"taxpayerGroup": "Personne vivant seule, avec enfant (en concubinage)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Pour les prochains CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 1.1,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 56700,
+							"ratePercent": 1.3,
+							"baseAmount": 623.7
+						},
+						{
+							"threshold": 113400,
+							"ratePercent": 1.7,
+							"baseAmount": 1360.8
+						}
+					]
+				},
+				"sourceId": "ju-adli-2026",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module",
+				"note": "derivedFrom: \"bracketWidths\" — seuils et montants de base calculés à la lecture, par cumul des largeurs de tranches de l'export."
+			}
+		}
+	],
+	"cantonalMultiplier": {
+		"income": {
+			"value": 285,
+			"sourceId": "ju-cantonal-multiplier",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module"
+		},
+		"wealth": {
+			"value": 285,
+			"sourceId": "ju-cantonal-multiplier",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module"
+		}
+	},
+	"baseTaxReduction": null,
+	"communalScale": null,
+	"deductions": {
+		"value": [
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour dépenses professionnelles du revenu accessoire",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 800,
+				"maximum": 2400
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour autres frais professionnels",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 0,
+				"maximum": 4100
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour les frais d'entretien des biens immobiliers jusqu'à 10 ans",
+				"amount": 0,
+				"percent": 10,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire des frais d'entretien pour les immeubles de plus de 10 ans",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes célibataires avec cotisations pilier 2/3a",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3400
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes célibataires sans cotisations pilier 2/3a",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 4190
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, enfant mineur",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1020
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, enfant majeur",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3400
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour couple à deux revenus",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 2700
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais de garde des enfants par des tiers",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 10600
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour frais de formation des enfants, éducation externe",
+				"amount": 10600,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour enfant, 1er et 2ème enfant",
+				"amount": 5700,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction enfants dès 3 enfants",
+				"amount": 6400,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour enfants majeurs en dehors de la maison",
+				"amount": 2400,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour personnes mariées",
+				"amount": 3700,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour famille monoparentale",
+				"amount": 2700,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour contribuables célibataires",
+				"amount": 1800,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes mariées, les deux avec des cotisations au pilier 2/3a",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 6800
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes mariées, les deux sans des cotisations au pilier 2/3a",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 8380
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes mariées, une personne sans cotisations pilier 2/3a",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 7590
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a avec solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 7258
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a sans solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 36288
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Taux d'intérêt technique maximal Prime unique en CHF FINMA",
+				"amount": 0,
+				"percent": 350,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas sans subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3200
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas avec subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1600
+			}
+		],
+		"sourceId": "ju-li",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"otherDeductions": {
+		"value": [
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers AVS/AI célibataires",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 8900
+					},
+					{
+						"threshold": 29100,
+						"amount": 8300
+					},
+					{
+						"threshold": 29900,
+						"amount": 7800
+					},
+					{
+						"threshold": 30800,
+						"amount": 7200
+					},
+					{
+						"threshold": 31600,
+						"amount": 6700
+					},
+					{
+						"threshold": 32500,
+						"amount": 6200
+					},
+					{
+						"threshold": 33400,
+						"amount": 5600
+					},
+					{
+						"threshold": 34200,
+						"amount": 5100
+					},
+					{
+						"threshold": 35100,
+						"amount": 4500
+					},
+					{
+						"threshold": 35900,
+						"amount": 4000
+					},
+					{
+						"threshold": 36800,
+						"amount": 3500
+					},
+					{
+						"threshold": 37700,
+						"amount": 2900
+					},
+					{
+						"threshold": 38500,
+						"amount": 2400
+					},
+					{
+						"threshold": 39400,
+						"amount": 1800
+					},
+					{
+						"threshold": 40200,
+						"amount": 1300
+					},
+					{
+						"threshold": 41100,
+						"amount": 800
+					},
+					{
+						"threshold": 42000,
+						"amount": 200
+					},
+					{
+						"threshold": 42800,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers de l'AVS/AI, les personnes mariées, une personne recevant la rente",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 8900
+					},
+					{
+						"threshold": 37200,
+						"amount": 8300
+					},
+					{
+						"threshold": 38000,
+						"amount": 7800
+					},
+					{
+						"threshold": 38900,
+						"amount": 7200
+					},
+					{
+						"threshold": 39700,
+						"amount": 6700
+					},
+					{
+						"threshold": 40600,
+						"amount": 6200
+					},
+					{
+						"threshold": 41500,
+						"amount": 5600
+					},
+					{
+						"threshold": 42300,
+						"amount": 5100
+					},
+					{
+						"threshold": 43200,
+						"amount": 4500
+					},
+					{
+						"threshold": 44000,
+						"amount": 4000
+					},
+					{
+						"threshold": 44900,
+						"amount": 3500
+					},
+					{
+						"threshold": 45800,
+						"amount": 2900
+					},
+					{
+						"threshold": 46600,
+						"amount": 2400
+					},
+					{
+						"threshold": 47500,
+						"amount": 1800
+					},
+					{
+						"threshold": 48300,
+						"amount": 1300
+					},
+					{
+						"threshold": 49200,
+						"amount": 800
+					},
+					{
+						"threshold": 50100,
+						"amount": 200
+					},
+					{
+						"threshold": 50900,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers AVS/AI mariés, dont les deux partenaires sont bénéficiaires d'une rente",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 10300
+					},
+					{
+						"threshold": 37200,
+						"amount": 9700
+					},
+					{
+						"threshold": 38000,
+						"amount": 9200
+					},
+					{
+						"threshold": 38900,
+						"amount": 8600
+					},
+					{
+						"threshold": 39700,
+						"amount": 8100
+					},
+					{
+						"threshold": 40600,
+						"amount": 7600
+					},
+					{
+						"threshold": 41500,
+						"amount": 7000
+					},
+					{
+						"threshold": 42300,
+						"amount": 6500
+					},
+					{
+						"threshold": 43200,
+						"amount": 5900
+					},
+					{
+						"threshold": 44000,
+						"amount": 5400
+					},
+					{
+						"threshold": 44900,
+						"amount": 4900
+					},
+					{
+						"threshold": 45800,
+						"amount": 4300
+					},
+					{
+						"threshold": 46600,
+						"amount": 3800
+					},
+					{
+						"threshold": 47500,
+						"amount": 3200
+					},
+					{
+						"threshold": 48300,
+						"amount": 2700
+					},
+					{
+						"threshold": 49200,
+						"amount": 2200
+					},
+					{
+						"threshold": 50100,
+						"amount": 1600
+					},
+					{
+						"threshold": 50900,
+						"amount": 1100
+					},
+					{
+						"threshold": 51800,
+						"amount": 500
+					},
+					{
+						"threshold": 52600,
+						"amount": 0
+					},
+					{
+						"threshold": 53500,
+						"amount": 0
+					}
+				]
+			}
+		],
+		"sourceId": "ju-li",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"realEstateGainsTax": {
+		"todo": "Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.",
+		"sourceId": null
+	},
+	"imputedRentalValue": {
+		"todo": "Valeur locative : source à inscrire au registre, méthode à relever.",
+		"sourceId": null
+	}
+}

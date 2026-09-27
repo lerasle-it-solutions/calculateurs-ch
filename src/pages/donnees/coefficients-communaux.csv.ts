@@ -2,10 +2,10 @@
  * Export CSV du détail communal des coefficients (voir CLAUDE.md § 1.4).
  * Route statique, générée au build (aucun serveur) : /donnees/coefficients-communaux.csv
  *
- * Ce n'est PAS un export brut du jeu de données ESTV : seules les deux valeurs
- * transformées et sourcées que le site conserve (coefficient cantonal et
- * communal, voir `scripts/import-estv-tax-data.ts`) sont incluses — jamais les
- * autres champs de la réponse d'origine (taux de fortune, de bénéfice, etc.).
+ * Ce n'est PAS un export brut du jeu de données de l'AFC : seuls les
+ * coefficients communaux sur le revenu et la fortune, transformés et sourcés
+ * par `scripts/read-estv-exports.ts`, sont inclus — jamais les coefficients
+ * paroissiaux, de bénéfice ou de capital de l'export d'origine.
  *
  * Les en-têtes définis ci-dessous ne survivent pas à l'export statique : sur
  * Cloudflare Pages, c'est `public/_headers` qui fixe le Content-Disposition
@@ -30,8 +30,8 @@ export const GET: APIRoute = () => {
 		"bfsId",
 		"canton",
 		"municipality",
-		"cantonalMultiplier",
-		"municipalMultiplier",
+		"incomeMunicipalMultiplier",
+		"wealthMunicipalMultiplier",
 		"sourceId",
 		"verifiedOn",
 		"effectiveFrom",
@@ -40,11 +40,11 @@ export const GET: APIRoute = () => {
 		entry.bfsId,
 		entry.canton,
 		entry.municipality,
-		entry.cantonalMultiplier.value,
-		entry.municipalMultiplier.value,
-		entry.cantonalMultiplier.sourceId,
-		entry.cantonalMultiplier.verifiedOn,
-		entry.cantonalMultiplier.effectiveFrom,
+		entry.income.municipal.value,
+		entry.wealth.municipal.value,
+		entry.income.municipal.sourceId,
+		entry.income.municipal.verifiedOn,
+		entry.income.municipal.effectiveFrom,
 	]);
 
 	return new Response(toCsv(columns, rows), {

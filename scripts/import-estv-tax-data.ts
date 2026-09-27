@@ -1,4 +1,5 @@
 #!/usr/bin/env -S npx tsx
+// @ts-nocheck — neutralisé : écrit pour l'ancien schéma cantonal, remplacé par read-estv-exports.ts.
 /**
  * Importe, depuis le calculateur d'impôt de l'Administration fédérale des
  * contributions (swisstaxcalculator.estv.admin.ch), pour une année donnée et
@@ -35,9 +36,8 @@
  * quant à leur exactitude. En revanche, aucun accès programmatique aux
  * serveurs du simulateur n'est autorisé : les données de base se
  * téléchargent désormais à la main, depuis le module « Rechercher des
- * données de base » de l'interface web. Ce script est donc désactivé — voir
- * la garde ci-dessous et DECISIONS.md pour le détail et le plan de
- * conversion (semaine 17).
+ * données de base » de l'interface web. Ce script est donc remplacé par
+ * scripts/read-estv-exports.ts, qui lit ces fichiers — voir scripts/README.md.
  *
  * Chaque requête porte un User-Agent identifiant ce script et un contact
  * joignable (voir `USER_AGENT` ci-dessous) — jamais une identité de navigateur.
@@ -78,12 +78,12 @@ if (process.env.CF_PAGES || process.env.NODE_ENV === "production") {
 }
 
 // ---------------------------------------------------------------------------
-// Garde : script désactivé (voir l'en-tête). Les schémas zod et la logique
-// « rien n'est écrit si rien n'est compris » restent en place pour la
-// conversion prévue en semaine 17.
+// Garde : script remplacé par scripts/read-estv-exports.ts (voir l'en-tête).
+// Conservé pour ses schémas zod et sa logique « rien n'est écrit si rien
+// n'est compris ».
 // ---------------------------------------------------------------------------
 console.error(
-	"Script désactivé : l'AFC a indiqué par écrit que les données du simulateur fiscal se consultent exclusivement par son interface web. Les données de base se téléchargent à la main depuis le module Rechercher des données de base. Conversion prévue en semaine 17 — voir DECISIONS.md.",
+	"Script remplacé : les données de base se téléchargent à la main depuis le module Rechercher des données de base — voir scripts/README.md.",
 );
 process.exit(1);
 

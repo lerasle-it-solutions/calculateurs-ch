@@ -1,0 +1,502 @@
+{
+	"canton": "GE",
+	"year": 2026,
+	"incomeTaxScale": [
+		{
+			"taxpayerGroup": "Tous",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Revenu imposable Confédération",
+					"rateSplittingDivisor": 2,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 18700,
+							"ratePercent": 7.3,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 22530,
+							"ratePercent": 8.2,
+							"baseAmount": 279.6
+						},
+						{
+							"threshold": 24784,
+							"ratePercent": 9.1,
+							"baseAmount": 464.4
+						},
+						{
+							"threshold": 27036,
+							"ratePercent": 10,
+							"baseAmount": 669.35
+						},
+						{
+							"threshold": 29290,
+							"ratePercent": 10.9,
+							"baseAmount": 894.75
+						},
+						{
+							"threshold": 34922,
+							"ratePercent": 11.3,
+							"baseAmount": 1508.65
+						},
+						{
+							"threshold": 39428,
+							"ratePercent": 12.3,
+							"baseAmount": 2017.8
+						},
+						{
+							"threshold": 43935,
+							"ratePercent": 12.8,
+							"baseAmount": 2572.2
+						},
+						{
+							"threshold": 48441,
+							"ratePercent": 13.2,
+							"baseAmount": 3148.95
+						},
+						{
+							"threshold": 77730,
+							"ratePercent": 14.2,
+							"baseAmount": 7015.1
+						},
+						{
+							"threshold": 127297,
+							"ratePercent": 15,
+							"baseAmount": 14053.6
+						},
+						{
+							"threshold": 171231,
+							"ratePercent": 15.6,
+							"baseAmount": 20643.7
+						},
+						{
+							"threshold": 193762,
+							"ratePercent": 15.8,
+							"baseAmount": 24158.55
+						},
+						{
+							"threshold": 277125,
+							"ratePercent": 16,
+							"baseAmount": 37329.9
+						},
+						{
+							"threshold": 295150,
+							"ratePercent": 16.8,
+							"baseAmount": 40213.9
+						},
+						{
+							"threshold": 415688,
+							"ratePercent": 17.6,
+							"baseAmount": 60464.3
+						},
+						{
+							"threshold": 651131,
+							"ratePercent": 18,
+							"baseAmount": 101902.25
+						}
+					]
+				},
+				"sourceId": "ge-rcepf",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"wealthTaxScale": [
+		{
+			"taxpayerGroup": "Tous",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Fortune imposable CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0.149,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 118723,
+							"ratePercent": 0.191,
+							"baseAmount": 176.9
+						},
+						{
+							"threshold": 237444,
+							"ratePercent": 0.234,
+							"baseAmount": 403.65
+						},
+						{
+							"threshold": 356166,
+							"ratePercent": 0.255,
+							"baseAmount": 681.45
+						},
+						{
+							"threshold": 474887,
+							"ratePercent": 0.276,
+							"baseAmount": 984.2
+						},
+						{
+							"threshold": 712331,
+							"ratePercent": 0.298,
+							"baseAmount": 1639.55
+						},
+						{
+							"threshold": 949773,
+							"ratePercent": 0.319,
+							"baseAmount": 2347.15
+						},
+						{
+							"threshold": 1187216,
+							"ratePercent": 0.34,
+							"baseAmount": 3104.6
+						},
+						{
+							"threshold": 1424659,
+							"ratePercent": 0.361,
+							"baseAmount": 3911.9
+						},
+						{
+							"threshold": 1780824,
+							"ratePercent": 0.383,
+							"baseAmount": 5197.65
+						}
+					]
+				},
+				"sourceId": "ge-rcepf",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"capitalWithdrawalTax": {
+		"definedIn": "cantons/capital-withdrawal-derivation.json"
+	},
+	"cantonalMultiplier": {
+		"income": {
+			"value": 147.5,
+			"sourceId": "ge-lcacant",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module",
+			"note": "L'art. 2 LCACant mentionne 47,5 + 1 centimes, soit 148,5 % attendus. Écart non résolu : le centime supplémentaire ne semble pas inclus dans le coefficient publié. À trancher contre les cas de référence."
+		},
+		"wealth": {
+			"value": 147.5,
+			"sourceId": "ge-lcacant",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module",
+			"note": "L'art. 2 LCACant mentionne 47,5 + 1 centimes, soit 148,5 % attendus. Écart non résolu : le centime supplémentaire ne semble pas inclus dans le coefficient publié. À trancher contre les cas de référence."
+		}
+	},
+	"baseTaxReduction": {
+		"todo": "Réduction de l'impôt cantonal de base : absente des exports de l'AFC, à relever dans l'acte.",
+		"sourceId": "ge-ldirpp"
+	},
+	"communalScale": null,
+	"deductions": {
+		"value": [
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais de déplacement revenu principal",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 536
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour dépenses professionnelles du revenu accessoire",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 810,
+				"maximum": 2429
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour autres frais professionnels",
+				"amount": 0,
+				"percent": 3,
+				"minimum": 641,
+				"maximum": 1817
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour les frais d'entretien des biens immobiliers jusqu'à 10 ans",
+				"amount": 0,
+				"percent": 15,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire des frais d'entretien pour les immeubles de plus de 10 ans",
+				"amount": 0,
+				"percent": 25,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3528
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, personnes célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 2352
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance et des intérêts de l'épargne, enfant",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 962
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Facteur Primes d'assurance et intérêts de l'épargne, personnes mariées toutes les deux sans cotisations pilier 2/3a",
+				"amount": 2,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Facteur Primes d'assurance et intérêts de l'épargne, personnes mariées, une personne sans cotisations pilier 2/3a",
+				"amount": 1.5,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Facteur Primes d'assurance et intérêts de l'épargne, personnes célibataires sans cotisations pilier 2/3a",
+				"amount": 2,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour couple à deux revenus",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1054
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais de garde des enfants par des tiers",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 26392
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour enfants",
+				"amount": 13698,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Caisse maladie Prime moyenne Mineurs",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 4147
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Caisse maladie Prime moyenne jeunes adultes",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 13063
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Caisse maladie Prime moyenne adulte",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 17520
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a avec solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 7258
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a sans solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 36288
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Taux d'intérêt technique maximal Prime unique en CHF FINMA",
+				"amount": 0,
+				"percent": 350,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas sans subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3200
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas avec subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1600
+			}
+		],
+		"sourceId": "ge-lipp",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"otherDeductions": {
+		"value": [
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers AVS/AI célibataires sans enfants",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 10690
+					},
+					{
+						"threshold": 53451,
+						"amount": 8552
+					},
+					{
+						"threshold": 60613,
+						"amount": 6414
+					},
+					{
+						"threshold": 68417,
+						"amount": 4276
+					},
+					{
+						"threshold": 76434,
+						"amount": 2138
+					},
+					{
+						"threshold": 85521,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers de l'AVS/AI, les personnes mariées, une personne recevant la rente",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 10690
+					},
+					{
+						"threshold": 61468,
+						"amount": 8552
+					},
+					{
+						"threshold": 69700,
+						"amount": 6414
+					},
+					{
+						"threshold": 78679,
+						"amount": 4276
+					},
+					{
+						"threshold": 87873,
+						"amount": 2138
+					},
+					{
+						"threshold": 98349,
+						"amount": 0
+					}
+				]
+			},
+			{
+				"taxType": "Impôt sur le revenu",
+				"name": "Déduction pour les rentiers AVS/AI mariés, dont les deux partenaires sont bénéficiaires d'une rente",
+				"authority": "Canton",
+				"thresholdLabel": "Revenu net / Fortune nette CHF",
+				"steps": [
+					{
+						"threshold": 0,
+						"amount": 12293
+					},
+					{
+						"threshold": 61468,
+						"amount": 9835
+					},
+					{
+						"threshold": 69700,
+						"amount": 7376
+					},
+					{
+						"threshold": 78679,
+						"amount": 4917
+					},
+					{
+						"threshold": 87873,
+						"amount": 2459
+					},
+					{
+						"threshold": 98349,
+						"amount": 0
+					}
+				]
+			}
+		],
+		"sourceId": "ge-lipp",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"realEstateGainsTax": {
+		"todo": "Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.",
+		"sourceId": null
+	},
+	"imputedRentalValue": {
+		"todo": "Valeur locative : source à inscrire au registre, méthode à relever.",
+		"sourceId": null
+	}
+}

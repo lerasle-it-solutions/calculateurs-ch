@@ -14,7 +14,8 @@
     "pretest": "tsx scripts/fetch-private-data.ts",
     "test": "vitest run",
     "predeploy": "npm run test && astro check",
-    "import:estv-tax-data": "tsx scripts/import-estv-tax-data.ts"
+    "import:estv-tax-data": "tsx scripts/import-estv-tax-data.ts",
+    "read:estv-exports": "tsx scripts/read-estv-exports.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "read-excel-file": "^9.3.10",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",
     "vitest": "^5.0.0"

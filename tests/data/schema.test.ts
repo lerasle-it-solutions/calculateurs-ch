@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { allDataFiles } from "../../src/data";
 import {
+	CAPITAL_WITHDRAWAL_DERIVATION_FILE,
+	capitalWithdrawalDerivationFileSchema,
 	cantonDataSchema,
 	federalDataSchema,
 	municipalMultipliersDataSchema,
@@ -35,7 +37,12 @@ describe("conformité de schéma des fichiers de données", () => {
 
 	it("chaque fichier de src/data/ valide le schéma correspondant à son emplacement", () => {
 		for (const file of files) {
-			if (file.path.startsWith("federal/")) {
+			if (file.path === CAPITAL_WITHDRAWAL_DERIVATION_FILE) {
+				const result = capitalWithdrawalDerivationFileSchema.safeParse(file.data);
+				expect(result.success, `${file.path} : ${result.error?.message}`).toBe(
+					true,
+				);
+			} else if (file.path.startsWith("federal/")) {
 				const result = federalDataSchema.safeParse(file.data);
 				expect(result.success, `${file.path} : ${result.error?.message}`).toBe(
 					true,

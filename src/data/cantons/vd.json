@@ -1,0 +1,745 @@
+{
+	"canton": "VD",
+	"year": 2026,
+	"incomeTaxScale": [
+		{
+			"taxpayerGroup": "Marié(e)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Revenu imposable Confédération",
+					"rateSplittingDivisor": 1.8,
+					"brackets": [
+						{
+							"threshold": 100,
+							"ratePercent": 1,
+							"baseAmount": 1
+						},
+						{
+							"threshold": 1600,
+							"ratePercent": 2,
+							"baseAmount": 16
+						},
+						{
+							"threshold": 3400,
+							"ratePercent": 3,
+							"baseAmount": 52
+						},
+						{
+							"threshold": 5100,
+							"ratePercent": 4,
+							"baseAmount": 103
+						},
+						{
+							"threshold": 8300,
+							"ratePercent": 5,
+							"baseAmount": 231
+						},
+						{
+							"threshold": 11900,
+							"ratePercent": 6,
+							"baseAmount": 411
+						},
+						{
+							"threshold": 15100,
+							"ratePercent": 7,
+							"baseAmount": 603
+						},
+						{
+							"threshold": 23600,
+							"ratePercent": 8,
+							"baseAmount": 1198
+						},
+						{
+							"threshold": 40500,
+							"ratePercent": 9,
+							"baseAmount": 2550
+						},
+						{
+							"threshold": 57200,
+							"ratePercent": 10,
+							"baseAmount": 4053
+						},
+						{
+							"threshold": 74400,
+							"ratePercent": 11,
+							"baseAmount": 5773
+						},
+						{
+							"threshold": 91200,
+							"ratePercent": 12,
+							"baseAmount": 7621
+						},
+						{
+							"threshold": 108100,
+							"ratePercent": 12.5,
+							"baseAmount": 9649
+						},
+						{
+							"threshold": 135000,
+							"ratePercent": 13,
+							"baseAmount": 13011.5
+						},
+						{
+							"threshold": 162000,
+							"ratePercent": 13.5,
+							"baseAmount": 16521.5
+						},
+						{
+							"threshold": 192500,
+							"ratePercent": 14,
+							"baseAmount": 20639
+						},
+						{
+							"threshold": 223000,
+							"ratePercent": 14.5,
+							"baseAmount": 24909
+						},
+						{
+							"threshold": 256000,
+							"ratePercent": 15,
+							"baseAmount": 29694
+						},
+						{
+							"threshold": 291700,
+							"ratePercent": 15.5,
+							"baseAmount": 35049
+						}
+					]
+				},
+				"sourceId": "vd-li",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		},
+		{
+			"taxpayerGroup": "Personne vivant seule, avec / sans enfant",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Revenu imposable Confédération",
+					"rateSplittingDivisor": 1.8,
+					"brackets": [
+						{
+							"threshold": 100,
+							"ratePercent": 1,
+							"baseAmount": 1
+						},
+						{
+							"threshold": 1600,
+							"ratePercent": 2,
+							"baseAmount": 16
+						},
+						{
+							"threshold": 3400,
+							"ratePercent": 3,
+							"baseAmount": 52
+						},
+						{
+							"threshold": 5100,
+							"ratePercent": 4,
+							"baseAmount": 103
+						},
+						{
+							"threshold": 8300,
+							"ratePercent": 5,
+							"baseAmount": 231
+						},
+						{
+							"threshold": 11900,
+							"ratePercent": 6,
+							"baseAmount": 411
+						},
+						{
+							"threshold": 15100,
+							"ratePercent": 7,
+							"baseAmount": 603
+						},
+						{
+							"threshold": 23600,
+							"ratePercent": 8,
+							"baseAmount": 1198
+						},
+						{
+							"threshold": 40500,
+							"ratePercent": 9,
+							"baseAmount": 2550
+						},
+						{
+							"threshold": 57200,
+							"ratePercent": 10,
+							"baseAmount": 4053
+						},
+						{
+							"threshold": 74400,
+							"ratePercent": 11,
+							"baseAmount": 5773
+						},
+						{
+							"threshold": 91200,
+							"ratePercent": 12,
+							"baseAmount": 7621
+						},
+						{
+							"threshold": 108100,
+							"ratePercent": 12.5,
+							"baseAmount": 9649
+						},
+						{
+							"threshold": 135000,
+							"ratePercent": 13,
+							"baseAmount": 13011.5
+						},
+						{
+							"threshold": 162000,
+							"ratePercent": 13.5,
+							"baseAmount": 16521.5
+						},
+						{
+							"threshold": 192500,
+							"ratePercent": 14,
+							"baseAmount": 20639
+						},
+						{
+							"threshold": 223000,
+							"ratePercent": 14.5,
+							"baseAmount": 24909
+						},
+						{
+							"threshold": 256000,
+							"ratePercent": 15,
+							"baseAmount": 29694
+						},
+						{
+							"threshold": 291700,
+							"ratePercent": 15.5,
+							"baseAmount": 35049
+						}
+					]
+				},
+				"sourceId": "vd-li",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		},
+		{
+			"taxpayerGroup": "Personne vivant seule, avec enfant (en concubinage)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Revenu imposable Confédération",
+					"rateSplittingDivisor": 1.8,
+					"brackets": [
+						{
+							"threshold": 100,
+							"ratePercent": 1,
+							"baseAmount": 1
+						},
+						{
+							"threshold": 1600,
+							"ratePercent": 2,
+							"baseAmount": 16
+						},
+						{
+							"threshold": 3400,
+							"ratePercent": 3,
+							"baseAmount": 52
+						},
+						{
+							"threshold": 5100,
+							"ratePercent": 4,
+							"baseAmount": 103
+						},
+						{
+							"threshold": 8300,
+							"ratePercent": 5,
+							"baseAmount": 231
+						},
+						{
+							"threshold": 11900,
+							"ratePercent": 6,
+							"baseAmount": 411
+						},
+						{
+							"threshold": 15100,
+							"ratePercent": 7,
+							"baseAmount": 603
+						},
+						{
+							"threshold": 23600,
+							"ratePercent": 8,
+							"baseAmount": 1198
+						},
+						{
+							"threshold": 40500,
+							"ratePercent": 9,
+							"baseAmount": 2550
+						},
+						{
+							"threshold": 57200,
+							"ratePercent": 10,
+							"baseAmount": 4053
+						},
+						{
+							"threshold": 74400,
+							"ratePercent": 11,
+							"baseAmount": 5773
+						},
+						{
+							"threshold": 91200,
+							"ratePercent": 12,
+							"baseAmount": 7621
+						},
+						{
+							"threshold": 108100,
+							"ratePercent": 12.5,
+							"baseAmount": 9649
+						},
+						{
+							"threshold": 135000,
+							"ratePercent": 13,
+							"baseAmount": 13011.5
+						},
+						{
+							"threshold": 162000,
+							"ratePercent": 13.5,
+							"baseAmount": 16521.5
+						},
+						{
+							"threshold": 192500,
+							"ratePercent": 14,
+							"baseAmount": 20639
+						},
+						{
+							"threshold": 223000,
+							"ratePercent": 14.5,
+							"baseAmount": 24909
+						},
+						{
+							"threshold": 256000,
+							"ratePercent": 15,
+							"baseAmount": 29694
+						},
+						{
+							"threshold": 291700,
+							"ratePercent": 15.5,
+							"baseAmount": 35049
+						}
+					]
+				},
+				"sourceId": "vd-li",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"wealthTaxScale": [
+		{
+			"taxpayerGroup": "Marié(e)",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Fortune imposable CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 119999,
+							"ratePercent": 0.169,
+							"baseAmount": 108.85
+						},
+						{
+							"threshold": 177000,
+							"ratePercent": 0.242,
+							"baseAmount": 205.2
+						},
+						{
+							"threshold": 355000,
+							"ratePercent": 0.315,
+							"baseAmount": 635.95
+						},
+						{
+							"threshold": 711000,
+							"ratePercent": 0.339,
+							"baseAmount": 1757.35
+						}
+					]
+				},
+				"sourceId": "vd-li",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		},
+		{
+			"taxpayerGroup": "Personne vivant seule",
+			"table": {
+				"value": {
+					"scaleType": "marginal",
+					"thresholdLabel": "Fortune imposable CHF",
+					"rateSplittingDivisor": null,
+					"brackets": [
+						{
+							"threshold": 0,
+							"ratePercent": 0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 59999,
+							"ratePercent": 0.097,
+							"baseAmount": 32.65
+						},
+						{
+							"threshold": 95000,
+							"ratePercent": 0.169,
+							"baseAmount": 66.6
+						},
+						{
+							"threshold": 120000,
+							"ratePercent": 0.169,
+							"baseAmount": 108.85
+						},
+						{
+							"threshold": 177000,
+							"ratePercent": 0.242,
+							"baseAmount": 205.2
+						},
+						{
+							"threshold": 355000,
+							"ratePercent": 0.315,
+							"baseAmount": 635.95
+						},
+						{
+							"threshold": 711000,
+							"ratePercent": 0.339,
+							"baseAmount": 1757.35
+						}
+					]
+				},
+				"sourceId": "vd-li",
+				"verifiedOn": "2026-09-26",
+				"effectiveFrom": "2026-01-01",
+				"collectedFrom": "estv-base-data-module"
+			}
+		}
+	],
+	"capitalWithdrawalTax": {
+		"definedIn": "cantons/capital-withdrawal-derivation.json"
+	},
+	"cantonalMultiplier": {
+		"income": {
+			"value": 155,
+			"sourceId": "vd-la-2026",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module"
+		},
+		"wealth": {
+			"value": 155,
+			"sourceId": "vd-la-2026",
+			"verifiedOn": "2026-09-26",
+			"effectiveFrom": "2026-01-01",
+			"collectedFrom": "estv-base-data-module"
+		}
+	},
+	"baseTaxReduction": {
+		"todo": "Réduction de l'impôt cantonal de base : absente des exports de l'AFC, à relever dans l'acte.",
+		"sourceId": "vd-base-tax-reduction"
+	},
+	"communalScale": null,
+	"deductions": {
+		"value": [
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour dépenses professionnelles du revenu accessoire",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 800,
+				"maximum": 2400
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour autres frais professionnels",
+				"amount": 0,
+				"percent": 3,
+				"minimum": 2000,
+				"maximum": 4000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction de la valeur locative imputée",
+				"amount": 0,
+				"percent": 35,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des intérêts de capitaux d'épargne, personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3300
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des intérêts de capitaux d'épargne, personnes célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1600
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des intérêts de capitaux d'épargne, enfant",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 300
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance, personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 9900
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance, personnes célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 5000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des primes d'assurance, enfant",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1300
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour couple à deux revenus",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1700
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais de garde des enfants par des tiers",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 15200
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour les personnes célibataires avec enfants",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 2800
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour les enfants mineurs",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction pour personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1300
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour les frais d'entretien des immeubles occupés par leur propriétaire et âgés de plus de 20 ans",
+				"amount": 0,
+				"percent": 30,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "déduction sociale revenus modestes célibataire",
+				"amount": 17000,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "déduction sociale revenus modestes marié",
+				"amount": 22700,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "déduction sociale revenus modestes enfant",
+				"amount": 3500,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour le loyer des personnes mariées",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 13700
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour le loyer des célibataires",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 11100
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire loyer par enfant",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3700
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale du loyer",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 6800
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire pour les frais d'entretien des biens immobiliers occupés par leur propriétaire et âgés de moins de 20 ans",
+				"amount": 0,
+				"percent": 20,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire des frais d'entretien des immeubles loués jusqu'à 20 ans d'âge",
+				"amount": 0,
+				"percent": 10,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire des frais d'entretien des immeubles loués jusqu'à 20 ans d'âge",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 15000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction forfaitaire des frais d'entretien des immeubles loués de plus de 20 ans",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 30000
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction sociale revenus modestes famille monoparentale avec enfant",
+				"amount": 23700,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Seuil de sortie de la déduction pour famille 1",
+				"amount": 126400,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Seuil de sortie de la déduction pour famille 2",
+				"amount": 164200,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a avec solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 7258
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction maximale pilier 3a sans solution de prévoyance",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 36288
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Taux d'intérêt technique maximal Prime unique en CHF FINMA",
+				"amount": 0,
+				"percent": 350,
+				"minimum": 0,
+				"maximum": 0
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas sans subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 3200
+			},
+			{
+				"taxType": "Revenu",
+				"name": "Déduction des frais supplémentaires de repas avec subvention",
+				"amount": 0,
+				"percent": 0,
+				"minimum": 0,
+				"maximum": 1600
+			}
+		],
+		"sourceId": "vd-li",
+		"verifiedOn": "2026-09-26",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "estv-base-data-module"
+	},
+	"realEstateGainsTax": {
+		"todo": "Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.",
+		"sourceId": null
+	},
+	"imputedRentalValue": {
+		"todo": "Valeur locative : source à inscrire au registre, méthode à relever.",
+		"sourceId": null
+	}
+}
