@@ -1,42 +1,29 @@
-import { readFileSync } from "node:fs";
-
 import { describe, expect, it } from "vitest";
+
+import {
+	EXAMPLE_REFERENCE_PATH,
+	PRIVATE_REFERENCE_PATH,
+	caseLabel,
+	privateReferenceFileExists,
+	readReferenceFile,
+	type ReferenceCase,
+} from "./reference-file";
 
 /**
  * Intégrité du fichier de cas de référence (relevés manuels contre le
- * calculateur de l'AFC). Ce test ne lit que canton-references.json : aucun
- * import de src/, aucune dépendance au moteur de calcul. Il vérifie la
- * cohérence interne du fichier, pas l'exactitude du moteur.
+ * calculateur de l'AFC). Aucun import de src/, aucune dépendance au moteur de
+ * calcul : ce test vérifie la cohérence interne du fichier, pas l'exactitude du
+ * moteur.
+ *
+ * Lit le fichier privé s'il a été injecté, sinon les deux cas fictifs des
+ * fixtures. Les contrôles propres au vrai relevé (nombre de cas, cantons, taux)
+ * ne portent que sur le fichier privé.
  */
-const JSON_PATH = new URL("./canton-references.json", import.meta.url);
-
-interface ReferenceCase {
-	id: unknown;
-	label?: unknown;
-	municipality?: { name?: unknown; canton?: unknown; ofsId?: unknown };
-	taxpayer?: unknown;
-	grossInput?: { grossIncome?: unknown } & Record<string, unknown>;
-	estvIntermediate?: unknown;
-	engineInput?: unknown;
-	expected?: {
-		cantonalTax?: unknown;
-		municipalTax?: unknown;
-		personalTax?: unknown;
-		federalTax?: unknown;
-		churchTax?: unknown;
-		totalTax?: unknown;
-	};
-	estvMarginalRate?: { incomeRatePercent?: unknown; wealthRatePercent?: unknown };
-	estvAverageRateOnGrossPercent?: unknown;
-}
-
-interface ReferenceFile {
-	meta?: { taxYear?: unknown; tolerance?: { relative?: unknown } };
-	cases?: ReferenceCase[];
-}
-
-const raw = readFileSync(JSON_PATH, "utf-8");
-const file = JSON.parse(raw) as ReferenceFile;
+const isPrivate = privateReferenceFileExists();
+const file = readReferenceFile(isPrivate ? PRIVATE_REFERENCE_PATH : EXAMPLE_REFERENCE_PATH);
+const fileName = isPrivate
+	? "private/canton-references.json"
+	: "fixtures/canton-references.example.json";
 
 const meta = file.meta ?? {};
 const cases = file.cases ?? [];
@@ -60,7 +47,7 @@ function findNullPaths(value: unknown, path: string): string[] {
 			findNullPaths(item, `${path}[${index}]`),
 		);
 	}
-	if (value !== null && typeof value === "object") {
+	if (typeof value === "object") {
 		return Object.entries(value as Record<string, unknown>).flatMap(
 			([key, entry]) => findNullPaths(entry, path ? `${path}.${key}` : key),
 		);
@@ -68,21 +55,16 @@ function findNullPaths(value: unknown, path: string): string[] {
 	return [];
 }
 
-function caseLabel(referenceCase: ReferenceCase, index: number): string {
-	const id = typeof referenceCase.id === "string" ? referenceCase.id : null;
-	return id ?? `cases[${index}]`;
-}
+const isFiniteNumber = (value: unknown): value is number =>
+	typeof value === "number" && Number.isFinite(value);
 
-describe("intégrité de canton-references.json", () => {
-	it("les 18 cas sont présents et leurs id sont uniques", () => {
-		expect(cases.length, `18 cas attendus, ${cases.length} trouvés`).toBe(18);
+describe(`intégrité de ${fileName}`, () => {
+	it("le fichier contient des cas et leurs id sont uniques", () => {
+		expect(cases.length, "aucun cas dans le fichier").toBeGreaterThan(0);
 
 		const ids = cases.map((referenceCase) => referenceCase.id);
-		const uniqueIds = new Set(ids);
-		expect(
-			uniqueIds.size,
-			`id en double parmi : ${ids.join(", ")}`,
-		).toBe(ids.length);
+		const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+		expect(duplicates, `id en double : ${duplicates.join(", ")}`).toEqual([]);
 	});
 
 	it("chaque cas possède ses champs obligatoires, sans valeur nulle", () => {
@@ -111,9 +93,9 @@ describe("intégrité de canton-references.json", () => {
 			);
 
 			expect(
-				nullPaths.length,
+				nullPaths,
 				`${label} : valeur(s) nulle(s) sur ${nullPaths.join(", ")}`,
-			).toBe(0);
+			).toEqual([]);
 		});
 	});
 
@@ -135,36 +117,54 @@ describe("intégrité de canton-references.json", () => {
 		});
 	});
 
+	it("meta.tolerance.relative vaut 0.01 et meta.taxYear est un entier à quatre chiffres", () => {
+		expect(
+			meta.tolerance?.relative,
+			`meta.tolerance.relative vaut « ${meta.tolerance?.relative} », attendu 0.01`,
+		).toBe(0.01);
+
+		const taxYear = meta.taxYear;
+		expect(
+			typeof taxYear === "number" &&
+				Number.isInteger(taxYear) &&
+				taxYear >= 1000 &&
+				taxYear <= 9999,
+			`meta.taxYear « ${taxYear} » n'est pas un entier à quatre chiffres`,
+		).toBe(true);
+	});
+});
+
+describe.runIf(isPrivate)("intégrité du relevé réel (fichier privé uniquement)", () => {
+	it("le relevé compte 18 cas", () => {
+		expect(cases.length, `18 cas attendus, ${cases.length} trouvés`).toBe(18);
+	});
+
 	it("les six cantons romands (VD, GE, VS, FR, NE, JU) sont représentés", () => {
 		const cantonsPresent = new Set(
 			cases.map((referenceCase) => referenceCase.municipality?.canton),
 		);
-
-		for (const canton of REQUIRED_ROMANDE_CANTONS) {
-			expect(
-				cantonsPresent.has(canton),
-				`aucun cas ne porte le canton « ${canton} »`,
-			).toBe(true);
-		}
+		const missing = REQUIRED_ROMANDE_CANTONS.filter(
+			(canton) => !cantonsPresent.has(canton),
+		);
+		expect(missing, `aucun cas pour le(s) canton(s) : ${missing.join(", ")}`).toEqual([]);
 	});
 
-	it("chaque estvMarginalRate.incomeRatePercent et wealthRatePercent est renseigné", () => {
+	it("36 taux marginaux sont renseignés (revenu et fortune, pour chacun des 18 cas)", () => {
+		const missing: string[] = [];
 		cases.forEach((referenceCase, index) => {
 			const label = caseLabel(referenceCase, index);
 			const marginalRate = referenceCase.estvMarginalRate;
-
-			expect(
-				typeof marginalRate?.incomeRatePercent === "number" &&
-					Number.isFinite(marginalRate.incomeRatePercent),
-				`${label} : estvMarginalRate.incomeRatePercent « ${marginalRate?.incomeRatePercent} » n'est pas renseigné`,
-			).toBe(true);
-
-			expect(
-				typeof marginalRate?.wealthRatePercent === "number" &&
-					Number.isFinite(marginalRate.wealthRatePercent),
-				`${label} : estvMarginalRate.wealthRatePercent « ${marginalRate?.wealthRatePercent} » n'est pas renseigné`,
-			).toBe(true);
+			if (!isFiniteNumber(marginalRate?.incomeRatePercent)) {
+				missing.push(`${label} : estvMarginalRate.incomeRatePercent`);
+			}
+			if (!isFiniteNumber(marginalRate?.wealthRatePercent)) {
+				missing.push(`${label} : estvMarginalRate.wealthRatePercent`);
+			}
 		});
+		const filled = cases.length * 2 - missing.length;
+
+		expect(missing, `taux marginaux non renseignés :\n${missing.join("\n")}`).toEqual([]);
+		expect(filled, `36 taux marginaux attendus, ${filled} renseignés`).toBe(36);
 	});
 
 	it("estvAverageRateOnGrossPercent égale expected.totalTax / grossInput.grossIncome × 100 à 0,05 point près", () => {
@@ -206,21 +206,5 @@ describe("intégrité de canton-references.json", () => {
 				`${label} : ofsId ${ofsId} porte le nom « ${name} », mais ${previous.label} lui donnait déjà « ${previous.name} »`,
 			).toBe(previous.name);
 		});
-	});
-
-	it("meta.tolerance.relative vaut 0.01 et meta.taxYear est un entier à quatre chiffres", () => {
-		expect(
-			meta.tolerance?.relative,
-			`meta.tolerance.relative vaut « ${meta.tolerance?.relative} », attendu 0.01`,
-		).toBe(0.01);
-
-		const taxYear = meta.taxYear;
-		expect(
-			typeof taxYear === "number" &&
-				Number.isInteger(taxYear) &&
-				taxYear >= 1000 &&
-				taxYear <= 9999,
-			`meta.taxYear « ${taxYear} » n'est pas un entier à quatre chiffres`,
-		).toBe(true);
 	});
 });
