@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
 	MissingTaxDataError,
+	OutOfScopeError,
+	PartialCoverageError,
 	computeIncomeAndWealthTax,
 	computeMarginalRate,
 	computeFederalIncomeTax,
@@ -90,14 +92,16 @@ const scales = (overrides: Partial<TaxScales> = {}, canton: Partial<TaxScales["c
 		incomeScaleIndexation: null,
 		supplementaryWealthTax: null,
 		taxCreditPerChild: null,
+		maximumTaxBurden: null,
 		...canton,
 	},
 	municipality: { model: "multiplierOnBaseTax", multiplier: { income: pct(50), wealth: pct(50) } },
 	church: { income: noChurch, wealth: noChurch },
 	familyModel: { type: "separateScale", sourceId: "fictive-family" },
-	taxBaseRounding: { value: { incomeStep: 1, wealthStep: 1 }, sourceId: "fictive-rounding" },
+	taxBaseRounding: { income: pct(1, "fictive-rounding"), wealth: pct(1, "fictive-rounding"), rateDeterminingIncome: null },
 	personalTax: null,
 	federal: federal(),
+	coverage: null,
 	...overrides,
 });
 
@@ -174,7 +178,7 @@ describe("chaîne de calcul", () => {
 		const result = computeIncomeAndWealthTax(
 			input({ cantonalTaxableIncome: 15_099, federalTaxableIncome: 15_099 }),
 			scales({
-				taxBaseRounding: { value: { incomeStep: 100, wealthStep: 1_000 }, sourceId: "fictive-rounding" },
+				taxBaseRounding: { income: pct(100, "fictive-rounding"), wealth: pct(1_000, "fictive-rounding"), rateDeterminingIncome: null },
 				federal: federal(),
 			}),
 		);
@@ -241,6 +245,7 @@ describe("modèles familiaux", () => {
 					value: { single: 1, singleWithChildren: 1.5, married: 1.5, perChild: 0.5 },
 					sourceId: "fictive-family",
 				},
+				childReductionCap: null,
 			},
 		});
 		// quotient 1,5 + 0,5 = 2 → 2 × barème(15 000)
@@ -327,7 +332,7 @@ describe("corrections cantonales", () => {
 describe("valeurs à relever (R3)", () => {
 	it("lève MissingTaxDataError avec la liste complète des valeurs manquantes, sans résultat partiel", () => {
 		const incomplete = scales({
-			taxBaseRounding: pending("arrondi"),
+			taxBaseRounding: { income: pending("arrondi"), wealth: pending("arrondi de la fortune"), rateDeterminingIncome: null },
 			personalTax: pending("taxe personnelle"),
 			federal: federal({ income: pending("barème IFD") }),
 		});
@@ -352,7 +357,7 @@ describe("valeurs à relever (R3)", () => {
 });
 
 describe("fonctions dérivées", () => {
-	it("taux marginal : impôt supplémentaire sur 100 CHF ajoutés aux deux bases", () => {
+	it("taux marginal : impôt supplémentaire sur 1 000 CHF ajoutés aux deux bases", () => {
 		// 15 000 : 10 % cantonal, 5 % communal, 10 % fédéral
 		expect(computeMarginalRate(input(), scales()).marginalRatePercent).toBeCloseTo(25);
 	});
@@ -450,5 +455,109 @@ describe("impôt fédéral direct", () => {
 		// 24,60 arrondi à 25 : perçu
 		const rounded = federal({ minimumLeviedTax: pct(25), taxReductionPerDependant: pct(5.4) });
 		expect(computeFederalIncomeTax(input({ federalTaxableIncome: 10_300, children: 1 }), rounded).federalTax).toBe(25);
+	});
+});
+
+describe("couverture partielle", () => {
+	it("refuse le calcul d'un canton déclaré en couverture partielle, avec la note de couverture", () => {
+		const partial = scales({ coverage: { status: "partial", note: "barème non reproduit" } });
+		expect(() => computeIncomeAndWealthTax(input({ canton: "VS" }), partial)).toThrow(PartialCoverageError);
+		expect(() => computeIncomeAndWealthTax(input({ canton: "VS" }), partial)).toThrow(/barème non reproduit/);
+		expect(() => computeMarginalRate(input({ canton: "VS" }), partial)).toThrow(PartialCoverageError);
+	});
+});
+
+describe("règles cantonales relevées le 28.09.2026", () => {
+	const quotientModel = (reference: number) =>
+		scales({
+			familyModel: {
+				type: "familyQuotient",
+				sourceId: "fictive-family",
+				coefficients: {
+					value: { single: 1, singleWithChildren: 1.5, married: 1.5, perChild: 0.5 },
+					sourceId: "fictive-family",
+				},
+				childReductionCap: {
+					value: { referenceTaxableIncome: reference, increasePerAdditionalChild: 1_000 },
+					sourceId: "fictive-cap",
+				},
+			},
+		});
+	const married = input({ maritalStatus: "married", cantonalTaxableIncome: 30_000, federalTaxableIncome: 0 });
+
+	it("quotient familial : plafond non atteint, l'impôt de base reste celui du quotient", () => {
+		// réduction à 30 000 : 1,5 × barème(20 000) − 2 × barème(15 000) = 1 500 − 1 000 = 500 ;
+		// réduction de référence à 40 000 : 1,5 × barème(26 667) − 2 × barème(20 000) = 3 500 − 2 000 = 1 500
+		expect(computeIncomeAndWealthTax({ ...married, children: 1 }, quotientModel(40_000)).baseCantonalIncomeTax).toBeCloseTo(1_000);
+	});
+
+	it("quotient familial : plafond atteint pour un enfant, la réduction est ramenée à celle du revenu de référence", () => {
+		// référence à 16 000 : 1,5 × barème(10 667) − 2 × barème(8 000) = 100 ; impôt = 1 500 − 100
+		expect(computeIncomeAndWealthTax({ ...married, children: 1 }, quotientModel(16_000)).baseCantonalIncomeTax).toBeCloseTo(1_400);
+	});
+
+	it("quotient familial : plafond atteint pour plusieurs enfants, calcul refusé tant que la lecture de la loi n'est pas tranchée", () => {
+		expect(() => computeIncomeAndWealthTax({ ...married, children: 2 }, quotientModel(16_000))).toThrow(MissingTaxDataError);
+	});
+
+	it("l'arrondi de la fortune n'est requis que s'il y a une fortune imposable", () => {
+		const model = scales({ taxBaseRounding: { income: pct(1, "fictive-rounding"), wealth: pending("arrondi de la fortune"), rateDeterminingIncome: null } });
+		expect(() => computeIncomeAndWealthTax(input({ taxableWealth: 0 }), model)).not.toThrow();
+		expect(() => computeIncomeAndWealthTax(input({ taxableWealth: 200_000 }), model)).toThrow(MissingTaxDataError);
+	});
+
+	it("le rabais par enfant se déduit de l'impôt cantonal sur le revenu, pas de celui sur la fortune", () => {
+		const credit = scales({}, { taxCreditPerChild: pct(1_000, "fictive-credit") });
+		// revenu : 500 − 1 000 → 0 ; fortune : 1 000 intacte
+		expect(computeIncomeAndWealthTax(input({ children: 1, taxableWealth: 200_000 }), credit).cantonalTax).toBeCloseTo(1_000);
+	});
+
+	it("charge fiscale maximale : trace si le plafond ne peut pas jouer, refus s'il peut jouer", () => {
+		const burden = (percent: number) =>
+			scales({}, { maximumTaxBurden: { value: { percentOfNetTaxableIncome: percent, minimumWealthYieldPercent: 1 }, sourceId: "fictive-burden" } });
+		// 15 000 de revenu : cantonal 500 + communal 250 = 750, soit 5 %
+		const { breakdown } = computeIncomeAndWealthTax(input(), burden(60));
+		expect(breakdown.some((entry) => entry.label === "Charge fiscale maximale")).toBe(true);
+		expect(() => computeIncomeAndWealthTax(input(), burden(4))).toThrow(OutOfScopeError);
+	});
+});
+
+describe("impôt supplémentaire sur la fortune", () => {
+	it("s'ajoute à l'impôt cantonal sans coefficient ni réduction, et reste hors de l'impôt communal", () => {
+		const supplementary = {
+			value: {
+				scaleType: "marginal" as const,
+				brackets: [
+					{ threshold: 0, ratePercent: 0, baseAmount: 0 },
+					{ threshold: 100_000, ratePercent: 0.1, baseAmount: 0 },
+				],
+			},
+			sourceId: "fictive-supplementary",
+		};
+		const model = scales({}, {
+			multiplier: { income: pct(200), wealth: pct(200) },
+			baseTaxReduction: { value: { ratePercent: 50, appliesTo: ["income", "wealth"] }, sourceId: "fictive-reduction" },
+			supplementaryWealthTax: supplementary,
+		});
+		const withExtra = computeIncomeAndWealthTax(input({ taxableWealth: 200_000 }), model);
+		const without = computeIncomeAndWealthTax(input({ taxableWealth: 200_000 }), scales({}, {
+			multiplier: { income: pct(200), wealth: pct(200) },
+			baseTaxReduction: { value: { ratePercent: 50, appliesTo: ["income", "wealth"] }, sourceId: "fictive-reduction" },
+		}));
+		// 100 000 × 0,1 % = 100, ajouté tel quel
+		expect(withExtra.cantonalTax - without.cantonalTax).toBeCloseTo(100);
+		expect(withExtra.municipalTax).toBeCloseTo(without.municipalTax);
+	});
+});
+
+describe("revenu déterminant pour le taux arrondi", () => {
+	it("après division, le taux se lit au revenu déterminant arrondi et s'applique à l'assiette entière", () => {
+		const model = scales({
+			familyModel: { type: "divisorOnIncomeAndWealth", sourceId: "fictive-family", households: { value: ["married"], sourceId: "fictive-family" } },
+			taxBaseRounding: { income: pct(1, "fictive-rounding"), wealth: pct(1, "fictive-rounding"), rateDeterminingIncome: pct(100, "fictive-rounding") },
+		}, { income: [table({ rateSplittingDivisor: 2 })] });
+		// 30 150 / 2 = 15 075 → 15 000 ; taux moyen à 15 000 : 500 / 15 000 ; impôt = 30 150 × 500 / 15 000 = 1 005
+		const married = input({ maritalStatus: "married", cantonalTaxableIncome: 30_150, federalTaxableIncome: 0 });
+		expect(computeIncomeAndWealthTax(married, model).baseCantonalIncomeTax).toBeCloseTo(1_005);
 	});
 });

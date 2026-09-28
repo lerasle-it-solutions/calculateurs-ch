@@ -1,0 +1,46 @@
+/**
+ * Couverture cantonale du moteur fiscal, lue dans la couche de données.
+ *
+ * Un canton déclaré en couverture partielle (`coverage` dans
+ * src/data/cantons/{ct}.json) sort de `cantonsCovered` et entre dans
+ * `notCovered`, avec un lien vers le calculateur officiel du canton quand il
+ * est relevé : le périmètre l'annonce avant la saisie (P5), et le moteur refuse
+ * le calcul (`PartialCoverageError`) plutôt que de rendre un résultat faux.
+ */
+import { cantonFiles } from "../data";
+import { cantonDataSchema } from "../data/schema";
+import { fr } from "../i18n/fr";
+import { ROMANDE_CANTONS, type CantonCode } from "./cantons";
+import type { CalculatorDefinition } from "./types";
+
+type Scope = CalculatorDefinition["scope"];
+
+export type TaxEngineCoverage = {
+	cantonsCovered: CantonCode[];
+	notCovered: Scope["notCovered"];
+};
+
+/**
+ * Cantons que le moteur fiscal calcule, et entrées `notCovered` des cantons en
+ * couverture partielle. À reprendre dans le `scope` de tout calculateur qui
+ * appelle le moteur fiscal.
+ */
+export function taxEngineCoverage(): TaxEngineCoverage {
+	const cantonsCovered: CantonCode[] = [];
+	const notCovered: Scope["notCovered"] = [];
+	for (const { code, name } of ROMANDE_CANTONS) {
+		const file = cantonFiles().find((candidate) => candidate.code === code);
+		const coverage = file ? cantonDataSchema.parse(file.data).coverage : undefined;
+		if (coverage === undefined) {
+			cantonsCovered.push(code);
+			continue;
+		}
+		const official = coverage.officialCalculator;
+		notCovered.push(
+			"url" in official
+				? { case: fr.partialCoverage.notCoveredCase(name), alternative: { label: official.label, url: official.url } }
+				: { case: `${fr.partialCoverage.notCoveredCase(name)} ${fr.partialCoverage.useOfficialCalculator}` },
+		);
+	}
+	return { cantonsCovered, notCovered };
+}

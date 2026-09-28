@@ -61,6 +61,9 @@ const formId = definition.id.replace(/[^a-z0-9]+/gi, "-");
 const fieldId = (name: string) => `${formId}-${name}`;
 
 const notCovered = definition.scope.notCovered.map((entry) => {
+	if (typeof entry.alternative === "object") {
+		return { case: entry.case, alternative: entry.alternative };
+	}
 	const alternative = entry.alternative ? byId.get(entry.alternative) : undefined;
 	return {
 		case: entry.case,

@@ -467,6 +467,7 @@ const NON_EXPORT_KEYS = [
 	"supplementaryWealthTax",
 	"taxCreditPerChild",
 	"personalTax",
+	"maximumTaxBurden",
 	"realEstateGainsTax",
 	"imputedRentalValue",
 ] as const;
@@ -484,8 +485,13 @@ const DECLARED_FAMILY_MODELS: Record<CantonCode, FamilyModel | Todo> = {
 		type: "familyQuotient",
 		sourceId: "vd-li",
 		coefficients: todo("Coefficients du quotient familial (personne seule, famille monoparentale, couple marié, part par enfant) : à relever dans la LI.", "vd-li"),
+		childReductionCap: todo("Plafond de la réduction obtenue par les parts d'enfants (art. 43 al. 3 LI) : à relever.", "vd-li"),
 	},
-	GE: todo("Modèle familial genevois : taux applicable aux couples mariés et aux familles monoparentales, et assiettes concernées (revenu, fortune).", "ge-lipp"),
+	GE: {
+		type: "divisorOnIncomeAndWealth",
+		sourceId: "ge-lipp",
+		households: todo("Ménages auxquels s'applique le taux du revenu divisé (art. 41 al. 2 et 3 LIPP) : à relever.", "ge-lipp"),
+	},
 	VS: todo("Modèle familial valaisan : traitement des couples mariés (rabais d'impôt) et des familles monoparentales.", "vs-lf"),
 	FR: { type: "splittingIncludedInScale", sourceId: "fr-licd" },
 	NE: {
@@ -506,21 +512,27 @@ const nonExportDefaults = (canton: CantonCode) => {
 				: todo("Réduction de l'impôt cantonal de base (taux et impôts concernés : revenu, fortune) : absente des exports de l'AFC, à relever dans l'acte.", reduction),
 		unreducedCantonalMultiplier:
 			canton === "GE"
-				? todo("Centime additionnel cantonal qui échappe à la diminution de la LDIRPP (revenu et fortune) : à identifier et relever dans l'acte.", "ge-lcacant")
+				? todo("LCACant art. 2 : il est perçu 47,5 centimes par franc et fraction de franc sur le montant des impôts cantonaux, plus 1 centime additionnel supplémentaire. Le coefficient de l'export (147,5 %) couvre les 47,5 centimes ; reste à établir si le centime supplémentaire échappe à la diminution de la LDIRPP.", "ge-lcacant")
 				: null,
-		taxBaseRounding: todo("Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.", taxLaw),
+		taxBaseRounding: {
+			income: todo("Arrondi du revenu imposable (pas en francs, 1 si aucun) : à relever dans la loi.", taxLaw),
+			wealth: todo("Arrondi de la fortune imposable (pas en francs, 1 si aucun) : à relever dans la loi.", taxLaw),
+		},
 		incomeScaleIndexation:
 			canton === "VS"
-				? todo("Application du barème du revenu, cantonal et communal : les cas de référence ne sont reproduits qu'en indexant les seuils de l'export. Mécanisme et facteurs à relever.", "vs-lf")
+				? todo("Indexation cantonale du barème du revenu (%), et si le barème publié l'intègre déjà : à relever dans la LF.", "vs-lf")
 				: null,
 		supplementaryWealthTax:
-			canton === "GE" ? todo("Impôt supplémentaire sur la fortune, sans centimes additionnels : barème à relever.", "ge-lipp") : null,
+			canton === "GE"
+				? todo("LIPP art. 59 al. 2, barème adapté par RCEPF art. 18 al. 2 pour 2026 : la fortune est divisée en tranches soumises à un impôt supplémentaire, sur lequel il n'est perçu aucun centime additionnel. Barème à relever.", "ge-lipp")
+				: null,
 		taxCreditPerChild:
 			canton === "NE" ? todo("Rabais d'impôt par enfant, déduit de l'impôt cantonal : montant à relever.", "ne-lcdir") : null,
 		personalTax:
 			canton === "VS" || canton === "GE"
 				? todo("Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.", null)
 				: null,
+		maximumTaxBurden: null, // relevé à la main (Genève, art. 60 LIPP), jamais écrasé
 		realEstateGainsTax: todo("Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.", null),
 		imputedRentalValue: todo("Valeur locative : source à inscrire au registre, méthode à relever.", null),
 	};
@@ -587,6 +599,30 @@ const readCommunalScale = (
 	return { income, wealth: todo(COMMUNAL_WEALTH_TODO, SOURCE_BY_CANTON[canton].communalScale) };
 };
 
+/**
+ * Barèmes relevés dans la loi plutôt que lus dans l'export : l'export de l'AFC
+ * est lu et validé, mais la table relevée à la main dans le fichier cantonal
+ * fait foi et n'est jamais écrasée. Valais : l'export ne reproduit ni l'annexe 1
+ * à l'art. 32 al. 1 LF ni toutes les classes de l'art. 178.
+ */
+const LAW_SCALES: Partial<Record<CantonCode, ("incomeTaxScale" | "communalIncomeScale")[]>> = {
+	VS: ["incomeTaxScale", "communalIncomeScale"],
+};
+
+const existingCantonFile = (path: string): Record<string, unknown> =>
+	existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>) : {};
+
+/** La table relevée dans la loi si le fichier existant la porte ; sinon, celle de l'export. */
+const keepLawScale = (canton: CantonCode, key: "incomeTaxScale" | "communalIncomeScale", manual: unknown, fromExport: TaxScale): TaxScale => {
+	if (!LAW_SCALES[canton]?.includes(key)) return fromExport;
+	if (manual === undefined || todoSchema.safeParse(manual).success) {
+		flag(canton, `${key} : barème à relever dans la loi (LAW_SCALES), absent du fichier cantonal — l'export ne fait pas foi`);
+		return fromExport;
+	}
+	remarks.push(`${canton} — ${key} : barème relevé dans la loi conservé, table de l'export ignorée`);
+	return manual as TaxScale;
+};
+
 // --- Un canton -----------------------------------------------------------------
 
 const readCanton = async (
@@ -642,21 +678,36 @@ const readCanton = async (
 
 	const otherDeductionsSheet = sheets.get("autres-deductions");
 	const path = join(DATA_DIR, "cantons", `${canton.toLowerCase()}.json`);
+	const existing = existingCantonFile(path);
+	const communalScale = readCommunalScale(canton, path, incomeScales.Commune, wealthScales.Commune);
 	const data = {
 		canton,
 		year: YEAR,
-		incomeTaxScale: incomeScales.Canton,
+		incomeTaxScale: keepLawScale(canton, "incomeTaxScale", existing.incomeTaxScale, incomeScales.Canton),
 		wealthTaxScale: wealthScales.Canton,
 		capitalWithdrawalTax,
 		cantonalMultiplier: multipliers.cantonal && {
 			income: collected(multipliers.cantonal.income, cantonalSource, cantonalNote),
 			wealth: collected(multipliers.cantonal.wealth, cantonalSource, cantonalNote),
 		},
-		communalScale: readCommunalScale(canton, path, incomeScales.Commune, wealthScales.Commune),
+		communalScale:
+			communalScale === null
+				? null
+				: {
+						...communalScale,
+						income: keepLawScale(
+							canton,
+							"communalIncomeScale",
+							(existing.communalScale as { income?: unknown } | undefined)?.income,
+							communalScale.income,
+						),
+					},
 		deductions: readDeductions(canton, deductions, taxLawSource),
 		...(otherDeductionsSheet ? { otherDeductions: readOtherDeductions(canton, otherDeductionsSheet, taxLawSource) } : {}),
 		...keepManualValues(path, nonExportDefaults(canton)),
 		familyModel: keepFamilyModel(canton, path),
+		// Couverture partielle : décision du mainteneur, jamais écrasée
+		...(existing.coverage !== undefined ? { coverage: existing.coverage } : {}),
 	};
 
 	const result = { path, municipalities: multipliers.municipalities };
@@ -690,8 +741,22 @@ for (const canton of CANTON_CODES) {
 	}
 }
 
+// Indexation communale : relevée à la main, conservée par numéro OFS
+const multipliersPath = join(DATA_DIR, "municipalities", "multipliers.json");
+const existingIndexations = new Map<number, unknown>(
+	existsSync(multipliersPath)
+		? (JSON.parse(readFileSync(multipliersPath, "utf8")) as { multipliers: { bfsId: number; communalScaleIndexation?: unknown }[] }).multipliers
+				.filter((entry) => entry.communalScaleIndexation !== undefined)
+				.map((entry) => [entry.bfsId, entry.communalScaleIndexation])
+		: [],
+);
 const municipalities = results
 	.flatMap((result) => result?.municipalities ?? [])
+	.map((entry) =>
+		existingIndexations.has(entry.bfsId)
+			? { ...entry, communalScaleIndexation: existingIndexations.get(entry.bfsId) }
+			: entry,
+	)
 	.sort((a, b) => CANTON_CODES.indexOf(a.canton) - CANTON_CODES.indexOf(b.canton) || a.bfsId - b.bfsId);
 const multipliersFile = municipalMultipliersDataSchema.safeParse({ year: YEAR, multipliers: municipalities });
 if (!multipliersFile.success) {
@@ -717,7 +782,6 @@ for (const result of results) {
 	writeFileSync(result.path, `${JSON.stringify(result.data, null, "\t")}\n`);
 	console.log(`✓ écrit ${relative(ROOT, result.path)}`);
 }
-const multipliersPath = join(DATA_DIR, "municipalities", "multipliers.json");
 mkdirSync(dirname(multipliersPath), { recursive: true });
 writeFileSync(multipliersPath, `${JSON.stringify(multipliersFile.data, null, "\t")}\n`);
 console.log(`✓ écrit ${relative(ROOT, multipliersPath)} (${municipalities.length} communes)`);

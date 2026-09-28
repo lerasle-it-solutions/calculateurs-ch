@@ -50,8 +50,14 @@
 				"note": "Art. 33b LF : taux applicable aux prestations périodiques, plafonné. Pas de facteur : l'art. 33b al. 1 LF applique le taux des prestations périodiques, plafonné à 4 % (al. 4), avec une réduction de 2 % pour les couples mariés, au maximum 2 450 CHF. Cette réduction n'est pas encore modélisée."
 			},
 			"coupleReduction": {
-				"todo": "Réduction pour les couples mariés (art. 33b LF), décrite dans la note de maximumRatePercent : à saisir en valeur sourcée et à modéliser dans le moteur.",
-				"sourceId": "vs-lf"
+				"value": {
+					"reductionPercent": 2,
+					"maximumAmount": 2450
+				},
+				"sourceId": "vs-lf",
+				"verifiedOn": "2026-09-28",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 33b LF : réduction de 2 % pour les couples mariés, au maximum 2 450 CHF. Assiette de la réduction (impôt ou taux) à préciser avant modélisation ; pas encore appliquée par le moteur."
 			}
 		}
 	}

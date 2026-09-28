@@ -199,30 +199,149 @@
 		}
 	},
 	"baseTaxReduction": {
-		"todo": "Réduction de l'impôt cantonal de base (taux et impôts concernés : revenu, fortune) : absente des exports de l'AFC, à relever dans l'acte.",
-		"sourceId": "ge-ldirpp"
+		"value": {
+			"ratePercent": 12,
+			"appliesTo": [
+				"income"
+			]
+		},
+		"unit": "%",
+		"sourceId": "ge-ldirpp",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "LDIRPP, rs/GE D 3 06, art. 1 : « L'impôt direct sur le revenu des personnes physiques, à l'exception des centimes additionnels communaux, est diminué de 12 %. » La diminution porte sur l'impôt cantonal sur le revenu, 47,5 centimes cantonaux compris ; ni sur la fortune, ni sur les centimes communaux, ni sur le centime supplémentaire de l'art. 2 al. 2 LCACant, qui n'est pas de l'impôt direct sur le revenu."
 	},
 	"unreducedCantonalMultiplier": {
-		"todo": "Centime additionnel cantonal qui échappe à la diminution de la LDIRPP (revenu et fortune) : à identifier et relever dans l'acte.",
-		"sourceId": "ge-lcacant"
+		"value": {
+			"income": 1,
+			"wealth": 1
+		},
+		"unit": "%",
+		"sourceId": "ge-lcacant",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "LCACant, rs/GE D 3 07, art. 2 al. 2 : en couverture partielle des charges relatives au maintien, à l'aide et aux soins à domicile, il est perçu 1 centime additionnel supplémentaire, par franc et fraction de franc, sur le montant des impôts cantonaux sur le revenu et la fortune des personnes physiques. Il échappe à la diminution de la LDIRPP. Les 47,5 centimes de l'al. 1 sont portés par le coefficient cantonal de 147,5 %. Aucun centime n'est perçu sur l'impôt supplémentaire sur la fortune (art. 59 al. 2 LIPP)."
 	},
 	"familyModel": {
-		"todo": "Modèle familial genevois : taux applicable aux couples mariés et aux familles monoparentales, et assiettes concernées (revenu, fortune).",
-		"sourceId": "ge-lipp"
+		"type": "divisorOnIncomeAndWealth",
+		"sourceId": "ge-lipp",
+		"households": {
+			"value": [
+				"married",
+				"singleWithChildren"
+			],
+			"sourceId": "ge-lipp",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "LIPP art. 41 al. 2 et 3 : pour les époux vivant en ménage commun, le taux appliqué à leur revenu est celui qui correspond à 50 % de ce dernier — soit le diviseur 2 publié avec la table du revenu, aucun sur la fortune. L'al. 3 étend la règle aux célibataires, veufs, divorcés, séparés de corps ou de fait qui font ménage commun avec leurs enfants ou un proche constituant une charge de famille et dont ils assurent pour l'essentiel l'entretien ; le moteur ne connaît pas le proche à charge sans enfant."
+		}
 	},
 	"taxBaseRounding": {
-		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
-		"sourceId": "ge-lipp"
+		"income": {
+			"value": 1,
+			"unit": "CHF",
+			"sourceId": "ge-lipp",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Pas d'arrondi : aucune règle d'arrondi d'assiette dans la feuille cantonale. Les centimes additionnels se perçoivent « par franc et fraction de franc », ce qui exclut un arrondi de l'impôt."
+		},
+		"wealth": {
+			"value": 1,
+			"unit": "CHF",
+			"sourceId": "ge-lipp",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Pas d'arrondi : aucune règle d'arrondi d'assiette dans la feuille cantonale. Les centimes additionnels se perçoivent « par franc et fraction de franc », ce qui exclut un arrondi de l'impôt."
+		}
 	},
 	"incomeScaleIndexation": null,
 	"supplementaryWealthTax": {
-		"todo": "Impôt supplémentaire sur la fortune, sans centimes additionnels : barème à relever.",
-		"sourceId": "ge-lipp"
+		"value": {
+			"scaleType": "marginal",
+			"thresholdLabel": "Fortune imposable, borne inférieure de tranche",
+			"rateSplittingDivisor": null,
+			"brackets": [
+				{
+					"threshold": 1,
+					"ratePercent": 0.0,
+					"baseAmount": 0.0
+				},
+				{
+					"threshold": 118723,
+					"ratePercent": 0.00956,
+					"baseAmount": 0.0
+				},
+				{
+					"threshold": 237444,
+					"ratePercent": 0.01169,
+					"baseAmount": 11.35
+				},
+				{
+					"threshold": 356166,
+					"ratePercent": 0.0255,
+					"baseAmount": 25.25
+				},
+				{
+					"threshold": 474887,
+					"ratePercent": 0.02763,
+					"baseAmount": 55.5
+				},
+				{
+					"threshold": 712331,
+					"ratePercent": 0.04463,
+					"baseAmount": 121.1
+				},
+				{
+					"threshold": 949773,
+					"ratePercent": 0.04781,
+					"baseAmount": 227.05
+				},
+				{
+					"threshold": 1187216,
+					"ratePercent": 0.068,
+					"baseAmount": 340.55
+				},
+				{
+					"threshold": 1424659,
+					"ratePercent": 0.07225,
+					"baseAmount": 502.0
+				},
+				{
+					"threshold": 1780824,
+					"ratePercent": 0.09563,
+					"baseAmount": 759.35
+				},
+				{
+					"threshold": 3561647,
+					"ratePercent": 0.11475,
+					"baseAmount": 2462.35
+				}
+			]
+		},
+		"sourceId": "ge-rcepf",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "LIPP art. 59 al. 2, barème adapté par RCEPF art. 18 al. 2 pour la période fiscale 2026. Taux de tranche publiés en ‰, convertis en % ; montant de base de chaque tranche = impôt total cumulé publié de la tranche précédente. Au-delà de 3 561 646 francs : 1,1475 ‰, taux moyen tendant vers 1,1475 ‰. Aucun centime additionnel n'est perçu sur cet impôt supplémentaire ; il échappe aussi à la diminution de la LDIRPP, qui ne vise que l'impôt sur le revenu."
 	},
 	"taxCreditPerChild": null,
 	"personalTax": {
-		"todo": "Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.",
-		"sourceId": null
+		"value": 25,
+		"unit": "CHF",
+		"sourceId": "ge-lcp",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "LCP art. 374 à 377. Sont soumises les personnes domiciliées dans le canton au bénéfice d'une attestation, d'un permis de séjour ou d'établissement ; une seule taxe par couple marié ou lié par un partenariat enregistré vivant en ménage commun (art. 374 al. 2) ; quotité de 25 francs par an (art. 375). Exemptions de l'art. 377, non examinées par le moteur : enfants mineurs ; contribuable sans fortune soumis au barème de l'art. 41 al. 1 LIPP dont le revenu ne dépasse pas 3 400 francs, soumis aux art. 41 al. 2 ou 3 dont le revenu ne dépasse pas 5 000 francs, soumis à l'art. 41 al. 4 dont le revenu ne dépasse pas 4 500 francs ; bénéficiaires réguliers de l'aide sociale ; personnes de plus de 60 ans et invalides à la charge de leurs parents ; catégories de chômeurs désignées par le Conseil d'État."
+	},
+	"maximumTaxBurden": {
+		"value": {
+			"percentOfNetTaxableIncome": 60,
+			"minimumWealthYieldPercent": 1
+		},
+		"unit": "%",
+		"sourceId": "ge-lipp",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "LIPP art. 60 al. 1 : pour les contribuables domiciliés en Suisse, les impôts sur la fortune et sur le revenu, centimes additionnels cantonaux et communaux compris, ne peuvent excéder 60 % du revenu net imposable, le rendement net de la fortune étant fixé au moins à 1 % de la fortune nette."
 	},
 	"communalScale": null,
 	"deductions": {

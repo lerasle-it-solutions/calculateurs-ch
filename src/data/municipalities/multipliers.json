@@ -30842,6 +30842,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-09-28",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Sion."
 			}
 		},
 		{

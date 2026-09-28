@@ -281,7 +281,11 @@ les **deux** revenus imposables diminués de la déduction — et **jamais** en 
 un taux marginal par un montant. Une déduction de plusieurs milliers de francs peut
 franchir une limite de barème ou un seuil de déduction sociale, ce qu'une dérivée ne
 voit pas. `computeMarginalRate` existe, mais sert d'oracle de vérification, pas de
-méthode de calcul.
+méthode de calcul : impôt supplémentaire sur 1 000 CHF de revenu imposable appliqués
+simultanément aux deux bases, divisé par 1 000. Pourquoi 1 000 : certains cantons font
+avancer le revenu déterminant pour le taux par marches — le quotient familial vaudois,
+qui divise par 2,3 puis arrondit à la centaine, produit une marche tous les 230 francs —,
+de sorte qu'un pas de 100 francs mesure le plateau et non la pente.
 
 **Trois pièges d'implémentation connus** : le barème fribourgeois est **continu**, sans
 paliers, contrairement aux cinq autres ; certaines étapes officielles **arrondissent à

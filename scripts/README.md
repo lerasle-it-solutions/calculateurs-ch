@@ -45,7 +45,9 @@ Le script écrit `src/data/cantons/{ct}.json` et `src/data/municipalities/multip
 - **Largeurs de tranches (Jura).** L'export donne « Pour les prochains CHF » au lieu d'un seuil. `estv-scale-conversion.ts` cumule les largeurs en seuils et les impôts des tranches précédentes en montants de base ; la largeur `9 999 999 999` marque la dernière tranche, sans borne. La table porte la note `derivedFrom: "bracketWidths"`.
 - **Arrondi.** Taux, coefficients et montants de base calculés sont arrondis à huit décimales. L'arrondi ne vise que les artefacts de virgule flottante, jamais la précision publiée : l'AFC publie au plus cinq décimales. Un test vérifie qu'aucun taux des exports jurassiens n'est modifié par l'arrondi.
 - **Prestations en capital dérivées** (VD, GE, NE, VS). Leurs règles vivent dans `src/data/cantons/capital-withdrawal-derivation.json`, écrit à la main, lu et validé par le lecteur mais jamais réécrit ; le fichier cantonal y renvoie par `{ "definedIn": … }`. Chaque valeur y porte pour `sourceId` le rôle `taxLaw` du canton.
-- **Barème communal valaisan.** Lu sous l'autorité « Commune » en `communalScale.income`. L'export ne livre pas la fortune communale : `communalScale.wealth` reste un TODO tant qu'elle n'est ni dans l'export ni relevée à la main.
+- **Barèmes valaisans du revenu.** Relevés dans la loi (annexe 1 à l'art. 32 al. 1 LF pour le canton, art. 178 pour la commune) et déclarés dans `LAW_SCALES` : l'export est lu et validé, mais la table du fichier cantonal fait foi et n'est jamais écrasée ; son absence bloque l'écriture. L'export ne livre pas la fortune communale : `communalScale.wealth` reste un TODO tant qu'elle n'est ni dans l'export ni relevée à la main.
+- **Indexation communale** (`communalScaleIndexation`, Valais). Relevée à la main par commune dans `multipliers.json`, conservée à la relance par numéro OFS.
+- **Couverture partielle** (`coverage`). Décision du mainteneur, conservée à la relance.
 
 ### Contrôle après lecture
 

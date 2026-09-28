@@ -56,6 +56,13 @@ export const fr = {
 		assumptions: "Hypothèses retenues",
 	},
 
+	/** Canton déclaré en couverture partielle par la couche de données. */
+	partialCoverage: {
+		notCoveredCase: (canton: string): string =>
+			`${canton} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ce canton.`,
+		useOfficialCalculator: "Utilisez le calculateur fiscal officiel du canton.",
+	},
+
 	breakdown: {
 		summary: "Voir le calcul ligne par ligne",
 		stepColumn: "Étape",

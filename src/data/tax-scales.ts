@@ -9,6 +9,7 @@
  * le moteur le signale s'il en a besoin, sans jamais supposer de valeur.
  */
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "./index";
+import { SOURCE_BY_CANTON } from "./sources";
 import type { Todo, Value } from "./schema";
 import type {
 	ChurchDenomination,
@@ -107,20 +108,42 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 		wealth: sourced(municipality.wealth.municipal),
 	};
 
+	// Indexation cantonale : facteur de lecture des seuils, sauf si le barème publié l'intègre déjà.
 	const indexation = canton.incomeScaleIndexation;
-	const indexationFor = (level: "cantonal" | "communal"): SourcedOrPending<number> | null =>
+	const cantonalIndexation: SourcedOrPending<number> | null =
 		indexation === null
 			? null
 			: isTodo(indexation)
 				? pending(indexation)
-				: { value: indexation.value[level], sourceId: indexation.sourceId };
+				: indexation.value.appliedIn === "publishedScale"
+					? null
+					: { value: indexation.value.cantonalPercent / 100, sourceId: indexation.sourceId };
+	// Indexation communale : une donnée par commune, relevée à la main.
+	const communalIndexation: SourcedOrPending<number> =
+		municipality.communalScaleIndexation === undefined
+			? {
+					pending: `Indexation du barème communal de ${municipality.municipality} (OFS ${municipality.bfsId}) : à relever.`,
+					sourceId: SOURCE_BY_CANTON[query.canton].municipalMultipliers,
+				}
+			: {
+					value: municipality.communalScaleIndexation.value / 100,
+					sourceId: municipality.communalScaleIndexation.sourceId,
+				};
 
 	const familyModel: FamilyModel | Pending = isTodo(canton.familyModel)
 		? pending(canton.familyModel)
 		: canton.familyModel.type === "divisorOnIncomeAndWealth"
 			? { ...canton.familyModel, households: sourcedOrPending(canton.familyModel.households) }
 			: canton.familyModel.type === "familyQuotient"
-				? { ...canton.familyModel, coefficients: sourcedOrPending(canton.familyModel.coefficients) }
+				? {
+						type: "familyQuotient",
+						sourceId: canton.familyModel.sourceId,
+						coefficients: sourcedOrPending(canton.familyModel.coefficients),
+						childReductionCap:
+							canton.familyModel.childReductionCap === undefined
+								? null
+								: sourcedOrPending(canton.familyModel.childReductionCap),
+					}
 				: canton.familyModel;
 
 	const communal = canton.communalScale;
@@ -135,9 +158,10 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 			},
 			baseTaxReduction: nullable(canton.baseTaxReduction),
 			unreducedMultiplier: nullable(canton.unreducedCantonalMultiplier),
-			incomeScaleIndexation: indexationFor("cantonal"),
-			supplementaryWealthTax: canton.supplementaryWealthTax === null ? null : pending(canton.supplementaryWealthTax),
+			incomeScaleIndexation: cantonalIndexation,
+			supplementaryWealthTax: nullable(canton.supplementaryWealthTax),
 			taxCreditPerChild: nullable(canton.taxCreditPerChild),
+			maximumTaxBurden: canton.maximumTaxBurden === null ? null : sourced(canton.maximumTaxBurden),
 		},
 		municipality:
 			communal === null
@@ -148,14 +172,22 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 						wealth: isTodo(communal.wealth)
 							? pending(communal.wealth)
 							: toTables(communal.wealth, `${query.canton}, barème communal de la fortune`),
-						incomeScaleIndexation: indexationFor("communal"),
+						incomeScaleIndexation: communalIndexation,
 						multiplier: municipalMultiplier,
 					},
 		church: { income: church("income"), wealth: church("wealth") },
 		familyModel,
-		taxBaseRounding: sourcedOrPending(canton.taxBaseRounding),
+		taxBaseRounding: {
+			income: sourcedOrPending(canton.taxBaseRounding.income),
+			wealth: sourcedOrPending(canton.taxBaseRounding.wealth),
+			rateDeterminingIncome:
+				canton.taxBaseRounding.rateDeterminingIncome === undefined
+					? null
+					: sourced(canton.taxBaseRounding.rateDeterminingIncome),
+		},
 		personalTax: nullable(canton.personalTax),
 		federal: getFederalTaxScales(query.taxYear),
+		coverage: canton.coverage === undefined ? null : { status: canton.coverage.status, note: canton.coverage.note },
 	};
 }
 

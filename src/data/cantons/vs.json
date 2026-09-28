@@ -7,80 +7,130 @@
 			"table": {
 				"value": {
 					"scaleType": "interpolated",
-					"thresholdLabel": "Revenu imposable Confédération",
+					"thresholdLabel": "Revenu imposable, borne supérieure de classe",
 					"rateSplittingDivisor": null,
 					"brackets": [
 						{
-							"threshold": 0,
-							"ratePercent": 2,
+							"threshold": 9700,
+							"ratePercent": 2.0,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 5000,
-							"ratePercent": 2,
+							"threshold": 19500,
+							"ratePercent": 2.8009,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 10000,
-							"ratePercent": 2.8,
+							"threshold": 29200,
+							"ratePercent": 3.6966,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 20000,
-							"ratePercent": 4.6,
+							"threshold": 38900,
+							"ratePercent": 4.5928,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 30000,
-							"ratePercent": 6,
+							"threshold": 58400,
+							"ratePercent": 5.9952,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 40000,
-							"ratePercent": 7.4,
+							"threshold": 77900,
+							"ratePercent": 7.3962,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 50000,
-							"ratePercent": 8.7,
+							"threshold": 97400,
+							"ratePercent": 8.6974,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 60000,
-							"ratePercent": 10.2,
+							"threshold": 116900,
+							"ratePercent": 10.1978,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 70000,
-							"ratePercent": 11.5,
+							"threshold": 136300,
+							"ratePercent": 11.4923,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 80000,
-							"ratePercent": 13,
+							"threshold": 155800,
+							"ratePercent": 12.9938,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 90000,
-							"ratePercent": 13.3,
+							"threshold": 175300,
+							"ratePercent": 13.2986,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 100000,
-							"ratePercent": 13.5,
+							"threshold": 194800,
+							"ratePercent": 13.4992,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 200000,
-							"ratePercent": 14,
+							"threshold": 214300,
+							"ratePercent": 13.5498,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 233800,
+							"ratePercent": 13.5999,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 253200,
+							"ratePercent": 13.6496,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 272700,
+							"ratePercent": 13.6997,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 292200,
+							"ratePercent": 13.7497,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 311700,
+							"ratePercent": 13.7997,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 331200,
+							"ratePercent": 13.8498,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 350800,
+							"ratePercent": 13.9001,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 370300,
+							"ratePercent": 13.9501,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 389800,
+							"ratePercent": 14.0,
+							"baseAmount": 0
+						},
+						{
+							"threshold": 389900,
+							"ratePercent": 14.0,
 							"baseAmount": 0
 						}
 					]
 				},
 				"sourceId": "vs-lf",
-				"verifiedOn": "2026-09-26",
+				"verifiedOn": "2026-09-28",
 				"effectiveFrom": "2026-01-01",
-				"collectedFrom": "estv-base-data-module"
+				"note": "Annexe 1 à l'art. 32 al. 1 LF, « État 01.01.2024 », liée à la version de la loi en vigueur depuis le 01.01.2026, adoptée le 12.09.2024, indexation du canton à 170 % : classes déjà indexées, aucune déflation. Un point par borne supérieure de classe, au taux de la classe ; le taux s'interpole entre deux bornes supérieures consécutives et s'applique au revenu entier. Le « produit de l'impôt » publié vaut le taux × la borne supérieure (écart de 0,14 CHF au plus) et n'est pas repris. Dernière ligne : dès 389 900, 14 %. Première classe publiée à partir de 500 CHF : le traitement des revenus inférieurs n'est vérifié par aucun cas de référence."
 			}
 		}
 	],
@@ -253,19 +303,37 @@
 		"sourceId": "vs-lf"
 	},
 	"taxBaseRounding": {
-		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
-		"sourceId": "vs-lf"
+		"income": {
+			"todo": "Arrondi du revenu imposable : à relever dans la LF.",
+			"sourceId": "vs-lf"
+		},
+		"wealth": {
+			"todo": "Arrondi de la fortune imposable : à relever dans la LF.",
+			"sourceId": "vs-lf"
+		}
 	},
 	"incomeScaleIndexation": {
-		"todo": "Application du barème du revenu, cantonal et communal : les cas de référence ne sont reproduits qu'en indexant les seuils de l'export. Mécanisme et facteurs à relever.",
-		"sourceId": "vs-lf"
+		"value": {
+			"cantonalPercent": 170,
+			"appliedIn": "publishedScale"
+		},
+		"unit": "%",
+		"sourceId": "vs-lf",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "Annexe 1 à l'art. 32 al. 1 LF, « État 01.01.2024 », liée à la version de la loi en vigueur depuis le 01.01.2026, adoptée le 12.09.2024 : le barème de incomeTaxScale est publié déjà indexé à 170 %, le moteur ne réapplique pas l'indexation."
 	},
 	"supplementaryWealthTax": null,
 	"taxCreditPerChild": null,
 	"personalTax": {
-		"todo": "Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.",
-		"sourceId": null
+		"value": 24,
+		"unit": "CHF",
+		"sourceId": "vs-lf",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "Art. 177 al. 1 LF : impôt personnel, plafonné à 24 francs ; le moteur prélève le plafond."
 	},
+	"maximumTaxBurden": null,
 	"communalScale": {
 		"income": [
 			{
@@ -273,17 +341,12 @@
 				"table": {
 					"value": {
 						"scaleType": "interpolated",
-						"thresholdLabel": "Revenu imposable Confédération",
+						"thresholdLabel": "Revenu imposable, borne supérieure de classe",
 						"rateSplittingDivisor": null,
 						"brackets": [
 							{
-								"threshold": 0,
-								"ratePercent": 2,
-								"baseAmount": 0
-							},
-							{
 								"threshold": 5000,
-								"ratePercent": 2,
+								"ratePercent": 2.0,
 								"baseAmount": 0
 							},
 							{
@@ -318,7 +381,12 @@
 							},
 							{
 								"threshold": 60000,
-								"ratePercent": 8,
+								"ratePercent": 8.0,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 70000,
+								"ratePercent": 8.4,
 								"baseAmount": 0
 							},
 							{
@@ -328,7 +396,47 @@
 							},
 							{
 								"threshold": 90000,
-								"ratePercent": 9,
+								"ratePercent": 9.0,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 100000,
+								"ratePercent": 9.1,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 110000,
+								"ratePercent": 9.2,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 120000,
+								"ratePercent": 9.3,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 130000,
+								"ratePercent": 9.4,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 140000,
+								"ratePercent": 9.5,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 150000,
+								"ratePercent": 9.6,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 160000,
+								"ratePercent": 9.7,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 170000,
+								"ratePercent": 9.8,
 								"baseAmount": 0
 							},
 							{
@@ -337,21 +445,31 @@
 								"baseAmount": 0
 							},
 							{
+								"threshold": 190000,
+								"ratePercent": 9.95,
+								"baseAmount": 0
+							},
+							{
 								"threshold": 200000,
-								"ratePercent": 10,
+								"ratePercent": 10.0,
+								"baseAmount": 0
+							},
+							{
+								"threshold": 200100,
+								"ratePercent": 10.0,
 								"baseAmount": 0
 							}
 						]
 					},
 					"sourceId": "vs-communal-scale",
-					"verifiedOn": "2026-09-26",
+					"verifiedOn": "2026-09-28",
 					"effectiveFrom": "2026-01-01",
-					"collectedFrom": "estv-base-data-module"
+					"note": "Art. 178 al. 1 LF, barème communal du revenu, base non indexée. Un point par borne supérieure de classe, au taux de la classe ; interpolation de 5 000 à 200 000 francs (art. 178 al. 2) ; dès 200 100, 10 %. Le produit publié vaut exactement le taux × la borne supérieure et n'est pas repris. Indexation propre à chaque commune (municipalities/multipliers.json)."
 				}
 			}
 		],
 		"wealth": {
-			"todo": "L'art. 178 LF couvre la fortune, mais l'export du module ne la livre pas. À relever dans la loi ou auprès du Service cantonal des contributions avant tout calcul de fortune valaisanne au niveau communal.",
+			"todo": "Règle de fortune communale de l'art. 179 LF : à relever avant tout calcul de fortune valaisanne au niveau communal.",
 			"sourceId": "vs-communal-scale"
 		}
 	},
@@ -646,5 +764,14 @@
 	"imputedRentalValue": {
 		"todo": "Valeur locative : source à inscrire au registre, méthode à relever.",
 		"sourceId": null
+	},
+	"coverage": {
+		"status": "partial",
+		"declaredOn": "2026-09-28",
+		"note": "Écart résiduel entre le barème publié et les résultats du calculateur officiel, mesuré sur deux cas de référence à des revenus très différents : +2,2 % et +0,6 % avec l'annexe 1 telle quelle. L'écart n'est pas multiplicatif : il porte sur les classes. Il disparaît sur les deux cas, à 2 francs près, si les classes de l'annexe sont élargies d'environ 3,1 %, soit une indexation effective d'environ 175,2 % au lieu de 170 %, le taux étant interpolé puis appliqué au revenu entier. Une réduction proportionnelle des taux ne l'expliquerait pas. Cause non identifiée ; piste : troisième étape de la révision fiscale valaisanne en faveur des personnes physiques, applicable dès 2026, non retrouvée dans les actes publiés. L'annexe 1 consultée, « État 01.01.2024 » à 170 %, liée à la version de la loi en vigueur depuis le 01.01.2026, est la seule publiée. Question à poser au Service cantonal des contributions : quel tableau, avec quelle indexation, s'applique à la période fiscale 2026 ?",
+		"officialCalculator": {
+			"label": "Calculette d'impôts du Service cantonal des contributions du Valais",
+			"url": "https://taxcalculator.apps.vs.ch/"
+		}
 	}
 }

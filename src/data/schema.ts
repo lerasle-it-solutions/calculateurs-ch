@@ -288,7 +288,16 @@ export const capitalWithdrawalDerivationFileSchema = z
 					factor: valueSchema(z.number()).optional(),
 					minimumRatePercent: valueSchema(z.number()).optional(),
 					maximumRatePercent: valueSchema(z.number()).optional(),
-					coupleReduction: todoSchema.optional(),
+					coupleReduction: z
+						.union([
+							valueSchema(
+								z
+									.object({ reductionPercent: z.number().positive(), maximumAmount: z.number().positive() })
+									.strict(),
+							),
+							todoSchema,
+						])
+						.optional(),
 				})
 				.strict(),
 		),
@@ -358,6 +367,18 @@ const familyQuotientCoefficientsSchema = z
 	})
 	.strict();
 
+/**
+ * La réduction obtenue par les parts d'enfants ne peut excéder celle obtenue
+ * pour un enfant à `referenceTaxableIncome` francs de revenu imposable, montant
+ * augmenté de `increasePerAdditionalChild` francs par enfant supplémentaire.
+ */
+const childReductionCapSchema = z
+	.object({
+		referenceTaxableIncome: z.number().positive(),
+		increasePerAdditionalChild: z.number().nonnegative(),
+	})
+	.strict();
+
 const familyModelSchema = z.discriminatedUnion("type", [
 	z.object({ type: z.literal("splittingIncludedInScale"), sourceId: z.string().min(1) }).strict(),
 	z.object({ type: z.literal("separateScale"), sourceId: z.string().min(1) }).strict(),
@@ -373,6 +394,8 @@ const familyModelSchema = z.discriminatedUnion("type", [
 			type: z.literal("familyQuotient"),
 			sourceId: z.string().min(1),
 			coefficients: z.union([valueSchema(familyQuotientCoefficientsSchema), todoSchema]),
+			// Plafond de la réduction obtenue par les parts d'enfants (Vaud, art. 43 al. 3 LI)
+			childReductionCap: z.union([valueSchema(childReductionCapSchema), todoSchema]).optional(),
 		})
 		.strict(),
 ]);
@@ -384,9 +407,67 @@ export const FAMILY_MODEL_TYPES = [
 	"familyQuotient",
 ] as const;
 
-/** Pas d'arrondi vers le bas des assiettes, en francs ; 1 = aucun arrondi. */
+/**
+ * Indexation cantonale du barème du revenu, en %. `appliedIn` dit qui l'applique :
+ * - `publishedScale` : le barème écrit dans `incomeTaxScale` est déjà indexé
+ *   (Valais, annexe 1 à l'art. 32 al. 1 LF) — le moteur ne la réapplique pas ;
+ * - `engine` : le barème écrit est la base non indexée, le moteur élargit les
+ *   classes du pourcentage.
+ * L'indexation communale est une donnée par commune (`communalScaleIndexation`
+ * dans municipalities/multipliers.json), jamais une constante cantonale.
+ */
+const incomeScaleIndexationSchema = z
+	.object({
+		cantonalPercent: z.number().positive(),
+		appliedIn: z.enum(["publishedScale", "engine"]),
+	})
+	.strict();
+
+/**
+ * Couverture partielle déclarée : le moteur ne reproduit pas le calculateur
+ * officiel du canton. Il refuse alors le calcul plutôt que de rendre un
+ * résultat faux, et le périmètre des calculateurs l'annonce avec un lien vers
+ * le calculateur officiel du canton. Ce n'est pas une valeur sourcée : c'est
+ * une décision du mainteneur, datée.
+ */
+export const cantonCoverageSchema = z
+	.object({
+		status: z.literal("partial"),
+		note: z.string().min(1),
+		declaredOn: isoDateSchema,
+		officialCalculator: z.union([
+			z.object({ label: z.string().min(1), url: z.string().url() }).strict(),
+			todoSchema,
+		]),
+	})
+	.strict();
+export type CantonCoverage = z.infer<typeof cantonCoverageSchema>;
+
+/**
+ * Pas d'arrondi vers le bas de chaque assiette, en francs ; 1 = aucun arrondi.
+ * Revenu et fortune se relèvent séparément : une loi peut énoncer l'un sans
+ * l'autre.
+ */
 const taxBaseRoundingSchema = z
-	.object({ incomeStep: z.number().positive(), wealthStep: z.number().positive() })
+	.object({
+		income: z.union([valueSchema(z.number().positive()), todoSchema]),
+		wealth: z.union([valueSchema(z.number().positive()), todoSchema]),
+		// Revenu déterminant pour le taux, après division (quotient familial) : Vaud, art. 46 al. 1 LI
+		rateDeterminingIncome: valueSchema(z.number().positive()).optional(),
+	})
+	.strict();
+
+/**
+ * Charge fiscale maximale (Genève, art. 60 al. 1 LIPP) : impôts cantonaux et
+ * communaux sur le revenu et la fortune plafonnés à un pourcentage du revenu
+ * net imposable, le rendement net de la fortune étant compté au moins à un
+ * pourcentage de la fortune nette.
+ */
+const maximumTaxBurdenSchema = z
+	.object({
+		percentOfNetTaxableIncome: z.number().positive(),
+		minimumWealthYieldPercent: z.number().nonnegative(),
+	})
 	.strict();
 
 /**
@@ -409,6 +490,7 @@ export const REQUIRED_CANTON_KEYS = [
 	"supplementaryWealthTax", // impôt supplémentaire sur la fortune (Genève), null ailleurs
 	"taxCreditPerChild", // rabais d'impôt par enfant (Neuchâtel), null ailleurs
 	"personalTax", // taxe personnelle forfaitaire, null si aucune
+	"maximumTaxBurden", // charge fiscale maximale (Genève), null ailleurs
 	"communalScale", // barème communal propre (Valais), null ailleurs
 	"deductions", // déductions
 	"realEstateGainsTax", // gains immobiliers
@@ -430,16 +512,13 @@ export const cantonDataSchema = z
 			.union([valueSchema(z.object({ income: z.number(), wealth: z.number() }).strict()), todoSchema])
 			.nullable(),
 		familyModel: z.union([familyModelSchema, todoSchema]),
-		taxBaseRounding: z.union([valueSchema(taxBaseRoundingSchema), todoSchema]),
-		incomeScaleIndexation: z
-			.union([
-				valueSchema(z.object({ cantonal: z.number().positive(), communal: z.number().positive() }).strict()),
-				todoSchema,
-			])
-			.nullable(),
-		supplementaryWealthTax: todoSchema.nullable(), // forme arrêtée au relevé
+		taxBaseRounding: taxBaseRoundingSchema,
+		incomeScaleIndexation: z.union([valueSchema(incomeScaleIndexationSchema), todoSchema]).nullable(),
+		// Genève (art. 59 al. 2 LIPP) : barème distinct, sans centimes additionnels ni diminution
+		supplementaryWealthTax: z.union([valueSchema(taxScaleTableSchema), todoSchema]).nullable(),
 		taxCreditPerChild: z.union([valueSchema(z.number().nonnegative()), todoSchema]).nullable(),
 		personalTax: z.union([valueSchema(z.number().nonnegative()), todoSchema]).nullable(),
+		maximumTaxBurden: valueSchema(maximumTaxBurdenSchema).nullable(),
 		// Valais (art. 178 LF) : revenu et fortune ; la fortune reste TODO tant que l'export ne la livre pas
 		communalScale: z
 			.object({ income: taxScaleSchema, wealth: z.union([taxScaleSchema, todoSchema]) })
@@ -449,6 +528,7 @@ export const cantonDataSchema = z
 		otherDeductions: valueSchema(z.array(degressiveDeductionSchema).min(1)).optional(),
 		realEstateGainsTax: todoSchema,
 		imputedRentalValue: todoSchema,
+		coverage: cantonCoverageSchema.optional(), // absente : aucune restriction déclarée
 	})
 	.strict();
 export type CantonData = z.infer<typeof cantonDataSchema>;
@@ -481,6 +561,8 @@ const municipalMultiplierEntrySchema = z
 		canton: z.enum(CANTON_CODES),
 		income: multipliersByTaxSchema,
 		wealth: multipliersByTaxSchema,
+		// Indexation du barème communal propre (Valais, art. 178 LF), en % ; relevée à la main
+		communalScaleIndexation: valueSchema(z.number().positive()).optional(),
 	})
 	.strict();
 

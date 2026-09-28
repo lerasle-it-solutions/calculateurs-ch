@@ -212,21 +212,46 @@
 		"type": "divisorOnIncomeAndWealth",
 		"sourceId": "ne-lcdir",
 		"households": {
-			"todo": "Ménages auxquels s'applique le splitting (couples mariés ; familles monoparentales ?), sur le revenu et la fortune.",
-			"sourceId": "ne-lcdir"
+			"value": [
+				"married",
+				"singleWithChildren"
+			],
+			"sourceId": "ne-lcdir",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Revenu, LCdir art. 40b ter al. 3 : pour les époux vivant en ménage commun, ainsi que pour les contribuables veufs, séparés, divorcés et célibataires qui vivent en ménage commun avec des enfants dont ils assument pour l'essentiel l'entretien, le revenu est frappé du taux correspondant à 52 % de son montant, dès la période fiscale 2023. Fortune, LCdir art. 53 al. 3 : la fortune des mêmes ménages est frappée du taux correspondant à 52 % de son montant. Les deux taux correspondent au diviseur 1/0,52 publié avec les tables de l'export. Personnes nécessiteuses : le relevé du 28.09.2026 les rattache au revenu et non à la fortune, la feuille cantonale de l'AFC (état février 2026) à la fortune et non au revenu ; à vérifier dans le texte. Le moteur ne les connaît pas au niveau cantonal."
 		}
 	},
 	"taxBaseRounding": {
-		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
-		"sourceId": "ne-lcdir"
+		"income": {
+			"value": 100,
+			"unit": "CHF",
+			"sourceId": "ne-lcdir",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "LCdir art. 40b quater al. 4 (périodes fiscales 2024 à 2026) : le revenu net imposable est arrondi à la centaine de francs inférieure."
+		},
+		"wealth": {
+			"value": 1000,
+			"unit": "CHF",
+			"sourceId": "ne-lcdir",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "LCdir art. 53 al. 4 : la fortune nette imposable est arrondie au millier de francs inférieur."
+		}
 	},
 	"incomeScaleIndexation": null,
 	"supplementaryWealthTax": null,
 	"taxCreditPerChild": {
-		"todo": "Rabais d'impôt par enfant, déduit de l'impôt cantonal : montant à relever.",
-		"sourceId": "ne-lcdir"
+		"value": 200,
+		"unit": "CHF",
+		"sourceId": "ne-lcdir",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"note": "LCdir art. 40c al. 1 : pour chaque enfant mineur ou majeur poursuivant un apprentissage ou des études dont le contribuable assume pour l'essentiel l'entretien, 200 francs sont déduits de l'impôt cantonal sur le revenu, déterminé conformément aux art. 3 et 40 : après application du coefficient cantonal."
 	},
 	"personalTax": null,
+	"maximumTaxBurden": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

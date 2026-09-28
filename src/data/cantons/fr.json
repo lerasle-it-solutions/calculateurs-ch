@@ -299,13 +299,28 @@
 		"sourceId": "fr-licd"
 	},
 	"taxBaseRounding": {
-		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
-		"sourceId": "fr-licd"
+		"income": {
+			"value": 100,
+			"unit": "CHF",
+			"sourceId": "fr-licd",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "LICD art. 37 al. 4 : « Les fractions de revenu sont arrondies aux 100 francs inférieurs. »"
+		},
+		"wealth": {
+			"value": 1000,
+			"unit": "CHF",
+			"sourceId": "fr-licd",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Les fractions de fortune sont arrondies au millier inférieur (art. 62 al. 2 LICD d'après la feuille cantonale de l'AFC ; article non précisé dans le relevé)."
+		}
 	},
 	"incomeScaleIndexation": null,
 	"supplementaryWealthTax": null,
 	"taxCreditPerChild": null,
 	"personalTax": null,
+	"maximumTaxBurden": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

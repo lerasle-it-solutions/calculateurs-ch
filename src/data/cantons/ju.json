@@ -333,13 +333,28 @@
 		"sourceId": "ju-li"
 	},
 	"taxBaseRounding": {
-		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
-		"sourceId": "ju-li"
+		"income": {
+			"value": 100,
+			"unit": "CHF",
+			"sourceId": "ju-li",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "LI art. 150 al. 1 : les taxations relatives aux impôts sur le revenu, sur le bénéfice et sur les gains immobiliers sont arrondies à la centaine de francs inférieure. Article du titre sur la procédure de taxation, non du chapitre du calcul de l'impôt."
+		},
+		"wealth": {
+			"value": 1000,
+			"unit": "CHF",
+			"sourceId": "ju-li",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "LI art. 150 al. 2 : les taxations relatives aux impôts sur la fortune et le capital propre sont arrondies au millier de francs inférieur. Article du titre sur la procédure de taxation, non du chapitre du calcul de l'impôt."
+		}
 	},
 	"incomeScaleIndexation": null,
 	"supplementaryWealthTax": null,
 	"taxCreditPerChild": null,
 	"personalTax": null,
+	"maximumTaxBurden": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

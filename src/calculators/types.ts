@@ -46,6 +46,9 @@ export type FieldDefinition =
 	| SelectFieldDefinition
 	| CantonFieldDefinition;
 
+/** Lien hors du site, libellé FRANÇAIS. */
+export type ExternalAlternative = { label: string; url: string };
+
 export type CalculatorDefinition = {
 	/** « family.name » — ex. « pension.pillar-3a-buyback ». */
 	id: string;
@@ -66,8 +69,11 @@ export type CalculatorDefinition = {
 		/** FRANÇAIS → bandeau, bloc « Ce que ça ne couvre pas ». */
 		notCovered: {
 			case: string;
-			/** id d'un autre calculateur. */
-			alternative?: string;
+			/**
+			 * id d'un autre calculateur, ou lien externe — p. ex. le calculateur
+			 * officiel d'un canton en couverture partielle.
+			 */
+			alternative?: string | ExternalAlternative;
 		}[];
 		/** FRANÇAIS → bandeau + page méthodologie. */
 		assumptions: string[];
