@@ -25,7 +25,7 @@ pnpm-debug.log*
 
 src/pdf/**
 # données privées et plan
-docs/plan/
+docs/plan
 src/data/private/
 tests/calculations/private/
 imports/

@@ -7,8 +7,10 @@ l'AFC, (4) le contrat du moteur fiscal, (5) le document d'architecture v2 intég
 
 **Le travail de la semaine n'est pas ici.** Il est dans `docs/plan/`, un fichier par
 semaine, avec son index. `docs/plan/` est exclu du dépôt public et sauvegardé dans le
-dépôt privé `calculateurs-ch-data`. La commande `/session NN` ouvre et exécute une
-semaine.
+dépôt privé `calculateurs-ch-data`, sous `plan/` : `docs/plan` est un lien symbolique
+vers `../calculateurs-ch-data/plan`, clone voisin du dépôt privé. Toute modification du
+plan se commite et se pousse dans ce dépôt-là. La commande `/session NN` ouvre et
+exécute une semaine.
 
 | Besoin | Fichier |
 | --- | --- |
@@ -370,7 +372,7 @@ calculateurs.ch/
 │
 ├── CLAUDE.md                            ← ce fichier
 ├── docs/plan/                           ← le plan, une semaine par fichier — HORS DÉPÔT PUBLIC
-├── DECISIONS.md, JOURNAL.md, PARTNERS.md ← pilotage — HORS DÉPÔT
+├── DECISIONS.md, JOURNAL.md, PARTNERS.md ← pilotage — HORS DÉPÔT PUBLIC, liens vers ../calculateurs-ch-data/pilotage/
 │
 ├── public/
 │   ├── favicon.svg
