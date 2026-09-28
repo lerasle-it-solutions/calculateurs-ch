@@ -7,121 +7,71 @@
 			"table": {
 				"value": {
 					"scaleType": "interpolated",
-					"thresholdLabel": "Revenu imposable, borne supérieure de classe",
+					"thresholdLabel": "Revenu déterminant pour le taux, ramené à 100 %",
 					"rateSplittingDivisor": null,
 					"brackets": [
 						{
-							"threshold": 9700,
+							"threshold": 0,
 							"ratePercent": 2.0,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 19500,
-							"ratePercent": 2.8009,
+							"threshold": 5000,
+							"ratePercent": 2.0,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 29200,
-							"ratePercent": 3.6966,
+							"threshold": 10000,
+							"ratePercent": 2.8,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 38900,
-							"ratePercent": 4.5928,
+							"threshold": 20000,
+							"ratePercent": 4.6,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 58400,
-							"ratePercent": 5.9952,
+							"threshold": 30000,
+							"ratePercent": 6.0,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 77900,
-							"ratePercent": 7.3962,
+							"threshold": 40000,
+							"ratePercent": 7.4,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 97400,
-							"ratePercent": 8.6974,
+							"threshold": 50000,
+							"ratePercent": 8.7,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 116900,
-							"ratePercent": 10.1978,
+							"threshold": 60000,
+							"ratePercent": 10.2,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 136300,
-							"ratePercent": 11.4923,
+							"threshold": 70000,
+							"ratePercent": 11.5,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 155800,
-							"ratePercent": 12.9938,
+							"threshold": 80000,
+							"ratePercent": 13.0,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 175300,
-							"ratePercent": 13.2986,
+							"threshold": 90000,
+							"ratePercent": 13.3,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 194800,
-							"ratePercent": 13.4992,
+							"threshold": 100000,
+							"ratePercent": 13.5,
 							"baseAmount": 0
 						},
 						{
-							"threshold": 214300,
-							"ratePercent": 13.5498,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 233800,
-							"ratePercent": 13.5999,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 253200,
-							"ratePercent": 13.6496,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 272700,
-							"ratePercent": 13.6997,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 292200,
-							"ratePercent": 13.7497,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 311700,
-							"ratePercent": 13.7997,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 331200,
-							"ratePercent": 13.8498,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 350800,
-							"ratePercent": 13.9001,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 370300,
-							"ratePercent": 13.9501,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 389800,
-							"ratePercent": 14.0,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 389900,
+							"threshold": 200000,
 							"ratePercent": 14.0,
 							"baseAmount": 0
 						}
@@ -130,7 +80,8 @@
 				"sourceId": "vs-lf",
 				"verifiedOn": "2026-09-28",
 				"effectiveFrom": "2026-01-01",
-				"note": "Annexe 1 à l'art. 32 al. 1 LF, « État 01.01.2024 », liée à la version de la loi en vigueur depuis le 01.01.2026, adoptée le 12.09.2024, indexation du canton à 170 % : classes déjà indexées, aucune déflation. Un point par borne supérieure de classe, au taux de la classe ; le taux s'interpole entre deux bornes supérieures consécutives et s'applique au revenu entier. Le « produit de l'impôt » publié vaut le taux × la borne supérieure (écart de 0,14 CHF au plus) et n'est pas repris. Dernière ligne : dès 389 900, 14 %. Première classe publiée à partir de 500 CHF : le traitement des revenus inférieurs n'est vérifié par aucun cas de référence."
+				"collectedFrom": "vs-scc-cantonal-rate-notice",
+				"note": "Art. 32 al. 1 LF, barème cantonal du revenu à 100 %, valable dès 2026, d'après la notice de calcul du SCC du 12.02.2026. Un point par borne de tranche : le taux s'interpole linéairement entre deux bornes, ce qui reproduit exactement les formules de la notice (taux de base + (revenu − borne) / 100 × pente) ; 2 % jusqu'à 5 000 francs, 14 % au-delà de 200 000. Le taux se lit au revenu ramené à 100 % (incomeScaleIndexation) et s'applique, non arrondi, au revenu arrondi non déflaté. Contrôlé contre la table officielle à l'indice 173 : 3 930 lignes sur 3 930, taux et impôt."
 			}
 		}
 	],
@@ -273,7 +224,8 @@
 				"sourceId": "vs-lf",
 				"verifiedOn": "2026-09-26",
 				"effectiveFrom": "2026-01-01",
-				"collectedFrom": "estv-base-data-module"
+				"collectedFrom": "estv-base-data-module",
+				"note": "Art. 60 et 179 LF, barème 3 : même table pour le canton et les communes, coefficient communal par-dessus ; aucune indexation. Comparé ligne à ligne à l'imprimé du SCC « Édition 2001 » : concordance sur 198 lignes sur 200 jusqu'à 200 000 francs et sur les 19 tranches forfaitaires au-delà. À 56 000 et 136 000 francs, l'imprimé de 2001 indique 95,50 et 258,50 CHF, contredisant son propre taux (1,7 ‰ et 1,9 ‰, soit 95,20 et 258,40) : la valeur cohérente, celle de l'export, est retenue."
 			}
 		}
 	],
@@ -299,29 +251,76 @@
 	"baseTaxReduction": null,
 	"unreducedCantonalMultiplier": null,
 	"familyModel": {
-		"todo": "Modèle familial valaisan : traitement des couples mariés (rabais d'impôt) et des familles monoparentales.",
-		"sourceId": "vs-lf"
+		"type": "taxReduction",
+		"sourceId": "vs-lf",
+		"households": {
+			"value": [
+				"married",
+				"singleWithChildren"
+			],
+			"sourceId": "vs-lf",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 32 al. 3 let. a LF (canton), identique à l'art. 178 al. 3 let. a (commune) : époux vivant en ménage commun, et contribuables veufs, séparés, divorcés ou célibataires faisant ménage commun avec des enfants ou des personnes nécessiteuses dont ils assurent pour l'essentiel l'entretien. Let. c : ni abattement ni déduction pour les personnes vivant en union libre, que le moteur ne modélise pas. Le moteur ne connaît pas les personnes nécessiteuses au niveau cantonal."
+		},
+		"reduction": {
+			"value": {
+				"ratePercent": 35,
+				"minimumAmount": 600,
+				"maximumAmount": 4500,
+				"sharedParentalAuthority": {
+					"minimumAmount": 300,
+					"maximumAmount": 2250
+				}
+			},
+			"sourceId": "vs-lf",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 32 al. 3 let. a LF (canton) et art. 178 al. 3 let. a LF (commune), dispositions identiques : l'impôt est réduit de 35 %, au minimum de 600 francs et au maximum de 4 500 francs. En cas d'autorité parentale commune avec déduction sociale partagée par moitié, l'abattement est réduit de moitié : minimum 300, maximum 2 250."
+		},
+		"deductionWithoutReduction": {
+			"value": {
+				"amount": 20000,
+				"phaseOutFrom": 20000,
+				"reductionPerStep": 2000,
+				"stepWidth": 1500,
+				"zeroFrom": 33500
+			},
+			"unit": "CHF",
+			"sourceId": "vs-lf",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 32 al. 3 let. b LF (canton) et art. 178 al. 3 let. b LF (commune) : déduction de 20 000 francs sur le revenu net imposable pour les contribuables qui n'ont pas droit à l'abattement de la let. a, réduite de 2 000 francs par tranche de 1 500 francs au-delà de 20 000, nulle dès 33 500."
+		}
 	},
 	"taxBaseRounding": {
 		"income": {
-			"todo": "Arrondi du revenu imposable : à relever dans la LF.",
-			"sourceId": "vs-lf"
+			"value": 100,
+			"unit": "CHF",
+			"sourceId": "vs-communal-scale",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 178 al. 2 LF : les fractions de revenu inférieures à 100 francs sont négligées."
 		},
 		"wealth": {
-			"todo": "Arrondi de la fortune imposable : à relever dans la LF.",
-			"sourceId": "vs-lf"
+			"value": 1000,
+			"unit": "CHF",
+			"sourceId": "vs-lf",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 179 al. 1 LF : les fractions de fortune inférieures à 1 000 francs sont négligées."
 		}
 	},
 	"incomeScaleIndexation": {
 		"value": {
-			"cantonalPercent": 170,
-			"appliedIn": "publishedScale"
+			"cantonalIndexPercent": 173,
+			"deflationStepPercent": 10
 		},
 		"unit": "%",
-		"sourceId": "vs-lf",
+		"sourceId": "vs-income-scale-indexation",
 		"verifiedOn": "2026-09-28",
 		"effectiveFrom": "2026-01-01",
-		"note": "Annexe 1 à l'art. 32 al. 1 LF, « État 01.01.2024 », liée à la version de la loi en vigueur depuis le 01.01.2026, adoptée le 12.09.2024 : le barème de incomeTaxScale est publié déjà indexé à 170 %, le moteur ne réapplique pas l'indexation."
+		"note": "Indexation de 173 % pour les périodes fiscales 2025 et 2026 (document du SCC du 07.11.2025), paramètre de la déflation par étapes décrite par les notices de calcul du SCC (12.02.2026) : revenu arrondi aux 100 francs inférieurs, divisé par 1,10 par pas de 10 points d'indexation, puis par 1 + reste / 100 (173 % : sept divisions par 1,10 puis une par 1,03), tronqué au franc à chaque étape. Le pas de 10 points vaut aussi pour les communes."
 	},
 	"supplementaryWealthTax": null,
 	"taxCreditPerChild": null,
@@ -334,6 +333,15 @@
 		"note": "Art. 177 al. 1 LF : impôt personnel, plafonné à 24 francs ; le moteur prélève le plafond."
 	},
 	"maximumTaxBurden": null,
+	"incomeTaxRounding": {
+		"value": 0.05,
+		"unit": "CHF",
+		"sourceId": "vs-lf",
+		"verifiedOn": "2026-09-28",
+		"effectiveFrom": "2026-01-01",
+		"collectedFrom": "vs-scc-cantonal-income-table-2026",
+		"note": "Impôt = revenu arrondi × taux non arrondi, arrondi aux 5 centimes au plus proche : règle du barème annexé de l'art. 32 al. 2 LF, qui reproduit les 3 930 lignes de la table officielle à l'indice 173 (la troncature en laisse 1 987). La notice de calcul du 12.02.2026 applique le taux arrondi à 4 décimales (8 676,30 CHF pour 100 000 CHF, table : 8 676,35) : quand les deux divergent, la table fait foi. Commune : même règle, puis coefficient communal et second arrondi aux 5 centimes. C'est une inférence : le second exemple de la notice communale applique le taux arrondi, et aucune table communale officielle ne permet de trancher ; écart possible de 5 centimes."
+	},
 	"communalScale": {
 		"income": [
 			{
@@ -341,9 +349,14 @@
 				"table": {
 					"value": {
 						"scaleType": "interpolated",
-						"thresholdLabel": "Revenu imposable, borne supérieure de classe",
+						"thresholdLabel": "Revenu déterminant pour le taux, ramené à 100 %",
 						"rateSplittingDivisor": null,
 						"brackets": [
+							{
+								"threshold": 0,
+								"ratePercent": 2.0,
+								"baseAmount": 0
+							},
 							{
 								"threshold": 5000,
 								"ratePercent": 2.0,
@@ -385,11 +398,6 @@
 								"baseAmount": 0
 							},
 							{
-								"threshold": 70000,
-								"ratePercent": 8.4,
-								"baseAmount": 0
-							},
-							{
 								"threshold": 80000,
 								"ratePercent": 8.8,
 								"baseAmount": 0
@@ -400,62 +408,12 @@
 								"baseAmount": 0
 							},
 							{
-								"threshold": 100000,
-								"ratePercent": 9.1,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 110000,
-								"ratePercent": 9.2,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 120000,
-								"ratePercent": 9.3,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 130000,
-								"ratePercent": 9.4,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 140000,
-								"ratePercent": 9.5,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 150000,
-								"ratePercent": 9.6,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 160000,
-								"ratePercent": 9.7,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 170000,
-								"ratePercent": 9.8,
-								"baseAmount": 0
-							},
-							{
 								"threshold": 180000,
 								"ratePercent": 9.9,
 								"baseAmount": 0
 							},
 							{
-								"threshold": 190000,
-								"ratePercent": 9.95,
-								"baseAmount": 0
-							},
-							{
 								"threshold": 200000,
-								"ratePercent": 10.0,
-								"baseAmount": 0
-							},
-							{
-								"threshold": 200100,
 								"ratePercent": 10.0,
 								"baseAmount": 0
 							}
@@ -464,13 +422,17 @@
 					"sourceId": "vs-communal-scale",
 					"verifiedOn": "2026-09-28",
 					"effectiveFrom": "2026-01-01",
-					"note": "Art. 178 al. 1 LF, barème communal du revenu, base non indexée. Un point par borne supérieure de classe, au taux de la classe ; interpolation de 5 000 à 200 000 francs (art. 178 al. 2) ; dès 200 100, 10 %. Le produit publié vaut exactement le taux × la borne supérieure et n'est pas repris. Indexation propre à chaque commune (municipalities/multipliers.json)."
+					"collectedFrom": "vs-scc-communal-rate-notice",
+					"note": "Art. 178 al. 1 LF, barème communal du revenu à 100 %, d'après la notice de calcul communale du SCC. Un point par borne de tranche, taux interpolé comme pour le canton ; 2 % jusqu'à 5 000 francs, 10 % au-delà de 200 000. Même déflation par étapes que le canton, à l'indexation de la commune (municipalities/multipliers.json), puis coefficient communal compris entre 1 et 1,5 (art. 178 al. 4), par-dessus le barème."
 				}
 			}
 		],
 		"wealth": {
-			"todo": "Règle de fortune communale de l'art. 179 LF : à relever avant tout calcul de fortune valaisanne au niveau communal.",
-			"sourceId": "vs-communal-scale"
+			"value": "cantonalWealthTaxScale",
+			"sourceId": "vs-lf",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 179 LF : l'impôt communal sur la fortune se calcule d'après les taux de l'art. 60, le barème cantonal de la fortune ; l'art. 178 al. 4 s'applique par analogie, coefficient communal compris."
 		}
 	},
 	"deductions": {
@@ -767,11 +729,15 @@
 	},
 	"coverage": {
 		"status": "partial",
+		"notCoveredHouseholds": [
+			"married",
+			"singleWithChildren"
+		],
 		"declaredOn": "2026-09-28",
-		"note": "Écart résiduel entre le barème publié et les résultats du calculateur officiel, mesuré sur deux cas de référence à des revenus très différents : +2,2 % et +0,6 % avec l'annexe 1 telle quelle. L'écart n'est pas multiplicatif : il porte sur les classes. Il disparaît sur les deux cas, à 2 francs près, si les classes de l'annexe sont élargies d'environ 3,1 %, soit une indexation effective d'environ 175,2 % au lieu de 170 %, le taux étant interpolé puis appliqué au revenu entier. Une réduction proportionnelle des taux ne l'expliquerait pas. Cause non identifiée ; piste : troisième étape de la révision fiscale valaisanne en faveur des personnes physiques, applicable dès 2026, non retrouvée dans les actes publiés. L'annexe 1 consultée, « État 01.01.2024 » à 170 %, liée à la version de la loi en vigueur depuis le 01.01.2026, est la seule publiée. Question à poser au Service cantonal des contributions : quel tableau, avec quelle indexation, s'applique à la période fiscale 2026 ?",
+		"note": "Couvert pour les contribuables seuls sans charge de famille : cas de référence 03 et 15 reproduits au centime près, impôts cantonal et communal. Non couverts : les contribuables ayant droit à l'abattement de l'art. 32 al. 3 let. a LF — époux vivant en ménage commun, et personnes veuves, séparées, divorcées ou célibataires faisant ménage commun avec des enfants ou des personnes nécessiteuses. Motif : écart constant de 300 francs sur l'impôt cantonal du cas de référence 10 (couple marié, un enfant), alors que l'impôt communal est exact avec le même abattement ; la disposition qui l'explique n'a pas été identifiée dans la LF. TODO : chercher dans la LF une réduction d'impôt par enfant au niveau cantonal, sur le modèle de l'art. 40c LCdir neuchâtelois (200 francs déduits de l'impôt) — piste non vérifiée.",
 		"officialCalculator": {
 			"label": "Calculette d'impôts du Service cantonal des contributions du Valais",
-			"url": "https://taxcalculator.apps.vs.ch/"
+			"url": "https://taxcalculator.apps.vs.ch/home/ordinary"
 		}
 	}
 }

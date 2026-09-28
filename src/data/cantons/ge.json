@@ -343,6 +343,7 @@
 		"effectiveFrom": "2026-01-01",
 		"note": "LIPP art. 60 al. 1 : pour les contribuables domiciliés en Suisse, les impôts sur la fortune et sur le revenu, centimes additionnels cantonaux et communaux compris, ne peuvent excéder 60 % du revenu net imposable, le rendement net de la fortune étant fixé au moins à 1 % de la fortune nette."
 	},
+	"incomeTaxRounding": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

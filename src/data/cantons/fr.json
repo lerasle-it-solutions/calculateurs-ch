@@ -321,6 +321,7 @@
 	"taxCreditPerChild": null,
 	"personalTax": null,
 	"maximumTaxBurden": null,
+	"incomeTaxRounding": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

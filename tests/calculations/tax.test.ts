@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
 	MissingTaxDataError,
 	OutOfScopeError,
+	deflateStepwise,
+	evaluateDeflatedScale,
 	PartialCoverageError,
 	computeIncomeAndWealthTax,
 	computeMarginalRate,
@@ -93,6 +95,7 @@ const scales = (overrides: Partial<TaxScales> = {}, canton: Partial<TaxScales["c
 		supplementaryWealthTax: null,
 		taxCreditPerChild: null,
 		maximumTaxBurden: null,
+		incomeTaxRounding: null,
 		...canton,
 	},
 	municipality: { model: "multiplierOnBaseTax", multiplier: { income: pct(50), wealth: pct(50) } },
@@ -460,7 +463,7 @@ describe("impôt fédéral direct", () => {
 
 describe("couverture partielle", () => {
 	it("refuse le calcul d'un canton déclaré en couverture partielle, avec la note de couverture", () => {
-		const partial = scales({ coverage: { status: "partial", note: "barème non reproduit" } });
+		const partial = scales({ coverage: { status: "partial", note: "barème non reproduit", notCoveredHouseholds: null } });
 		expect(() => computeIncomeAndWealthTax(input({ canton: "VS" }), partial)).toThrow(PartialCoverageError);
 		expect(() => computeIncomeAndWealthTax(input({ canton: "VS" }), partial)).toThrow(/barème non reproduit/);
 		expect(() => computeMarginalRate(input({ canton: "VS" }), partial)).toThrow(PartialCoverageError);
@@ -559,5 +562,62 @@ describe("revenu déterminant pour le taux arrondi", () => {
 		// 30 150 / 2 = 15 075 → 15 000 ; taux moyen à 15 000 : 500 / 15 000 ; impôt = 30 150 × 500 / 15 000 = 1 005
 		const married = input({ maritalStatus: "married", cantonalTaxableIncome: 30_150, federalTaxableIncome: 0 });
 		expect(computeIncomeAndWealthTax(married, model).baseCantonalIncomeTax).toBeCloseTo(1_005);
+	});
+});
+
+describe("déflation par étapes et abattement familial", () => {
+	it("ramène le revenu à 100 % par pas de 10 points, tronqué au franc à chaque étape, puis par le reste", () => {
+		// 125 % : 89 500 ÷ 1,10 = 81 363 ; ÷ 1,10 = 73 966 ; ÷ 1,05 = 70 443
+		expect(deflateStepwise(89_500, { indexPercent: 125, stepPercent: 10 })).toEqual({ value: 70_443, divisorsPercent: [110, 110, 105] });
+		// 110 000 ÷ 1,10 tombe juste : aucune troncature parasite de virgule flottante
+		expect(deflateStepwise(110_000, { indexPercent: 110, stepPercent: 10 }).value).toBe(100_000);
+	});
+
+	it("lit le taux, non arrondi, au revenu déflaté et l'applique au revenu entier", () => {
+		const interpolated = table({
+			scaleType: "interpolated",
+			brackets: [
+				{ threshold: 0, ratePercent: 1, baseAmount: 0 },
+				{ threshold: 10_000, ratePercent: 2, baseAmount: 0 },
+			],
+		});
+		// 11 000 ÷ 1,10 = 10 000 → 2 % sur 11 000
+		expect(evaluateDeflatedScale(interpolated, 11_000, { indexPercent: 110, stepPercent: 10 }).tax).toBeCloseTo(220);
+	});
+
+	it("abattement familial : pourcentage de l'impôt, borné par un minimum et un maximum, pour les ménages listés", () => {
+		const model = (reduction: { ratePercent: number; minimumAmount: number; maximumAmount: number }) =>
+			scales({
+				familyModel: {
+					type: "taxReduction",
+					sourceId: "fictive-family",
+					households: { value: ["married"], sourceId: "fictive-family" },
+					reduction: { value: { ...reduction, sharedParentalAuthority: { minimumAmount: 0, maximumAmount: 0 } }, sourceId: "fictive-family" },
+					deductionWithoutReduction: { value: { amount: 1, phaseOutFrom: 0, reductionPerStep: 1, stepWidth: 1, zeroFrom: 1 }, sourceId: "fictive-family" },
+				},
+			});
+		const married = input({ maritalStatus: "married" }); // impôt de base 500
+		expect(computeIncomeAndWealthTax(married, model({ ratePercent: 10, minimumAmount: 0, maximumAmount: 1_000 })).baseCantonalIncomeTax).toBeCloseTo(450);
+		expect(computeIncomeAndWealthTax(married, model({ ratePercent: 10, minimumAmount: 100, maximumAmount: 1_000 })).baseCantonalIncomeTax).toBeCloseTo(400);
+		expect(computeIncomeAndWealthTax(married, model({ ratePercent: 50, minimumAmount: 0, maximumAmount: 200 })).baseCantonalIncomeTax).toBeCloseTo(300);
+		expect(computeIncomeAndWealthTax(married, model({ ratePercent: 10, minimumAmount: 900, maximumAmount: 1_000 })).baseCantonalIncomeTax).toBe(0);
+		// personne seule : pas d'abattement
+		expect(computeIncomeAndWealthTax(input(), model({ ratePercent: 10, minimumAmount: 0, maximumAmount: 1_000 })).baseCantonalIncomeTax).toBeCloseTo(500);
+	});
+});
+
+describe("couverture partielle limitée à certains ménages", () => {
+	const partial = scales({ coverage: { status: "partial", note: "familles non reproduites", notCoveredHouseholds: ["married", "singleWithChildren"] } });
+
+	it("calcule pour les ménages couverts", () => {
+		expect(() => computeIncomeAndWealthTax(input({ canton: "VS" }), partial)).not.toThrow();
+	});
+
+	it("refuse les ménages non couverts, personne nécessiteuse à charge comprise", () => {
+		expect(() => computeIncomeAndWealthTax(input({ canton: "VS", maritalStatus: "married" }), partial)).toThrow(/pour ce ménage/);
+		expect(() => computeIncomeAndWealthTax(input({ canton: "VS", children: 1 }), partial)).toThrow(PartialCoverageError);
+		expect(() =>
+			computeIncomeAndWealthTax(input({ canton: "VS", supportedHouseholdMembers: { children: 0, needyPersons: 1 } }), partial),
+		).toThrow(PartialCoverageError);
 	});
 });

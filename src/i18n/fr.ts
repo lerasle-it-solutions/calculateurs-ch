@@ -61,6 +61,15 @@ export const fr = {
 		notCoveredCase: (canton: string): string =>
 			`${canton} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ce canton.`,
 		useOfficialCalculator: "Utilisez le calculateur fiscal officiel du canton.",
+		/** Couverture partielle limitée à certains ménages. */
+		notCoveredHouseholdsCase: (canton: string, households: string): string =>
+			`${canton}, ${households} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ces contribuables.`,
+		households: {
+			single: "personnes seules sans charge de famille",
+			singleWithChildren:
+				"personnes veuves, séparées, divorcées ou célibataires faisant ménage commun avec des enfants ou des personnes nécessiteuses",
+			married: "époux vivant en ménage commun",
+		},
 	},
 
 	breakdown: {

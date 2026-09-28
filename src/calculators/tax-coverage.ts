@@ -2,10 +2,12 @@
  * Couverture cantonale du moteur fiscal, lue dans la couche de données.
  *
  * Un canton déclaré en couverture partielle (`coverage` dans
- * src/data/cantons/{ct}.json) sort de `cantonsCovered` et entre dans
- * `notCovered`, avec un lien vers le calculateur officiel du canton quand il
- * est relevé : le périmètre l'annonce avant la saisie (P5), et le moteur refuse
- * le calcul (`PartialCoverageError`) plutôt que de rendre un résultat faux.
+ * src/data/cantons/{ct}.json) entre dans `notCovered`, avec un lien vers le
+ * calculateur officiel du canton quand il est relevé : le périmètre l'annonce
+ * avant la saisie (P5), et le moteur refuse le calcul (`PartialCoverageError`)
+ * plutôt que de rendre un résultat faux. Si la couverture partielle ne vise que
+ * certains ménages (`notCoveredHouseholds`), le canton reste dans
+ * `cantonsCovered` pour les autres.
  */
 import { cantonFiles } from "../data";
 import { cantonDataSchema } from "../data/schema";
@@ -35,11 +37,21 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 			cantonsCovered.push(code);
 			continue;
 		}
+		// Couverture limitée à certains ménages : le canton reste couvert pour les autres.
+		const households = coverage.notCoveredHouseholds;
+		if (households !== undefined) cantonsCovered.push(code);
+		const text =
+			households === undefined
+				? fr.partialCoverage.notCoveredCase(name)
+				: fr.partialCoverage.notCoveredHouseholdsCase(
+						name,
+						households.map((household) => fr.partialCoverage.households[household]).join(" ; "),
+					);
 		const official = coverage.officialCalculator;
 		notCovered.push(
 			"url" in official
-				? { case: fr.partialCoverage.notCoveredCase(name), alternative: { label: official.label, url: official.url } }
-				: { case: `${fr.partialCoverage.notCoveredCase(name)} ${fr.partialCoverage.useOfficialCalculator}` },
+				? { case: text, alternative: { label: official.label, url: official.url } }
+				: { case: `${text} ${fr.partialCoverage.useOfficialCalculator}` },
 		);
 	}
 	return { cantonsCovered, notCovered };

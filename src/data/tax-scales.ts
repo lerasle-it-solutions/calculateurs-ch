@@ -20,6 +20,7 @@ import type {
 	ScaleTable,
 	Sourced,
 	SourcedOrPending,
+	StepwiseDeflation,
 	TaxInput,
 	TaxScales,
 } from "../lib/calculations/tax";
@@ -108,27 +109,34 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 		wealth: sourced(municipality.wealth.municipal),
 	};
 
-	// Indexation cantonale : facteur de lecture des seuils, sauf si le barème publié l'intègre déjà.
+	// Indexation : déflation par étapes ; le pas vient du canton, le pourcentage du canton ou de la commune.
 	const indexation = canton.incomeScaleIndexation;
-	const cantonalIndexation: SourcedOrPending<number> | null =
+	const cantonalIndexation: SourcedOrPending<StepwiseDeflation> | null =
 		indexation === null
 			? null
 			: isTodo(indexation)
 				? pending(indexation)
-				: indexation.value.appliedIn === "publishedScale"
-					? null
-					: { value: indexation.value.cantonalPercent / 100, sourceId: indexation.sourceId };
-	// Indexation communale : une donnée par commune, relevée à la main.
-	const communalIndexation: SourcedOrPending<number> =
-		municipality.communalScaleIndexation === undefined
-			? {
-					pending: `Indexation du barème communal de ${municipality.municipality} (OFS ${municipality.bfsId}) : à relever.`,
-					sourceId: SOURCE_BY_CANTON[query.canton].municipalMultipliers,
-				}
-			: {
-					value: municipality.communalScaleIndexation.value / 100,
-					sourceId: municipality.communalScaleIndexation.sourceId,
-				};
+				: {
+						value: { indexPercent: indexation.value.cantonalIndexPercent, stepPercent: indexation.value.deflationStepPercent },
+						sourceId: indexation.sourceId,
+					};
+	const communalIndexation: SourcedOrPending<StepwiseDeflation> | null =
+		indexation === null
+			? null
+			: isTodo(indexation)
+				? pending(indexation)
+				: municipality.communalScaleIndexation === undefined
+					? {
+							pending: `Indexation du barème communal de ${municipality.municipality} (OFS ${municipality.bfsId}) : à relever.`,
+							sourceId: SOURCE_BY_CANTON[query.canton].municipalMultipliers,
+						}
+					: {
+							value: {
+								indexPercent: municipality.communalScaleIndexation.value,
+								stepPercent: indexation.value.deflationStepPercent,
+							},
+							sourceId: municipality.communalScaleIndexation.sourceId,
+						};
 
 	const familyModel: FamilyModel | Pending = isTodo(canton.familyModel)
 		? pending(canton.familyModel)
@@ -144,7 +152,15 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 								? null
 								: sourcedOrPending(canton.familyModel.childReductionCap),
 					}
-				: canton.familyModel;
+				: canton.familyModel.type === "taxReduction"
+					? {
+							type: "taxReduction",
+							sourceId: canton.familyModel.sourceId,
+							households: sourcedOrPending(canton.familyModel.households),
+							reduction: sourcedOrPending(canton.familyModel.reduction),
+							deductionWithoutReduction: sourcedOrPending(canton.familyModel.deductionWithoutReduction),
+						}
+					: canton.familyModel;
 
 	const communal = canton.communalScale;
 
@@ -162,6 +178,7 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 			supplementaryWealthTax: nullable(canton.supplementaryWealthTax),
 			taxCreditPerChild: nullable(canton.taxCreditPerChild),
 			maximumTaxBurden: canton.maximumTaxBurden === null ? null : sourced(canton.maximumTaxBurden),
+			incomeTaxRounding: canton.incomeTaxRounding === null ? null : sourced(canton.incomeTaxRounding),
 		},
 		municipality:
 			communal === null
@@ -171,7 +188,13 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 						income: toTables(communal.income, `${query.canton}, barème communal du revenu`),
 						wealth: isTodo(communal.wealth)
 							? pending(communal.wealth)
-							: toTables(communal.wealth, `${query.canton}, barème communal de la fortune`),
+							: "value" in communal.wealth
+								? // Renvoi au barème cantonal de la fortune (Valais, art. 179 LF)
+									toTables(canton.wealthTaxScale, `${query.canton}, barème cantonal de la fortune`).map((table) => ({
+										...table,
+										sourceId: (communal.wealth as { sourceId: string }).sourceId,
+									}))
+								: toTables(communal.wealth, `${query.canton}, barème communal de la fortune`),
 						incomeScaleIndexation: communalIndexation,
 						multiplier: municipalMultiplier,
 					},
@@ -187,7 +210,14 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 		},
 		personalTax: nullable(canton.personalTax),
 		federal: getFederalTaxScales(query.taxYear),
-		coverage: canton.coverage === undefined ? null : { status: canton.coverage.status, note: canton.coverage.note },
+		coverage:
+			canton.coverage === undefined
+				? null
+				: {
+						status: canton.coverage.status,
+						note: canton.coverage.note,
+						notCoveredHouseholds: canton.coverage.notCoveredHouseholds ?? null,
+					},
 	};
 }
 

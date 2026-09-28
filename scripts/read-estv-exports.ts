@@ -468,6 +468,7 @@ const NON_EXPORT_KEYS = [
 	"taxCreditPerChild",
 	"personalTax",
 	"maximumTaxBurden",
+	"incomeTaxRounding",
 	"realEstateGainsTax",
 	"imputedRentalValue",
 ] as const;
@@ -520,7 +521,7 @@ const nonExportDefaults = (canton: CantonCode) => {
 		},
 		incomeScaleIndexation:
 			canton === "VS"
-				? todo("Indexation cantonale du barème du revenu (%), et si le barème publié l'intègre déjà : à relever dans la LF.", "vs-lf")
+				? todo("Indexation du barème du revenu (%) et pas de la déflation par étapes : à relever auprès du Service cantonal des contributions.", "vs-income-scale-indexation")
 				: null,
 		supplementaryWealthTax:
 			canton === "GE"
@@ -533,6 +534,7 @@ const nonExportDefaults = (canton: CantonCode) => {
 				? todo("Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.", null)
 				: null,
 		maximumTaxBurden: null, // relevé à la main (Genève, art. 60 LIPP), jamais écrasé
+		incomeTaxRounding: null, // relevé à la main (Valais), jamais écrasé
 		realEstateGainsTax: todo("Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.", null),
 		imputedRentalValue: todo("Valeur locative : source à inscrire au registre, méthode à relever.", null),
 	};

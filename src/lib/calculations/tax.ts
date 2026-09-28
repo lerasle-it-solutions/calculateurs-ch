@@ -80,6 +80,25 @@ export type FamilyModel =
 	| { type: "separateScale"; sourceId: string }
 	| { type: "divisorOnIncomeAndWealth"; sourceId: string; households: SourcedOrPending<Household[]> }
 	| {
+			/** Abattement sur l'impôt des ménages listés, déduction dégressive sur le revenu des autres. */
+			type: "taxReduction";
+			sourceId: string;
+			households: SourcedOrPending<Household[]>;
+			reduction: SourcedOrPending<{
+				ratePercent: number;
+				minimumAmount: number;
+				maximumAmount: number;
+				sharedParentalAuthority: { minimumAmount: number; maximumAmount: number };
+			}>;
+			deductionWithoutReduction: SourcedOrPending<{
+				amount: number;
+				phaseOutFrom: number;
+				reductionPerStep: number;
+				stepWidth: number;
+				zeroFrom: number;
+			}>;
+	  }
+	| {
 			type: "familyQuotient";
 			sourceId: string;
 			coefficients: SourcedOrPending<FamilyQuotientCoefficients>;
@@ -101,6 +120,14 @@ export type ChurchDenomination = Exclude<TaxInput["denomination"], "none">;
 
 type ByTax<T> = { income: T; wealth: T };
 
+/**
+ * Indexation par déflation par étapes (Valais) : le revenu déterminant pour le
+ * taux est ramené à 100 % en divisant par 1 + `stepPercent` % autant de fois que
+ * l'indexation dépasse 100 % d'un pas entier, puis par 1 + reste %, en tronquant
+ * au franc à chaque étape.
+ */
+export type StepwiseDeflation = { indexPercent: number; stepPercent: number };
+
 export type MunicipalModel =
 	| {
 			/** Coefficient communal appliqué à l'impôt cantonal de base. */
@@ -112,7 +139,8 @@ export type MunicipalModel =
 			model: "communalScale";
 			income: ScaleTable[];
 			wealth: ScaleTable[] | Pending;
-			incomeScaleIndexation: SourcedOrPending<number> | null;
+			/** Indexation de la commune, déflation par étapes ; `null` si aucune. */
+			incomeScaleIndexation: SourcedOrPending<StepwiseDeflation> | null;
 			multiplier: ByTax<Sourced<number>>;
 	  };
 
@@ -126,8 +154,13 @@ export type TaxScales = {
 		baseTaxReduction: SourcedOrPending<{ ratePercent: number; appliesTo: ("income" | "wealth")[] }> | null;
 		/** Part du coefficient cantonal calculée sur l'impôt de base non réduit, en %. */
 		unreducedMultiplier: SourcedOrPending<ByTax<number>> | null;
-		/** Facteur appliqué aux seuils du barème du revenu. */
-		incomeScaleIndexation: SourcedOrPending<number> | null;
+		/** Indexation du barème du revenu, déflation par étapes ; `null` si aucune. */
+		incomeScaleIndexation: SourcedOrPending<StepwiseDeflation> | null;
+		/**
+		 * Pas de l'arrondi au plus proche de l'impôt sur le revenu selon le barème, et
+		 * de l'impôt communal sur le revenu après coefficient ; `null` si aucun.
+		 */
+		incomeTaxRounding: Sourced<number> | null;
 		/**
 		 * Impôt supplémentaire sur la fortune : barème distinct, hors de l'assiette des
 		 * coefficients cantonal et communal et de la réduction de l'impôt de base.
@@ -155,7 +188,8 @@ export type TaxScales = {
 	coverage: PartialCoverage | null;
 };
 
-export type PartialCoverage = { status: "partial"; note: string };
+/** `notCoveredHouseholds` : ménages non couverts ; `null` : le canton entier. */
+export type PartialCoverage = { status: "partial"; note: string; notCoveredHouseholds: Household[] | null };
 
 /** Situation qui détermine le barème de l'impôt fédéral direct (art. 36 LIFD). */
 export type FederalTaxSituation = "marriedCoupleLivingTogether" | "livingWithSupportedDependants" | "otherTaxpayer";
@@ -246,8 +280,10 @@ export class PartialCoverageError extends Error {
 	readonly canton: TaxInput["canton"];
 	readonly note: string;
 
-	constructor(canton: TaxInput["canton"], note: string) {
-		super(`Canton ${canton} en couverture partielle : aucun résultat n'est calculé. ${note}`);
+	constructor(canton: TaxInput["canton"], note: string, household?: string) {
+		super(
+			`Canton ${canton} en couverture partielle${household ? ` pour ce ménage (${household})` : ""} : aucun résultat n'est calculé. ${note}`,
+		);
 		this.name = "PartialCoverageError";
 		this.canton = canton;
 		this.note = note;
@@ -283,6 +319,64 @@ const bracketIndex = (brackets: Pick<Bracket, "threshold">[], amount: number): n
  * Taux et impôt d'un barème pour une assiette. `lookupFactor` indexe les seuils
  * pour la seule lecture du taux : il n'a de sens que pour un barème à taux.
  */
+/** Taux, en %, d'un barème à taux (`averageRate` ou `interpolated`) lu à `lookup`. */
+const rateOf = (table: Pick<ScaleTable, "scaleType" | "brackets">, lookup: number): number => {
+	const { brackets } = table;
+	const index = bracketIndex(brackets, lookup);
+	const bracket = brackets[index]!;
+	const next = brackets[index + 1];
+	if (table.scaleType === "averageRate" || next === undefined || next.threshold === bracket.threshold) {
+		return bracket.ratePercent;
+	}
+	return (
+		bracket.ratePercent +
+		((lookup - bracket.threshold) * (next.ratePercent - bracket.ratePercent)) / (next.threshold - bracket.threshold)
+	);
+};
+
+/** Revenu déterminant pour le taux après déflation par étapes, tronqué au franc à chaque division. */
+export function deflateStepwise(income: number, deflation: StepwiseDeflation): { value: number; divisorsPercent: number[] } {
+	const excess = deflation.indexPercent - 100;
+	if (excess < 0 || deflation.stepPercent <= 0) {
+		throw new Error(`Indexation de ${fmt(deflation.indexPercent)} % par pas de ${fmt(deflation.stepPercent)} % : non définie.`);
+	}
+	const steps = Math.floor(excess / deflation.stepPercent);
+	const rest = excess - steps * deflation.stepPercent;
+	const divisorsPercent = [
+		...Array.from({ length: steps }, () => 100 + deflation.stepPercent),
+		...(rest > 0 ? [100 + rest] : []),
+	];
+	let value = income;
+	// Division d'entiers (× 100 / 110) : aucune erreur de virgule flottante avant la troncature
+	for (const divisor of divisorsPercent) value = Math.floor((value * 100) / divisor);
+	return { value, divisorsPercent };
+}
+
+/**
+ * Impôt d'un barème à taux dont l'indexation se fait par déflation par étapes :
+ * taux lu, non arrondi, au revenu déflaté, appliqué au revenu entier.
+ */
+export function evaluateDeflatedScale(
+	table: Pick<ScaleTable, "scaleType" | "brackets">,
+	amount: number,
+	deflation: StepwiseDeflation,
+): { tax: number; ratePercent: number; rateIncome: number; formula: string } {
+	if (table.scaleType === "marginal") throw new Error("Déflation par étapes non définie pour un barème marginal.");
+	if (amount <= 0) return { tax: 0, ratePercent: 0, rateIncome: 0, formula: "assiette nulle" };
+	const { value: rateIncome, divisorsPercent } = deflateStepwise(amount, deflation);
+	const ratePercent = rateOf(table, rateIncome);
+	return {
+		tax: (amount * ratePercent) / 100,
+		ratePercent,
+		rateIncome,
+		formula: `${fmt(amount)} × ${fmt(ratePercent)} %, taux lu au revenu déflaté ${fmt(rateIncome)} = ${fmt(amount)} ÷ ${divisorsPercent.map((divisor) => fmt(divisor / 100)).join(" ÷ ")}, tronqué au franc à chaque étape`,
+	};
+}
+
+/** Arrondi au plus proche multiple de `step` ; la marge absorbe les erreurs de virgule flottante. */
+export const roundToNearest = (value: number, step: number): number =>
+	Math.round(Math.round(value / step + 5e-8) * step * 1e6) / 1e6;
+
 export function evaluateScale(
 	table: Pick<ScaleTable, "scaleType" | "brackets">,
 	amount: number,
@@ -316,9 +410,7 @@ export function evaluateScale(
 		};
 	}
 
-	const ratePercent =
-		bracket.ratePercent +
-		((lookup - bracket.threshold) * (next.ratePercent - bracket.ratePercent)) / (next.threshold - bracket.threshold);
+	const ratePercent = rateOf(table, lookup);
 	return {
 		tax: (amount * ratePercent) / 100,
 		formula: `${fmt(amount)} × ${fmt(ratePercent)} %, taux interpolé entre ${fmt(bracket.threshold)} (${fmt(bracket.ratePercent)} %) et ${fmt(next.threshold)} (${fmt(next.ratePercent)} %)${lookupText}`,
@@ -582,7 +674,20 @@ export function computeFederalIncomeTax(input: TaxInput, federal: FederalTaxScal
 // --- Le calcul -------------------------------------------------------------------
 
 export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): TaxResult {
-	if (scales.coverage !== null) throw new PartialCoverageError(input.canton, scales.coverage.note);
+	if (scales.coverage !== null) {
+		const excluded = scales.coverage.notCoveredHouseholds;
+		// Une personne nécessiteuse à charge ouvre les mêmes droits qu'un enfant : le ménage n'est plus « seul ».
+		const coverageHousehold: Household =
+			input.maritalStatus === "married"
+				? "married"
+				: input.children > 0 || (input.supportedHouseholdMembers?.needyPersons ?? 0) > 0
+					? "singleWithChildren"
+					: "single";
+		if (excluded === null) throw new PartialCoverageError(input.canton, scales.coverage.note);
+		if (excluded.includes(coverageHousehold)) {
+			throw new PartialCoverageError(input.canton, scales.coverage.note, HOUSEHOLD_LABELS[coverageHousehold]);
+		}
+	}
 	const missing: MissingItem[] = [];
 	const breakdown: BreakdownLine[] = [];
 	const need = needInto(missing);
@@ -630,6 +735,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	let familySourceId: string | null = null;
 	let familyFormula = "";
 	let quotientCap: { base: number; perChild: number; cap: Sourced<ChildReductionCap> } | undefined;
+	let familyTaxReduction: Sourced<{ ratePercent: number; minimumAmount: number; maximumAmount: number }> | undefined;
 	const familyModel = scales.familyModel;
 	if (isPending(familyModel)) {
 		missing.push({ label: "Modèle familial cantonal", todo: familyModel.pending, sourceId: familyModel.sourceId });
@@ -639,6 +745,14 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			case "splittingIncludedInScale":
 			case "separateScale":
 				break;
+			case "taxReduction": {
+				// La déduction dégressive des autres ménages (let. b) réduit le revenu imposable : elle
+				// relève du passage du revenu net au revenu imposable, pas du moteur.
+				const households = need(familyModel.households, "Ménages ayant droit à l'abattement familial");
+				const reduction = need(familyModel.reduction, "Abattement familial sur l'impôt");
+				if (households && reduction && households.value.includes(household)) familyTaxReduction = reduction;
+				break;
+			}
 			case "divisorOnIncomeAndWealth": {
 				const households = need(familyModel.households, "Ménages soumis au splitting");
 				if (households?.value.includes(household)) {
@@ -676,11 +790,53 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	}
 
 	// 3. Impôt cantonal de base sur le revenu
-	const cantonalIndexation =
+	const cantonalDeflation =
 		scales.canton.incomeScaleIndexation === null
 			? undefined
 			: need(scales.canton.incomeScaleIndexation, "Indexation du barème cantonal du revenu");
-	const lookupFactor = cantonalIndexation?.value ?? 1;
+	const lookupFactor = 1;
+	const taxRounding = scales.canton.incomeTaxRounding;
+	/** Impôt selon le barème, déflation par étapes s'il y a lieu, puis arrondi s'il y a lieu. */
+	const scaleTax = (
+		table: ScaleTable,
+		amount: number,
+		deflation: Sourced<StepwiseDeflation> | undefined,
+		what: string,
+	): { tax: number; formula: string } => {
+		if (!deflation) return evaluateWithDivisor(table, amount, incomeDivisor, lookupFactor, rateStep);
+		if (incomeDivisor !== 1) throw new Error(`${what} : déflation par étapes et diviseur familial combinés, non définis.`);
+		const deflated = evaluateDeflatedScale(table, amount, deflation.value);
+		line({
+			label: `Revenu déterminant pour le taux, ${what}`,
+			operands: { taxableIncome: amount, indexPercent: deflation.value.indexPercent, stepPercent: deflation.value.stepPercent },
+			formula: `${fmt(amount)} ramené de ${fmt(deflation.value.indexPercent)} % à 100 % par étapes de ${fmt(deflation.value.stepPercent)} points, tronqué au franc à chaque étape`,
+			value: deflated.rateIncome,
+			unit: "CHF",
+			sourceId: deflation.sourceId,
+		});
+		if (!taxRounding) return deflated;
+		return {
+			tax: roundToNearest(deflated.tax, taxRounding.value),
+			formula: `${deflated.formula}, arrondi à ${fmt(taxRounding.value)} CHF le plus proche (${taxRounding.sourceId})`,
+		};
+	};
+	/** Abattement familial sur l'impôt sur le revenu selon le barème (Valais). */
+	const afterFamilyTaxReduction = (tax: number, what: string): number => {
+		if (!familyTaxReduction) return tax;
+		const { ratePercent, minimumAmount, maximumAmount } = familyTaxReduction.value;
+		const reduction = Math.min(tax, Math.min(maximumAmount, Math.max(minimumAmount, (tax * ratePercent) / 100)));
+		line({
+			label: `${what} après abattement familial`,
+			operands: { tax, ratePercent, minimumAmount, maximumAmount, reduction },
+			formula: `${fmt(tax)} − ${fmt(reduction)}, soit ${fmt(ratePercent)} % borné entre ${fmt(minimumAmount)} et ${fmt(maximumAmount)} CHF`,
+			value: tax - reduction,
+			unit: "CHF",
+			sourceId: familyTaxReduction.sourceId,
+			assumption:
+				"L'abattement porte sur l'impôt sur le revenu selon le barème, avant le coefficient ; autorité parentale commune non examinée.",
+		});
+		return tax - reduction;
+	};
 	const rateRounding = scales.taxBaseRounding.rateDeterminingIncome;
 	const rateStep = rateRounding?.value ?? null;
 	if (rateRounding && incomeDivisor !== 1) {
@@ -694,7 +850,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			sourceId: rateRounding.sourceId,
 		});
 	}
-	const baseIncome = evaluateWithDivisor(incomeTable, cantonalIncome, incomeDivisor, lookupFactor, rateStep);
+	const baseIncome = scaleTax(incomeTable, cantonalIncome, cantonalDeflation, "impôt cantonal");
 	line({
 		label: "Impôt cantonal de base sur le revenu",
 		operands: { cantonalTaxableIncome: cantonalIncome, divisor: incomeDivisor },
@@ -744,6 +900,8 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			});
 		}
 	}
+
+	baseIncome.tax = afterFamilyTaxReduction(baseIncome.tax, "Impôt cantonal de base sur le revenu");
 
 	// 4. Impôt cantonal de base sur la fortune
 	const baseWealth = evaluateWithDivisor(wealthTable, wealth, wealthDivisor, 1);
@@ -861,16 +1019,12 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		});
 	} else {
 		const communalIncomeTable = selectTable(municipality.income, household, "Barème communal du revenu");
-		const communalIndexation =
+		const communalDeflation =
 			municipality.incomeScaleIndexation === null
 				? undefined
 				: need(municipality.incomeScaleIndexation, "Indexation du barème communal du revenu");
-		const communalIncome = evaluateWithDivisor(
-			communalIncomeTable,
-			cantonalIncome,
-			incomeDivisor,
-			communalIndexation?.value ?? 1,
-		);
+		const communalIncome = scaleTax(communalIncomeTable, cantonalIncome, communalDeflation, "impôt communal");
+		communalIncome.tax = afterFamilyTaxReduction(communalIncome.tax, "Impôt communal de base sur le revenu");
 		let communalWealthTax = 0;
 		let communalWealthFormula = "";
 		if (isPending(municipality.wealth)) {
@@ -885,8 +1039,9 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			communalWealthTax = communalWealth.tax;
 			communalWealthFormula = communalWealth.formula;
 		}
+		const communalIncomePart = (communalIncome.tax * municipality.multiplier.income.value) / 100;
 		municipalTax =
-			(communalIncome.tax * municipality.multiplier.income.value) / 100 +
+			(taxRounding ? roundToNearest(communalIncomePart, taxRounding.value) : communalIncomePart) +
 			(communalWealthTax * municipality.multiplier.wealth.value) / 100;
 		line({
 			label: "Impôt communal selon le barème communal",
