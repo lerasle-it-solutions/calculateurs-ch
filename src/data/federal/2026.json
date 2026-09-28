@@ -1,0 +1,97 @@
+{
+	"year": 2026,
+	"directFederalTax": {
+		"incomeTaxScales": [
+			{
+				"value": {
+					"label": "Barème de base (art. 36 al. 1 LIFD)",
+					"appliesTo": ["otherTaxpayer"],
+					"scaleType": "marginal",
+					"thresholdLabel": "jusqu'à … francs de revenu",
+					"incrementStep": 100,
+					"brackets": [
+						{ "threshold": 15200, "baseAmount": 0, "ratePercent": 0.77 },
+						{ "threshold": 33200, "baseAmount": 138.6, "ratePercent": 0.88 },
+						{ "threshold": 43500, "baseAmount": 229.2, "ratePercent": 2.64 },
+						{ "threshold": 58000, "baseAmount": 612, "ratePercent": 2.97 },
+						{ "threshold": 76200, "baseAmount": 1152.5, "ratePercent": 5.94 },
+						{ "threshold": 82100, "baseAmount": 1502.95, "ratePercent": 6.6 },
+						{ "threshold": 108900, "baseAmount": 3271.75, "ratePercent": 8.8 },
+						{ "threshold": 141500, "baseAmount": 6140.55, "ratePercent": 11 },
+						{ "threshold": 185100, "baseAmount": 10936.55, "ratePercent": 13.2 },
+						{ "threshold": 793900, "baseAmount": 91298.15, "ratePercent": null },
+						{ "threshold": 794000, "baseAmount": 91310, "ratePercent": 11.5 }
+					]
+				},
+				"unit": "CHF",
+				"sourceId": "fedlex-ifd-cold-progression",
+				"verifiedOn": "2026-09-28",
+				"effectiveFrom": "2026-01-01",
+				"note": "RS 642.119.2, état au 01.01.2026. Chaque ligne : l'impôt dû au seuil, puis le montant ajouté par tranche complète de 100 fr. de revenu en plus. Taux « - » sur l'avant-dernière ligne, relevé comme null. Les deux dernières lignes encodent le taux maximal de 11,5 % (art. 128 Cst.). Champ d'application déduit de la structure de l'art. 36 : le barème de base vaut pour les contribuables qui ne relèvent ni de l'al. 2 ni de l'al. 2bis. Déduction de structure, non citation. Trois montants de base ne se déduisent pas exactement de la ligne précédente (229,20 au lieu de 229,24 ; 1 152,50 au lieu de 1 152,54 ; 1 502,95 au lieu de 1 502,96). Compatible avec une troncature aux 5 centimes dans l'ordonnance. Valeurs publiées reprises telles quelles. Le barème pour époux est cohérent de bout en bout."
+			},
+			{
+				"value": {
+					"label": "Barème pour époux (art. 36 al. 2 LIFD)",
+					"appliesTo": ["marriedCoupleLivingTogether", "livingWithSupportedDependants"],
+					"scaleType": "marginal",
+					"thresholdLabel": "jusqu'à … francs de revenu",
+					"incrementStep": 100,
+					"brackets": [
+						{ "threshold": 29700, "baseAmount": 0, "ratePercent": 1 },
+						{ "threshold": 53400, "baseAmount": 237, "ratePercent": 2 },
+						{ "threshold": 61300, "baseAmount": 395, "ratePercent": 3 },
+						{ "threshold": 79100, "baseAmount": 929, "ratePercent": 4 },
+						{ "threshold": 94900, "baseAmount": 1561, "ratePercent": 5 },
+						{ "threshold": 108700, "baseAmount": 2251, "ratePercent": 6 },
+						{ "threshold": 120600, "baseAmount": 2965, "ratePercent": 7 },
+						{ "threshold": 130500, "baseAmount": 3658, "ratePercent": 8 },
+						{ "threshold": 138400, "baseAmount": 4290, "ratePercent": 9 },
+						{ "threshold": 144300, "baseAmount": 4821, "ratePercent": 10 },
+						{ "threshold": 148300, "baseAmount": 5221, "ratePercent": 11 },
+						{ "threshold": 150400, "baseAmount": 5452, "ratePercent": 12 },
+						{ "threshold": 152400, "baseAmount": 5692, "ratePercent": 13 },
+						{ "threshold": 941300, "baseAmount": 108249, "ratePercent": null },
+						{ "threshold": 941400, "baseAmount": 108261, "ratePercent": 11.5 }
+					]
+				},
+				"unit": "CHF",
+				"sourceId": "fedlex-ifd-cold-progression",
+				"verifiedOn": "2026-09-28",
+				"effectiveFrom": "2026-01-01",
+				"note": "RS 642.119.2, état au 01.01.2026. S'applique aux époux vivant en ménage commun et, par analogie (art. 36 al. 2bis LIFD), aux contribuables veufs, séparés, divorcés ou célibataires qui vivent en ménage commun avec des enfants ou des personnes nécessiteuses dont ils assument pour l'essentiel l'entretien. Taux « - » sur l'avant-dernière ligne, relevé comme null. Les deux dernières lignes encodent le taux maximal de 11,5 % (art. 128 Cst.)."
+			}
+		],
+		"maximumRatePercent": {
+			"value": 11.5,
+			"unit": "%",
+			"sourceId": "cst-art-128",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Taux maximal fixé par l'art. 128 Cst. ; encodé par les deux dernières lignes de chaque table de RS 642.119.2. Au-delà du dernier seuil, l'impôt vaut ce taux appliqué au revenu entier."
+		},
+		"taxReductionPerDependant": {
+			"value": 263,
+			"unit": "CHF",
+			"sourceId": "fedlex-ifd-cold-progression",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 36 al. 2bis LIFD : réduction du montant de l'impôt fixé selon le barème pour époux, par enfant et par personne nécessiteuse."
+		},
+		"minimumLeviedTax": {
+			"value": 25,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 36 al. 3 LIFD : les montants d'impôt inférieurs à 25 francs ne sont pas perçus. Seuil apprécié sur l'impôt arrondi. L'ordre inverse rendrait nul un impôt de 24,50 à 24,99 CHF. Aucun cas de référence ne le tranche ; à confirmer auprès de l'AFC si un utilisateur signale un écart."
+		},
+		"taxRoundingToNearest": {
+			"value": 1,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Arrondi de l'impôt final au franc le plus proche : confirmé par les cas de référence 01, 07 et 13 ; aucune base dans la LIFD, relève probablement d'une pratique de taxation."
+		}
+	}
+}

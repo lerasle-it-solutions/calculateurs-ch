@@ -6,7 +6,7 @@
 			"taxpayerGroup": "Personne vivant seule, sans enfant",
 			"table": {
 				"value": {
-					"scaleType": "averageRate",
+					"scaleType": "interpolated",
 					"thresholdLabel": "Revenu imposable Confédération",
 					"rateSplittingDivisor": 2,
 					"brackets": [
@@ -87,7 +87,7 @@
 			"taxpayerGroup": "Personne mariée / vivant seule, avec enfant",
 			"table": {
 				"value": {
-					"scaleType": "averageRate",
+					"scaleType": "interpolated",
 					"thresholdLabel": "Revenu imposable Confédération",
 					"rateSplittingDivisor": 2,
 					"brackets": [
@@ -293,6 +293,19 @@
 		}
 	},
 	"baseTaxReduction": null,
+	"unreducedCantonalMultiplier": null,
+	"familyModel": {
+		"type": "splittingIncludedInScale",
+		"sourceId": "fr-licd"
+	},
+	"taxBaseRounding": {
+		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
+		"sourceId": "fr-licd"
+	},
+	"incomeScaleIndexation": null,
+	"supplementaryWealthTax": null,
+	"taxCreditPerChild": null,
+	"personalTax": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

@@ -79,7 +79,7 @@ export const sourceSchema: z.ZodType<Source> = z
 		id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "identifiant kebab-case attendu"),
 		name: z.string().min(1),
 		authority: z.string().min(1),
-		url: z.string().url(),
+		url: z.string().url().or(z.literal("")), // vide : pas encore relevée (R3)
 		legalReference: z.string().min(1).optional(),
 		cadence: z.enum(["annual", "biennial", "quarterly", "monthly", "irregular", "event"]),
 		verifiedOn: isoDateSchema.or(z.literal("")), // vide : pas encore vérifiée à la source (R3)
@@ -101,30 +101,6 @@ export const sourceSchema: z.ZodType<Source> = z
 			});
 		}
 	});
-
-// ---------------------------------------------------------------------------
-// Fichiers fédéraux — src/data/federal/AAAA.json (CLAUDE.md § 1.1)
-// ---------------------------------------------------------------------------
-
-const pillar3aSchema = z
-	.object({
-		employeeCapWithLpp: valueSchema(z.number()),
-		retroactiveBuyback: z
-			.object({
-				firstBuybackableGap: valueSchema(z.number()),
-				windowYears: valueSchema(z.number()),
-			})
-			.passthrough(),
-	})
-	.passthrough();
-
-export const federalDataSchema = z
-	.object({
-		year: z.number().int(),
-		pillar3a: pillar3aSchema,
-	})
-	.passthrough();
-export type FederalData = z.infer<typeof federalDataSchema>;
 
 // ---------------------------------------------------------------------------
 // Fichiers cantonaux — src/data/cantons/xx.json (CLAUDE.md § 1, structure)
@@ -158,9 +134,13 @@ export type Todo = z.infer<typeof todoSchema>;
  * un même canton peut combiner les deux familles (Fribourg : revenu à taux moyen,
  * fortune marginale). Il est déclaré table par table, jamais deviné :
  * - `marginal` : l'impôt vaut base + (assiette − seuil) × taux ;
- * - `averageRate` : le taux s'applique au revenu entier, sans montant de base.
+ * - `averageRate` : le taux de la tranche s'applique au revenu entier, sans
+ *   montant de base ;
+ * - `interpolated` : le taux s'obtient par interpolation linéaire entre les
+ *   seuils, puis s'applique au revenu entier, sans montant de base (barème
+ *   continu, p. ex. Fribourg).
  */
-export const SCALE_TYPES = ["marginal", "averageRate"] as const;
+export const SCALE_TYPES = ["marginal", "averageRate", "interpolated"] as const;
 
 const taxScaleTableSchema = z
 	.object({
@@ -188,10 +168,10 @@ const taxScaleTableSchema = z
 				message: "barème marginal dont tous les montants de base valent 0",
 			});
 		}
-		if (table.scaleType === "averageRate" && !allBasesZero) {
+		if (table.scaleType !== "marginal" && !allBasesZero) {
 			context.addIssue({
 				code: z.ZodIssueCode.custom,
-				message: "barème à taux moyen avec un montant de base non nul",
+				message: `barème ${table.scaleType} avec un montant de base non nul`,
 			});
 		}
 	});
@@ -206,6 +186,89 @@ const taxScaleSchema = z
 			.strict(),
 	)
 	.min(1);
+
+// ---------------------------------------------------------------------------
+// Fichiers fédéraux — src/data/federal/AAAA.json (CLAUDE.md § 1.1)
+// ---------------------------------------------------------------------------
+
+const pillar3aSchema = z
+	.object({
+		employeeCapWithLpp: valueSchema(z.number()),
+		retroactiveBuyback: z
+			.object({
+				firstBuybackableGap: valueSchema(z.number()),
+				windowYears: valueSchema(z.number()),
+			})
+			.passthrough(),
+	})
+	.passthrough();
+
+/**
+ * Situations qui déterminent le barème de l'impôt fédéral direct (art. 36 LIFD) :
+ * - `marriedCoupleLivingTogether` : époux vivant en ménage commun (al. 2) ;
+ * - `livingWithSupportedDependants` : veufs, séparés, divorcés ou célibataires
+ *   vivant en ménage commun avec des enfants ou des personnes nécessiteuses dont
+ *   ils assument pour l'essentiel l'entretien (al. 2bis) ;
+ * - `otherTaxpayer` : tout autre contribuable (al. 1).
+ */
+export const FEDERAL_TAX_SITUATIONS = [
+	"marriedCoupleLivingTogether",
+	"livingWithSupportedDependants",
+	"otherTaxpayer",
+] as const;
+
+/**
+ * Une table de l'art. 36 LIFD, telle que publiée par l'ordonnance sur la
+ * progression à froid : impôt dû au seuil, puis montant ajouté par tranche
+ * complète de `incrementStep` francs. `ratePercent` vaut `null` là où la table
+ * publie « - ». Les deux dernières lignes encodent le taux maximal.
+ */
+const federalIncomeTaxScaleSchema = valueSchema(
+	z
+		.object({
+			label: z.string().min(1), // intitulé du relevé, en français
+			appliesTo: z.array(z.enum(FEDERAL_TAX_SITUATIONS)).min(1),
+			scaleType: z.literal("marginal"),
+			thresholdLabel: z.string().min(1),
+			incrementStep: z.number().positive(),
+			brackets: z
+				.array(
+					z
+						.object({
+							threshold: z.number(),
+							baseAmount: z.number(),
+							ratePercent: z.number().nullable(),
+						})
+						.strict(),
+				)
+				.min(2),
+		})
+		.strict(),
+);
+
+/**
+ * Impôt fédéral direct (art. 36 LIFD). Tant qu'une valeur n'est pas relevée,
+ * elle reste un `TODO` (R3).
+ */
+const directFederalTaxSchema = z
+	.object({
+		incomeTaxScales: z.union([z.array(federalIncomeTaxScaleSchema).min(1), todoSchema]),
+		maximumRatePercent: z.union([valueSchema(z.number().positive()), todoSchema]),
+		taxReductionPerDependant: z.union([valueSchema(z.number().nonnegative()), todoSchema]),
+		minimumLeviedTax: z.union([valueSchema(z.number().nonnegative()), todoSchema]),
+		taxRoundingToNearest: z.union([valueSchema(z.number().positive()), todoSchema]),
+	})
+	.strict();
+
+export const federalDataSchema = z
+	.object({
+		year: z.number().int(),
+		// Facultatif jusqu'au relevé des plafonds 3a (semaine 6).
+		pillar3a: pillar3aSchema.optional(),
+		directFederalTax: directFederalTaxSchema,
+	})
+	.passthrough();
+export type FederalData = z.infer<typeof federalDataSchema>;
 
 /**
  * Règles de dérivation des prestations en capital, écrites à la main dans
@@ -261,6 +324,72 @@ const degressiveDeductionSchema = z
 	.strict();
 
 /**
+ * Réduction de l'impôt cantonal de base (Vaud, Genève). Elle ne touche que la
+ * part cantonale : l'impôt communal se calcule sur l'impôt de base non réduit.
+ */
+const baseTaxReductionSchema = z
+	.object({
+		ratePercent: z.number().positive(),
+		appliesTo: z.array(z.enum(["income", "wealth"])).min(1),
+	})
+	.strict();
+
+/** Situations de ménage que distingue le moteur (`TaxInput`, sans concubinage). */
+export const HOUSEHOLDS = ["single", "singleWithChildren", "married"] as const;
+
+/**
+ * Où s'applique le diviseur familial. Le type est déclaré par le mainteneur
+ * dans le lecteur d'exports, jamais déduit ; ses paramètres sont des valeurs
+ * sourcées, ou des `TODO` tant qu'ils ne sont pas relevés.
+ * - `splittingIncludedInScale` : la table des ménages concernés intègre déjà le
+ *   splitting (Fribourg) — le diviseur de l'export ne s'applique pas ;
+ * - `separateScale` : une table distincte par situation (Jura) ;
+ * - `divisorOnIncomeAndWealth` : le diviseur de chaque table s'applique au
+ *   revenu et à la fortune des ménages listés (Neuchâtel) ;
+ * - `familyQuotient` : diviseur du revenu variable selon la composition du
+ *   ménage (Vaud).
+ */
+const familyQuotientCoefficientsSchema = z
+	.object({
+		single: z.number().positive(),
+		singleWithChildren: z.number().positive(),
+		married: z.number().positive(),
+		perChild: z.number().nonnegative(),
+	})
+	.strict();
+
+const familyModelSchema = z.discriminatedUnion("type", [
+	z.object({ type: z.literal("splittingIncludedInScale"), sourceId: z.string().min(1) }).strict(),
+	z.object({ type: z.literal("separateScale"), sourceId: z.string().min(1) }).strict(),
+	z
+		.object({
+			type: z.literal("divisorOnIncomeAndWealth"),
+			sourceId: z.string().min(1),
+			households: z.union([valueSchema(z.array(z.enum(HOUSEHOLDS)).min(1)), todoSchema]),
+		})
+		.strict(),
+	z
+		.object({
+			type: z.literal("familyQuotient"),
+			sourceId: z.string().min(1),
+			coefficients: z.union([valueSchema(familyQuotientCoefficientsSchema), todoSchema]),
+		})
+		.strict(),
+]);
+export type FamilyModel = z.infer<typeof familyModelSchema>;
+export const FAMILY_MODEL_TYPES = [
+	"splittingIncludedInScale",
+	"separateScale",
+	"divisorOnIncomeAndWealth",
+	"familyQuotient",
+] as const;
+
+/** Pas d'arrondi vers le bas des assiettes, en francs ; 1 = aucun arrondi. */
+const taxBaseRoundingSchema = z
+	.object({ incomeStep: z.number().positive(), wealthStep: z.number().positive() })
+	.strict();
+
+/**
  * Clés obligatoires d'un fichier canton. Les 6 cantons romands doivent porter
  * exactement le même jeu de clés — vérifié par `tests/data/coverage.test.ts`.
  * `otherDeductions` est facultative : Vaud n'a pas d'export « Autres déductions ».
@@ -273,6 +402,13 @@ export const REQUIRED_CANTON_KEYS = [
 	"capitalWithdrawalTax", // prestation en capital
 	"cantonalMultiplier", // coefficient cantonal ; 100 % s'il est neutre
 	"baseTaxReduction", // réduction de l'impôt de base, null si aucune
+	"unreducedCantonalMultiplier", // part du coefficient cantonal hors réduction (Genève), null ailleurs
+	"familyModel", // où s'applique le diviseur familial
+	"taxBaseRounding", // arrondi des revenu et fortune imposables
+	"incomeScaleIndexation", // application indexée du barème du revenu (Valais), null ailleurs
+	"supplementaryWealthTax", // impôt supplémentaire sur la fortune (Genève), null ailleurs
+	"taxCreditPerChild", // rabais d'impôt par enfant (Neuchâtel), null ailleurs
+	"personalTax", // taxe personnelle forfaitaire, null si aucune
 	"communalScale", // barème communal propre (Valais), null ailleurs
 	"deductions", // déductions
 	"realEstateGainsTax", // gains immobiliers
@@ -289,7 +425,21 @@ export const cantonDataSchema = z
 		cantonalMultiplier: z
 			.object({ income: valueSchema(z.number()), wealth: valueSchema(z.number()) })
 			.strict(),
-		baseTaxReduction: todoSchema.nullable(),
+		baseTaxReduction: z.union([valueSchema(baseTaxReductionSchema), todoSchema]).nullable(),
+		unreducedCantonalMultiplier: z
+			.union([valueSchema(z.object({ income: z.number(), wealth: z.number() }).strict()), todoSchema])
+			.nullable(),
+		familyModel: z.union([familyModelSchema, todoSchema]),
+		taxBaseRounding: z.union([valueSchema(taxBaseRoundingSchema), todoSchema]),
+		incomeScaleIndexation: z
+			.union([
+				valueSchema(z.object({ cantonal: z.number().positive(), communal: z.number().positive() }).strict()),
+				todoSchema,
+			])
+			.nullable(),
+		supplementaryWealthTax: todoSchema.nullable(), // forme arrêtée au relevé
+		taxCreditPerChild: z.union([valueSchema(z.number().nonnegative()), todoSchema]).nullable(),
+		personalTax: z.union([valueSchema(z.number().nonnegative()), todoSchema]).nullable(),
 		// Valais (art. 178 LF) : revenu et fortune ; la fortune reste TODO tant que l'export ne la livre pas
 		communalScale: z
 			.object({ income: taxScaleSchema, wealth: z.union([taxScaleSchema, todoSchema]) })

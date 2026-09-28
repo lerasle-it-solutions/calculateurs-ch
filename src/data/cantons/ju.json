@@ -327,6 +327,19 @@
 		}
 	},
 	"baseTaxReduction": null,
+	"unreducedCantonalMultiplier": null,
+	"familyModel": {
+		"type": "separateScale",
+		"sourceId": "ju-li"
+	},
+	"taxBaseRounding": {
+		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
+		"sourceId": "ju-li"
+	},
+	"incomeScaleIndexation": null,
+	"supplementaryWealthTax": null,
+	"taxCreditPerChild": null,
+	"personalTax": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

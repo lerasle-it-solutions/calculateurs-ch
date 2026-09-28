@@ -267,6 +267,11 @@ type TaxInput = {
   federalTaxableIncome: number;
   cantonalTaxableIncome: number;
   taxableWealth: number;
+  // Facultatif. Enfants et personnes nécessiteuses en ménage commun dont le
+  // contribuable assume pour l'essentiel l'entretien (art. 36 al. 2bis LIFD) :
+  // choix du barème fédéral et réduction par personne. Absent, il vaut
+  // { children, needyPersons: 0 }, hypothèse inscrite dans la trace.
+  supportedHouseholdMembers?: { children: number; needyPersons: number };
 };
 ```
 

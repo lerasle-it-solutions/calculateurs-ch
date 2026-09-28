@@ -15,8 +15,11 @@ export interface BreakdownLine {
 	/** Résultat intermédiaire. */
 	value: number;
 	unit?: string;
-	/** Identifiant présent dans le registre des sources. */
-	sourceId: string;
+	/**
+	 * Identifiant présent dans le registre des sources ; `null` pour une étape
+	 * purement arithmétique (somme, différence) qui n'applique aucune valeur.
+	 */
+	sourceId: string | null;
 	/** Hypothèse retenue pour cette étape, s'il y en a une. */
 	assumption?: string;
 }

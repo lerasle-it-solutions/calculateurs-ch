@@ -187,7 +187,7 @@
 			"verifiedOn": "2026-09-26",
 			"effectiveFrom": "2026-01-01",
 			"collectedFrom": "estv-base-data-module",
-			"note": "L'art. 2 LCACant mentionne 47,5 + 1 centimes, soit 148,5 % attendus. Écart non résolu : le centime supplémentaire ne semble pas inclus dans le coefficient publié. À trancher contre les cas de référence."
+			"note": "Coefficient publié : la part soumise à la diminution de la LDIRPP. Le centime supplémentaire de l'art. 2 LCACant, qui y échappe selon les cas de référence, est porté par unreducedCantonalMultiplier."
 		},
 		"wealth": {
 			"value": 147.5,
@@ -195,12 +195,34 @@
 			"verifiedOn": "2026-09-26",
 			"effectiveFrom": "2026-01-01",
 			"collectedFrom": "estv-base-data-module",
-			"note": "L'art. 2 LCACant mentionne 47,5 + 1 centimes, soit 148,5 % attendus. Écart non résolu : le centime supplémentaire ne semble pas inclus dans le coefficient publié. À trancher contre les cas de référence."
+			"note": "Coefficient publié : la part soumise à la diminution de la LDIRPP. Le centime supplémentaire de l'art. 2 LCACant, qui y échappe selon les cas de référence, est porté par unreducedCantonalMultiplier."
 		}
 	},
 	"baseTaxReduction": {
-		"todo": "Réduction de l'impôt cantonal de base : absente des exports de l'AFC, à relever dans l'acte.",
+		"todo": "Réduction de l'impôt cantonal de base (taux et impôts concernés : revenu, fortune) : absente des exports de l'AFC, à relever dans l'acte.",
 		"sourceId": "ge-ldirpp"
+	},
+	"unreducedCantonalMultiplier": {
+		"todo": "Centime additionnel cantonal qui échappe à la diminution de la LDIRPP (revenu et fortune) : à identifier et relever dans l'acte.",
+		"sourceId": "ge-lcacant"
+	},
+	"familyModel": {
+		"todo": "Modèle familial genevois : taux applicable aux couples mariés et aux familles monoparentales, et assiettes concernées (revenu, fortune).",
+		"sourceId": "ge-lipp"
+	},
+	"taxBaseRounding": {
+		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
+		"sourceId": "ge-lipp"
+	},
+	"incomeScaleIndexation": null,
+	"supplementaryWealthTax": {
+		"todo": "Impôt supplémentaire sur la fortune, sans centimes additionnels : barème à relever.",
+		"sourceId": "ge-lipp"
+	},
+	"taxCreditPerChild": null,
+	"personalTax": {
+		"todo": "Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.",
+		"sourceId": null
 	},
 	"communalScale": null,
 	"deductions": {

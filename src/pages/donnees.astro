@@ -71,10 +71,12 @@ const formatDate = (isoDate: string): string =>
 							{rows.map((row) => (
 								<tr class="border-t border-rule align-top">
 									<td class="px-lg py-md">
-										{row.source ? (
+										{row.source?.url ? (
 											<a href={row.source.url} class="font-serif">
 												{row.source.name}
 											</a>
+										) : row.source ? (
+											<span class="font-serif">{row.source.name}</span>
 										) : (
 											<span class="font-serif text-fine">
 												{row.sourceId} — {fr.dataPage.sourceUnknown}

@@ -31,6 +31,7 @@ import {
 	municipalMultipliersDataSchema,
 	todoSchema,
 	type CantonData,
+	type FamilyModel,
 	type MunicipalMultipliersData,
 	type SCALE_TYPES,
 	type Todo,
@@ -72,8 +73,8 @@ type ScaleKey = "cantonal.income" | "cantonal.wealth" | "cantonal.capital" | "co
 const DECLARED_SCALE_TYPES: Record<CantonCode, Partial<Record<ScaleKey, ScaleType>>> = {
 	VD: { "cantonal.income": "marginal", "cantonal.wealth": "marginal" },
 	GE: { "cantonal.income": "marginal", "cantonal.wealth": "marginal" },
-	VS: { "cantonal.income": "averageRate", "communal.income": "averageRate", "cantonal.wealth": "marginal" },
-	FR: { "cantonal.income": "averageRate", "cantonal.wealth": "marginal", "cantonal.capital": "marginal" },
+	VS: { "cantonal.income": "interpolated", "communal.income": "interpolated", "cantonal.wealth": "marginal" },
+	FR: { "cantonal.income": "interpolated", "cantonal.wealth": "marginal", "cantonal.capital": "marginal" },
 	NE: { "cantonal.income": "marginal", "cantonal.wealth": "marginal" },
 	JU: { "cantonal.income": "marginal", "cantonal.wealth": "marginal", "cantonal.capital": "marginal" },
 };
@@ -85,7 +86,7 @@ const COMMUNAL_WEALTH_TODO =
 
 /** Note portée par le coefficient cantonal d'un canton, là où l'export s'écarte du texte légal. */
 const CANTONAL_MULTIPLIER_NOTES: Partial<Record<CantonCode, string>> = {
-	GE: "L'art. 2 LCACant mentionne 47,5 + 1 centimes, soit 148,5 % attendus. Écart non résolu : le centime supplémentaire ne semble pas inclus dans le coefficient publié. À trancher contre les cas de référence.",
+	GE: "Coefficient publié : la part soumise à la diminution de la LDIRPP. Le centime supplémentaire de l'art. 2 LCACant, qui y échappe selon les cas de référence, est porté par unreducedCantonalMultiplier.",
 };
 
 const SCALE_HEADER_FIXED = ["Canton-Id", "Canton", "Type d'impôt", "Sujet fiscal", "Autorité fiscale"];
@@ -298,8 +299,8 @@ const readScale = (canton: CantonCode, sheet: ExportSheet, kind: ScaleKind): Rea
 		if (scaleType === "marginal" && allBasesZero) {
 			flag(canton, `${label} : table « ${table} » déclarée marginal, mais tous ses montants de base valent 0`);
 		}
-		if (scaleType === "averageRate" && !allBasesZero) {
-			flag(canton, `${label} : table « ${table} » déclarée averageRate, mais certains de ses montants de base sont non nuls`);
+		if (scaleType !== "marginal" && !allBasesZero) {
+			flag(canton, `${label} : table « ${table} » déclarée ${scaleType}, mais certains de ses montants de base sont non nuls`);
 		}
 
 		const role: Role =
@@ -458,17 +459,68 @@ const loadCapitalWithdrawalDerivation = () => {
 
 // --- Clés hors exports : TODO, sans écraser une valeur déjà relevée -------------
 
-const NON_EXPORT_KEYS = ["baseTaxReduction", "realEstateGainsTax", "imputedRentalValue"] as const;
+const NON_EXPORT_KEYS = [
+	"baseTaxReduction",
+	"unreducedCantonalMultiplier",
+	"taxBaseRounding",
+	"incomeScaleIndexation",
+	"supplementaryWealthTax",
+	"taxCreditPerChild",
+	"personalTax",
+	"realEstateGainsTax",
+	"imputedRentalValue",
+] as const;
 
 const todo = (text: string, sourceId: SourceId | null): Todo => ({ todo: text, sourceId });
+const isTodo = (candidate: unknown): boolean => todoSchema.safeParse(candidate).success;
+
+/**
+ * Modèle familial de chaque canton, déclaré par le mainteneur — jamais déduit
+ * des exports. Les paramètres restent des TODO jusqu'au relevé ; un canton dont
+ * le modèle n'est pas encore tranché porte un TODO entier.
+ */
+const DECLARED_FAMILY_MODELS: Record<CantonCode, FamilyModel | Todo> = {
+	VD: {
+		type: "familyQuotient",
+		sourceId: "vd-li",
+		coefficients: todo("Coefficients du quotient familial (personne seule, famille monoparentale, couple marié, part par enfant) : à relever dans la LI.", "vd-li"),
+	},
+	GE: todo("Modèle familial genevois : taux applicable aux couples mariés et aux familles monoparentales, et assiettes concernées (revenu, fortune).", "ge-lipp"),
+	VS: todo("Modèle familial valaisan : traitement des couples mariés (rabais d'impôt) et des familles monoparentales.", "vs-lf"),
+	FR: { type: "splittingIncludedInScale", sourceId: "fr-licd" },
+	NE: {
+		type: "divisorOnIncomeAndWealth",
+		sourceId: "ne-lcdir",
+		households: todo("Ménages auxquels s'applique le splitting (couples mariés ; familles monoparentales ?), sur le revenu et la fortune.", "ne-lcdir"),
+	},
+	JU: { type: "separateScale", sourceId: "ju-li" },
+};
 
 const nonExportDefaults = (canton: CantonCode) => {
 	const reduction = SOURCE_BY_CANTON[canton].baseTaxReduction;
+	const taxLaw = SOURCE_BY_CANTON[canton].taxLaw;
 	return {
 		baseTaxReduction:
 			reduction === null
 				? null
-				: todo("Réduction de l'impôt cantonal de base : absente des exports de l'AFC, à relever dans l'acte.", reduction),
+				: todo("Réduction de l'impôt cantonal de base (taux et impôts concernés : revenu, fortune) : absente des exports de l'AFC, à relever dans l'acte.", reduction),
+		unreducedCantonalMultiplier:
+			canton === "GE"
+				? todo("Centime additionnel cantonal qui échappe à la diminution de la LDIRPP (revenu et fortune) : à identifier et relever dans l'acte.", "ge-lcacant")
+				: null,
+		taxBaseRounding: todo("Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.", taxLaw),
+		incomeScaleIndexation:
+			canton === "VS"
+				? todo("Application du barème du revenu, cantonal et communal : les cas de référence ne sont reproduits qu'en indexant les seuils de l'export. Mécanisme et facteurs à relever.", "vs-lf")
+				: null,
+		supplementaryWealthTax:
+			canton === "GE" ? todo("Impôt supplémentaire sur la fortune, sans centimes additionnels : barème à relever.", "ge-lipp") : null,
+		taxCreditPerChild:
+			canton === "NE" ? todo("Rabais d'impôt par enfant, déduit de l'impôt cantonal : montant à relever.", "ne-lcdir") : null,
+		personalTax:
+			canton === "VS" || canton === "GE"
+				? todo("Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.", null)
+				: null,
 		realEstateGainsTax: todo("Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.", null),
 		imputedRentalValue: todo("Valeur locative : source à inscrire au registre, méthode à relever.", null),
 	};
@@ -481,11 +533,34 @@ const keepManualValues = (path: string, defaults: ReturnType<typeof nonExportDef
 	const merged: Record<string, unknown> = { ...defaults };
 	for (const key of NON_EXPORT_KEYS) {
 		const current = existing[key];
-		if (current !== undefined && current !== null && !todoSchema.safeParse(current).success) {
+		if (current !== undefined && current !== null && !isTodo(current)) {
 			merged[key] = current;
 		}
 	}
 	return merged as typeof defaults;
+};
+
+/**
+ * Modèle familial : la déclaration fait foi sur le type ; un paramètre déjà
+ * relevé dans le fichier existant est gardé. Un modèle relevé à la main là où
+ * la déclaration est un TODO est gardé tel quel.
+ */
+const keepFamilyModel = (canton: CantonCode, path: string): FamilyModel | Todo => {
+	const declared = DECLARED_FAMILY_MODELS[canton];
+	if (!existsSync(path)) return declared;
+	const current = (JSON.parse(readFileSync(path, "utf8")) as { familyModel?: unknown }).familyModel;
+	if (current === undefined || isTodo(current)) return declared;
+	if (isTodo(declared)) return current as FamilyModel;
+	const manual = current as Record<string, unknown>;
+	if (manual.type !== (declared as FamilyModel).type) {
+		flag(canton, `modèle familial « ${String(manual.type)} » dans ${relative(ROOT, path)}, mais « ${(declared as FamilyModel).type} » déclaré dans DECLARED_FAMILY_MODELS : lequel fait foi ?`);
+		return declared;
+	}
+	const merged: Record<string, unknown> = { ...declared };
+	for (const [key, value] of Object.entries(declared)) {
+		if (isTodo(value) && manual[key] !== undefined && !isTodo(manual[key])) merged[key] = manual[key];
+	}
+	return merged as FamilyModel;
 };
 
 /**
@@ -581,6 +656,7 @@ const readCanton = async (
 		deductions: readDeductions(canton, deductions, taxLawSource),
 		...(otherDeductionsSheet ? { otherDeductions: readOtherDeductions(canton, otherDeductionsSheet, taxLawSource) } : {}),
 		...keepManualValues(path, nonExportDefaults(canton)),
+		familyModel: keepFamilyModel(canton, path),
 	};
 
 	const result = { path, municipalities: multipliers.municipalities };

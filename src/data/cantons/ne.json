@@ -207,6 +207,26 @@
 		}
 	},
 	"baseTaxReduction": null,
+	"unreducedCantonalMultiplier": null,
+	"familyModel": {
+		"type": "divisorOnIncomeAndWealth",
+		"sourceId": "ne-lcdir",
+		"households": {
+			"todo": "Ménages auxquels s'applique le splitting (couples mariés ; familles monoparentales ?), sur le revenu et la fortune.",
+			"sourceId": "ne-lcdir"
+		}
+	},
+	"taxBaseRounding": {
+		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
+		"sourceId": "ne-lcdir"
+	},
+	"incomeScaleIndexation": null,
+	"supplementaryWealthTax": null,
+	"taxCreditPerChild": {
+		"todo": "Rabais d'impôt par enfant, déduit de l'impôt cantonal : montant à relever.",
+		"sourceId": "ne-lcdir"
+	},
+	"personalTax": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

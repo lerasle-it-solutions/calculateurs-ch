@@ -450,9 +450,26 @@
 		}
 	},
 	"baseTaxReduction": {
-		"todo": "Réduction de l'impôt cantonal de base : absente des exports de l'AFC, à relever dans l'acte.",
+		"todo": "Réduction de l'impôt cantonal de base (taux et impôts concernés : revenu, fortune) : absente des exports de l'AFC, à relever dans l'acte.",
 		"sourceId": "vd-base-tax-reduction"
 	},
+	"unreducedCantonalMultiplier": null,
+	"familyModel": {
+		"type": "familyQuotient",
+		"sourceId": "vd-li",
+		"coefficients": {
+			"todo": "Coefficients du quotient familial (personne seule, famille monoparentale, couple marié, part par enfant) : à relever dans la LI.",
+			"sourceId": "vd-li"
+		}
+	},
+	"taxBaseRounding": {
+		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
+		"sourceId": "vd-li"
+	},
+	"incomeScaleIndexation": null,
+	"supplementaryWealthTax": null,
+	"taxCreditPerChild": null,
+	"personalTax": null,
 	"communalScale": null,
 	"deductions": {
 		"value": [

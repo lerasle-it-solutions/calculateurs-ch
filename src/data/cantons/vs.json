@@ -6,7 +6,7 @@
 			"taxpayerGroup": "Tous",
 			"table": {
 				"value": {
-					"scaleType": "averageRate",
+					"scaleType": "interpolated",
 					"thresholdLabel": "Revenu imposable Confédération",
 					"rateSplittingDivisor": null,
 					"brackets": [
@@ -247,13 +247,32 @@
 		}
 	},
 	"baseTaxReduction": null,
+	"unreducedCantonalMultiplier": null,
+	"familyModel": {
+		"todo": "Modèle familial valaisan : traitement des couples mariés (rabais d'impôt) et des familles monoparentales.",
+		"sourceId": "vs-lf"
+	},
+	"taxBaseRounding": {
+		"todo": "Arrondi des revenu et fortune imposables (pas en francs, 1 si aucun) : à relever dans la loi.",
+		"sourceId": "vs-lf"
+	},
+	"incomeScaleIndexation": {
+		"todo": "Application du barème du revenu, cantonal et communal : les cas de référence ne sont reproduits qu'en indexant les seuils de l'export. Mécanisme et facteurs à relever.",
+		"sourceId": "vs-lf"
+	},
+	"supplementaryWealthTax": null,
+	"taxCreditPerChild": null,
+	"personalTax": {
+		"todo": "Taxe personnelle forfaitaire : montant et acte à relever, source à inscrire au registre.",
+		"sourceId": null
+	},
 	"communalScale": {
 		"income": [
 			{
 				"taxpayerGroup": "Tous",
 				"table": {
 					"value": {
-						"scaleType": "averageRate",
+						"scaleType": "interpolated",
 						"thresholdLabel": "Revenu imposable Confédération",
 						"rateSplittingDivisor": null,
 						"brackets": [
