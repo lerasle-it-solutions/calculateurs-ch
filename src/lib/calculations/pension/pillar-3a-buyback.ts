@@ -1,0 +1,219 @@
+/**
+ * Rachat rétroactif dans le pilier 3a (OPP 3, RS 831.461.3, art. 7a et 7b).
+ *
+ * Fonction pure : plafonds et règles arrivent en paramètres (R2), la fonction
+ * n'importe aucun fichier de données. Elle dit, année par année, quelle lacune
+ * est rachetable l'année R du rachat, et propose une répartition du rachat sous
+ * le plafond de l'année R.
+ *
+ * Non traité : la limite d'âge (art. 7a al. 5, qui renvoie à l'art. 7 al. 3).
+ */
+import type { BreakdownLine } from "../../utils/breakdown";
+
+/** Une valeur relevée, avec l'acte qui la fixe. */
+export type Sourced<T> = { value: T; sourceId: string };
+
+/** Une année de lacune candidate. */
+export type Pillar3aGapYearInput = {
+	year: number;
+	/** Plafond applicable à la personne cette année-là : petite ou grande cotisation. */
+	maxContribution: Sourced<number>;
+	paidContribution: number;
+	/** Revenu soumis à l'AVS cette année-là. */
+	hadAvsIncome: boolean;
+	/** Année déjà rachetée, même en partie. */
+	alreadyBoughtBack: boolean;
+};
+
+export type Pillar3aGapsParams = {
+	/** Année du rachat, notée R. */
+	buybackYear: number;
+	/** Première année de lacune rachetable (disposition transitoire de la modification du 6 novembre 2024). */
+	firstGapYear: Sourced<number>;
+	/** Nombre d'années précédentes rachetables (art. 7a al. 1 let. a). */
+	lookbackYears: Sourced<number>;
+	/** Plafond total des rachats de l'année R : la petite cotisation de R (art. 7a al. 2). */
+	buybackYearCap: Sourced<number>;
+	gapYears: Pillar3aGapYearInput[];
+	/** Cotisation ordinaire de l'année R versée intégralement (art. 7a al. 1 let. c). */
+	currentYearContributionPaidInFull: boolean;
+	/** Revenu soumis à l'AVS l'année R. */
+	hasAvsIncomeInBuybackYear: boolean;
+	/** Prestation de vieillesse déjà perçue (art. 7a al. 4). */
+	receivedOldAgeBenefit: boolean;
+};
+
+export type Pillar3aGapYearResult = {
+	year: number;
+	/** Plafond moins cotisation versée, jamais négatif. */
+	gap: number;
+	/** Montant proposé au rachat l'année R. */
+	proposedBuyback: number;
+	/** Dernière année où la lacune peut être rachetée. */
+	lastBuybackYear: number;
+	eligible: boolean;
+	/** Motif du refus, en français, avec son article ; `null` si l'année est rachetable. */
+	refusalReason: string | null;
+	/** Année comblée en partie : son solde est perdu (art. 7a al. 3). */
+	partiallyFilled: boolean;
+	/** Solde perdu si l'année n'est comblée qu'en partie. */
+	lostBalance: number;
+};
+
+export type Pillar3aGapsResult = {
+	years: Pillar3aGapYearResult[];
+	/** Total rachetable l'année R, dans la limite du plafond. */
+	totalBuyback: number;
+	breakdown: BreakdownLine[];
+};
+
+const numberFormat = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 2 });
+const fmt = (value: number): string => numberFormat.format(value);
+
+/** Conditions qui bloquent tout rachat l'année R, dans l'ordre où elles sont examinées. */
+const blockingConditionOf = (params: Pillar3aGapsParams): string | null => {
+	if (params.receivedOldAgeBenefit) {
+		return "Une prestation de vieillesse a été perçue : aucun rachat n'est possible (art. 7a al. 4 OPP 3).";
+	}
+	if (!params.currentYearContributionPaidInFull) {
+		return `La cotisation ordinaire de ${params.buybackYear} n'est pas versée intégralement : aucun rachat n'est possible (art. 7a al. 1 let. c OPP 3).`;
+	}
+	if (!params.hasAvsIncomeInBuybackYear) {
+		// Condition non écrite en toutes lettres : elle découle de l'art. 7a al. 1 let. c,
+		// la cotisation ordinaire de l'année R supposant un revenu soumis à l'AVS cette année-là.
+		return `Aucun revenu soumis à l'AVS en ${params.buybackYear} : aucun rachat n'est possible (découle de l'art. 7a al. 1 let. c OPP 3).`;
+	}
+	return null;
+};
+
+/** Motif de refus propre à une année, ou `null` si elle est rachetable l'année R. */
+const yearRefusalOf = (params: Pillar3aGapsParams, gapYear: Pillar3aGapYearInput): string | null => {
+	const R = params.buybackYear;
+	const firstGapYear = params.firstGapYear.value;
+	const lookbackYears = params.lookbackYears.value;
+	const Y = gapYear.year;
+	if (Y >= R) {
+		return `${Y} n'est pas une année antérieure à l'année du rachat ${R} (art. 7a al. 1 let. a OPP 3).`;
+	}
+	if (Y < firstGapYear) {
+		return `Lacune antérieure à ${firstGapYear}, non rachetable (OPP 3, disposition transitoire de la modification du 6 novembre 2024).`;
+	}
+	if (Y < R - lookbackYears) {
+		return `Délai échu : la lacune de ${Y} ne pouvait être rachetée que jusqu'en ${Y + lookbackYears} (art. 7a al. 1 let. a OPP 3).`;
+	}
+	if (!gapYear.hadAvsIncome) {
+		return `Aucun revenu soumis à l'AVS en ${Y} : la lacune n'est pas rachetable (art. 7a al. 1 let. b ; art. 7b al. 2 let. b OPP 3).`;
+	}
+	if (gapYear.alreadyBoughtBack) {
+		return `${Y} a déjà fait l'objet d'un rachat : un seul rachat par année de lacune, le solde non comblé est perdu (art. 7a al. 3 ; art. 7b al. 2 let. c OPP 3).`;
+	}
+	return null;
+};
+
+/**
+ * Lacunes rachetables l'année R et répartition proposée du rachat : les années
+ * les plus anciennes d'abord, puisqu'elles expirent les premières, dans la
+ * limite du plafond total de l'année R, y compris pour un indépendant (art. 7a
+ * al. 2 ; un seul rachat peut combler plusieurs lacunes, al. 3).
+ */
+export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsResult {
+	const breakdown: BreakdownLine[] = [];
+	const line = (entry: BreakdownLine): void => {
+		breakdown.push(entry);
+	};
+	const R = params.buybackYear;
+	const lookbackYears = params.lookbackYears.value;
+	const cap = params.buybackYearCap;
+
+	for (const gapYear of params.gapYears) {
+		if (![gapYear.maxContribution.value, gapYear.paidContribution].every((amount) => Number.isFinite(amount) && amount >= 0)) {
+			throw new Error(`Montants invalides pour ${gapYear.year} : plafond et cotisation versée doivent être positifs ou nuls.`);
+		}
+	}
+	if (new Set(params.gapYears.map((gapYear) => gapYear.year)).size !== params.gapYears.length) {
+		throw new Error("Une même année de lacune figure deux fois.");
+	}
+
+	line({
+		label: "Années de lacune rachetables",
+		operands: { buybackYear: R, firstGapYear: params.firstGapYear.value, lookbackYears },
+		formula: `de max(${params.firstGapYear.value} ; ${R} − ${lookbackYears}) à ${R} − 1, soit de ${Math.max(params.firstGapYear.value, R - lookbackYears)} à ${R - 1}`,
+		value: Math.max(0, R - Math.max(params.firstGapYear.value, R - lookbackYears)),
+		sourceId: params.lookbackYears.sourceId,
+		assumption: "Les lacunes antérieures à la première année de lacune rachetable ne le sont jamais (disposition transitoire).",
+	});
+	line({
+		label: "Limite d'âge non examinée",
+		operands: {},
+		formula: "art. 7a al. 5 OPP 3, qui renvoie à l'art. 7 al. 3 : non traité par ce calcul",
+		value: 0,
+		sourceId: params.lookbackYears.sourceId,
+		assumption: "La limite d'âge du rachat doit être vérifiée à part.",
+	});
+
+	const blocking = blockingConditionOf(params);
+	if (blocking !== null) {
+		line({
+			label: "Rachat impossible l'année du rachat",
+			operands: { buybackYear: R },
+			formula: blocking,
+			value: 0,
+			unit: "CHF",
+			sourceId: params.lookbackYears.sourceId,
+		});
+	}
+
+	const oldestFirst = [...params.gapYears].sort((a, b) => a.year - b.year);
+	let remaining = blocking === null ? cap.value : 0;
+	const years: Pillar3aGapYearResult[] = oldestFirst.map((gapYear) => {
+		const gap = Math.max(0, gapYear.maxContribution.value - gapYear.paidContribution);
+		const lastBuybackYear = gapYear.year + lookbackYears;
+		const refusalReason = blocking ?? yearRefusalOf(params, gapYear);
+		line({
+			label: `Lacune ${gapYear.year}`,
+			operands: { maxContribution: gapYear.maxContribution.value, paidContribution: gapYear.paidContribution },
+			formula: `max(0 ; ${fmt(gapYear.maxContribution.value)} − ${fmt(gapYear.paidContribution)})`,
+			value: gap,
+			unit: "CHF",
+			sourceId: gapYear.maxContribution.sourceId,
+			assumption:
+				refusalReason ?? `Rachetable jusqu'en ${lastBuybackYear} (art. 7a al. 1 let. a OPP 3).`,
+		});
+		if (refusalReason !== null) {
+			return { year: gapYear.year, gap, proposedBuyback: 0, lastBuybackYear, eligible: false, refusalReason, partiallyFilled: false, lostBalance: 0 };
+		}
+		const proposedBuyback = Math.min(gap, remaining);
+		remaining -= proposedBuyback;
+		const partiallyFilled = proposedBuyback > 0 && proposedBuyback < gap;
+		const lostBalance = partiallyFilled ? gap - proposedBuyback : 0;
+		if (gap > 0) {
+			line({
+				label: `Rachat proposé pour ${gapYear.year}`,
+				operands: { gap, proposedBuyback, remainingCap: remaining },
+				formula: `min(${fmt(gap)} ; plafond restant ${fmt(proposedBuyback + remaining)})`,
+				value: proposedBuyback,
+				unit: "CHF",
+				sourceId: cap.sourceId,
+				assumption: partiallyFilled
+					? `Année comblée en partie : le solde de ${fmt(lostBalance)} CHF serait perdu, un seul rachat étant admis par année de lacune (art. 7a al. 3 OPP 3).`
+					: proposedBuyback === 0
+						? `Plafond de ${R} épuisé : la lacune reste rachetable une autre année, jusqu'en ${lastBuybackYear}, si elle n'est pas entamée.`
+						: "Lacune comblée entièrement ; les années les plus anciennes passent en premier, puisqu'elles expirent les premières.",
+			});
+		}
+		return { year: gapYear.year, gap, proposedBuyback, lastBuybackYear, eligible: true, refusalReason: null, partiallyFilled, lostBalance };
+	});
+
+	const totalBuyback = years.reduce((sum, year) => sum + year.proposedBuyback, 0);
+	line({
+		label: `Total rachetable en ${R}`,
+		operands: { cap: cap.value, totalBuyback },
+		formula: `${years.filter((year) => year.proposedBuyback > 0).map((year) => fmt(year.proposedBuyback)).join(" + ") || "0"}, plafond total de ${fmt(cap.value)} CHF pour l'année ${R}`,
+		value: totalBuyback,
+		unit: "CHF",
+		sourceId: cap.sourceId,
+		assumption: "Le plafond s'applique au total des rachats de l'année, et non à chaque lacune (art. 7a al. 2 OPP 3).",
+	});
+
+	return { years, totalBuyback, breakdown };
+}
