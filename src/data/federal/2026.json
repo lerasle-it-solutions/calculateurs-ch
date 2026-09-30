@@ -1,5 +1,46 @@
 {
 	"year": 2026,
+	"pillar3a": {
+		"smallContributionCap": {
+			"value": 7258,
+			"unit": "CHF",
+			"sourceId": "ofas-pillar-3a-caps",
+			"verifiedOn": "2026-09-29",
+			"effectiveFrom": "2025-01-01",
+			"note": "OPP 3 art. 7 al. 1 let. a : « petite » cotisation. La page de l'OFAS donne les montants « dès 2025 », sans ligne 2026."
+		},
+		"largeContributionCap": {
+			"value": 36288,
+			"unit": "CHF",
+			"sourceId": "ofas-pillar-3a-caps",
+			"verifiedOn": "2026-09-29",
+			"effectiveFrom": "2025-01-01",
+			"note": "OPP 3 art. 7 al. 1 let. b : « grande » cotisation. La page de l'OFAS donne les montants « dès 2025 », sans ligne 2026."
+		},
+		"largeContributionIncomeRate": {
+			"value": 0.2,
+			"sourceId": "opp3-art-7a",
+			"verifiedOn": "2026-09-29",
+			"effectiveFrom": "2025-01-01",
+			"note": "OPP 3 art. 7 al. 1 let. b : part du revenu, exprimée en fraction (0,20 = 20 %), plafonnée à la « grande » cotisation."
+		},
+		"buyback": {
+			"firstGapYear": {
+				"value": 2025,
+				"sourceId": "opp3-art-7a",
+				"verifiedOn": "2026-09-29",
+				"effectiveFrom": "2025-01-01",
+				"note": "OPP 3, disposition transitoire de la modification du 6 novembre 2024 : les lacunes antérieures au 1er janvier 2025 ne sont pas rachetables."
+			},
+			"lookbackYears": {
+				"value": 10,
+				"sourceId": "opp3-art-7a",
+				"verifiedOn": "2026-09-29",
+				"effectiveFrom": "2025-01-01",
+				"note": "OPP 3 art. 7a al. 1 let. a et al. 2 : rachat pour les dix années précédentes."
+			}
+		}
+	},
 	"directFederalTax": {
 		"incomeTaxScales": [
 			{

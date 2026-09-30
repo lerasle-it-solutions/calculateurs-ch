@@ -512,25 +512,38 @@ nommage).
 {
   "year": 2026,
   "pillar3a": {
-    "employeeCapWithLpp": {
+    "smallContributionCap": {
       "value": 7258,
       "unit": "CHF",
       "sourceId": "ofas-pillar-3a-caps",
-      "verifiedOn": "2026-01-08",
-      "effectiveFrom": "2026-01-01",
+      "verifiedOn": "2026-09-29",
+      "effectiveFrom": "2025-01-01",
     },
-    "retroactiveBuyback": {
-      "firstBuybackableGap": {
+    "largeContributionCap": {
+      "value": 36288,
+      "unit": "CHF",
+      "sourceId": "ofas-pillar-3a-caps",
+      "verifiedOn": "2026-09-29",
+      "effectiveFrom": "2025-01-01",
+    },
+    "largeContributionIncomeRate": {
+      "value": 0.2,
+      "sourceId": "opp3-art-7a",
+      "verifiedOn": "2026-09-29",
+      "effectiveFrom": "2025-01-01",
+    },
+    "buyback": {
+      "firstGapYear": {
         "value": 2025,
         "sourceId": "opp3-art-7a",
-        "verifiedOn": "2026-01-08",
-        "effectiveFrom": "2026-01-01",
+        "verifiedOn": "2026-09-29",
+        "effectiveFrom": "2025-01-01",
       },
-      "windowYears": {
+      "lookbackYears": {
         "value": 10,
         "sourceId": "opp3-art-7a",
-        "verifiedOn": "2026-01-08",
-        "effectiveFrom": "2026-01-01",
+        "verifiedOn": "2026-09-29",
+        "effectiveFrom": "2025-01-01",
       },
     },
   },

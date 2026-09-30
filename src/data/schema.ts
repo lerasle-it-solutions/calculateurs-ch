@@ -191,17 +191,24 @@ const taxScaleSchema = z
 // Fichiers fédéraux — src/data/federal/AAAA.json (CLAUDE.md § 1.1)
 // ---------------------------------------------------------------------------
 
+/**
+ * Pilier 3a (OPP 3, RS 831.461.3) : plafonds annuels de l'art. 7 al. 1 et règles
+ * du rachat de l'art. 7a. Aucun plafond antérieur à 2025 : les lacunes d'avant
+ * 2025 ne sont pas rachetables.
+ */
 const pillar3aSchema = z
 	.object({
-		employeeCapWithLpp: valueSchema(z.number()),
-		retroactiveBuyback: z
+		smallContributionCap: valueSchema(z.number().positive()), // « petite » cotisation, art. 7 al. 1 let. a
+		largeContributionCap: valueSchema(z.number().positive()), // « grande » cotisation, art. 7 al. 1 let. b
+		largeContributionIncomeRate: valueSchema(z.number().positive().max(1)), // part du revenu, art. 7 al. 1 let. b
+		buyback: z
 			.object({
-				firstBuybackableGap: valueSchema(z.number()),
-				windowYears: valueSchema(z.number()),
+				firstGapYear: valueSchema(z.number().int()), // première année de lacune rachetable
+				lookbackYears: valueSchema(z.number().int().positive()), // années précédentes rachetables
 			})
-			.passthrough(),
+			.strict(),
 	})
-	.passthrough();
+	.strict();
 
 /**
  * Situations qui déterminent le barème de l'impôt fédéral direct (art. 36 LIFD) :
@@ -263,8 +270,7 @@ const directFederalTaxSchema = z
 export const federalDataSchema = z
 	.object({
 		year: z.number().int(),
-		// Facultatif jusqu'au relevé des plafonds 3a (semaine 6).
-		pillar3a: pillar3aSchema.optional(),
+		pillar3a: pillar3aSchema,
 		directFederalTax: directFederalTaxSchema,
 	})
 	.passthrough();

@@ -685,6 +685,35 @@ export const SOURCES = defineSources([
 		usedBy: ["tax-engine"],
 		note: "Le PDF « Coefficients et indexations » ne contient PAS le barème : il porte les coefficients d'indexation. Le barème communal est à l'art. 178 de la loi fiscale, d'où l'URL ramenée sur lex.vs.ch. Cette ligne (le barème) et vs-municipal-multipliers (les coefficients d'indexation) décrivent les deux composantes du modèle valaisan et ne se confondent pas. Même adresse que vs-lf : c'est normal, un même texte peut porter deux entrées du registre quand il fonde deux données différentes.",
 	},
+	{
+		id: "opp3-art-7a",
+		name: "Ordonnance sur les déductions admises fiscalement pour les cotisations versées à des formes reconnues de prévoyance (OPP 3)",
+		authority: "Confédération",
+		url: "https://www.fedlex.admin.ch/eli/cc/1985/1778_1778_1778/fr",
+		legalReference:
+			"RS 831.461.3 — art. 7 al. 1 let. a et b (plafonds annuels, en pour-cent du montant-limite supérieur de l'art. 8 al. 1 LPP) · art. 7a (rachat : dix années précédentes, plafond total de 8 % du montant-limite par année de rachat, un seul rachat par année de lacune) · art. 7b (demande de rachat) · disposition transitoire de la modification du 6 novembre 2024 (lacunes antérieures au 1er janvier 2025 non rachetables)",
+		cadence: "irregular",
+		verifiedOn: "2026-09-29",
+		dataClass: "public",
+		nature: "official",
+		requiresAttribution: false,
+		usedBy: ["pension.pillar-3a-buyback"],
+		note: "Version consultée le 29.09.2026 : état le 1er janvier 2025, toujours en vigueur. L'identifiant reprend celui du plan, mais l'entrée couvre aussi les art. 7 et 7b et la disposition transitoire. L'ordonnance ne donne aucun montant en francs : les plafonds viennent de ofas-pillar-3a-caps. La condition de revenu soumis à l'AVS l'année du rachat n'est pas écrite en toutes lettres : elle découle de l'art. 7a al. 1 let. c.",
+	},
+	{
+		id: "ofas-pillar-3a-caps",
+		name: "Le troisième pilier — plafonds des cotisations au pilier 3a",
+		authority: "Office fédéral des assurances sociales (OFAS)",
+		url: "https://www.bsv.admin.ch/fr/le-troisieme-pilier",
+		legalReference: "OPP 3 art. 7 al. 1 let. a (« petite » cotisation) et let. b (« grande » cotisation)",
+		cadence: "annual",
+		verifiedOn: "2026-09-29",
+		dataClass: "public",
+		nature: "official",
+		requiresAttribution: false,
+		usedBy: ["pension.pillar-3a-buyback"],
+		note: "La page donne les montants « dès 2025 », sans ligne 2026 : les plafonds 2026 sont ceux de 2025. Montants antérieurs non repris, les lacunes d'avant 2025 n'étant pas rachetables. À rouvrir au rituel du 1er janvier : les plafonds suivent l'adaptation du montant-limite LPP.",
+	},
 ]);
 
 /** Identifiants des sources publiques. */
