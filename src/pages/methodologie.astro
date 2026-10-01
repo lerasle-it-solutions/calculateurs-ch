@@ -1,8 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { attributionTextsFor } from "../lib/attribution";
 import { fr } from "../i18n/fr";
 
 const title = `${fr.footer.methodology} — ${fr.site.name}`;
+// Texte d'attribution du module de données de base de l'AFC, tel que le registre le porte
+const [estvAttribution] = attributionTextsFor(["estv-base-data-module"]);
 const description =
 	"Comment les barèmes sont relevés et sourcés, comment les résultats sont testés contre le calculateur officiel de l'Administration fédérale des contributions, la politique de mise à jour et de correction d'erreur, et les trois niveaux d'avertissement.";
 ---
@@ -73,6 +76,21 @@ const description =
 				vient, quelles hypothèses il retient, et à quoi il sert dans une
 				décision.
 			</p>
+		</section>
+
+		<section class="flex flex-col gap-sm">
+			<h2 class="text-heading">
+				Données de base de l'Administration fédérale des contributions
+			</h2>
+			<p class="text-body">
+				Les barèmes cantonaux et les coefficients communaux sont relevés dans le
+				module « Rechercher des données de base » du simulateur fiscal de l'AFC,
+				dont l'AFC autorise la réutilisation à condition d'en citer la source et
+				sans garantie. Les résultats du calculateur de l'AFC, eux, ne sont jamais
+				reproduits : ils servent uniquement à tester nos calculs. Tout résultat
+				qui s'appuie sur ces données porte la mention suivante :
+			</p>
+			<p class="font-serif text-body">{estvAttribution}</p>
 		</section>
 
 		<section class="flex flex-col gap-sm">

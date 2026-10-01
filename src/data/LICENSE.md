@@ -4,4 +4,6 @@ Attribution demandée : « Données compilées par calculateurs.ch — https://c
 
 Les valeurs proviennent de sources officielles suisses citées dans chaque enregistrement. Les textes officiels dont elles sont extraites ne sont pas protégés par le droit d'auteur (art. 5 LDA) ; la présente licence porte sur la compilation, sa structure et son enrichissement (identifiants de source, dates de vérification, mise en relation entre niveaux fédéral, cantonal et communal).
 
+Les données issues du module « Rechercher des données de base » de l'Administration fédérale des contributions restent soumises aux conditions de l'AFC : citation de la source, sans garantie. La présente licence porte sur la compilation, sa structure et son enrichissement, et couvre exclusivement les fichiers publiés dans ce dépôt.
+
 Aucune garantie d'exactitude. Ces données sont fournies à titre informatif. Toute réutilisation se fait sous la responsabilité du réutilisateur, qui doit vérifier les valeurs à la source officielle avant tout usage engageant.

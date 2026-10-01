@@ -7,16 +7,24 @@
  * Rendu en serif : c'est de l'appareil de sources, pas un produit du calcul.
  * Un `verifiedOn` vide veut dire « jamais vérifiée » (R3) : aucune date n'est
  * formatée.
+ *
+ * Attribution : si l'une des sources du résultat l'exige (`requiresAttribution`),
+ * son texte s'affiche sous la date, tel que le registre le porte — jamais
+ * recopié ici.
  */
+import { attributionTextsFor } from "../../lib/attribution";
 import { fr } from "../../i18n/fr";
 
 interface Props {
 	referenceYear: number;
 	/** Date de vérification humaine, ISO 8601 ; vide si jamais vérifiée. */
 	verifiedOn: string;
+	/** Sources sur lesquelles s'appuie le résultat, identifiants du registre. */
+	sourceIds?: readonly string[];
 }
 
-const { referenceYear, verifiedOn } = Astro.props;
+const { referenceYear, verifiedOn, sourceIds = [] } = Astro.props;
+const attributions = attributionTextsFor(sourceIds);
 
 const verifiedLabel =
 	verifiedOn === ""
@@ -42,3 +50,4 @@ const verifiedLabel =
 		)
 	}.
 </p>
+{attributions.map((text) => <p class="font-serif text-fine">{text}</p>)}
