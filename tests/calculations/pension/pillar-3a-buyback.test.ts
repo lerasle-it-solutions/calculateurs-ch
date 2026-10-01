@@ -60,22 +60,44 @@ describe("rachat rétroactif dans le pilier 3a", () => {
 		expect(y2030).toMatchObject({ eligible: true, lastBuybackYear: 2040, proposedBuyback: small.value - 2_000 });
 	});
 
-	it("lacunes cumulées au-delà du plafond de R : la plus ancienne d'abord, la suivante en partie, solde perdu signalé", () => {
+	it("lacunes cumulées au-delà du plafond de R : une année entière, la plus ancienne à égalité, l'autre gardée intacte pour plus tard", () => {
 		const result = computePillar3aGaps(
 			params(2027, [gapYear(2026, { paidContribution: 2_000 }), gapYear(2025, { paidContribution: 2_000 })]),
 		);
 		const [y2025, y2026] = result.years;
 		const gap = small.value - 2_000;
 		expect(y2025).toMatchObject({ year: 2025, proposedBuyback: gap, partiallyFilled: false });
-		expect(y2026).toMatchObject({ year: 2026, proposedBuyback: small.value - gap, partiallyFilled: true, lostBalance: gap - (small.value - gap) });
-		expect(result.totalBuyback).toBe(small.value);
-		expect(result.breakdown.some((entry) => entry.assumption?.includes("solde"))).toBe(true);
+		// 2026 n'est pas entamée : elle reste rachetable jusqu'en 2036, sans solde perdu
+		expect(y2026).toMatchObject({ year: 2026, proposedBuyback: 0, partiallyFilled: false, lostBalance: 0, lastBuybackYear: 2036 });
+		expect(result.totalBuyback).toBe(gap);
+		expect(result.breakdown.some((entry) => entry.assumption?.includes("reste rachetable jusqu'en 2036"))).toBe(true);
 	});
 
-	it("indépendant : même une lacune de grande cotisation reste plafonnée au total de l'année R", () => {
-		const result = computePillar3aGaps(params(2026, [gapYear(2025, { maxContribution: large })]));
-		expect(result.years[0]).toMatchObject({ gap: large.value, proposedBuyback: small.value, partiallyFilled: true, lostBalance: large.value - small.value });
-		expect(result.totalBuyback).toBe(small.value);
+	it("R = 2029 : 2025 et 2028 entières plutôt que 2025 et une partie de 2027", () => {
+		const result = computePillar3aGaps(
+			params(2029, [
+				gapYear(2025, { paidContribution: small.value - 5_258 }),
+				gapYear(2027, { paidContribution: small.value - 7_258 }),
+				gapYear(2028, { paidContribution: small.value - 2_000 }),
+			]),
+		);
+		const byYear = Object.fromEntries(result.years.map((year) => [year.year, year]));
+		expect(byYear[2025]).toMatchObject({ gap: 5_258, proposedBuyback: 5_258, partiallyFilled: false });
+		expect(byYear[2027]).toMatchObject({ gap: 7_258, proposedBuyback: 0, partiallyFilled: false, lostBalance: 0 });
+		expect(byYear[2028]).toMatchObject({ gap: 2_000, proposedBuyback: 2_000, partiallyFilled: false });
+		expect(result.totalBuyback).toBe(7_258);
+		expect(result.years.some((year) => year.partiallyFilled)).toBe(false);
+	});
+
+	it("indépendant : une lacune de grande cotisation, au-delà du plafond de R, n'est entamée que l'année où elle expire", () => {
+		// En 2026, l'entamer perdrait le solde : elle reste rachetable jusqu'en 2035
+		const early = computePillar3aGaps(params(2026, [gapYear(2025, { maxContribution: large })]));
+		expect(early.years[0]).toMatchObject({ gap: large.value, proposedBuyback: 0, partiallyFilled: false, lastBuybackYear: 2035 });
+		expect(early.totalBuyback).toBe(0);
+		// En 2035, dernière année : comblée jusqu'au plafond, le solde est perdu
+		const last = computePillar3aGaps(params(2035, [gapYear(2025, { maxContribution: large })]));
+		expect(last.years[0]).toMatchObject({ proposedBuyback: small.value, partiallyFilled: true, lostBalance: large.value - small.value });
+		expect(last.totalBuyback).toBe(small.value);
 	});
 
 	it("inéligible faute de revenu soumis à l'AVS l'année de la lacune", () => {

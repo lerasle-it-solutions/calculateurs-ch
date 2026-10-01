@@ -70,6 +70,34 @@ export type Pillar3aGapsResult = {
 const numberFormat = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 2 });
 const fmt = (value: number): string => numberFormat.format(value);
 
+/**
+ * Ensemble d'années entières dont la somme est la plus grande sans dépasser
+ * `cap` ; à égalité, celui dont les années, triées, expirent le plus tôt. Les
+ * années candidates sont au plus le nombre d'années rachetables : l'énumération
+ * exhaustive reste petite.
+ */
+const bestWholeYears = (candidates: { year: number; gap: number }[], cap: number): Set<number> => {
+	if (candidates.length > 20) throw new Error(`${candidates.length} années candidates : énumération non prévue.`);
+	const sorted = [...candidates].sort((a, b) => a.year - b.year);
+	let best: { sum: number; years: number[] } = { sum: 0, years: [] };
+	for (let mask = 1; mask < 1 << sorted.length; mask++) {
+		const chosen = sorted.filter((_, index) => (mask >> index) & 1);
+		const sum = chosen.reduce((total, year) => total + year.gap, 0);
+		if (sum > cap) continue;
+		const years = chosen.map((year) => year.year);
+		if (sum > best.sum || (sum === best.sum && expiresEarlier(years, best.years))) best = { sum, years };
+	}
+	return new Set(best.years);
+};
+
+/** Vrai si la première liste d'années (triées) contient des années qui expirent plus tôt. */
+const expiresEarlier = (a: number[], b: number[]): boolean => {
+	for (let index = 0; index < Math.min(a.length, b.length); index++) {
+		if (a[index] !== b[index]) return a[index]! < b[index]!;
+	}
+	return a.length > b.length;
+};
+
 /** Conditions qui bloquent tout rachat l'année R, dans l'ordre où elles sont examinées. */
 const blockingConditionOf = (params: Pillar3aGapsParams): string | null => {
 	if (params.receivedOldAgeBenefit) {
@@ -111,10 +139,14 @@ const yearRefusalOf = (params: Pillar3aGapsParams, gapYear: Pillar3aGapYearInput
 };
 
 /**
- * Lacunes rachetables l'année R et répartition proposée du rachat : les années
- * les plus anciennes d'abord, puisqu'elles expirent les premières, dans la
+ * Lacunes rachetables l'année R et répartition proposée du rachat, dans la
  * limite du plafond total de l'année R, y compris pour un indépendant (art. 7a
- * al. 2 ; un seul rachat peut combler plusieurs lacunes, al. 3).
+ * al. 2 ; un seul rachat peut combler plusieurs lacunes, al. 3). Une année
+ * entamée ne se complète plus (al. 3) : la répartition retient l'ensemble
+ * d'années entières dont la somme est la plus grande sous le plafond, et à
+ * égalité celui qui contient les années qui expirent le plus tôt. Une année
+ * n'est entamée que si elle expire l'année R ; les autres restent rachetables
+ * jusqu'à leur dernière année.
  */
 export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsResult {
 	const breakdown: BreakdownLine[] = [];
@@ -164,8 +196,7 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 	}
 
 	const oldestFirst = [...params.gapYears].sort((a, b) => a.year - b.year);
-	let remaining = blocking === null ? cap.value : 0;
-	const years: Pillar3aGapYearResult[] = oldestFirst.map((gapYear) => {
+	const assessed = oldestFirst.map((gapYear) => {
 		const gap = Math.max(0, gapYear.maxContribution.value - gapYear.paidContribution);
 		const lastBuybackYear = gapYear.year + lookbackYears;
 		const refusalReason = blocking ?? yearRefusalOf(params, gapYear);
@@ -179,29 +210,46 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 			assumption:
 				refusalReason ?? `Rachetable jusqu'en ${lastBuybackYear} (art. 7a al. 1 let. a OPP 3).`,
 		});
+		return { year: gapYear.year, gap, lastBuybackYear, refusalReason };
+	});
+
+	// Années entières : une année entamée ne se complète plus (art. 7a al. 3).
+	const available = blocking === null ? cap.value : 0;
+	const candidates = assessed.filter((year) => year.refusalReason === null && year.gap > 0);
+	const wholeYears = bestWholeYears(candidates, available);
+	let remaining = available - candidates.filter((year) => wholeYears.has(year.year)).reduce((sum, year) => sum + year.gap, 0);
+	// Une année n'est entamée que si elle expire l'année R : elle serait perdue de toute façon.
+	const partialAmounts = new Map<number, number>();
+	for (const year of candidates) {
+		if (wholeYears.has(year.year) || year.lastBuybackYear !== R || remaining <= 0) continue;
+		const amount = Math.min(year.gap, remaining);
+		partialAmounts.set(year.year, amount);
+		remaining -= amount;
+	}
+
+	const years: Pillar3aGapYearResult[] = assessed.map(({ year, gap, lastBuybackYear, refusalReason }) => {
 		if (refusalReason !== null) {
-			return { year: gapYear.year, gap, proposedBuyback: 0, lastBuybackYear, eligible: false, refusalReason, partiallyFilled: false, lostBalance: 0 };
+			return { year, gap, proposedBuyback: 0, lastBuybackYear, eligible: false, refusalReason, partiallyFilled: false, lostBalance: 0 };
 		}
-		const proposedBuyback = Math.min(gap, remaining);
-		remaining -= proposedBuyback;
+		const proposedBuyback = wholeYears.has(year) ? gap : (partialAmounts.get(year) ?? 0);
 		const partiallyFilled = proposedBuyback > 0 && proposedBuyback < gap;
 		const lostBalance = partiallyFilled ? gap - proposedBuyback : 0;
 		if (gap > 0) {
 			line({
-				label: `Rachat proposé pour ${gapYear.year}`,
-				operands: { gap, proposedBuyback, remainingCap: remaining },
-				formula: `min(${fmt(gap)} ; plafond restant ${fmt(proposedBuyback + remaining)})`,
+				label: `Rachat proposé pour ${year}`,
+				operands: { gap, proposedBuyback, cap: cap.value },
+				formula: `${fmt(proposedBuyback)} sur une lacune de ${fmt(gap)}`,
 				value: proposedBuyback,
 				unit: "CHF",
 				sourceId: cap.sourceId,
 				assumption: partiallyFilled
-					? `Année comblée en partie : le solde de ${fmt(lostBalance)} CHF serait perdu, un seul rachat étant admis par année de lacune (art. 7a al. 3 OPP 3).`
-					: proposedBuyback === 0
-						? `Plafond de ${R} épuisé : la lacune reste rachetable une autre année, jusqu'en ${lastBuybackYear}, si elle n'est pas entamée.`
-						: "Lacune comblée entièrement ; les années les plus anciennes passent en premier, puisqu'elles expirent les premières.",
+					? `Dernière année de rachat de cette lacune : comblée en partie, le solde de ${fmt(lostBalance)} CHF est perdu, un seul rachat étant admis par année de lacune (art. 7a al. 3 OPP 3).`
+					: proposedBuyback === gap
+						? "Année comblée entièrement : ensemble d'années entières le plus élevé sous le plafond, les années qui expirent le plus tôt en priorité à égalité."
+						: `Non retenue en ${R} pour ne pas entamer cette année : elle reste rachetable jusqu'en ${lastBuybackYear}.`,
 			});
 		}
-		return { year: gapYear.year, gap, proposedBuyback, lastBuybackYear, eligible: true, refusalReason: null, partiallyFilled, lostBalance };
+		return { year, gap, proposedBuyback, lastBuybackYear, eligible: true, refusalReason: null, partiallyFilled, lostBalance };
 	});
 
 	const totalBuyback = years.reduce((sum, year) => sum + year.proposedBuyback, 0);
