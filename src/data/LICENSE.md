@@ -6,4 +6,8 @@ Les valeurs proviennent de sources officielles suisses citées dans chaque enreg
 
 Les données issues du module « Rechercher des données de base » de l'Administration fédérale des contributions restent soumises aux conditions de l'AFC : citation de la source, sans garantie. La présente licence porte sur la compilation, sa structure et son enrichissement, et couvre exclusivement les fichiers publiés dans ce dépôt.
 
+Formule d'attribution de l'AFC, à reproduire telle quelle avec toute donnée qui en provient :
+
+> Source : Administration fédérale des contributions (AFC), simulateur fiscal, module « Rechercher des données de base ». Données reproduites sans garantie.
+
 Aucune garantie d'exactitude. Ces données sont fournies à titre informatif. Toute réutilisation se fait sous la responsabilité du réutilisateur, qui doit vérifier les valeurs à la source officielle avant tout usage engageant.

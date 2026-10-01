@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 
@@ -106,5 +108,38 @@ describe("attribution sur /methodologie/", () => {
 			request: new Request("https://calculateurs.ch/methodologie/"),
 		});
 		expect(visibleText(html)).toContain(ESTV_BASE_DATA_ATTRIBUTION);
+	});
+});
+
+describe("formule d'attribution de l'AFC dans la licence et sur /donnees/", () => {
+	it("src/data/LICENSE.md contient exactement le texte de ESTV_BASE_DATA_ATTRIBUTION", () => {
+		const license = readFileSync(new URL("../../src/data/LICENSE.md", import.meta.url), "utf8");
+		expect(license).toContain(ESTV_BASE_DATA_ATTRIBUTION);
+	});
+
+	it("le rendu de /donnees/ contient exactement ce texte, une fois par source qui l'exige, outils de collecte compris", async () => {
+		const { default: DataPage } = await import("../../src/pages/donnees.astro");
+		const { collectionToolsReport, sourceFreshnessReport } = await import("../../src/lib/data-report");
+		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
+		const text = visibleText(await container.renderToString(DataPage, { request: new Request("https://calculateurs.ch/donnees/") }));
+		const expected =
+			sourceFreshnessReport().filter((row) => row.source?.requiresAttribution).length +
+			collectionToolsReport().filter((tool) => tool.source?.requiresAttribution).length;
+		expect(expected, "7 sources portent l'attribution : estv-base-data-module et les six coefficients communaux").toBe(7);
+		expect(text.split(ESTV_BASE_DATA_ATTRIBUTION).length - 1).toBe(expected);
+		expect(text).toContain("Outils de collecte");
+	});
+});
+
+describe("calculateurs fondés sur le moteur fiscal", () => {
+	it("toute définition qui cite une source du moteur fiscal déclare estv-base-data-module", () => {
+		const usesTaxEngine = (definition: CalculatorDefinition): boolean =>
+			definition.sourceIds.some((id) => sourceRegistry().get(id)?.usedBy.includes("tax-engine") === true);
+		for (const definition of definitions.filter(usesTaxEngine)) {
+			expect(
+				definition.sourceIds,
+				`${definition.id} : s'appuie sur le moteur fiscal sans déclarer estv-base-data-module`,
+			).toContain("estv-base-data-module");
+		}
 	});
 });

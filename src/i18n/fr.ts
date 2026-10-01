@@ -120,6 +120,12 @@ export const fr = {
 			irregular: "Irrégulière",
 			event: "Événementielle",
 		},
+		collectionTools: {
+			heading: "Outils de collecte",
+			intro:
+				"Ces outils ont servi à relever les valeurs ; la source juridique de chacune reste l'acte officiel cité dans le tableau ci-dessus. Les conditions d'usage d'un outil s'appliquent aux données qu'il a fournies.",
+			collectedValues: (count: number): string => `${count} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
+		},
 		municipalCsv: {
 			heading: "Détail communal",
 			intro: (count: number): string =>

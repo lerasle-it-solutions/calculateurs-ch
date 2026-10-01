@@ -151,3 +151,35 @@ export const sourceFreshnessReport = (
 
 	return [...bySource.values()].sort((a, b) => byUrgency(a.nextDueOn, b.nextDueOn));
 };
+
+export interface CollectionToolRow {
+	sourceId: string;
+	/** Entrée du registre, si `sourceId` y figure. */
+	source?: Source;
+	/** Nombre de valeurs relevées avec cet outil. */
+	collectedValues: number;
+}
+
+/**
+ * Outils de collecte : les sources citées en `collectedFrom` (module de données
+ * de base de l'AFC, notices du SCC…), distinctes des actes officiels qui
+ * fondent les valeurs. Une ligne par outil, la plus utilisée d'abord. Les
+ * sources `reference-tool` n'apparaissent jamais sur une page publique.
+ */
+export const collectionToolsReport = (files: DataFile[] = allDataFiles()): CollectionToolRow[] => {
+	const registry = sourceRegistry();
+	const byTool = new Map<string, CollectionToolRow>();
+
+	for (const file of files) {
+		eachValue(file.data, (value) => {
+			if (value.collectedFrom === undefined) return;
+			const source = registry.get(value.collectedFrom);
+			if (source?.nature === "reference-tool") return;
+			const row = byTool.get(value.collectedFrom) ?? { sourceId: value.collectedFrom, source, collectedValues: 0 };
+			row.collectedValues += 1;
+			byTool.set(value.collectedFrom, row);
+		});
+	}
+
+	return [...byTool.values()].sort((a, b) => b.collectedValues - a.collectedValues);
+};

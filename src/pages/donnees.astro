@@ -1,10 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { fr } from "../i18n/fr";
-import { sourceFreshnessReport } from "../lib/data-report";
+import { collectionToolsReport, sourceFreshnessReport } from "../lib/data-report";
+import { attributionTextsFor } from "../lib/attribution";
 import { getMunicipalMultipliers } from "../data";
 
 const rows = sourceFreshnessReport();
+const collectionTools = collectionToolsReport();
 const overdueCount = rows.filter(
 	(row) => row.overdueCount > 0 || row.neverVerifiedCount > 0,
 ).length;
@@ -82,6 +84,10 @@ const formatDate = (isoDate: string): string =>
 												{row.sourceId} — {fr.dataPage.sourceUnknown}
 											</span>
 										)}
+										{row.source &&
+											attributionTextsFor([row.sourceId]).map((text) => (
+												<p class="font-serif text-fine">{text}</p>
+											))}
 									</td>
 									<td class="px-lg py-md font-serif text-fine">
 										{row.source?.authority ?? fr.dataPage.sourceUnknown}
@@ -120,6 +126,40 @@ const formatDate = (isoDate: string): string =>
 						</tbody>
 					</table>
 				</div>
+			)
+		}
+
+		{
+			collectionTools.length > 0 && (
+				<section class="flex flex-col gap-sm border-t border-rule pt-lg">
+					<h2 class="text-heading">{fr.dataPage.collectionTools.heading}</h2>
+					<p class="text-body">{fr.dataPage.collectionTools.intro}</p>
+					<ul class="flex flex-col gap-md">
+						{collectionTools.map((tool) => (
+							<li class="flex flex-col gap-2xs">
+								{tool.source?.url ? (
+									<a href={tool.source.url} class="font-serif">
+										{tool.source.name}
+									</a>
+								) : (
+									<span class="font-serif">
+										{tool.source?.name ?? `${tool.sourceId} — ${fr.dataPage.sourceUnknown}`}
+									</span>
+								)}
+								<span class="font-serif text-fine">
+									{tool.source?.authority ?? fr.dataPage.sourceUnknown} ·{" "}
+									<span class="tabular-nums">
+										{fr.dataPage.collectionTools.collectedValues(tool.collectedValues)}
+									</span>
+								</span>
+								{tool.source &&
+									attributionTextsFor([tool.sourceId]).map((text) => (
+										<p class="font-serif text-fine">{text}</p>
+									))}
+							</li>
+						))}
+					</ul>
+				</section>
 			)
 		}
 
