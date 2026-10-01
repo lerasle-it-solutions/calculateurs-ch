@@ -50,11 +50,15 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 		const someMunicipalitiesUncovered =
 			data?.communalScale !== null && coveredMunicipalities.length < communes.length;
 		const householdsText = households?.map((household) => fr.partialCoverage.households[household]).join(" ; ");
+		const coveredHouseholdsText = (Object.keys(fr.partialCoverage.coveredHouseholds) as (keyof typeof fr.partialCoverage.coveredHouseholds)[])
+			.filter((household) => !households?.includes(household))
+			.map((household) => fr.partialCoverage.coveredHouseholds[household])
+			.join(" et ");
 		const text =
 			householdsText === undefined
 				? fr.partialCoverage.notCoveredCase(name)
 				: someMunicipalitiesUncovered
-					? fr.partialCoverage.notCoveredHouseholdsAndMunicipalitiesCase(name, householdsText, coveredMunicipalities)
+					? fr.partialCoverage.coveredHouseholdsAndMunicipalitiesCase(name, coveredHouseholdsText, coveredMunicipalities)
 					: fr.partialCoverage.notCoveredHouseholdsCase(name, householdsText);
 		const official = coverage.officialCalculator;
 		notCovered.push(

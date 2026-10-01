@@ -22,4 +22,8 @@ export interface BreakdownLine {
 	sourceId: string | null;
 	/** Hypothèse retenue pour cette étape, s'il y en a une. */
 	assumption?: string;
+	/** Étape sans montant (constat, choix d'un barème) : la trace affiche un tiret. */
+	noAmount?: boolean;
+	/** Précision affichée à côté du montant, p. ex. « non rachetable ». */
+	qualifier?: string;
 }

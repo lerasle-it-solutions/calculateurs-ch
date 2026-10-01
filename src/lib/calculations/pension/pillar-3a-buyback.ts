@@ -10,7 +10,7 @@
  */
 import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
-import { computeTaxSavingOnDeduction, type TaxInput, type TaxScales } from "../tax";
+import { computeTaxSavingOnDeduction, type TaxInput, type TaxResult, type TaxScales } from "../tax";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
 export type Sourced<T> = { value: T; sourceId: string };
@@ -183,6 +183,7 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 		operands: {},
 		formula: "art. 7a al. 5 OPP 3, qui renvoie à l'art. 7 al. 3 : non traité par ce calcul",
 		value: 0,
+		noAmount: true,
 		sourceId: params.lookbackYears.sourceId,
 		assumption: "La limite d'âge du rachat doit être vérifiée à part.",
 	});
@@ -194,7 +195,7 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 			operands: { buybackYear: R },
 			formula: blocking,
 			value: 0,
-			unit: "CHF",
+			noAmount: true,
 			sourceId: params.lookbackYears.sourceId,
 		});
 	}
@@ -213,6 +214,7 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 			sourceId: gapYear.maxContribution.sourceId,
 			assumption:
 				refusalReason ?? `Rachetable jusqu'en ${lastBuybackYear} (art. 7a al. 1 let. a OPP 3).`,
+			...(refusalReason !== null ? { qualifier: "non rachetable" } : {}),
 		});
 		return { year: gapYear.year, gap, lastBuybackYear, refusalReason };
 	});
@@ -287,7 +289,7 @@ export type Pillar3aBuybackResult = {
 	gaps: Pillar3aGapsResult;
 	/** Total rachetable l'année R, retranché des deux revenus imposables. */
 	buybackAmount: number;
-	/** Impôt total avant moins impôt total après le rachat. */
+	/** Impôt sur le revenu avant moins après le rachat, composantes arrondies au franc. */
 	taxSaving: number;
 	/** Part cantonale, communale et paroissiale de l'économie. */
 	cantonalAndMunicipalSaving: number;
@@ -296,42 +298,94 @@ export type Pillar3aBuybackResult = {
 	breakdown: BreakdownLine[];
 };
 
+const TAX_COMPONENTS = ["cantonalTax", "municipalTax", "churchTax", "personalTax", "federalTax"] as const;
+
+/**
+ * Composantes de l'impôt sur le revenu, chacune arrondie au franc comme dans la
+ * trace affichée, et leur somme ; sans calcul d'impôt, des zéros.
+ */
+const roundedIncomeTax = (tax: TaxResult | undefined) => {
+	const components = Object.fromEntries(TAX_COMPONENTS.map((key) => [key, Math.round(tax?.[key] ?? 0)]));
+	return { components, total: Object.values(components).reduce((sum, amount) => sum + amount, 0) };
+};
+
 /**
  * Calcul complet du rachat rétroactif : lacunes et répartition, puis économie
  * d'impôt sur le total rachetable, retranché des deux revenus imposables — par
- * différence de deux impôts totaux, jamais par taux marginal. Un ménage hors du
- * périmètre du moteur fiscal lève `PartialCoverageError`.
+ * différence de deux impôts totaux, jamais par taux marginal. Totaux et économie
+ * se calculent sur les composantes arrondies au franc, telles qu'affichées ;
+ * l'impôt sur la fortune, inchangé, est omis. Sans montant rachetable, l'impôt
+ * n'est pas calculé et l'économie est nulle. Un ménage hors du périmètre du
+ * moteur fiscal lève `PartialCoverageError`.
  */
 export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aBuybackResult {
 	const gaps = computePillar3aGaps(params.gaps);
-	const saving = computeTaxSavingOnDeduction(params.taxInput, params.scales, gaps.totalBuyback);
-	const federalSaving = saving.before.federalTax - saving.after.federalTax;
-	const cantonalAndMunicipalSaving = saving.taxSaving - federalSaving;
+	const amount = gaps.totalBuyback;
+	const saving = amount > 0 ? computeTaxSavingOnDeduction(params.taxInput, params.scales, amount) : undefined;
+	const before = roundedIncomeTax(saving?.before);
+	const after = roundedIncomeTax(saving?.after);
+	const taxSaving = before.total - after.total;
+	const federalBefore = before.components.federalTax!;
+	const federalAfter = after.components.federalTax!;
+	const federalSaving = federalBefore - federalAfter;
+	const cantonalAndMunicipalSaving = taxSaving - federalSaving;
+
+	const lines: BreakdownLine[] = [];
+	for (const line of saving?.breakdown ?? []) {
+		// Impôt sur une fortune nulle : sans objet, A1 ne saisit pas la fortune
+		if (line.formula === "assiette nulle" && line.label.includes("fortune")) continue;
+		if (line.label === "Économie d'impôt") continue;
+		if (line.label.startsWith("Impôt total")) {
+			const { components, total } = line.label === "Impôt total" ? before : after;
+			lines.push({
+				label: `Impôt sur le revenu (hors impôt sur la fortune)${line.label.slice(11)}`,
+				operands: components,
+				formula: Object.values(components).map(fmt).join(" + "),
+				value: total,
+				unit: "CHF",
+				sourceId: null,
+				assumption: "Montants arrondis au franc ; l'impôt sur la fortune ne change pas (hypothèse 6).",
+			});
+		} else lines.push(line);
+	}
+
 	return {
 		gaps,
-		buybackAmount: gaps.totalBuyback,
-		taxSaving: saving.taxSaving,
+		buybackAmount: amount,
+		taxSaving,
 		cantonalAndMunicipalSaving,
 		federalSaving,
 		breakdown: [
 			...gaps.breakdown,
-			...saving.breakdown,
+			...lines,
 			{
-				label: "Économie d'impôt, canton et commune",
-				operands: { taxSaving: saving.taxSaving, federalSaving },
-				formula: `${fmt(saving.taxSaving)} − ${fmt(federalSaving)}`,
-				value: cantonalAndMunicipalSaving,
+				label: "Économie d'impôt",
+				operands: { totalTaxBefore: before.total, totalTaxAfter: after.total, deduction: amount },
+				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : "aucun montant rachetable : impôt non calculé",
+				value: taxSaving,
 				unit: "CHF",
 				sourceId: null,
 			},
-			{
-				label: "Économie d'impôt, Confédération",
-				operands: { federalTaxBefore: saving.before.federalTax, federalTaxAfter: saving.after.federalTax },
-				formula: `${fmt(saving.before.federalTax)} − ${fmt(saving.after.federalTax)}`,
-				value: federalSaving,
-				unit: "CHF",
-				sourceId: null,
-			},
+			...(saving
+				? [
+						{
+							label: "Économie d'impôt, canton et commune",
+							operands: { taxSaving, federalSaving },
+							formula: `${fmt(taxSaving)} − ${fmt(federalSaving)}`,
+							value: cantonalAndMunicipalSaving,
+							unit: "CHF",
+							sourceId: null,
+						},
+						{
+							label: "Économie d'impôt, Confédération",
+							operands: { federalTaxBefore: federalBefore, federalTaxAfter: federalAfter },
+							formula: `${fmt(federalBefore)} − ${fmt(federalAfter)}`,
+							value: federalSaving,
+							unit: "CHF",
+							sourceId: null,
+						},
+					]
+				: []),
 		],
 	};
 }

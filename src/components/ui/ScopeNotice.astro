@@ -75,11 +75,11 @@ const {
 				<h2 class:list={["text-heading", reinforced && "text-warning"]}>
 					{fr.scopeNotice.assumptions}
 				</h2>
-				<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg font-serif text-body">
+				<ol class="flex max-w-reading list-decimal flex-col gap-xs pl-lg font-serif text-body">
 					{assumptions.map((item) => (
 						<li>{item}</li>
 					))}
-				</ul>
+				</ol>
 			</section>
 		)
 	}

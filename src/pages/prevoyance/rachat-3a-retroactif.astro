@@ -106,7 +106,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			unknownMunicipality: string;
 		};
 	};
-	type BreakdownRow = { label: string; detail?: string; amount: string; note?: string };
+	type BreakdownRow = { label: string; detail?: string; amount: string; qualifier?: string; note?: string };
 
 	const dataElement = document.getElementById("pillar3a-data");
 	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
@@ -199,7 +199,12 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 					result.breakdown.map((line) => ({
 						label: line.label,
 						detail: line.formula,
-						amount: line.unit === "CHF" ? chf.format(line.value) : `${number.format(line.value)}${line.unit ? ` ${line.unit}` : ""}`,
+						amount: line.noAmount
+							? "—"
+							: line.unit === "CHF"
+								? chf.format(line.value)
+								: `${number.format(line.value)}${line.unit ? ` ${line.unit}` : ""}`,
+						qualifier: line.qualifier,
 						note: line.assumption,
 					})),
 				);

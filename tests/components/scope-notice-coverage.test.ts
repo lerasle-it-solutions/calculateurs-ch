@@ -35,7 +35,7 @@ describe("bandeau de périmètre d'A1, Valais", () => {
 		const notice = visibleText(html.slice(asideStart, asideEnd));
 		expect(notice).toContain("Valais");
 		for (const name of covered) expect(notice, `${name} absente du bandeau`).toContain(name);
-		expect(notice).toContain(covered.length > 1 ? "communes couvertes" : "seule commune couverte");
+		expect(notice).toContain("dans les communes suivantes");
 		expect(pillar3aBuyback.scope.notCovered).toHaveLength(6);
 	});
 });

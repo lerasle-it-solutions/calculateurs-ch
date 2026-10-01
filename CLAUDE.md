@@ -827,7 +827,7 @@ export default defineConfig({
     tailwind(),
   ],
   build: { format: "directory" },
-  prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
+  prefetch: false,
 });
 ```
 

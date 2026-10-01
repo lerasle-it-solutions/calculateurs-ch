@@ -274,11 +274,8 @@ export class MissingTaxDataError extends Error {
 	readonly missing: MissingItem[];
 
 	constructor(missing: MissingItem[]) {
-		super(
-			`Valeurs à relever avant de pouvoir calculer ce cas :\n${missing
-				.map((item) => `· ${item.label} — ${item.todo} (source : ${item.sourceId ?? "à inscrire au registre"})`)
-				.join("\n")}`,
-		);
+		// Détail de chaque valeur, TODO et source, dans `missing`
+		super(`Valeurs à relever : ${missing.map((item) => item.label).join(" ; ")}.`);
 		this.name = "MissingTaxDataError";
 		this.missing = missing;
 	}
@@ -296,9 +293,7 @@ export class PartialCoverageError extends Error {
 
 	constructor(canton: TaxInput["canton"], note: string, scope: { household?: string; municipality?: string } = {}) {
 		super(
-			scope.municipality
-				? `Commune ${scope.municipality} (canton ${canton}) en couverture partielle : aucun résultat n'est calculé. ${note}`
-				: `Canton ${canton} en couverture partielle${scope.household ? ` pour ce ménage (${scope.household})` : ""} : aucun résultat n'est calculé. ${note}`,
+			`${scope.municipality ? `Commune ${scope.municipality}` : `Canton ${canton}`} en couverture partielle${scope.household ? ` pour ce ménage (${scope.household})` : ""}. ${note}`,
 		);
 		this.name = "PartialCoverageError";
 		this.canton = canton;
@@ -609,6 +604,7 @@ const federalIncomeTax = (
 		operands: { children, needyPersons },
 		formula: `${FEDERAL_SITUATION_LABELS[situation]}, ${children} enfant(s) et ${needyPersons} personne(s) nécessiteuse(s) en ménage commun → ${table.label}`,
 		value: dependants,
+		noAmount: true,
 		sourceId: table.sourceId,
 		...(assumptions.length > 0 ? { assumption: assumptions.join(" ") } : {}),
 	});
@@ -882,6 +878,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		// Réduction pour un enfant au revenu de référence : plancher du plafond quelle que soit la
 		// lecture de l'augmentation par enfant supplémentaire, la réduction croissant avec le revenu.
 		const oneChildCap = taxWithParts(reference, base) - taxWithParts(reference, base + perChild);
+		const referenceAssumption = "La réduction de référence se calcule avec les parts du ménage du contribuable.";
 		if (reduction <= oneChildCap) {
 			line({
 				label: "Plafond de la réduction pour enfants",
@@ -890,7 +887,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 				value: reduction,
 				unit: "CHF",
 				sourceId: cap.sourceId,
-				assumption: "La réduction de référence se calcule avec les parts du ménage du contribuable.",
+				assumption: referenceAssumption,
 			});
 		} else if (children === 1) {
 			baseIncome.tax = withoutChildParts - oneChildCap;
@@ -901,7 +898,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 				value: baseIncome.tax,
 				unit: "CHF",
 				sourceId: cap.sourceId,
-				assumption: "La réduction de référence se calcule avec les parts du ménage du contribuable.",
+				assumption: referenceAssumption,
 			});
 		} else {
 			missing.push({
@@ -1079,7 +1076,9 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		const floorCeiling = (percent / 100) * input.cantonalTaxableIncome;
 		if (burdenTax > floorCeiling) {
 			throw new OutOfScopeError(
-				`Charge fiscale maximale possiblement atteinte : impôts cantonal et communal de ${fmt(burdenTax)} CHF, au-delà de ${fmt(percent)} % du revenu imposable (${fmt(floorCeiling)} CHF). Le plafond se calcule sur un revenu où le rendement net de la fortune compte au moins pour ${fmt(burden.value.minimumWealthYieldPercent)} % de la fortune nette : ces deux montants ne sont pas des entrées du moteur.`,
+				// Le plafond se calcule sur un revenu qui compte un rendement minimal de la fortune
+				// nette : ni l'un ni l'autre ne sont des entrées du moteur.
+				`Charge fiscale maximale possiblement atteinte : ${fmt(burdenTax)} > ${fmt(floorCeiling)} CHF.`,
 			);
 		}
 		line({

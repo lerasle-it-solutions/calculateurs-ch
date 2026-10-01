@@ -64,9 +64,15 @@ export const fr = {
 		/** Couverture partielle limitée à certains ménages. */
 		notCoveredHouseholdsCase: (canton: string, households: string): string =>
 			`${canton}, ${households} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ces contribuables.`,
-		/** Couverture partielle par ménage et par commune (barème communal propre). */
-		notCoveredHouseholdsAndMunicipalitiesCase: (canton: string, households: string, covered: string[]): string =>
-			`${canton}, ${households}, ainsi que les communes dont l'indexation du barème communal n'est pas relevée (${covered.length > 1 ? "communes couvertes" : "seule commune couverte"} : ${covered.join(", ")}) : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ces contribuables.`,
+		/** Couverture limitée à certains ménages et aux communes dont le barème communal est relevé. */
+		coveredHouseholdsAndMunicipalitiesCase: (canton: string, households: string, covered: string[]): string =>
+			`${canton} : nous ne couvrons pour l'instant que ${households}, dans les communes suivantes : ${covered.join(", ")}. Pour les autres situations, utilisez la calculette officielle du canton.`,
+		/** Ménages couverts, dans la phrase ci-dessus. */
+		coveredHouseholds: {
+			single: "les personnes seules sans enfant",
+			singleWithChildren: "les personnes seules avec enfants",
+			married: "les époux vivant en ménage commun",
+		},
 		households: {
 			single: "personnes seules sans charge de famille",
 			singleWithChildren:
