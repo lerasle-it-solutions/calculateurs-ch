@@ -1,0 +1,227 @@
+---
+/**
+ * A1 — Rachat rétroactif du pilier 3a.
+ *
+ * Le calcul se fait dans le navigateur, en JavaScript natif : lacunes et
+ * répartition par computePillar3aGaps, économie par computeTaxSavingOnDeduction
+ * sur le total rachetable, retranché des deux revenus imposables. Les barèmes
+ * arrivent par un paquet JSON construit à la compilation ; l'année du rachat
+ * est l'année fiscale des données, jamais l'horloge du visiteur.
+ */
+import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
+import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
+import {
+	pillar3aBuyback,
+	pillar3aBuybackIntro,
+	pillar3aBuybackTexts,
+	pillar3aBuybackYear,
+	pillar3aGapYears,
+} from "../../calculators/pension/pillar-3a-buyback";
+import { ROMANDE_CANTONS } from "../../calculators/cantons";
+import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
+import { getTaxScalesBundle } from "../../data/tax-scales";
+
+const pillar3a = getFederalData(pillar3aBuybackYear).pillar3a;
+const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
+const cantons = pillar3aBuyback.scope.cantonsCovered as (typeof ROMANDE_CANTONS)[number]["code"][];
+
+const pageData = {
+	buybackYear: pillar3aBuybackYear,
+	gapYears: pillar3aGapYears,
+	firstGapYear: sourced(pillar3a.buyback.firstGapYear),
+	lookbackYears: sourced(pillar3a.buyback.lookbackYears),
+	smallContributionCap: sourced(pillar3a.smallContributionCap),
+	bundle: getTaxScalesBundle(pillar3aBuybackYear, cantons),
+	municipalities: Object.fromEntries(
+		(getMunicipalMultipliers()?.multipliers ?? [])
+			.filter((entry) => cantons.includes(entry.canton))
+			.map((entry) => [`${entry.municipality} (${entry.canton})`, { ofsId: entry.bfsId, canton: entry.canton }]),
+	),
+	cantonNames: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, canton.name])),
+	// Calculette officielle du canton, lue dans coverage.officialCalculator des données
+	officialCalculators: Object.fromEntries(
+		cantons.flatMap((code) => {
+			const official = getCantonData(code).coverage?.officialCalculator;
+			return official && "url" in official ? [[code, official]] : [];
+		}),
+	),
+	texts: {
+		outOfScope: Object.fromEntries(
+			ROMANDE_CANTONS.map((canton) => [canton.code, pillar3aBuybackTexts.outOfScope(canton.name)]),
+		),
+		outOfScopeMunicipality: Object.fromEntries(
+			(getMunicipalMultipliers()?.multipliers ?? [])
+				.filter((entry) => cantons.includes(entry.canton))
+				.map((entry) => [entry.municipality, pillar3aBuybackTexts.outOfScopeMunicipality(entry.municipality)]),
+		),
+		missingData: pillar3aBuybackTexts.missingData,
+		municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
+		unknownMunicipality: pillar3aBuybackTexts.unknownMunicipality,
+	},
+};
+// Données en JSON dans la page, sans « < » qui fermerait la balise
+const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
+---
+
+<CalculatorLayout definition={pillar3aBuyback}>
+	<CalculatorShell
+		definition={pillar3aBuyback}
+		intro={pillar3aBuybackIntro}
+		resultLabel={pillar3aBuybackTexts.resultLabel}
+		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
+	/>
+
+	<p id="pillar3a-status" role="status" class="max-w-reading text-body" hidden>
+		<span data-status-text></span>
+		<a data-status-link hidden></a>
+	</p>
+
+	<script type="application/json" id="pillar3a-data" set:html={pageDataJson} />
+</CalculatorLayout>
+
+<script>
+	import {
+		computePillar3aBuyback,
+		type Pillar3aGapYearInput,
+	} from "../../lib/calculations/pension/pillar-3a-buyback";
+	import { taxScalesFromBundle, type TaxScalesBundle } from "../../lib/calculations/tax-scales-bundle";
+	import { MissingTaxDataError, PartialCoverageError, type TaxInput } from "../../lib/calculations/tax";
+
+	type Sourced = { value: number; sourceId: string };
+	type PageData = {
+		buybackYear: number;
+		gapYears: number[];
+		firstGapYear: Sourced;
+		lookbackYears: Sourced;
+		smallContributionCap: Sourced;
+		bundle: TaxScalesBundle;
+		municipalities: Record<string, { ofsId: number; canton: TaxInput["canton"] }>;
+		cantonNames: Record<string, string>;
+		officialCalculators: Record<string, { label: string; url: string }>;
+		texts: {
+			outOfScope: Record<string, string>;
+			outOfScopeMunicipality: Record<string, string>;
+			missingData: string;
+			municipalityMismatch: string;
+			unknownMunicipality: string;
+		};
+	};
+	type BreakdownRow = { label: string; detail?: string; amount: string; note?: string };
+
+	const dataElement = document.getElementById("pillar3a-data");
+	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
+	const status = document.getElementById("pillar3a-status");
+
+	if (dataElement && form && status) {
+		const data = JSON.parse(dataElement.textContent ?? "{}") as PageData;
+		const statusText = status.querySelector<HTMLElement>("[data-status-text]")!;
+		const statusLink = status.querySelector<HTMLAnchorElement>("[data-status-link]")!;
+		const chf = new Intl.NumberFormat("fr-CH", { style: "currency", currency: "CHF", maximumFractionDigits: 0 });
+		const number = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 2 });
+
+		const showStatus = (text: string | null, link?: { label: string; url: string }) => {
+			status.hidden = text === null;
+			statusText.textContent = text ?? "";
+			statusLink.hidden = !link;
+			if (link) {
+				statusLink.textContent = link.label;
+				statusLink.href = link.url;
+			}
+		};
+		const publish = (value: string, breakdown: BreakdownRow[]) =>
+			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown } }));
+
+		const update = () => {
+			const fields = Object.fromEntries(new FormData(form)) as Record<string, string>;
+			const municipality = data.municipalities[fields.municipality ?? ""];
+			const cantonalTaxableIncome = Number(fields.cantonalTaxableIncome);
+			const federalTaxableIncome = Number(fields.federalTaxableIncome);
+			const children = Number(fields.children || 0);
+
+			if (!municipality) {
+				showStatus(fields.municipality ? data.texts.unknownMunicipality : null);
+				return publish("—", []);
+			}
+			if (municipality.canton !== fields.canton) {
+				showStatus(data.texts.municipalityMismatch);
+				return publish("—", []);
+			}
+			if (
+				fields.cantonalTaxableIncome === "" ||
+				fields.federalTaxableIncome === "" ||
+				![cantonalTaxableIncome, federalTaxableIncome, children].every((value) => Number.isFinite(value) && value >= 0)
+			) {
+				showStatus(null);
+				return publish("—", []);
+			}
+
+			const taxInput: TaxInput = {
+				taxYear: data.buybackYear,
+				canton: municipality.canton,
+				municipalityOfsId: municipality.ofsId,
+				maritalStatus: fields.maritalStatus === "married" ? "married" : "single",
+				children,
+				childrenAges: (fields.childrenAges ?? "")
+					.split(",")
+					.map((age) => Number(age.trim()))
+					.filter((age) => age !== 0 && Number.isFinite(age)),
+				denomination: "none",
+				federalTaxableIncome,
+				cantonalTaxableIncome,
+				taxableWealth: 0,
+			};
+			const gapYears: Pillar3aGapYearInput[] = data.gapYears.map((year) => ({
+				year,
+				maxContribution: data.smallContributionCap,
+				paidContribution: Math.max(0, Number(fields[`paidContribution${year}`] || 0)),
+				hadAvsIncome: fields[`avsIncome${year}`] === "yes",
+				alreadyBoughtBack: fields[`alreadyBoughtBack${year}`] === "yes",
+			}));
+
+			try {
+				const result = computePillar3aBuyback({
+					taxInput,
+					scales: taxScalesFromBundle(data.bundle, municipality.ofsId),
+					gaps: {
+						buybackYear: data.buybackYear,
+						firstGapYear: data.firstGapYear,
+						lookbackYears: data.lookbackYears,
+						buybackYearCap: data.smallContributionCap,
+						gapYears,
+						currentYearContributionPaidInFull: fields.currentYearContributionPaidInFull === "yes",
+						hasAvsIncomeInBuybackYear: fields.avsIncomeInBuybackYear === "yes",
+						receivedOldAgeBenefit: fields.oldAgeBenefit === "yes",
+					},
+				});
+				showStatus(null);
+				publish(
+					chf.format(result.taxSaving),
+					result.breakdown.map((line) => ({
+						label: line.label,
+						detail: line.formula,
+						amount: line.unit === "CHF" ? chf.format(line.value) : `${number.format(line.value)}${line.unit ? ` ${line.unit}` : ""}`,
+						note: line.assumption,
+					})),
+				);
+			} catch (error) {
+				if (error instanceof PartialCoverageError) {
+					const text =
+						error.municipality !== null
+							? data.texts.outOfScopeMunicipality[error.municipality]
+							: data.texts.outOfScope[error.canton];
+					showStatus(text ?? "", data.officialCalculators[error.canton]);
+					return publish("—", []);
+				}
+				if (error instanceof MissingTaxDataError) {
+					showStatus(data.texts.missingData);
+					return publish("—", []);
+				}
+				throw error;
+			}
+		};
+
+		form.addEventListener("input", update);
+		form.addEventListener("change", update);
+		requestAnimationFrame(update);
+	}
+</script>

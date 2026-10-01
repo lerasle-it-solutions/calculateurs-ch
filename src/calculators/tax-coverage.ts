@@ -9,7 +9,7 @@
  * certains ménages (`notCoveredHouseholds`), le canton reste dans
  * `cantonsCovered` pour les autres.
  */
-import { cantonFiles } from "../data";
+import { cantonFiles, getMunicipalMultipliers } from "../data";
 import { cantonDataSchema } from "../data/schema";
 import { fr } from "../i18n/fr";
 import { ROMANDE_CANTONS, type CantonCode } from "./cantons";
@@ -32,7 +32,8 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 	const notCovered: Scope["notCovered"] = [];
 	for (const { code, name } of ROMANDE_CANTONS) {
 		const file = cantonFiles().find((candidate) => candidate.code === code);
-		const coverage = file ? cantonDataSchema.parse(file.data).coverage : undefined;
+		const data = file ? cantonDataSchema.parse(file.data) : undefined;
+		const coverage = data?.coverage;
 		if (coverage === undefined) {
 			cantonsCovered.push(code);
 			continue;
@@ -40,13 +41,21 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 		// Couverture limitée à certains ménages : le canton reste couvert pour les autres.
 		const households = coverage.notCoveredHouseholds;
 		if (households !== undefined) cantonsCovered.push(code);
+		// Barème communal propre : seules les communes dont l'indexation est relevée sont couvertes.
+		const communes = (getMunicipalMultipliers()?.multipliers ?? []).filter((entry) => entry.canton === code);
+		const coveredMunicipalities = communes
+			.filter((entry) => entry.communalScaleIndexation !== undefined)
+			.map((entry) => entry.municipality)
+			.sort((a, b) => a.localeCompare(b, "fr"));
+		const someMunicipalitiesUncovered =
+			data?.communalScale !== null && coveredMunicipalities.length < communes.length;
+		const householdsText = households?.map((household) => fr.partialCoverage.households[household]).join(" ; ");
 		const text =
-			households === undefined
+			householdsText === undefined
 				? fr.partialCoverage.notCoveredCase(name)
-				: fr.partialCoverage.notCoveredHouseholdsCase(
-						name,
-						households.map((household) => fr.partialCoverage.households[household]).join(" ; "),
-					);
+				: someMunicipalitiesUncovered
+					? fr.partialCoverage.notCoveredHouseholdsAndMunicipalitiesCase(name, householdsText, coveredMunicipalities)
+					: fr.partialCoverage.notCoveredHouseholdsCase(name, householdsText);
 		const official = coverage.officialCalculator;
 		notCovered.push(
 			"url" in official

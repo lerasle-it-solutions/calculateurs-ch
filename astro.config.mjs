@@ -19,7 +19,8 @@ export default defineConfig({
     }),
   ],
   build: { format: "directory" },
-  prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
+  // Préchargement désactivé : son script comptait dans le budget de 30 ko de JavaScript par page.
+  prefetch: false,
   vite: {
     plugins: [tailwindcss()],
   },

@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { cantonFiles } from "../../src/data";
+import { cantonFiles, getMunicipalMultipliers } from "../../src/data";
 import { cantonDataSchema } from "../../src/data/schema";
-import { getTaxScales } from "../../src/data/tax-scales";
+import { getTaxScales, getTaxScalesBundle } from "../../src/data/tax-scales";
+import { taxScalesFromBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import { taxEngineCoverage } from "../../src/calculators/tax-coverage";
 import { computeIncomeAndWealthTax, PartialCoverageError, type TaxInput } from "../../src/lib/calculations/tax";
 
@@ -56,5 +57,32 @@ describe("couverture partielle d'un canton", () => {
 		expect(() => computeIncomeAndWealthTax(sion({}), scales)).not.toThrow();
 		expect(() => computeIncomeAndWealthTax(sion({ maritalStatus: "married" }), scales)).toThrow(PartialCoverageError);
 		expect(() => computeIncomeAndWealthTax(sion({ children: 1 }), scales)).toThrow(PartialCoverageError);
+	});
+});
+
+describe("Valais : commune sans indexation communale relevée", () => {
+	const commune = (getMunicipalMultipliers()?.multipliers ?? []).find(
+		(entry) => entry.canton === "VS" && entry.communalScaleIndexation === undefined,
+	);
+
+	it("une commune valaisanne autre que Sion, sans indexation relevée, est hors périmètre pour tout ménage, par les deux chemins de barèmes", () => {
+		expect(commune, "aucune commune valaisanne sans indexation relevée").toBeDefined();
+		expect(commune!.bfsId).not.toBe(6266);
+		const input = sion({ municipalityOfsId: commune!.bfsId });
+		const direct = getTaxScales({ taxYear: 2026, canton: "VS", municipalityOfsId: commune!.bfsId });
+		const viaBundle = taxScalesFromBundle(getTaxScalesBundle(2026, ["VS"]), commune!.bfsId);
+		for (const scales of [direct, viaBundle]) {
+			let error: unknown;
+			try {
+				computeIncomeAndWealthTax(input, scales);
+			} catch (thrown) {
+				error = thrown;
+			}
+			expect(error).toBeInstanceOf(PartialCoverageError);
+			expect((error as PartialCoverageError).municipality).toBe(commune!.municipality);
+			expect((error as Error).message).toMatch(new RegExp(`Commune ${commune!.municipality}`));
+		}
+		// Sion reste couverte pour une personne seule
+		expect(() => computeIncomeAndWealthTax(sion({}), taxScalesFromBundle(getTaxScalesBundle(2026, ["VS"]), 6266))).not.toThrow();
 	});
 });

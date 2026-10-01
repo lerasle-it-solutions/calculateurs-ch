@@ -89,6 +89,17 @@ describe("rachat rétroactif dans le pilier 3a", () => {
 		expect(result.years.some((year) => year.partiallyFilled)).toBe(false);
 	});
 
+	it("R = 2035 : 2025, qui expire, passe d'abord entière ; 2030 reste rachetable jusqu'en 2040", () => {
+		const result = computePillar3aGaps(
+			params(2035, [gapYear(2025, { paidContribution: small.value - 3_000 }), gapYear(2030, { paidContribution: small.value - 7_258 })]),
+		);
+		const byYear = Object.fromEntries(result.years.map((year) => [year.year, year]));
+		expect(byYear[2025]).toMatchObject({ gap: 3_000, proposedBuyback: 3_000, lastBuybackYear: 2035, partiallyFilled: false });
+		expect(byYear[2030]).toMatchObject({ gap: 7_258, proposedBuyback: 0, lastBuybackYear: 2040, partiallyFilled: false, lostBalance: 0 });
+		expect(result.totalBuyback).toBe(3_000);
+		expect(result.breakdown.some((entry) => entry.assumption?.includes("reste rachetable jusqu'en 2040"))).toBe(true);
+	});
+
 	it("indépendant : une lacune de grande cotisation, au-delà du plafond de R, n'est entamée que l'année où elle expire", () => {
 		// En 2026, l'entamer perdrait le solde : elle reste rachetable jusqu'en 2035
 		const early = computePillar3aGaps(params(2026, [gapYear(2025, { maxContribution: large })]));

@@ -27,14 +27,16 @@ import DataFreshness from "../ui/DataFreshness.astro";
 import NumberField from "../ui/NumberField.astro";
 import SelectField from "../ui/SelectField.astro";
 import CantonField from "./fields/CantonField.astro";
+import MunicipalityField from "../ui/MunicipalityField.astro";
+import TextField from "../ui/TextField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
 import { fr } from "../../i18n/fr";
 import type { CalculatorDefinition } from "../../calculators/types";
 
 interface Props {
 	definition: CalculatorDefinition;
-	/** Paragraphe d'introduction. FRANÇAIS. */
-	intro: string;
+	/** Introduction, un ou plusieurs paragraphes. FRANÇAIS. */
+	intro: string | string[];
 	/** Libellé de la ResultCard. FRANÇAIS. */
 	resultLabel: string;
 	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
@@ -86,7 +88,7 @@ const resultFor = definition.fields
 <article class="flex flex-col gap-2xl">
 	<header class="flex max-w-reading flex-col gap-md">
 		<h1 class="text-title">{definition.title}</h1>
-		<p class="text-body">{intro}</p>
+		{(Array.isArray(intro) ? intro : [intro]).map((paragraph) => <p class="text-body">{paragraph}</p>)}
 	</header>
 
 	<ScopeNotice
@@ -124,6 +126,27 @@ const resultFor = definition.fields
 							label={field.label}
 							options={field.options}
 							value={field.defaultValue}
+							hint={field.hint}
+							required={field.required}
+						/>
+					) : field.kind === "municipality" ? (
+						<MunicipalityField
+							id={fieldId(field.name)}
+							name={field.name}
+							label={field.label}
+							options={field.options}
+							value={field.defaultValue}
+							hint={field.hint}
+							required={field.required}
+						/>
+					) : field.kind === "text" ? (
+						<TextField
+							id={fieldId(field.name)}
+							name={field.name}
+							label={field.label}
+							value={field.defaultValue}
+							inputMode={field.inputMode}
+							placeholder={field.placeholder}
 							hint={field.hint}
 							required={field.required}
 						/>

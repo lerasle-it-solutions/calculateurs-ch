@@ -41,13 +41,34 @@ export type CantonFieldDefinition = FieldBase & {
 	defaultValue?: string;
 };
 
+/** Commune : autocomplétion native. `value` identifie la commune, `label` l'affiche. */
+export type MunicipalityFieldDefinition = FieldBase & {
+	kind: "municipality";
+	options: { value: string; label?: string }[];
+	defaultValue?: string;
+};
+
+/** Texte libre court, p. ex. une liste d'âges. */
+export type TextFieldDefinition = FieldBase & {
+	kind: "text";
+	/** Clavier proposé sur mobile. */
+	inputMode?: "text" | "numeric";
+	placeholder?: string;
+	defaultValue?: string;
+};
+
 export type FieldDefinition =
 	| NumberFieldDefinition
 	| SelectFieldDefinition
-	| CantonFieldDefinition;
+	| CantonFieldDefinition
+	| MunicipalityFieldDefinition
+	| TextFieldDefinition;
 
-/** Lien hors du site, libellé FRANÇAIS. */
-export type ExternalAlternative = { label: string; url: string };
+/**
+ * Alternative hors du site, libellé FRANÇAIS : un lien, ou un simple conseil
+ * sans lien quand aucune adresse ne vaut pour tous les cas.
+ */
+export type ExternalAlternative = { label: string; url?: string };
 
 export type CalculatorDefinition = {
 	/** « family.name » — ex. « pension.pillar-3a-buyback ». */
@@ -70,8 +91,8 @@ export type CalculatorDefinition = {
 		notCovered: {
 			case: string;
 			/**
-			 * id d'un autre calculateur, ou lien externe — p. ex. le calculateur
-			 * officiel d'un canton en couverture partielle.
+			 * id d'un autre calculateur, lien externe — p. ex. le calculateur
+			 * officiel d'un canton en couverture partielle —, ou conseil sans lien.
 			 */
 			alternative?: string | ExternalAlternative;
 		}[];

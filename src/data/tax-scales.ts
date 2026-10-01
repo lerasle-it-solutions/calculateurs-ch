@@ -9,6 +9,7 @@
  * le moteur le signale s'il en a besoin, sans jamais supposer de valeur.
  */
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "./index";
+import type { TaxScalesBundle } from "../lib/calculations/tax-scales-bundle";
 import { SOURCE_BY_CANTON } from "./sources";
 import type { Todo, Value } from "./schema";
 import type {
@@ -211,13 +212,22 @@ export function getTaxScales(query: TaxScalesQuery): TaxScales {
 		personalTax: nullable(canton.personalTax),
 		federal: getFederalTaxScales(query.taxYear),
 		coverage:
-			canton.coverage === undefined
-				? null
-				: {
-						status: canton.coverage.status,
-						note: canton.coverage.note,
-						notCoveredHouseholds: canton.coverage.notCoveredHouseholds ?? null,
-					},
+			// Barème communal sans indexation relevée pour cette commune : la commune entière est hors
+			// périmètre, plutôt qu'en donnée manquante.
+			communalIndexation !== null && "pending" in communalIndexation && communal !== null
+				? {
+						status: "partial",
+						note: `Indexation du barème communal de ${municipality.municipality} (OFS ${municipality.bfsId}) non relevée : la commune n'est pas couverte.`,
+						notCoveredHouseholds: null,
+						municipality: municipality.municipality,
+					}
+				: canton.coverage === undefined
+					? null
+					: {
+							status: canton.coverage.status,
+							note: canton.coverage.note,
+							notCoveredHouseholds: canton.coverage.notCoveredHouseholds ?? null,
+						},
 	};
 }
 
@@ -245,4 +255,28 @@ export function getFederalTaxScales(taxYear: number): FederalTaxScales {
 		minimumLeviedTax: sourcedOrPending(directFederalTax.minimumLeviedTax),
 		taxRoundingToNearest: sourcedOrPending(directFederalTax.taxRoundingToNearest),
 	};
+}
+
+/**
+ * Paquet de barèmes d'une page de calculateur (src/lib/calculations/tax-scales-bundle.ts) :
+ * toutes les communes des cantons demandés, chacune reconstituable par
+ * `taxScalesFromBundle` à l'identique de `getTaxScales`.
+ */
+export function getTaxScalesBundle(taxYear: number, cantons: readonly TaxInput["canton"][]): TaxScalesBundle {
+	const bundle: TaxScalesBundle = { taxYear, cantons: {}, municipalities: [] };
+	for (const entry of getMunicipalMultipliers()?.multipliers ?? []) {
+		if (!cantons.includes(entry.canton)) continue;
+		const scales = getTaxScales({ taxYear, canton: entry.canton, municipalityOfsId: entry.bfsId });
+		bundle.cantons[entry.canton] ??= scales;
+		bundle.municipalities.push({
+			ofsId: entry.bfsId,
+			name: entry.municipality,
+			canton: entry.canton,
+			multiplier: scales.municipality.multiplier,
+			church: scales.church,
+			communalIndexation: scales.municipality.model === "communalScale" ? scales.municipality.incomeScaleIndexation : null,
+			coverage: scales.coverage,
+		});
+	}
+	return bundle;
 }

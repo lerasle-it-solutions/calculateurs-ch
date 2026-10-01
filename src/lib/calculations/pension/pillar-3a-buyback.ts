@@ -9,6 +9,8 @@
  * Non traité : la limite d'âge (art. 7a al. 5, qui renvoie à l'art. 7 al. 3).
  */
 import type { BreakdownLine } from "../../utils/breakdown";
+import { formatNumber } from "../../utils/format-number";
+import { computeTaxSavingOnDeduction, type TaxInput, type TaxScales } from "../tax";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
 export type Sourced<T> = { value: T; sourceId: string };
@@ -67,8 +69,7 @@ export type Pillar3aGapsResult = {
 	breakdown: BreakdownLine[];
 };
 
-const numberFormat = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 2 });
-const fmt = (value: number): string => numberFormat.format(value);
+const fmt = (value: number): string => formatNumber(value, 2);
 
 /**
  * Ensemble d'années entières dont la somme est la plus grande sans dépasser
@@ -77,7 +78,7 @@ const fmt = (value: number): string => numberFormat.format(value);
  * exhaustive reste petite.
  */
 const bestWholeYears = (candidates: { year: number; gap: number }[], cap: number): Set<number> => {
-	if (candidates.length > 20) throw new Error(`${candidates.length} années candidates : énumération non prévue.`);
+	if (candidates.length > 20) throw new Error(`Trop d'années : ${candidates.length}.`);
 	const sorted = [...candidates].sort((a, b) => a.year - b.year);
 	let best: { sum: number; years: number[] } = { sum: 0, years: [] };
 	for (let mask = 1; mask < 1 << sorted.length; mask++) {
@@ -143,11 +144,12 @@ const yearRefusalOf = (params: Pillar3aGapsParams, gapYear: Pillar3aGapYearInput
 /**
  * Lacunes rachetables l'année R et répartition proposée du rachat, dans la
  * limite du plafond total de l'année R, y compris pour un indépendant (art. 7a
- * al. 2 ; un seul rachat peut combler plusieurs lacunes, al. 3). Une année
- * entamée ne se complète plus (al. 3) : la répartition retient l'ensemble
- * d'années entières dont la somme est la plus grande sous le plafond, et à
- * égalité celui qui contient les années qui expirent le plus tôt. Une année
- * n'est entamée que si elle expire l'année R ; les autres restent rachetables
+ * al. 2 ; un seul rachat peut combler plusieurs lacunes, al. 3). L'année qui
+ * expire l'année R passe d'abord, entière si elle tient sous le plafond, sinon
+ * jusqu'au plafond : elle serait perdue de toute façon. Une année entamée ne se
+ * complétant plus (al. 3), le plafond restant va ensuite à l'ensemble d'années
+ * entières dont la somme est la plus grande, et à égalité à celui qui contient
+ * les années qui expirent le plus tôt. Les autres années restent rachetables
  * jusqu'à leur dernière année.
  */
 export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsResult {
@@ -161,11 +163,11 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 
 	for (const gapYear of params.gapYears) {
 		if (![gapYear.maxContribution.value, gapYear.paidContribution].every((amount) => Number.isFinite(amount) && amount >= 0)) {
-			throw new Error(`Montants invalides pour ${gapYear.year} : plafond et cotisation versée doivent être positifs ou nuls.`);
+			throw new Error(`Montants invalides pour ${gapYear.year}.`);
 		}
 	}
 	if (new Set(params.gapYears.map((gapYear) => gapYear.year)).size !== params.gapYears.length) {
-		throw new Error("Une même année de lacune figure deux fois.");
+		throw new Error("Année de lacune en double.");
 	}
 
 	line({
@@ -215,19 +217,23 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 		return { year: gapYear.year, gap, lastBuybackYear, refusalReason };
 	});
 
-	// Années entières : une année entamée ne se complète plus (art. 7a al. 3).
 	const available = blocking === null ? cap.value : 0;
 	const candidates = assessed.filter((year) => year.refusalReason === null && year.gap > 0);
-	const wholeYears = bestWholeYears(candidates, available);
-	let remaining = available - candidates.filter((year) => wholeYears.has(year.year)).reduce((sum, year) => sum + year.gap, 0);
-	// Une année n'est entamée que si elle expire l'année R : elle serait perdue de toute façon.
+	// D'abord l'année qui expire l'année R : entière si elle tient sous le plafond, sinon
+	// jusqu'au plafond, son solde étant perdu de toute façon.
 	const partialAmounts = new Map<number, number>();
+	let remaining = available;
 	for (const year of candidates) {
-		if (wholeYears.has(year.year) || year.lastBuybackYear !== R || remaining <= 0) continue;
+		if (year.lastBuybackYear !== R) continue;
 		const amount = Math.min(year.gap, remaining);
 		partialAmounts.set(year.year, amount);
 		remaining -= amount;
 	}
+	// Puis des années entières : une année entamée ne se complète plus (art. 7a al. 3).
+	const wholeYears = bestWholeYears(
+		candidates.filter((year) => !partialAmounts.has(year.year)),
+		remaining,
+	);
 
 	const years: Pillar3aGapYearResult[] = assessed.map(({ year, gap, lastBuybackYear, refusalReason }) => {
 		if (refusalReason !== null) {
@@ -246,9 +252,11 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 				sourceId: cap.sourceId,
 				assumption: partiallyFilled
 					? `Dernière année de rachat de cette lacune : comblée en partie, le solde de ${fmt(lostBalance)} CHF est perdu, un seul rachat étant admis par année de lacune (art. 7a al. 3 OPP 3).`
-					: proposedBuyback === gap
-						? "Année comblée entièrement : ensemble d'années entières le plus élevé sous le plafond, les années qui expirent le plus tôt en priorité à égalité."
-						: `Non retenue en ${R} pour ne pas entamer cette année : elle reste rachetable jusqu'en ${lastBuybackYear}.`,
+					: proposedBuyback === gap && lastBuybackYear === R
+						? "Dernière année de rachat de cette lacune : comblée en priorité, entière."
+						: proposedBuyback === gap
+							? "Année comblée entièrement : ensemble d'années entières le plus élevé sous le plafond restant, les années qui expirent le plus tôt en priorité à égalité."
+							: `Non retenue en ${R} pour ne pas entamer cette année : elle reste rachetable jusqu'en ${lastBuybackYear}.`,
 			});
 		}
 		return { year, gap, proposedBuyback, lastBuybackYear, eligible: true, refusalReason: null, partiallyFilled, lostBalance };
@@ -266,4 +274,64 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 	});
 
 	return { years, totalBuyback, breakdown };
+}
+
+export type Pillar3aBuybackParams = {
+	gaps: Pillar3aGapsParams;
+	/** Situation du contribuable, revenus imposables avant rachat. */
+	taxInput: TaxInput;
+	scales: TaxScales;
+};
+
+export type Pillar3aBuybackResult = {
+	gaps: Pillar3aGapsResult;
+	/** Total rachetable l'année R, retranché des deux revenus imposables. */
+	buybackAmount: number;
+	/** Impôt total avant moins impôt total après le rachat. */
+	taxSaving: number;
+	/** Part cantonale, communale et paroissiale de l'économie. */
+	cantonalAndMunicipalSaving: number;
+	/** Part de l'impôt fédéral direct. */
+	federalSaving: number;
+	breakdown: BreakdownLine[];
+};
+
+/**
+ * Calcul complet du rachat rétroactif : lacunes et répartition, puis économie
+ * d'impôt sur le total rachetable, retranché des deux revenus imposables — par
+ * différence de deux impôts totaux, jamais par taux marginal. Un ménage hors du
+ * périmètre du moteur fiscal lève `PartialCoverageError`.
+ */
+export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aBuybackResult {
+	const gaps = computePillar3aGaps(params.gaps);
+	const saving = computeTaxSavingOnDeduction(params.taxInput, params.scales, gaps.totalBuyback);
+	const federalSaving = saving.before.federalTax - saving.after.federalTax;
+	const cantonalAndMunicipalSaving = saving.taxSaving - federalSaving;
+	return {
+		gaps,
+		buybackAmount: gaps.totalBuyback,
+		taxSaving: saving.taxSaving,
+		cantonalAndMunicipalSaving,
+		federalSaving,
+		breakdown: [
+			...gaps.breakdown,
+			...saving.breakdown,
+			{
+				label: "Économie d'impôt, canton et commune",
+				operands: { taxSaving: saving.taxSaving, federalSaving },
+				formula: `${fmt(saving.taxSaving)} − ${fmt(federalSaving)}`,
+				value: cantonalAndMunicipalSaving,
+				unit: "CHF",
+				sourceId: null,
+			},
+			{
+				label: "Économie d'impôt, Confédération",
+				operands: { federalTaxBefore: saving.before.federalTax, federalTaxAfter: saving.after.federalTax },
+				formula: `${fmt(saving.before.federalTax)} − ${fmt(saving.after.federalTax)}`,
+				value: federalSaving,
+				unit: "CHF",
+				sourceId: null,
+			},
+		],
+	};
 }

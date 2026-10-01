@@ -14,6 +14,7 @@
  * partiel, jamais de valeur supposée.
  */
 import type { BreakdownLine } from "../utils/breakdown";
+import { formatNumber } from "../utils/format-number";
 
 export type TaxInput = {
 	taxYear: number;
@@ -188,8 +189,16 @@ export type TaxScales = {
 	coverage: PartialCoverage | null;
 };
 
-/** `notCoveredHouseholds` : ménages non couverts ; `null` : le canton entier. */
-export type PartialCoverage = { status: "partial"; note: string; notCoveredHouseholds: Household[] | null };
+/**
+ * `notCoveredHouseholds` : ménages non couverts ; `null` : tous. `municipality` :
+ * commune non couverte en entier, p. ex. faute d'une donnée communale relevée.
+ */
+export type PartialCoverage = {
+	status: "partial";
+	note: string;
+	notCoveredHouseholds: Household[] | null;
+	municipality?: string;
+};
 
 /** Situation qui détermine le barème de l'impôt fédéral direct (art. 36 LIFD). */
 export type FederalTaxSituation = "marriedCoupleLivingTogether" | "livingWithSupportedDependants" | "otherTaxpayer";
@@ -252,6 +261,9 @@ export type TaxSavingResult = {
 	totalTaxAfter: number;
 	/** `totalTaxBefore − totalTaxAfter`, jamais un taux marginal × un montant. */
 	taxSaving: number;
+	/** Les deux calculs complets, pour ventiler l'économie par étage. */
+	before: TaxResult;
+	after: TaxResult;
 	breakdown: BreakdownLine[];
 };
 
@@ -279,14 +291,19 @@ export class MissingTaxDataError extends Error {
 export class PartialCoverageError extends Error {
 	readonly canton: TaxInput["canton"];
 	readonly note: string;
+	/** Commune non couverte en entier ; `null` si la restriction vise le canton ou le ménage. */
+	readonly municipality: string | null;
 
-	constructor(canton: TaxInput["canton"], note: string, household?: string) {
+	constructor(canton: TaxInput["canton"], note: string, scope: { household?: string; municipality?: string } = {}) {
 		super(
-			`Canton ${canton} en couverture partielle${household ? ` pour ce ménage (${household})` : ""} : aucun résultat n'est calculé. ${note}`,
+			scope.municipality
+				? `Commune ${scope.municipality} (canton ${canton}) en couverture partielle : aucun résultat n'est calculé. ${note}`
+				: `Canton ${canton} en couverture partielle${scope.household ? ` pour ce ménage (${scope.household})` : ""} : aucun résultat n'est calculé. ${note}`,
 		);
 		this.name = "PartialCoverageError";
 		this.canton = canton;
 		this.note = note;
+		this.municipality = scope.municipality ?? null;
 	}
 }
 
@@ -303,8 +320,7 @@ export class OutOfScopeError extends Error {
 
 // --- Évaluation d'un barème -----------------------------------------------------
 
-const numberFormat = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 4 });
-const fmt = (value: number): string => numberFormat.format(value);
+const fmt = (value: number): string => formatNumber(value, 4);
 
 const bracketIndex = (brackets: Pick<Bracket, "threshold">[], amount: number): number => {
 	let index = 0;
@@ -338,7 +354,7 @@ const rateOf = (table: Pick<ScaleTable, "scaleType" | "brackets">, lookup: numbe
 export function deflateStepwise(income: number, deflation: StepwiseDeflation): { value: number; divisorsPercent: number[] } {
 	const excess = deflation.indexPercent - 100;
 	if (excess < 0 || deflation.stepPercent <= 0) {
-		throw new Error(`Indexation de ${fmt(deflation.indexPercent)} % par pas de ${fmt(deflation.stepPercent)} % : non définie.`);
+		throw new Error("Indexation non définie.");
 	}
 	const steps = Math.floor(excess / deflation.stepPercent);
 	const rest = excess - steps * deflation.stepPercent;
@@ -361,7 +377,7 @@ export function evaluateDeflatedScale(
 	amount: number,
 	deflation: StepwiseDeflation,
 ): { tax: number; ratePercent: number; rateIncome: number; formula: string } {
-	if (table.scaleType === "marginal") throw new Error("Déflation par étapes non définie pour un barème marginal.");
+	if (table.scaleType === "marginal") throw new Error("Barème marginal : déflation non définie.");
 	if (amount <= 0) return { tax: 0, ratePercent: 0, rateIncome: 0, formula: "assiette nulle" };
 	const { value: rateIncome, divisorsPercent } = deflateStepwise(amount, deflation);
 	const ratePercent = rateOf(table, rateIncome);
@@ -387,7 +403,7 @@ export function evaluateScale(
 
 	if (table.scaleType === "marginal") {
 		if (lookupFactor !== 1) {
-			throw new Error("Indexation des seuils non définie pour un barème marginal.");
+			throw new Error("Barème marginal : indexation non définie.");
 		}
 		const bracket = brackets[bracketIndex(brackets, amount)]!;
 		const tax = bracket.baseAmount + ((amount - bracket.threshold) * bracket.ratePercent) / 100;
@@ -465,9 +481,7 @@ export function evaluateFederalScale(
 		capRow.ratePercent !== maximumRatePercent ||
 		Math.abs(capRow.baseAmount - (capRow.threshold * maximumRatePercent) / 100) > 0.005
 	) {
-		throw new Error(
-			`Barème fédéral : la dernière ligne (${fmt(capRow.threshold)} ; ${fmt(capRow.baseAmount)} ; ${fmt(capRow.ratePercent ?? Number.NaN)} %) ne traduit pas le taux maximal de ${fmt(maximumRatePercent)} %.`,
-		);
+		throw new Error("Barème fédéral : dernière ligne contraire au taux maximal.");
 	}
 	if (amount <= 0) return { tax: 0, formula: "assiette nulle" };
 	if (amount >= capRow.threshold) {
@@ -506,9 +520,7 @@ const HOUSEHOLD_LABELS: Record<Household, string> = {
 const selectTable = (tables: ScaleTable[], household: Household, what: string): ScaleTable => {
 	const matching = tables.filter((table) => table.households.includes(household));
 	if (matching.length !== 1) {
-		throw new Error(
-			`${what} : ${matching.length} table(s) pour un ménage « ${HOUSEHOLD_LABELS[household]} », une seule attendue.`,
-		);
+		throw new Error(`${what} : ${matching.length} table(s) pour « ${household} ».`);
 	}
 	return matching[0]!;
 };
@@ -554,9 +566,7 @@ const federalIncomeTax = (
 		declared !== undefined &&
 		![declared.children, declared.needyPersons].every((count) => Number.isInteger(count) && count >= 0)
 	) {
-		throw new Error(
-			`Personnes à charge en ménage commun invalides : ${declared.children} enfant(s), ${declared.needyPersons} personne(s) nécessiteuse(s).`,
-		);
+		throw new Error("Personnes à charge invalides.");
 	}
 	const children = declared?.children ?? input.children;
 	const needyPersons = declared?.needyPersons ?? 0;
@@ -583,9 +593,7 @@ const federalIncomeTax = (
 	// Barème applicable
 	const matching = tables.filter((table) => table.appliesTo.includes(situation));
 	if (matching.length !== 1) {
-		throw new Error(
-			`Barème de l'impôt fédéral direct : ${matching.length} table(s) pour « ${FEDERAL_SITUATION_LABELS[situation]} », une seule attendue.`,
-		);
+		throw new Error(`Barème IFD : ${matching.length} table(s) pour « ${situation} ».`);
 	}
 	const table = matching[0]!;
 	const assumptions = [
@@ -683,9 +691,12 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 				: input.children > 0 || (input.supportedHouseholdMembers?.needyPersons ?? 0) > 0
 					? "singleWithChildren"
 					: "single";
+		if (scales.coverage.municipality !== undefined) {
+			throw new PartialCoverageError(input.canton, scales.coverage.note, { municipality: scales.coverage.municipality });
+		}
 		if (excluded === null) throw new PartialCoverageError(input.canton, scales.coverage.note);
 		if (excluded.includes(coverageHousehold)) {
-			throw new PartialCoverageError(input.canton, scales.coverage.note, HOUSEHOLD_LABELS[coverageHousehold]);
+			throw new PartialCoverageError(input.canton, scales.coverage.note, { household: HOUSEHOLD_LABELS[coverageHousehold] });
 		}
 	}
 	const missing: MissingItem[] = [];
@@ -804,7 +815,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		what: string,
 	): { tax: number; formula: string } => {
 		if (!deflation) return evaluateWithDivisor(table, amount, incomeDivisor, lookupFactor, rateStep);
-		if (incomeDivisor !== 1) throw new Error(`${what} : déflation par étapes et diviseur familial combinés, non définis.`);
+		if (incomeDivisor !== 1) throw new Error(`${what} : déflation et diviseur combinés.`);
 		const deflated = evaluateDeflatedScale(table, amount, deflation.value);
 		line({
 			label: `Revenu déterminant pour le taux, ${what}`,
@@ -1201,7 +1212,7 @@ export function computeTaxSavingOnDeduction(
 	deduction: number,
 ): TaxSavingResult {
 	if (!Number.isFinite(deduction) || deduction < 0) {
-		throw new Error(`Déduction invalide : ${deduction}. Un montant positif ou nul est attendu.`);
+		throw new Error(`Déduction invalide : ${deduction}.`);
 	}
 	const before = computeIncomeAndWealthTax(input, scales);
 	const after = computeIncomeAndWealthTax(
@@ -1217,6 +1228,8 @@ export function computeTaxSavingOnDeduction(
 		totalTaxBefore: before.totalTax,
 		totalTaxAfter: after.totalTax,
 		taxSaving,
+		before,
+		after,
 		breakdown: [
 			...before.breakdown,
 			...after.breakdown.map((entry) => ({ ...entry, label: `${entry.label} (après déduction)` })),

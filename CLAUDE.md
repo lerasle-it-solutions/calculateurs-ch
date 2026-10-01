@@ -160,6 +160,7 @@ synonyme.
 | Périmètre déclaré | périmètre | `scope` |
 | Trace du calcul | trace | `breakdown` |
 | Fraîcheur des données | fraîcheur | `freshness` |
+| Projection retraite consolidée (A5), identifiant réservé | projection retraite | `pension.retirement-projection` |
 
 ### Deux exceptions assumées
 
@@ -682,7 +683,7 @@ et la compatibilité avec les lecteurs d'écran — précisément le problème q
 les bibliothèques de composants, et que nous n'avons pas.
 
 Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée, moins de 30 kb de JS
-par page, polices auto-hébergées, **aucune requête vers un domaine tiers**.
+par page (minifié, non compressé, préchargement compris), polices auto-hébergées, **aucune requête vers un domaine tiers**.
 
 ---
 
@@ -921,7 +922,7 @@ Documentation complète : https://docs.astro.build
 - Tailwind CSS v4. Aucune bibliothèque de composants : ni shadcn/ui, ni HeroUI, ni Preline, ni Flowbite.
 - Aucun framework d'interface. Pas de React, pas de Preact, pas de Vue, pas de Svelte, pas d'îlot hydraté.
 - Toute interactivité est écrite en JavaScript natif, dans un `<script>` de la page Astro concernée.
-- Budget strict : moins de 30 ko de JavaScript par page, moins de 100 ko de CSS, LCP sous 1,5 s en 4G simulée.
+- Budget strict : moins de 30 ko de JavaScript par page (minifié, non compressé, préchargement compris), moins de 100 ko de CSS, LCP sous 1,5 s en 4G simulée.
 - Polices auto-hébergées via Fontsource. Aucune requête vers un domaine tiers depuis le navigateur du visiteur, jamais, y compris pour les polices, les icônes ou les scripts.
 
 ### Source unique des valeurs

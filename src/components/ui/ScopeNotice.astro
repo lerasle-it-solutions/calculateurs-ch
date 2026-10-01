@@ -10,7 +10,8 @@ import { fr } from "../../i18n/fr";
 
 interface NotCovered {
 	case: string;
-	alternative?: { label: string; url: string };
+	/** Sans `url`, le libellé s'affiche en texte : un conseil, pas un lien. */
+	alternative?: { label: string; url?: string };
 }
 
 interface Props {
@@ -55,7 +56,11 @@ const {
 						{item.alternative && (
 							<>
 								{" — "}
-								<a href={item.alternative.url}>{item.alternative.label}</a>
+								{item.alternative.url ? (
+									<a href={item.alternative.url}>{item.alternative.label}</a>
+								) : (
+									item.alternative.label
+								)}
 							</>
 						)}
 					</li>
