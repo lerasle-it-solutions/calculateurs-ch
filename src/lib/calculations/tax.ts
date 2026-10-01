@@ -506,12 +506,6 @@ export function evaluateFederalScale(
 export const householdOf = (input: Pick<TaxInput, "maritalStatus" | "children">): Household =>
 	input.maritalStatus === "married" ? "married" : input.children > 0 ? "singleWithChildren" : "single";
 
-const HOUSEHOLD_LABELS: Record<Household, string> = {
-	single: "personne seule sans enfant",
-	singleWithChildren: "famille monoparentale",
-	married: "couple marié",
-};
-
 const selectTable = (tables: ScaleTable[], household: Household, what: string): ScaleTable => {
 	const matching = tables.filter((table) => table.households.includes(household));
 	if (matching.length !== 1) {
@@ -677,7 +671,11 @@ export function computeFederalIncomeTax(input: TaxInput, federal: FederalTaxScal
 
 // --- Le calcul -------------------------------------------------------------------
 
-export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): TaxResult {
+/**
+ * Refuse, sans rien calculer, un contribuable hors du périmètre que la couche
+ * de données déclare : commune, canton ou ménage non couverts.
+ */
+export function assertTaxCoverage(input: TaxInput, scales: TaxScales): void {
 	if (scales.coverage !== null) {
 		const excluded = scales.coverage.notCoveredHouseholds;
 		// Une personne nécessiteuse à charge ouvre les mêmes droits qu'un enfant : le ménage n'est plus « seul ».
@@ -692,9 +690,13 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		}
 		if (excluded === null) throw new PartialCoverageError(input.canton, scales.coverage.note);
 		if (excluded.includes(coverageHousehold)) {
-			throw new PartialCoverageError(input.canton, scales.coverage.note, { household: HOUSEHOLD_LABELS[coverageHousehold] });
+			throw new PartialCoverageError(input.canton, scales.coverage.note, { household: coverageHousehold });
 		}
 	}
+}
+
+export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): TaxResult {
+	assertTaxCoverage(input, scales);
 	const missing: MissingItem[] = [];
 	const breakdown: BreakdownLine[] = [];
 	const need = needInto(missing);
@@ -903,7 +905,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		} else {
 			missing.push({
 				label: "Plafond de la réduction pour plusieurs enfants",
-				todo: `Le plafond est atteint pour ${children} enfants : lecture de « augmenté de ${fmt(cap.value.increasePerAdditionalChild)} francs par enfant supplémentaire » (revenu de référence ou réduction) à trancher avant tout calcul.`,
+				todo: `Plafond atteint avec ${children} enfants : l'augmentation par enfant supplémentaire porte-t-elle sur le revenu de référence ou sur la réduction ?`,
 				sourceId: cap.sourceId,
 			});
 		}

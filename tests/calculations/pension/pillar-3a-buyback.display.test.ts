@@ -6,12 +6,13 @@ import {
 	computePillar3aBuyback,
 	type Pillar3aGapsParams,
 } from "../../../src/lib/calculations/pension/pillar-3a-buyback";
-import type { TaxInput } from "../../../src/lib/calculations/tax";
+import { PartialCoverageError, type TaxInput } from "../../../src/lib/calculations/tax";
 
 /**
  * Trace d'A1 telle qu'affichée : totaux et économie sur les composantes
  * arrondies au franc, impôt sur le revenu seul, lignes sans montant, lacunes
- * refusées, et aucun calcul d'impôt sans montant rachetable.
+ * refusées, et aucun calcul d'impôt sans montant rachetable pour un ménage
+ * couvert.
  */
 const pillar3a = getFederalData(2026).pillar3a;
 const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
@@ -108,9 +109,10 @@ describe("trace d'A1 telle qu'affichée", () => {
 		expect(result.breakdown.at(-1)).toMatchObject({ label: "Économie d'impôt", value: 0 });
 	});
 
-	it("sans montant rachetable, un ménage hors du périmètre du moteur n'est pas refusé par le moteur", () => {
+	it("sans montant rachetable, un ménage hors du périmètre du moteur reste refusé : jamais une économie nulle", () => {
 		const input = { ...taxInput("Sion", "VS"), maritalStatus: "married" as const };
-		const result = computePillar3aBuyback({ taxInput: input, scales: getTaxScales(input), gaps: gaps(7_258, { receivedOldAgeBenefit: true }) });
-		expect(result.taxSaving).toBe(0);
+		expect(() =>
+			computePillar3aBuyback({ taxInput: input, scales: getTaxScales(input), gaps: gaps(7_258, { receivedOldAgeBenefit: true }) }),
+		).toThrow(PartialCoverageError);
 	});
 });

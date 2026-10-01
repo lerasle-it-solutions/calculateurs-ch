@@ -80,12 +80,15 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 </CalculatorLayout>
 
 <script>
-	import {
-		computePillar3aBuyback,
-		type Pillar3aGapYearInput,
-	} from "../../lib/calculations/pension/pillar-3a-buyback";
+	import type { Pillar3aGapYearInput } from "../../lib/calculations/pension/pillar-3a-buyback";
 	import { taxScalesFromBundle, type TaxScalesBundle } from "../../lib/calculations/tax-scales-bundle";
-	import { MissingTaxDataError, PartialCoverageError, type TaxInput } from "../../lib/calculations/tax";
+	import type { TaxInput } from "../../lib/calculations/tax";
+	import {
+		displayPillar3aBuyback,
+		type BreakdownRow,
+		type Pillar3aBuybackDisplayTexts,
+		type StatusLink,
+	} from "../../lib/display/pillar-3a-buyback";
 
 	type Sourced = { value: number; sourceId: string };
 	type PageData = {
@@ -97,16 +100,12 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		bundle: TaxScalesBundle;
 		municipalities: Record<string, { ofsId: number; canton: TaxInput["canton"] }>;
 		cantonNames: Record<string, string>;
-		officialCalculators: Record<string, { label: string; url: string }>;
-		texts: {
-			outOfScope: Record<string, string>;
-			outOfScopeMunicipality: Record<string, string>;
-			missingData: string;
+		officialCalculators: Record<string, StatusLink>;
+		texts: Pillar3aBuybackDisplayTexts & {
 			municipalityMismatch: string;
 			unknownMunicipality: string;
 		};
 	};
-	type BreakdownRow = { label: string; detail?: string; amount: string; qualifier?: string; note?: string };
 
 	const dataElement = document.getElementById("pillar3a-data");
 	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
@@ -116,10 +115,8 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		const data = JSON.parse(dataElement.textContent ?? "{}") as PageData;
 		const statusText = status.querySelector<HTMLElement>("[data-status-text]")!;
 		const statusLink = status.querySelector<HTMLAnchorElement>("[data-status-link]")!;
-		const chf = new Intl.NumberFormat("fr-CH", { style: "currency", currency: "CHF", maximumFractionDigits: 0 });
-		const number = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 2 });
 
-		const showStatus = (text: string | null, link?: { label: string; url: string }) => {
+		const showStatus = (text: string | null, link?: StatusLink) => {
 			status.hidden = text === null;
 			statusText.textContent = text ?? "";
 			statusLink.hidden = !link;
@@ -178,8 +175,8 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 				alreadyBoughtBack: fields[`alreadyBoughtBack${year}`] === "yes",
 			}));
 
-			try {
-				const result = computePillar3aBuyback({
+			const shown = displayPillar3aBuyback(
+				{
 					taxInput,
 					scales: taxScalesFromBundle(data.bundle, municipality.ofsId),
 					gaps: {
@@ -192,37 +189,12 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 						hasAvsIncomeInBuybackYear: fields.avsIncomeInBuybackYear === "yes",
 						receivedOldAgeBenefit: fields.oldAgeBenefit === "yes",
 					},
-				});
-				showStatus(null);
-				publish(
-					chf.format(result.taxSaving),
-					result.breakdown.map((line) => ({
-						label: line.label,
-						detail: line.formula,
-						amount: line.noAmount
-							? "—"
-							: line.unit === "CHF"
-								? chf.format(line.value)
-								: `${number.format(line.value)}${line.unit ? ` ${line.unit}` : ""}`,
-						qualifier: line.qualifier,
-						note: line.assumption,
-					})),
-				);
-			} catch (error) {
-				if (error instanceof PartialCoverageError) {
-					const text =
-						error.municipality !== null
-							? data.texts.outOfScopeMunicipality[error.municipality]
-							: data.texts.outOfScope[error.canton];
-					showStatus(text ?? "", data.officialCalculators[error.canton]);
-					return publish("—", []);
-				}
-				if (error instanceof MissingTaxDataError) {
-					showStatus(data.texts.missingData);
-					return publish("—", []);
-				}
-				throw error;
-			}
+				},
+				data.texts,
+				data.officialCalculators,
+			);
+			showStatus(shown.status?.text ?? null, shown.status?.link);
+			publish(shown.value, shown.breakdown);
 		};
 
 		form.addEventListener("input", update);

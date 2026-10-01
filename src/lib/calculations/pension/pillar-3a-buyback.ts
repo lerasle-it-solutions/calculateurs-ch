@@ -10,7 +10,7 @@
  */
 import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
-import { computeTaxSavingOnDeduction, type TaxInput, type TaxResult, type TaxScales } from "../tax";
+import { assertTaxCoverage, computeTaxSavingOnDeduction, type TaxInput, type TaxResult, type TaxScales } from "../tax";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
 export type Sourced<T> = { value: T; sourceId: string };
@@ -314,11 +314,13 @@ const roundedIncomeTax = (tax: TaxResult | undefined) => {
  * d'impôt sur le total rachetable, retranché des deux revenus imposables — par
  * différence de deux impôts totaux, jamais par taux marginal. Totaux et économie
  * se calculent sur les composantes arrondies au franc, telles qu'affichées ;
- * l'impôt sur la fortune, inchangé, est omis. Sans montant rachetable, l'impôt
- * n'est pas calculé et l'économie est nulle. Un ménage hors du périmètre du
- * moteur fiscal lève `PartialCoverageError`.
+ * l'impôt sur la fortune, inchangé, est omis. Un ménage hors du périmètre du
+ * moteur fiscal lève `PartialCoverageError` avant tout autre examen. Pour un
+ * ménage couvert sans montant rachetable, l'impôt n'est pas calculé et
+ * l'économie est nulle.
  */
 export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aBuybackResult {
+	assertTaxCoverage(params.taxInput, params.scales);
 	const gaps = computePillar3aGaps(params.gaps);
 	const amount = gaps.totalBuyback;
 	const saving = amount > 0 ? computeTaxSavingOnDeduction(params.taxInput, params.scales, amount) : undefined;
@@ -361,7 +363,7 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 			{
 				label: "Économie d'impôt",
 				operands: { totalTaxBefore: before.total, totalTaxAfter: after.total, deduction: amount },
-				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : "aucun montant rachetable : impôt non calculé",
+				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : "aucun montant rachetable",
 				value: taxSaving,
 				unit: "CHF",
 				sourceId: null,
