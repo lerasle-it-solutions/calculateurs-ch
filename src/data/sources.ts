@@ -707,12 +707,12 @@ export const SOURCES = defineSources([
 		url: "https://www.bsv.admin.ch/fr/le-troisieme-pilier",
 		legalReference: "OPP 3 art. 7 al. 1 let. a (« petite » cotisation) et let. b (« grande » cotisation)",
 		cadence: "annual",
-		verifiedOn: "2026-09-29",
+		verifiedOn: "2026-10-01",
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["pension.pillar-3a-buyback"],
-		note: "La page donne les montants « dès 2025 », sans ligne 2026 : les plafonds 2026 sont ceux de 2025. Montants antérieurs non repris, les lacunes d'avant 2025 n'étant pas rachetables. À rouvrir au rituel du 1er janvier : les plafonds suivent l'adaptation du montant-limite LPP.",
+		note: "La page donne les montants « dès 2025 », sans ligne 2026 : les plafonds 2026 sont ceux de 2025. Montants antérieurs non repris, les lacunes d'avant 2025 n'étant pas rachetables. À rouvrir au rituel du 1er janvier : les plafonds suivent l'adaptation du montant-limite LPP. La section « Rachats dans le pilier 3a » énonce explicitement les conditions de revenu soumis à l'AVS l'année de la lacune et l'année du rachat, et de versement intégral de la cotisation ordinaire de l'année du rachat ; vérifiée le 01.10.2026.",
 	},
 ]);
 

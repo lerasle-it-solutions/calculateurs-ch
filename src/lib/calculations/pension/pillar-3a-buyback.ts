@@ -107,8 +107,10 @@ const blockingConditionOf = (params: Pillar3aGapsParams): string | null => {
 		return `La cotisation ordinaire de ${params.buybackYear} n'est pas versée intégralement : aucun rachat n'est possible (art. 7a al. 1 let. c OPP 3).`;
 	}
 	if (!params.hasAvsIncomeInBuybackYear) {
-		// Condition non écrite en toutes lettres : elle découle de l'art. 7a al. 1 let. c,
-		// la cotisation ordinaire de l'année R supposant un revenu soumis à l'AVS cette année-là.
+		// Condition non écrite en toutes lettres dans l'OPP 3 : elle découle de l'art. 7a al. 1
+		// let. c, la cotisation ordinaire de l'année R supposant un revenu soumis à l'AVS cette
+		// année-là. La page de l'OFAS (ofas-pillar-3a-caps, section « Rachats dans le pilier
+		// 3a ») l'énonce explicitement.
 		return `Aucun revenu soumis à l'AVS en ${params.buybackYear} : aucun rachat n'est possible (découle de l'art. 7a al. 1 let. c OPP 3).`;
 	}
 	return null;
