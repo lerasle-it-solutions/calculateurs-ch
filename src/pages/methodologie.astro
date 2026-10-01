@@ -159,13 +159,12 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				Sur les montants, la tolérance est de 1&nbsp;%, avec un plancher d'un
 				franc ; la taxe personnelle et l'impôt paroissial doivent être
 				identiques. Sur la pente — l'impôt supplémentaire pour 1&nbsp;000 francs
-				de revenu imposable —, elle est d'un demi-point. Pour trois profils, la
-				pente mesurée s'écarte davantage du taux marginal affiché par le
-				calculateur de l'AFC ; l'économie, comparée directement par un cas
-				différentiel, concorde pour chacun d'eux, et c'est elle que le site
-				affiche. Ces cas sont rejoués à chaque modification du moteur ou des
-				barèmes ; un écart hors tolérance fait échouer la suite de tests, qui
-				conditionne toute mise en ligne.
+				de revenu imposable —, elle est d'un demi-point. Ces cas sont rejoués à
+				chaque modification du moteur ou des barèmes, et avant chaque
+				publication : nous lançons la suite de tests complète avant de verser
+				une version dans la branche publiée, et une version dont un cas sort de
+				la tolérance n'y est pas versée. La publication elle-même est
+				automatique et ne rejoue pas ces tests.
 			</p>
 			<p class="text-body">
 				Le Valais n'est couvert qu'en partie. Le moteur ne reproduit pas
