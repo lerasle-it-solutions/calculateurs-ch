@@ -32,8 +32,11 @@ const container = wide ? "max-w-page" : "max-w-reading";
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="icon" href="/favicon.ico" sizes="48x48" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<!-- Métadonnée de navigateur, pas un style : seule valeur de couleur hors tokens.css. -->
+		<meta name="theme-color" content="#1C2A3A" />
 		<link rel="canonical" href={canonical} />
 		<meta name="generator" content={Astro.generator} />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
