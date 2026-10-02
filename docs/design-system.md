@@ -497,6 +497,9 @@ cartes, carrousels automatiques, compteurs animés du résultat.
 ### 3.4 Garde-fous automatiques
 
 - `--color-*: initial` dans `tokens.css` : la palette Tailwind par défaut n'existe plus.
+- `@theme static` dans `tokens.css` : toutes les variables CSS sont émises, y compris celles
+  qu'aucun utilitaire n'emploie encore. Un graphique en SVG inline lit donc `var(--color-slate)`
+  sans dépendre d'une classe présente ailleurs (≈ 1 ko de CSS).
 - `tests/design/design-tokens.test.ts` (Vitest, lancé par `npm test` et `predeploy`) : échoue sur
   toute couleur ou dimension arbitraire, style en ligne coloré ou couleur de palette par défaut
   dans `src/components`, `src/layouts`, `src/pages`.

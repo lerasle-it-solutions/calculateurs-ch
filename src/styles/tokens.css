@@ -14,7 +14,10 @@
 
 @import "tailwindcss";
 
-@theme {
+/* `static` : toutes les variables sont émises, même celles qu'aucun utilitaire
+ * n'emploie encore (brand, slate, success…). Les graphiques en SVG inline et
+ * la page /demo-ui/ les lisent par var(--color-…). Coût : moins de 1 ko. */
+@theme static {
   /* Désactive la palette Tailwind par défaut : seules les couleurs ci-dessous
    * existent. `bg-gray-100`, `text-blue-600`, … ne compilent plus. */
   --color-*: initial;
