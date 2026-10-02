@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import { includeInSitemap } from "./src/lib/seo/sitemap.ts";
 
 // https://astro.build/config
 // Configuration conforme à la section 9 de l'architecture et au § Design system (voir CLAUDE.md).
@@ -14,8 +15,8 @@ export default defineConfig({
     sitemap({
       changefreq: "monthly",
       lastmod: new Date(),
-      // Les pages internes de démonstration ne sont ni indexées ni listées.
-      filter: (page) => !page.includes("/demo-"),
+      // Les pages en noindex (démonstration, mentions légales, 404…) ne sont pas listées.
+      filter: includeInSitemap,
     }),
   ],
   build: { format: "directory" },
