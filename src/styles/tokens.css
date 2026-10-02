@@ -70,9 +70,6 @@
    * tabulaires `tnum` présents).
    * ------------------------------------------------------------------ */
   --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  /* Alias de migration : l'ancien serif (appareil de sources) pointe vers la
-   * famille unique. À retirer une fois `font-serif` supprimé des composants. */
-  --font-serif: var(--font-sans);
 
   /* ------------------------------------------------------------------ *
    * Typographie — fluide entre 320 px et 1280 px de large.

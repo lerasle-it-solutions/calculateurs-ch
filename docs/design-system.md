@@ -163,7 +163,8 @@ l'exige, via `unicode-range`). Poids : ≈ 22 ko contre ≈ 66 ko pour l'ancien 
 ```
 
 Une seule famille. L'ancien serif (« appareil de sources ») est remplacé par un **bloc source**
-(§ 2.6). `font-serif` est un alias de migration vers la famille sans ; ne plus l'employer.
+(§ 2.6). L'alias de migration `font-serif` a été retiré de `tokens.css` le 2 octobre 2026 :
+la classe ne compile plus.
 
 #### Échelle [P] (fluide de 320 px à 1280 px)
 
