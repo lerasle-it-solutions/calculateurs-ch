@@ -113,11 +113,13 @@ const catalog = [buybackDemo, lppDemo];
 ---
 
 <CalculatorLayout definition={buybackDemo} noindex={true}>
-	<p class="max-w-reading font-serif text-fine">
-		Page interne de démonstration. Le calculateur ci-dessous est factice et sert
-		à vérifier le rendu du CalculatorShell et de CalculatorLayout à partir d'une
-		CalculatorDefinition.
-	</p>
+	<div class="mx-auto w-full max-w-page px-lg pt-lg md:px-2xl">
+		<p class="max-w-reading rounded-panel bg-tint p-lg text-label">
+			Page interne de démonstration. Le calculateur ci-dessous est factice et sert
+			à vérifier le rendu du CalculatorShell et de CalculatorLayout à partir d'une
+			CalculatorDefinition.
+		</p>
+	</div>
 
 	<CalculatorShell
 		definition={buybackDemo}

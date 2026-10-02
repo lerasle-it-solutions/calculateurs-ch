@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/layout/PageHero.astro";
+import Section from "../components/layout/Section.astro";
 import { fr } from "../i18n/fr";
 import { FAMILY_ORDER, familyUrl } from "../calculators/families";
 
@@ -22,36 +24,36 @@ const previews: Record<(typeof FAMILY_ORDER)[number], string[]> = {
 ---
 
 <BaseLayout title={title} description={description}>
-	<div class="flex flex-col gap-2xl">
-		<header class="flex flex-col gap-md">
-			<h1 class="text-title">{fr.site.name}</h1>
-			<p class="text-body">{fr.site.baseline}</p>
-			<p class="text-body">
-				Chaque chiffre utilisé provient d'une source officielle, avec sa date de
-				vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne
-				quittent pas votre navigateur.
-			</p>
-		</header>
+	<PageHero
+		title={fr.site.name}
+		lead={[
+			fr.site.baseline,
+			"Chaque chiffre utilisé provient d'une source officielle, avec sa date de vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne quittent pas votre navigateur.",
+		]}
+	>
+		<p class="text-fine text-ink-muted">Premiers calculateurs en ligne dès octobre 2026.</p>
+	</PageHero>
 
-		<div class="flex flex-col gap-xl">
+	<Section tone="tint">
+		<ul class="grid gap-xl md:grid-cols-2">
 			{
 				FAMILY_ORDER.map((family) => (
-					<section class="flex flex-col gap-sm">
-						<h2 class="text-heading">
-							<a href={familyUrl(family)}>{fr.family[family]}</a>
-						</h2>
-						<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
-							{previews[family].map((item) => (
-								<li>{item}</li>
-							))}
-						</ul>
-					</section>
+					<li>
+						<a
+							href={familyUrl(family)}
+							class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
+						>
+							<h2 class="text-subheading group-hover:underline">{fr.family[family]}</h2>
+							<ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
+								{previews[family].map((item) => (
+									<li>{item}</li>
+								))}
+							</ul>
+							<span class="mt-auto text-label font-bold text-accent">{fr.home.familyCardAction}</span>
+						</a>
+					</li>
 				))
 			}
-		</div>
-
-		<p class="border-t border-rule pt-lg font-serif text-fine">
-			Premiers calculateurs en ligne dès octobre 2026.
-		</p>
-	</div>
+		</ul>
+	</Section>
 </BaseLayout>

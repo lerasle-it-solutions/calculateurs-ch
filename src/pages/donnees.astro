@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/layout/Section.astro";
+import Button from "../components/ui/Button.astro";
 import { fr } from "../i18n/fr";
 import { collectionToolsReport, sourceFreshnessReport } from "../lib/data-report";
 import { attributionTextsFor } from "../lib/attribution";
@@ -28,77 +30,79 @@ const formatDate = (isoDate: string): string =>
 	title={`${fr.dataPage.title} — ${fr.site.name}`}
 	description={fr.dataPage.lead}
 >
-	<div class="flex flex-col gap-2xl">
-		<header class="flex flex-col gap-md">
-			<h1 class="text-title">{fr.dataPage.title}</h1>
-			<p class="text-body">{fr.dataPage.lead}</p>
-			{
-				rows.length > 0 && (
-					<p class="font-serif text-fine">
-						{fr.dataPage.summary(rows.length, overdueCount)}
-					</p>
-				)
-			}
-		</header>
+	<Section hero={true}>
+		<h1 class="max-w-reading text-title">{fr.dataPage.title}</h1>
+		<p class="mt-sm max-w-reading text-lead text-ink-muted">{fr.dataPage.lead}</p>
+		{
+			rows.length > 0 && (
+				<p class="mt-2xl max-w-reading border-l-2 border-hairline pl-md text-fine text-ink-muted">
+					{fr.dataPage.summary(rows.length, overdueCount)}
+				</p>
+			)
+		}
+	</Section>
+
+	<Section tone="tint">
 
 		{
 			rows.length === 0 ? (
-				<p class="text-body">{fr.dataPage.empty}</p>
+				<p class="max-w-reading text-body">{fr.dataPage.empty}</p>
 			) : (
-				<div class="overflow-x-auto border border-rule">
-					<table class="w-full border-collapse text-body">
+				<div class="overflow-x-auto rounded-panel border border-hairline bg-paper">
+					<table class="w-full border-collapse text-label">
+						<caption class="caption-top px-md py-sm text-left text-fine text-ink-muted">
+							{fr.dataPage.title}
+						</caption>
 						<thead>
-							<tr class="border-b border-rule bg-tint text-label">
-								<th scope="col" class="px-lg py-sm text-left font-normal">
+							<tr class="bg-tint text-left font-bold">
+								<th scope="col" class="border-b border-hairline px-md py-sm">
 									{fr.dataPage.columnSource}
 								</th>
-								<th scope="col" class="px-lg py-sm text-left font-normal">
+								<th scope="col" class="border-b border-hairline px-md py-sm">
 									{fr.dataPage.columnAuthority}
 								</th>
-								<th scope="col" class="px-lg py-sm text-left font-normal">
+								<th scope="col" class="border-b border-hairline px-md py-sm">
 									{fr.dataPage.columnCadence}
 								</th>
-								<th scope="col" class="px-lg py-sm text-right font-normal">
+								<th scope="col" class="border-b border-hairline px-md py-sm text-right">
 									{fr.dataPage.columnTracked}
 								</th>
-								<th scope="col" class="px-lg py-sm text-left font-normal">
+								<th scope="col" class="border-b border-hairline px-md py-sm">
 									{fr.dataPage.columnVerifiedOn}
 								</th>
-								<th scope="col" class="px-lg py-sm text-left font-normal">
+								<th scope="col" class="border-b border-hairline px-md py-sm">
 									{fr.dataPage.columnDueOn}
 								</th>
 							</tr>
 						</thead>
 						<tbody>
 							{rows.map((row) => (
-								<tr class="border-t border-rule align-top">
-									<td class="px-lg py-md">
+								<tr class="align-top">
+									<td class="border-b border-hairline px-md py-sm">
 										{row.source?.url ? (
-											<a href={row.source.url} class="font-serif">
-												{row.source.name}
-											</a>
+											<a href={row.source.url}>{row.source.name}</a>
 										) : row.source ? (
-											<span class="font-serif">{row.source.name}</span>
+											<span>{row.source.name}</span>
 										) : (
-											<span class="font-serif text-fine">
+											<span class="text-fine text-ink-muted">
 												{row.sourceId} — {fr.dataPage.sourceUnknown}
 											</span>
 										)}
 										{row.source &&
 											attributionTextsFor([row.sourceId]).map((text) => (
-												<p class="font-serif text-fine">{text}</p>
+												<p class="mt-xs text-fine text-ink-muted">{text}</p>
 											))}
 									</td>
-									<td class="px-lg py-md font-serif text-fine">
+									<td class="border-b border-hairline px-md py-sm text-fine">
 										{row.source?.authority ?? fr.dataPage.sourceUnknown}
 									</td>
-									<td class="px-lg py-md text-fine">
+									<td class="border-b border-hairline px-md py-sm text-fine">
 										{row.source ? fr.dataPage.cadence[row.source.cadence] : "—"}
 									</td>
-									<td class="px-lg py-md text-right tabular-nums">
+									<td class="border-b border-hairline px-md py-sm text-right tabular-nums">
 										{numberFormat.format(row.trackedValues)}
 									</td>
-									<td class="px-lg py-md tabular-nums">
+									<td class="border-b border-hairline px-md py-sm tabular-nums">
 										{row.oldestVerifiedOn === null ? (
 											<span class="text-warning">{fr.dataPage.neverVerified}</span>
 										) : (
@@ -107,7 +111,7 @@ const formatDate = (isoDate: string): string =>
 											</time>
 										)}
 									</td>
-									<td class="px-lg py-md tabular-nums">
+									<td class="border-b border-hairline px-md py-sm tabular-nums">
 										{row.nextDueOn === null ? (
 											fr.common.emptyValue
 										) : (
@@ -116,7 +120,7 @@ const formatDate = (isoDate: string): string =>
 											</time>
 										)}
 										{row.overdueCount > 0 && (
-											<span class="block font-serif text-fine text-warning">
+											<span class="block text-fine font-bold text-warning">
 												{fr.dataPage.overdue} ({row.overdueCount})
 											</span>
 										)}
@@ -128,25 +132,24 @@ const formatDate = (isoDate: string): string =>
 				</div>
 			)
 		}
+	</Section>
 
 		{
 			collectionTools.length > 0 && (
-				<section class="flex flex-col gap-sm border-t border-rule pt-lg">
+				<Section tone="paper" class="flex flex-col gap-lg">
 					<h2 class="text-heading">{fr.dataPage.collectionTools.heading}</h2>
-					<p class="text-body">{fr.dataPage.collectionTools.intro}</p>
+					<p class="max-w-reading text-body">{fr.dataPage.collectionTools.intro}</p>
 					<ul class="flex flex-col gap-md">
 						{collectionTools.map((tool) => (
 							<li class="flex flex-col gap-2xs">
 								{tool.source?.url ? (
-									<a href={tool.source.url} class="font-serif">
-										{tool.source.name}
-									</a>
+									<a href={tool.source.url}>{tool.source.name}</a>
 								) : (
-									<span class="font-serif">
+									<span>
 										{tool.source?.name ?? `${tool.sourceId} — ${fr.dataPage.sourceUnknown}`}
 									</span>
 								)}
-								<span class="font-serif text-fine">
+								<span class="text-fine text-ink-muted">
 									{tool.source?.authority ?? fr.dataPage.sourceUnknown} ·{" "}
 									<span class="tabular-nums">
 										{fr.dataPage.collectionTools.collectedValues(tool.collectedValues)}
@@ -154,30 +157,31 @@ const formatDate = (isoDate: string): string =>
 								</span>
 								{tool.source &&
 									attributionTextsFor([tool.sourceId]).map((text) => (
-										<p class="font-serif text-fine">{text}</p>
+										<p class="border-l-2 border-hairline pl-md text-fine text-ink-muted">{text}</p>
 									))}
 							</li>
 						))}
 					</ul>
-				</section>
+				</Section>
 			)
 		}
 
 		{
 			multipliers && multipliers.multipliers.length > 0 && (
-				<section class="flex flex-col gap-sm border-t border-rule pt-lg">
+				<Section tone="tint" class="flex flex-col gap-lg">
 					<h2 class="text-heading">{fr.dataPage.municipalCsv.heading}</h2>
-					<p class="text-body">
+					<p class="max-w-reading text-body">
 						{fr.dataPage.municipalCsv.intro(multipliers.multipliers.length)}
 					</p>
 					<p>
-						<a href="/donnees/coefficients-communaux.csv">
+						<Button href="/donnees/coefficients-communaux.csv" variant="secondary">
 							{fr.dataPage.municipalCsv.downloadLabel}
-						</a>
+						</Button>
 					</p>
-					<p class="font-serif text-fine">{fr.dataPage.municipalCsv.unitCaveat}</p>
-				</section>
+					<p class="max-w-reading border-l-2 border-hairline pl-md text-fine text-ink-muted">
+						{fr.dataPage.municipalCsv.unitCaveat}
+					</p>
+				</Section>
 			)
 		}
-	</div>
 </BaseLayout>

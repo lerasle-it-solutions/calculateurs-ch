@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/layout/Section.astro";
 import { attributionTextsFor } from "../lib/attribution";
 import { sourceFreshnessReport } from "../lib/data-report";
 import { ROMANDE_CANTONS } from "../calculators/cantons";
@@ -58,32 +59,31 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 ---
 
 <BaseLayout title={title} description={description}>
-	<div class="flex flex-col gap-2xl">
-		<header class="flex flex-col gap-md">
-			<h1 class="text-title">{fr.footer.methodology}</h1>
-			<p class="text-body">
+		<Section hero={true}>
+			<h1 class="max-w-reading text-title">{fr.footer.methodology}</h1>
+			<p class="mt-sm max-w-reading text-lead text-ink-muted">
 				Ce site n'est pas un formulaire à devis déguisé. Chaque résultat est
 				accompagné du détail ligne par ligne du calcul et de ses hypothèses, et
 				chaque chiffre utilisé provient d'une source officielle datée. Cette page
 				décrit comment.
 			</p>
-			<p class="text-body">
+			<p class="mt-md max-w-reading text-lead text-ink-muted">
 				Le code et les données sont publics sur <a
 					href="https://github.com/lerasle-it-solutions/calculateurs-ch"
 					>GitHub</a
 				> — vous pouvez y vérifier vous-même chaque valeur et chaque formule.
 			</p>
-		</header>
+		</Section>
 
-		<section id="sources" class="flex flex-col gap-sm">
+		<Section tone="tint" id="sources" class="flex flex-col gap-lg">
 			<h2 class="text-heading">D'où viennent les chiffres</h2>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Aucune valeur chiffrée — barème, plafond, taux, seuil, coût de référence,
 				tarif — n'est écrite en dur dans le code du site. Toutes vivent dans une
 				couche de données séparée, où chaque valeur est enveloppée avec, au
 				minimum :
 			</p>
-			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+			<ul class="flex max-w-reading list-disc flex-col gap-2xs pl-lg text-body">
 				<li>la valeur elle-même et son unité ;</li>
 				<li>
 					un identifiant de source pointant vers un texte officiel enregistré
@@ -92,7 +92,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				<li>la date à laquelle un humain a relevé cette valeur à sa source ;</li>
 				<li>la date d'entrée en vigueur.</li>
 			</ul>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Chaque valeur suit la même hiérarchie. La source est toujours l'acte
 				officiel qui la fixe : loi fiscale cantonale pour un barème, arrêté
 				communal pour un coefficient, ordonnance fédérale pour un plafond.
@@ -104,7 +104,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				manque, le calculateur qui en dépend reste bloqué jusqu'à ce qu'elle soit
 				relevée — il n'est jamais publié avec un chiffre approché.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Les barèmes cantonaux et les coefficients communaux sont relevés dans le
 				module « Rechercher des données de base » du simulateur fiscal de
 				l'Administration fédérale des contributions (AFC), dont l'AFC autorise
@@ -113,15 +113,15 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				servent uniquement à vérifier nos calculs. Tout résultat qui s'appuie sur
 				ces données porte la mention suivante :
 			</p>
-			<p class="font-serif text-body">{estvAttribution}</p>
-			<p class="text-body">
+			<p class="max-w-reading border-l-2 border-hairline pl-md text-fine text-ink-muted">{estvAttribution}</p>
+			<p class="max-w-reading text-body">
 				Quelques chiffres ne viennent pas d'une autorité : directives
 				d'autorégulation bancaire, prix indicatifs publiés par une branche ou
 				une association professionnelle. Ils sont toujours signalés comme
 				tels, avec la mention « source non officielle, à titre indicatif », et
 				ne sont jamais présentés comme du droit.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Certaines données sont compilées à la main, commune par commune ou
 				fournisseur par fournisseur — subventions à la rénovation, tarifs de
 				reprise de l'électricité solaire. Elles ne sont pas publiées sous forme
@@ -131,18 +131,18 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				> en donnera l'inventaire — nature, couverture et date de mise à jour,
 				jamais les valeurs — dès qu'un calculateur les utilisera.
 			</p>
-		</section>
+		</Section>
 
-		<section id="verification" class="flex flex-col gap-sm">
+		<Section tone="paper" id="verification" class="flex flex-col gap-lg">
 			<h2 class="text-heading">Comment nous vérifions</h2>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Là où un simulateur officiel existe, il fait autorité et nous ne
 				cherchons pas à le battre. Le moteur fiscal est comparé au calculateur
 				d'impôts de l'<a href="https://www.estv.admin.ch/"
 					>Administration fédérale des contributions</a
 				>, sur des cas de référence saisis à la main dans son interface web :
 			</p>
-			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+			<ul class="flex max-w-reading list-disc flex-col gap-2xs pl-lg text-body">
 				<li>
 					dix-huit cas de niveau, trois par canton romand — deux personnes
 					seules sans enfant et un couple marié avec un enfant —, qui comparent
@@ -155,7 +155,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					rachat dans le pilier 3a.
 				</li>
 			</ul>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Sur les montants, la tolérance est de 1&nbsp;%, avec un plancher d'un
 				franc ; la taxe personnelle et l'impôt paroissial doivent être
 				identiques. Sur la pente — l'impôt supplémentaire pour 1&nbsp;000 francs
@@ -166,7 +166,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				la tolérance n'y est pas versée. La publication elle-même est
 				automatique et ne rejoue pas ces tests.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Le Valais n'est couvert qu'en partie. Le moteur ne reproduit pas
 				encore l'abattement accordé aux couples mariés et aux familles
 				monoparentales ; il ne calcule donc que pour les personnes seules sans
@@ -177,24 +177,24 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				avec enfant est conservé : il vérifie que le moteur refuse bien de
 				calculer.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Ces cas de référence ne sont pas publiés. L'AFC autorise la
 				réutilisation de ses données de base, mais les résultats de son
 				calculateur ne sont pas des données ouvertes et ne se consultent que par
 				son interface web. Ils sont conservés dans un dépôt privé et servent
 				uniquement à tester nos calculs.
 			</p>
-		</section>
+		</Section>
 
-		<section id="moteur-fiscal" class="flex flex-col gap-sm">
+		<Section tone="tint" id="moteur-fiscal" class="flex flex-col gap-lg">
 			<h2 class="text-heading">Le moteur fiscal</h2>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Nous ne publions pas de simulateur d'impôt cantonal : les simulateurs
 				officiels sont gratuits et font autorité. Le moteur fiscal sert les
 				calculateurs de prévoyance et de logement, qui ont besoin de savoir ce
 				que coûte ou rapporte une décision.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Deux revenus imposables, pas un.</strong> La loi sur
 				l'harmonisation des impôts directs laisse aux cantons les barèmes, les
 				taux et les montants des déductions ; l'impôt fédéral direct applique
@@ -203,7 +203,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				taxé par son barème. Les calculateurs vous demandent les deux, tels
 				qu'ils figurent sur votre décision de taxation.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Trois étages.</strong> Le revenu imposable cantonal passe par le
 				barème cantonal, qui donne l'impôt cantonal de base. Cet impôt de base
 				est multiplié par le coefficient cantonal, puis par le coefficient
@@ -215,38 +215,41 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				arrondissent le revenu à la centaine de francs inférieure — et chaque
 				arrondi apparaît dans le détail du calcul.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Deux familles de barèmes.</strong> Un barème par tranches
 				applique à chaque tranche son taux marginal ; un barème à taux moyen lit
 				un taux à la hauteur du revenu et l'applique au revenu entier. Voici les
 				barèmes de l'année tels que nous les avons relevés, table par table :
 			</p>
-			<div class="overflow-x-auto border border-rule">
-				<table class="w-full border-collapse text-body">
+			<div class="overflow-x-auto rounded-panel border border-hairline bg-paper">
+				<table class="w-full border-collapse text-label">
+					<caption class="caption-top px-md py-sm text-left text-fine text-ink-muted">
+						Familles de barèmes du revenu et de la fortune, par canton
+					</caption>
 					<thead>
-						<tr class="border-b border-rule bg-tint text-label">
-							<th scope="col" class="px-lg py-sm text-left font-normal">Canton</th>
-							<th scope="col" class="px-lg py-sm text-left font-normal">Revenu</th>
-							<th scope="col" class="px-lg py-sm text-left font-normal">Fortune</th>
+						<tr class="bg-tint text-left font-bold">
+							<th scope="col" class="border-b border-hairline px-md py-sm">Canton</th>
+							<th scope="col" class="border-b border-hairline px-md py-sm">Revenu</th>
+							<th scope="col" class="border-b border-hairline px-md py-sm">Fortune</th>
 						</tr>
 					</thead>
 					<tbody>
 						{
 							scaleFamilies.map((row) => (
-								<tr class="border-t border-rule align-top">
-									<th scope="row" class="px-lg py-md text-left font-normal">{row.name}</th>
-									<td class="px-lg py-md">
+								<tr class="align-top">
+									<th scope="row" class="border-b border-hairline px-md py-sm text-left font-bold">{row.name}</th>
+									<td class="border-b border-hairline px-md py-sm">
 										{row.income}
 										{row.communal && <span class="block">commune : {row.communal}</span>}
 									</td>
-									<td class="px-lg py-md">{row.wealth}</td>
+									<td class="border-b border-hairline px-md py-sm">{row.wealth}</td>
 								</tr>
 							))
 						}
 					</tbody>
 				</table>
 			</div>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Le quotient familial vaudois n'est pas un splitting.</strong> Un
 				splitting divise le revenu des époux par un diviseur fixe pour lire le
 				taux. À Vaud, le revenu imposable est divisé par un nombre de parts qui
@@ -265,7 +268,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				marches : c'est pourquoi la pente se mesure sur 1&nbsp;000 francs, et
 				non sur 100.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Les communes valaisannes ont leur propre barème.</strong> Ailleurs
 				en Suisse romande, l'impôt communal est un coefficient appliqué à
 				l'impôt cantonal de base. En Valais, chaque commune applique le barème
@@ -273,18 +276,18 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				coefficient communal : l'impôt communal ne se déduit pas de l'impôt
 				cantonal.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Ce que le moteur ne couvre pas.</strong> L'impôt à la source,
 				les prestations en capital, les gains immobiliers et, en Valais, les
 				situations décrites plus haut. Chaque calculateur annonce son périmètre
 				avant la saisie, avec une alternative pour les cas qu'il ne traite pas.
 			</p>
-		</section>
+		</Section>
 
-		<section id="prevoyance" class="flex flex-col gap-sm">
+		<Section tone="paper" id="prevoyance" class="flex flex-col gap-lg">
 			<h2 class="text-heading">Prévoyance</h2>
-			<h3 class="text-label">Rachat dans le pilier 3a</h3>
-			<p class="text-body">
+			<h3 class="text-subheading">Rachat dans le pilier 3a</h3>
+			<p class="max-w-reading text-body">
 				Depuis la modification de l'ordonnance sur la prévoyance individuelle
 				liée (OPP 3), une année où vous n'avez pas versé la cotisation maximale
 				au pilier 3a laisse une lacune que vous pouvez combler plus tard. Les
@@ -300,7 +303,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				partie ne peut plus être complétée. La limite d'âge n'est pas examinée
 				par le calculateur.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Répartition par années entières.</strong> Comme une lacune
 				entamée est perdue pour le solde, le calculateur ne propose jamais d'en
 				entamer une qui pourrait encore attendre. L'année dont le délai expire
@@ -310,7 +313,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				plus élevée et, à égalité, aux années qui expirent le plus tôt. Les
 				autres restent rachetables jusqu'à leur dernière année.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				<strong>Une économie par différence de deux impôts.</strong> L'économie
 				affichée est l'impôt calculé sur votre situation moins l'impôt calculé
 				avec les deux revenus imposables, cantonal et fédéral, diminués du
@@ -321,13 +324,13 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				arrondie au franc, et l'économie est la différence des totaux affichés.
 				L'impôt sur la fortune, que le rachat ne change pas, n'est pas calculé.
 			</p>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Sources rattachées aux calculateurs de prévoyance ; l'ensemble des
 				sources, moteur fiscal compris, figure sur la page <a href="/donnees/"
 					>Données et sources</a
 				> :
 			</p>
-			<ul class="flex list-disc flex-col gap-2xs pl-lg font-serif text-body">
+			<ul class="flex max-w-reading flex-col gap-xs border-l-2 border-hairline pl-md text-fine text-ink-muted">
 				{
 					pensionSources.map((row) => (
 						<li>
@@ -346,17 +349,17 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					))
 				}
 			</ul>
-		</section>
+		</Section>
 
-		<section class="flex flex-col gap-sm">
+		<Section tone="tint" class="flex flex-col gap-lg">
 			<h2 class="text-heading">Politique de mise à jour</h2>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				La couche de données porte une dette de fraîcheur, et cette dette est
 				publique : la page <a href="/donnees/">Données et sources</a> liste
 				chaque valeur, sa date de vérification et l'échéance de sa prochaine
 				relecture, triées par urgence.
 			</p>
-			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+			<ul class="flex max-w-reading list-disc flex-col gap-2xs pl-lg text-body">
 				<li>
 					Un test de build échoue si une valeur n'a pas été re-vérifiée à sa
 					source depuis plus de douze mois. Afficher un chiffre périmé avec
@@ -373,15 +376,15 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					publications officielles, selon la cadence propre à chaque source.
 				</li>
 			</ul>
-		</section>
+		</Section>
 
-		<section class="flex flex-col gap-sm">
+		<Section tone="paper" class="flex flex-col gap-lg">
 			<h2 class="text-heading">Politique de correction d'erreur</h2>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Une erreur peut porter sur une valeur relevée, sur une formule ou sur une
 				hypothèse. Dans les trois cas :
 			</p>
-			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+			<ul class="flex max-w-reading list-disc flex-col gap-2xs pl-lg text-body">
 				<li>
 					toute erreur signalée sur une valeur officielle est corrigée sous 48
 					heures ;
@@ -399,7 +402,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					ce qui a changé et quand.
 				</li>
 			</ul>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Pour signaler une erreur : ouvrez <a
 					href="https://github.com/lerasle-it-solutions/calculateurs-ch/issues"
 					>une issue sur GitHub</a
@@ -407,19 +410,19 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					>contact@calculateurs.ch</a
 				>.
 			</p>
-		</section>
+		</Section>
 
-		<section class="flex flex-col gap-sm">
+		<Section tone="tint" class="flex flex-col gap-lg">
 			<h2 class="text-heading">Les trois niveaux d'avertissement</h2>
-			<p class="text-body">
+			<p class="max-w-reading text-body">
 				Un calculateur annonce ses limites avant la saisie, jamais après. Trois
 				niveaux se superposent, du plus général au plus spécifique.
 			</p>
 
 			<div class="flex flex-col gap-md">
 				<div class="flex flex-col gap-2xs">
-					<h3 class="text-label">Niveau 1 — avertissement général du site</h3>
-					<p class="text-body">
+					<h3 class="text-subheading">Niveau 1 — avertissement général du site</h3>
+					<p class="max-w-reading text-body">
 						Présent sur chaque calculateur : le résultat est une estimation
 						indicative fondée sur des barèmes officiels datés. Il ne remplace ni
 						une décision de taxation, ni l'avis d'un professionnel tenant compte
@@ -428,8 +431,8 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				</div>
 
 				<div class="flex flex-col gap-2xs">
-					<h3 class="text-label">Niveau 2 — périmètre déclaré du calculateur</h3>
-					<p class="text-body">
+					<h3 class="text-subheading">Niveau 2 — périmètre déclaré du calculateur</h3>
+					<p class="max-w-reading text-body">
 						Un bandeau au-dessus de chaque formulaire indique pour qui le
 						calculateur est fait, ce qu'il ne couvre pas — avec un lien vers une
 						alternative — et les hypothèses qu'il retient. Il s'affiche avant
@@ -438,8 +441,8 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				</div>
 
 				<div class="flex flex-col gap-2xs">
-					<h3 class="text-label">Niveau 3 — avertissement renforcé</h3>
-					<p class="text-body">
+					<h3 class="text-subheading">Niveau 3 — avertissement renforcé</h3>
+					<p class="max-w-reading text-body">
 						Pour les calculateurs qui portent sur une décision difficilement
 						réversible — un retrait en capital du 2<sup>e</sup> pilier, par
 						exemple — un encart distinct rappelle que la décision est durable et
@@ -447,6 +450,5 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					</p>
 				</div>
 			</div>
-		</section>
-	</div>
+		</Section>
 </BaseLayout>

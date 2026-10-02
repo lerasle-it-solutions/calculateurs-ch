@@ -26,6 +26,11 @@ export const fr = {
 		emptyValue: "—",
 	},
 
+	home: {
+		/** Lien d'action à la fin de chaque carte de famille. */
+		familyCardAction: "Voir les calculateurs",
+	},
+
 	header: {
 		familiesNavLabel: "Familles de calculateurs",
 		/** Nom accessible du lien du logo vers l'accueil. */
