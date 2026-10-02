@@ -163,8 +163,8 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				chaque modification du moteur ou des barèmes, et avant chaque
 				publication : nous lançons la suite de tests complète avant de verser
 				une version dans la branche publiée, et une version dont un cas sort de
-				la tolérance n'y est pas versée. La publication elle-même est
-				automatique et ne rejoue pas ces tests.
+				la tolérance n'y est pas versée. La publication rejoue la suite de tests
+				complète et s'interrompt si un cas sort de la tolérance.
 			</p>
 			<p class="max-w-reading text-body">
 				Le Valais n'est couvert qu'en partie. Le moteur ne reproduit pas

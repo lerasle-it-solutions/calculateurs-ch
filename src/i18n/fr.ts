@@ -139,7 +139,7 @@ export const fr = {
 	dataPage: {
 		/** Méta-description de /donnees/, 155 caractères au plus. */
 		metaDescription:
-			"Chaque source officielle utilisée sur le site, avec sa date de vérification et l'échéance de sa prochaine relecture, générée depuis les données.",
+			"Chaque source officielle utilisée sur le site, avec sa date de vérification et sa prochaine relecture.",
 		title: "Données et sources",
 		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu'elle alimente et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
 		summary: (tracked: number, overdue: number): string =>
