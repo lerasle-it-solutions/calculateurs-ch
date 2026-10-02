@@ -845,7 +845,7 @@ export default defineConfig({
 ```
 
 Dépendances : `astro@5`, `@astrojs/sitemap`, `@astrojs/tailwind`, `tailwindcss@4`,
-`@fontsource/ibm-plex-sans`, `@fontsource/ibm-plex-serif`, `zod`, `vitest`, `tsx`,
+`@fontsource/figtree`, `zod`, `vitest`, `tsx`,
 `@astrojs/check`, `typescript`. **Ni `@astrojs/preact`, ni `preact`, ni aucune
 bibliothèque de composants.**
 
@@ -917,73 +917,25 @@ Documentation complète : https://docs.astro.build
 
 ## Design system
 
-### Pile technique
+La spécification complète fait autorité et est chargée automatiquement dans chaque session
+Claude Code par l'import ci-dessous. Palette « marine et sapin » propre au site ; structure
+(typographie, rayons, ombres) inspirée de VIAC.
 
-- Tailwind CSS v4. Aucune bibliothèque de composants : ni shadcn/ui, ni HeroUI, ni Preline, ni Flowbite.
-- Aucun framework d'interface. Pas de React, pas de Preact, pas de Vue, pas de Svelte, pas d'îlot hydraté.
-- Toute interactivité est écrite en JavaScript natif, dans un `<script>` de la page Astro concernée.
-- Budget strict : moins de 30 ko de JavaScript par page (minifié, non compressé, préchargement compris), moins de 100 ko de CSS, LCP sous 1,5 s en 4G simulée.
-- Polices auto-hébergées via Fontsource. Aucune requête vers un domaine tiers depuis le navigateur du visiteur, jamais, y compris pour les polices, les icônes ou les scripts.
+@docs/design-system.md
 
-### Source unique des valeurs
+Rappel des règles non négociables (le détail est dans le fichier importé) :
 
-Toutes les couleurs, tailles, graisses et espacements sont déclarés dans `src/styles/tokens.css`, dans le bloc `@theme` de Tailwind. Aucune valeur littérale — pas de `#1A2B3C`, pas de `text-[17px]`, pas de `p-[13px]` — n'apparaît dans un composant ou une page. Si un token manque, tu l'ajoutes à `tokens.css` et tu me le signales ; tu n'improvises pas une valeur locale.
-
-### Principe directeur
-
-Le produit est un document administratif qui calcule, pas une application financière. Registre visuel de référence : notice fiscale cantonale, barème officiel, formulaire de déclaration.
-
-Le chiffre est le héros : sur chaque page de calculateur, le résultat est l'élément le plus grand et le plus contrasté. Tout le reste est délibérément discret. C'est la seule audace du design.
-
-### Typographie
-
-- `IBM Plex Sans` pour l'interface, les libellés, le corps de texte et tous les chiffres.
-- `IBM Plex Serif` exclusivement pour l'appareil de sources : article de loi, référence de barème, date de vérification, citation officielle. Cette distinction encode l'information — serif signifie « provient d'un texte officiel », sans signifie « produit par le calcul ».
-- `font-variant-numeric: tabular-nums` sur tout élément contenant un montant, un pourcentage ou une année. Sans exception : c'est ce qui aligne les colonnes de montants.
-- Texte aligné à gauche, jamais justifié. Longueur de ligne inférieure à 70 caractères.
-- Casse phrase partout. Jamais de capitales pour un libellé ou une étiquette.
-
-### Couleur
-
-Six rôles, définis dans `tokens.css` : `ink`, `paper`, `tint`, `rule`, `accent`, `warning`.
-
-- `accent` est réservé au résultat du calcul et aux liens. Il n'apparaît nulle part ailleurs.
-- `warning` est réservé aux avertissements renforcés — retrait en capital, amortir ou investir, subventions. Il n'est jamais décoratif.
-- Aucun dégradé, aucune ombre portée, aucun aplat de couleur de marque.
-- Les séparations se font au filet d'un pixel en `rule`, comme dans un formulaire officiel.
-
-### Mise en page
-
-- Calculateur, grand écran : deux colonnes. Saisie à gauche en colonne étroite, résultat à droite en position collante afin de rester visible pendant l'ajustement des champs. Détail du calcul en dessous, pleine largeur, présenté en registre — libellé à gauche, montant aligné à droite.
-- Calculateur, mobile : empilement vertical, résultat fixé en bas de l'écran.
-- Rayon de bordure : `2px` sur les champs et les boutons, `0` sur les panneaux, tableaux et bandeaux. Jamais le même rayon sur tout.
-
-### Composants
-
-Ils vivent dans `src/components/ui/` et reposent sur des éléments HTML natifs :
-
-| Composant | Élément natif |
-| --- | --- |
-| `NumberField.astro` | `<input type="number">` |
-| `SelectField.astro` | `<select>` |
-| `CantonField.astro` | `<select>` |
-| `MunicipalityField.astro` | `<input list>` + `<datalist>` |
-| `ResultCard.astro` | `<output>` |
-| `CalculationBreakdown.astro` | `<details><summary>` + `<table>` |
-| `ScopeNotice.astro` | `<aside>` |
-| `DataFreshness.astro` | `<p>` + `<time datetime>` |
-| `LeadForm.astro` | `<form>` |
-
-N'introduis jamais un composant personnalisé là où un élément natif fait le travail. Pas de `<div role="button">`, pas d'accordéon en JavaScript à la place de `<details>`, pas de liste déroulante réimplémentée à la place de `<select>`.
-
-### Plancher de qualité, vérifié à chaque composant
-
-- Responsive jusqu'à 320 px de large.
-- Focus clavier visible sur tout élément interactif, contraste suffisant.
-- Contraste du texte conforme au niveau AA.
-- `prefers-reduced-motion` respecté.
-- Le site reste lisible et utilisable sans JavaScript ; seul le calcul cesse de fonctionner.
-
-### Interdits permanents
-
-Animations d'apparition au défilement. Transitions au survol des cartes. Icônes décoratives, illustrations, photographies, emoji. Bandeaux de cookies. Fenêtres surgissantes. Barres flottantes d'appel à l'action. Le formulaire de mise en relation n'est jamais un mur : le résultat complet s'affiche toujours avant lui.
+- Toute valeur de couleur, taille, graisse, espacement, rayon ou ombre vient de
+  `src/styles/tokens.css` (bloc `@theme`). Aucune valeur arbitraire Tailwind, aucune couleur de
+  la palette par défaut (désactivée). Token manquant → l'ajouter à `tokens.css`, le documenter
+  dans `docs/design-system.md` et me le signaler. `tests/design/design-tokens.test.ts` le vérifie.
+- Une seule famille, Figtree 500/700, auto-hébergée via Fontsource. Aucune requête tierce.
+- Une couleur, un rôle : `accent` (sapin) pour le résultat, les liens et l'action principale ;
+  `error` (rouge) pour les erreurs seulement ; `warning` (orange) pour les avertissements
+  renforcés seulement. Le gain ou la perte se dit en mots, jamais par la couleur.
+- Le résultat du calcul est l'élément le plus grand et le plus contrasté de la page.
+- Logo : composants de `src/assets/brand/`, jamais recomposé en texte ni modifié (§ 1.5).
+- Éléments HTML natifs, aucun framework ni bibliothèque de composants ; < 30 ko de JS par page,
+  < 100 ko de CSS, LCP < 1,5 s en 4G simulée ; contraste AA, focus visible, 320 px minimum.
+- Avant de livrer une interface : relire la section concernée de `docs/design-system.md` et
+  lancer `npx vitest run tests/design`.
