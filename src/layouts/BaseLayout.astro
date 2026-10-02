@@ -3,12 +3,13 @@ import "../styles/tokens.css";
 
 // Police auto-hébergée via Fontsource — aucune requête vers un domaine tiers.
 // Une seule famille, Figtree, en deux graisses : 500 (corps, libellés) et 700
-// (titres, boutons, résultat). Le sous-ensemble latin-ext n'est téléchargé que
-// si un glyphe l'exige (unicode-range). Voir docs/design-system.md § 1.2.
-import "@fontsource/figtree/latin-500.css";
-import "@fontsource/figtree/latin-700.css";
-import "@fontsource/figtree/latin-ext-500.css";
-import "@fontsource/figtree/latin-ext-700.css";
+// (titres, boutons, résultat). Voir docs/design-system.md § 1.2.
+// `500.css` et `700.css` déclarent les sous-ensembles latin et latin-ext avec
+// leur unicode-range : latin-ext n'est téléchargé que si un glyphe l'exige.
+// Les fichiers par sous-ensemble (`latin-500.css`…) n'ont pas d'unicode-range :
+// importés ensemble, ils font télécharger les deux sous-ensembles sur chaque page.
+import "@fontsource/figtree/500.css";
+import "@fontsource/figtree/700.css";
 
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
