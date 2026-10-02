@@ -180,7 +180,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	family: "pension",
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
-	metaDescription: `Calculez, année par année depuis ${firstGapYear}, les lacunes du pilier 3a que vous pouvez encore racheter, jusqu'à quand, et l'impôt que vous économiseriez dans votre commune romande.`,
+	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
 
 	scope: {
 		forWhom: [
@@ -277,6 +277,8 @@ export const pillar3aBuyback: CalculatorDefinition = {
 /** Textes de la page propres à A1, en français. */
 export const pillar3aBuybackTexts = {
 	resultLabel: "Économie d'impôt",
+	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
+	disclaimer: `Estimation indicative, établie d'après les barèmes ${pillar3aBuybackYear} et vos saisies. Elle ne constitue ni un conseil fiscal ni un conseil en prévoyance, et ne remplace pas votre décision de taxation.`,
 	outOfScope: (canton: string): string =>
 		`Ce calculateur ne couvre pas encore votre ménage dans le canton ${canton} : ses résultats ne reproduiraient pas exactement ceux du calculateur officiel. Utilisez la calculette du canton :`,
 	outOfScopeMunicipality: (municipality: string): string =>

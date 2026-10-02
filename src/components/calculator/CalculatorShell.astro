@@ -46,6 +46,8 @@ interface Props {
 	intro: string | string[];
 	/** Libellé de la ResultCard. FRANÇAIS. */
 	resultLabel: string;
+	/** Réserve affichée sous le résultat (estimation indicative…). FRANÇAIS. */
+	resultNote?: string;
 	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
 	verifiedOn: string;
 	/**
@@ -60,6 +62,7 @@ const {
 	definition,
 	intro,
 	resultLabel,
+	resultNote,
 	verifiedOn,
 	catalog = [],
 } = Astro.props;
@@ -177,6 +180,7 @@ const resultFor = definition.fields
 					label={resultLabel}
 					value="—"
 				/>
+				{resultNote && <p class="mt-md max-w-reading text-fine text-ink-muted">{resultNote}</p>}
 			</div>
 		</div>
 
