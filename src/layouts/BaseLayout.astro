@@ -18,13 +18,10 @@ interface Props {
 	title: string;
 	description: string;
 	noindex?: boolean;
-	/** Gabarit large, pour les pages de calculateur en deux colonnes. */
-	wide?: boolean;
 }
 
-const { title, description, noindex = false, wide = false } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const container = wide ? "max-w-page" : "max-w-reading";
 ---
 
 <!doctype html>
@@ -35,7 +32,7 @@ const container = wide ? "max-w-page" : "max-w-reading";
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 		<link rel="icon" href="/favicon.ico" sizes="48x48" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-		<!-- Métadonnée de navigateur, pas un style : seule valeur de couleur hors tokens.css. -->
+		{/* Métadonnée de navigateur, pas un style : seule valeur de couleur hors tokens.css. */}
 		<meta name="theme-color" content="#1C2A3A" />
 		<link rel="canonical" href={canonical} />
 		<meta name="generator" content={Astro.generator} />
@@ -47,17 +44,15 @@ const container = wide ? "max-w-page" : "max-w-reading";
 	<body class="flex min-h-screen flex-col bg-paper text-ink">
 		<a
 			href="#main"
-			class="sr-only focus:not-sr-only focus:absolute focus:left-lg focus:top-lg focus:z-20 focus:border focus:border-rule focus:bg-paper focus:px-md focus:py-sm focus:text-label"
+			class="sr-only rounded-button bg-paper px-lg py-sm text-label font-bold shadow-raised focus:not-sr-only focus:absolute focus:left-lg focus:top-lg focus:z-20"
 		>
 			{fr.common.skipToContent}
 		</a>
 
 		<Header />
 
-		<main
-			id="main"
-			class:list={["mx-auto w-full flex-1 px-lg py-2xl", container]}
-		>
+		{/* Pleine largeur : chaque page pose ses sections et leur conteneur (Section, PageHero). */}
+		<main id="main" class="flex-1">
 			<slot />
 		</main>
 

@@ -1,0 +1,32 @@
+---
+/**
+ * PageHero — héros de page : H1, chapeau, au plus un bouton principal en slot
+ * (docs/design-system.md § 3.2). Aligné à gauche, texte borné à la largeur de
+ * lecture.
+ */
+import Section from "./Section.astro";
+
+interface Props {
+	title: string;
+	/** Chapeau, un ou plusieurs paragraphes. */
+	lead?: string | string[];
+	tone?: "paper" | "tint";
+}
+
+const { title, lead, tone = "paper" } = Astro.props;
+const paragraphs = lead === undefined ? [] : Array.isArray(lead) ? lead : [lead];
+---
+
+<Section tone={tone} hero={true}>
+	<h1 class="max-w-reading text-title">{title}</h1>
+	{
+		paragraphs.length > 0 && (
+			<div class="mt-sm flex max-w-reading flex-col gap-sm">
+				{paragraphs.map((paragraph) => (
+					<p class="text-lead text-ink-muted">{paragraph}</p>
+				))}
+			</div>
+		)
+	}
+	{Astro.slots.has("default") && <div class="mt-2xl max-w-reading"><slot /></div>}
+</Section>

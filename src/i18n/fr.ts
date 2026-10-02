@@ -26,6 +26,10 @@ export const fr = {
 
 	header: {
 		familiesNavLabel: "Familles de calculateurs",
+		/** Nom accessible du lien du logo vers l'accueil. */
+		homeLabel: "calculateurs.ch — accueil",
+		/** Bouton du menu replié, sous `md`. */
+		menu: "Menu",
 	},
 
 	/** Libellés des familles. Les segments d'URL vivent dans calculators/families.ts. */
@@ -43,11 +47,14 @@ export const fr = {
 		legal: "Mentions légales",
 		privacy: "Politique de confidentialité",
 		contact: "Contact",
+		/** Titres des colonnes du pied de page. */
+		calculatorsHeading: "Calculateurs",
+		siteHeading: "Le site",
 	},
 
 	breadcrumb: {
 		navLabel: "Fil d'Ariane",
-		separator: "/",
+		separator: "›",
 	},
 
 	scopeNotice: {

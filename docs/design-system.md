@@ -206,6 +206,7 @@ Base 4 px. Les composants n'utilisent que ces pas (`p-*`, `m-*`, `gap-*`, `space
 | `3xl` | 3 | 48 | Hauteur des contrôles (`min-h-3xl`), padding de section mobile |
 | `4xl` | 4 | 64 | Padding de section bureau |
 | `5xl` | 6 | 96 | Respiration des sections héros (bureau) |
+| `icon` | 1,25 | 20 | **Taille d'objet**, pas un pas de rythme : icône fonctionnelle (§ 2.1), case à cocher et bouton radio natifs (§ 2.3), en `size-icon` |
 
 Rythme vertical : sections `py-3xl md:py-4xl` (héros `md:py-5xl`) ; titres suivis de `mt-sm`
 (chapeau) puis `mt-2xl` (contenu).

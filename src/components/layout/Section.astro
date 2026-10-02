@@ -1,0 +1,29 @@
+---
+/**
+ * Section — bande pleine largeur au fond `paper` ou `tint`, contenu dans le
+ * conteneur de page (docs/design-system.md § 1.1 et § 3.2). Les pages font
+ * alterner les deux fonds pour rythmer la lecture.
+ */
+interface Props {
+	tone?: "paper" | "tint";
+	id?: string;
+	/** Classes ajoutées au conteneur intérieur (gap, grille…). */
+	class?: string;
+	/** Rythme du héros de page : `md:py-5xl` au lieu de `md:py-4xl`. */
+	hero?: boolean;
+}
+
+const { tone = "paper", id, class: className, hero = false } = Astro.props;
+---
+
+<section id={id} class={tone === "tint" ? "bg-tint" : "bg-paper"}>
+	<div
+		class:list={[
+			"mx-auto w-full max-w-page px-lg py-3xl md:px-2xl",
+			hero ? "md:py-5xl" : "md:py-4xl",
+			className,
+		]}
+	>
+		<slot />
+	</div>
+</section>

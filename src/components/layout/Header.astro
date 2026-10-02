@@ -1,8 +1,11 @@
 ---
 /**
- * Header — nom du site + navigation des quatre familles.
- * Discret, registre « en-tête de formulaire officiel ». Aucun JavaScript.
+ * Header — logo et navigation des quatre familles (docs/design-system.md § 2.4).
+ * Aucun JavaScript : dès `md`, la navigation tient sur la ligne du logo ; en
+ * dessous, elle se replie dans un <details> natif, ouvert au clavier comme à
+ * la souris. Collant, jamais masqué au défilement.
  */
+import Logo from "../../assets/brand/logo.svg";
 import { fr } from "../../i18n/fr";
 import { FAMILY_ORDER, familyUrl } from "../../calculators/families";
 
@@ -12,20 +15,26 @@ const families = FAMILY_ORDER.map((family) => ({
 }));
 
 const path = Astro.url.pathname;
+const isCurrent = (url: string) => path.startsWith(url);
 ---
 
-<header class="border-b border-rule">
-	<div class="mx-auto flex max-w-page flex-col gap-sm px-lg py-md">
-		<a href="/" class="text-heading no-underline">{fr.site.name}</a>
-		<nav aria-label={fr.header.familiesNavLabel}>
-			<ul class="flex flex-wrap gap-lg text-label">
+<header class="sticky top-0 z-10 border-b border-hairline bg-paper">
+	<div
+		class="mx-auto flex min-h-4xl w-full max-w-page items-center justify-between gap-md px-lg md:gap-xl md:px-2xl"
+	>
+		<a href="/" aria-label={fr.header.homeLabel} class="inline-flex shrink-0 no-underline">
+			<Logo class="h-xl w-auto md:h-2xl" aria-hidden="true" />
+		</a>
+
+		<nav aria-label={fr.header.familiesNavLabel} class="hidden md:block">
+			<ul class="flex items-center gap-xl">
 				{
 					families.map((family) => (
 						<li>
 							<a
 								href={family.url}
-								class="no-underline"
-								aria-current={path.startsWith(family.url) ? "page" : undefined}
+								aria-current={isCurrent(family.url) ? "page" : undefined}
+								class="text-label font-bold text-ink no-underline transition-colors duration-150 hover:text-accent aria-[current=page]:text-accent aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8"
 							>
 								{family.label}
 							</a>
@@ -34,5 +43,44 @@ const path = Astro.url.pathname;
 				}
 			</ul>
 		</nav>
+
+		<details class="md:hidden">
+			<summary
+				class="flex min-h-3xl cursor-pointer list-none items-center gap-sm rounded-button px-md text-label font-bold text-ink hover:bg-tint [&::-webkit-details-marker]:hidden"
+			>
+				<svg
+					aria-hidden="true"
+					viewBox="0 0 20 20"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					class="size-icon"
+				>
+					<path d="M3 5h14M3 10h14M3 15h14"></path>
+				</svg>
+				{fr.header.menu}
+			</summary>
+			<nav
+				aria-label={fr.header.familiesNavLabel}
+				class="absolute inset-x-0 top-full border-b border-hairline bg-paper px-lg py-xl shadow-raised"
+			>
+				<ul class="flex flex-col gap-xs">
+					{
+						families.map((family) => (
+							<li>
+								<a
+									href={family.url}
+									aria-current={isCurrent(family.url) ? "page" : undefined}
+									class="flex min-h-3xl items-center rounded-control px-md text-body font-bold text-ink no-underline hover:bg-tint aria-[current=page]:text-accent aria-[current=page]:underline"
+								>
+									{family.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+		</details>
 	</div>
 </header>

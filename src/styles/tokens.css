@@ -121,6 +121,9 @@
   --spacing-3xl: 3rem;      /* 48 px */
   --spacing-4xl: 4rem;      /* 64 px */
   --spacing-5xl: 6rem;      /* 96 px */
+  /* Taille d'objet, pas un pas de rythme : icône fonctionnelle, case à cocher
+   * et bouton radio natifs (§ 2.1 et § 2.3), en `size-icon`. */
+  --spacing-icon: 1.25rem;  /* 20 px */
 
   /* ------------------------------------------------------------------ *
    * Largeurs de contenu.

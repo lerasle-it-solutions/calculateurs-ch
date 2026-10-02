@@ -39,7 +39,6 @@ const trail: Crumb[] = [
 	title={definition.title}
 	description={definition.metaDescription}
 	noindex={noindex}
-	wide={true}
 >
 	<Fragment slot="head">
 		<CalculatorSchema definition={definition} />
@@ -47,8 +46,8 @@ const trail: Crumb[] = [
 		<BreadcrumbSchema trail={trail} />
 	</Fragment>
 
-	<div class="flex flex-col gap-2xl">
+	<div class="mx-auto w-full max-w-page px-lg pt-xl md:px-2xl">
 		<Breadcrumb trail={trail} />
-		<slot />
 	</div>
+	<slot />
 </BaseLayout>

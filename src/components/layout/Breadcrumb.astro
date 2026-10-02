@@ -2,6 +2,7 @@
 /**
  * Breadcrumb — fil d'Ariane visible. Élément natif : <nav> + <ol>.
  * Le dernier maillon est la page courante (non cliquable, aria-current).
+ * Séparateur décoratif, masqué aux lecteurs d'écran (docs/design-system.md § 2.4).
  * Le pendant JSON-LD est `seo/BreadcrumbSchema.astro`.
  */
 import { fr } from "../../i18n/fr";
@@ -18,14 +19,16 @@ interface Props {
 const { trail } = Astro.props;
 ---
 
-<nav aria-label={fr.breadcrumb.navLabel} class="text-fine">
+<nav aria-label={fr.breadcrumb.navLabel} class="text-fine text-ink-muted">
 	<ol class="flex flex-wrap items-center gap-xs">
 		{
 			trail.map((crumb, index) => (
 				<li class="flex items-center gap-xs">
 					{index > 0 && <span aria-hidden="true">{fr.breadcrumb.separator}</span>}
 					{index < trail.length - 1 ? (
-						<a href={crumb.url} class="no-underline">{crumb.label}</a>
+						<a href={crumb.url} class="text-ink-muted hover:text-accent">
+							{crumb.label}
+						</a>
 					) : (
 						<span aria-current="page">{crumb.label}</span>
 					)}

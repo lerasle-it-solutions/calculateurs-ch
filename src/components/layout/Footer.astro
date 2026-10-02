@@ -1,9 +1,18 @@
 ---
 /**
- * Footer — liens de pilotage : méthodologie, données, mentions légales,
- * politique de confidentialité, contact. Aucun JavaScript.
+ * Footer — logo blanc, familles de calculateurs et liens de pilotage :
+ * méthodologie, données, mentions légales, politique de confidentialité,
+ * contact (docs/design-system.md § 2.4). Fond encre, texte papier (14,57:1).
+ * Aucun JavaScript.
  */
+import LogoWhite from "../../assets/brand/logo-blanc.svg";
 import { fr } from "../../i18n/fr";
+import { FAMILY_ORDER, familyUrl } from "../../calculators/families";
+
+const families = FAMILY_ORDER.map((family) => ({
+	label: fr.family[family],
+	url: familyUrl(family),
+}));
 
 const links = [
 	{ label: fr.footer.methodology, url: "/methodologie/" },
@@ -14,16 +23,43 @@ const links = [
 ];
 ---
 
-<footer class="mx-auto max-w-page border-t border-rule px-lg py-lg">
-	<nav aria-label={fr.footer.navLabel}>
-		<ul class="flex flex-wrap gap-lg text-fine">
-			{
-				links.map((link) => (
-					<li>
-						<a href={link.url} class="no-underline">{link.label}</a>
-					</li>
-				))
-			}
-		</ul>
-	</nav>
+<footer class="bg-ink text-paper">
+	<div class="mx-auto grid w-full max-w-page gap-2xl px-lg py-4xl md:grid-cols-3 md:px-2xl">
+		<div class="flex flex-col gap-md">
+			<a href="/" aria-label={fr.header.homeLabel} class="inline-flex self-start no-underline focus-visible:outline-paper">
+				<LogoWhite class="h-xl w-auto md:h-2xl" aria-hidden="true" />
+			</a>
+			<p class="max-w-reading text-fine">{fr.site.baseline}</p>
+		</div>
+
+		<nav aria-labelledby="footer-calculators" class="flex flex-col gap-md">
+			<h2 id="footer-calculators" class="text-label font-bold">{fr.footer.calculatorsHeading}</h2>
+			<ul class="flex flex-col gap-sm text-label">
+				{
+					families.map((family) => (
+						<li>
+							<a href={family.url} class="text-paper underline hover:text-paper focus-visible:outline-paper">
+								{family.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<nav aria-labelledby="footer-site" class="flex flex-col gap-md">
+			<h2 id="footer-site" class="text-label font-bold">{fr.footer.siteHeading}</h2>
+			<ul class="flex flex-col gap-sm text-label">
+				{
+					links.map((link) => (
+						<li>
+							<a href={link.url} class="text-paper underline hover:text-paper focus-visible:outline-paper">
+								{link.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
 </footer>
