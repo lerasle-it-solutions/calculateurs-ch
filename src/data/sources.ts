@@ -105,7 +105,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine", "gross-to-taxable"],
-		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans sources/pdf/2026/.",
+		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/ju-fr.pdf.",
 	},
 	{
 		id: "estv-cantonal-sheet-ne",
@@ -118,7 +118,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine", "gross-to-taxable"],
-		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans sources/pdf/2026/.",
+		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/ne-fr.pdf.",
 	},
 	{
 		id: "estv-cantonal-sheet-ge",
@@ -131,7 +131,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine", "gross-to-taxable"],
-		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans sources/pdf/2026/.",
+		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/ge-fr.pdf.",
 	},
 	{
 		id: "estv-cantonal-sheet-fr",
@@ -144,7 +144,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine", "gross-to-taxable"],
-		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans sources/pdf/2026/.",
+		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/fr-fr.pdf.",
 	},
 	{
 		id: "estv-cantonal-sheet-vd",
@@ -157,7 +157,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine", "gross-to-taxable"],
-		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans sources/pdf/2026/.",
+		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/vd-fr.pdf.",
 	},
 	{
 		id: "estv-cantonal-sheet-vs",
@@ -170,7 +170,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine", "gross-to-taxable"],
-		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans sources/pdf/2026/.",
+		note: "État février 2026. Sert à trouver les articles de loi ; ses liens de brochures pointent vers la période fiscale 2025. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/vs-fr.pdf.",
 	},
 	{
 		id: "estv-tax-brochures",
@@ -402,7 +402,7 @@ export const SOURCES = defineSources([
 		attributionText: ESTV_BASE_DATA_ATTRIBUTION,
 		collectedFrom: "estv-base-data-module",
 		usedBy: ["tax-engine"],
-		note: "PDF officiel « Coefficients et indexations des communes 2022-2027 », archivé dans sources/pdf/2026/ — l'URL contient un paramètre de session (?t=…) et ne survivra pas. Porte les coefficients d'indexation communaux, à appliquer au barème communal de l'art. 178 LF (vs-communal-scale). Document pluriannuel : vérifier chaque 1er janvier qu'une version plus récente n'a pas été publiée.",
+		note: "PDF officiel « Coefficients et indexations des communes 2022-2027 », archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/Coefficients_Indexations_Communes_Valais_2022-2027.pdf — l'URL contient un paramètre de session (?t=…) et ne survivra pas. Porte les coefficients d'indexation communaux, à appliquer au barème communal de l'art. 178 LF (vs-communal-scale). Document pluriannuel : vérifier chaque 1er janvier qu'une version plus récente n'a pas été publiée.",
 	},
 	{
 		id: "ge-municipal-multipliers",
@@ -418,7 +418,7 @@ export const SOURCES = defineSources([
 		attributionText: ESTV_BASE_DATA_ATTRIBUTION,
 		collectedFrom: "estv-base-data-module",
 		usedBy: ["tax-engine"],
-		note: "L'arrêté D 3 05.30 approuve chaque année le nombre des centimes additionnels communaux : il est réadopté annuellement, à rouvrir au rituel du 1er janvier, l'URL pouvant continuer d'afficher la version précédente. Le tableau des centimes publié par le canton sur ge.ch (ge.ch/document/19890) a un identifiant opaque qui changera à la prochaine édition : l'archiver dans sources/pdf/2026/. L'export AFC fournit aussi les coefficients paroissiaux, pour le revenu et pour la fortune.",
+		note: "L'arrêté D 3 05.30 approuve chaque année le nombre des centimes additionnels communaux : il est réadopté annuellement, à rouvrir au rituel du 1er janvier, l'URL pouvant continuer d'afficher la version précédente. Le tableau des centimes publié par le canton sur ge.ch (ge.ch/document/19890) a un identifiant opaque qui changera à la prochaine édition : l'archiver dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/ : pas encore archivé au 02.10.2026. L'export AFC fournit aussi les coefficients paroissiaux, pour le revenu et pour la fortune.",
 	},
 	{
 		id: "ju-municipal-multipliers",
@@ -435,7 +435,7 @@ export const SOURCES = defineSources([
 		attributionText: ESTV_BASE_DATA_ATTRIBUTION,
 		collectedFrom: "estv-base-data-module",
 		usedBy: ["tax-engine"],
-		note: "Même document que l'autre ligne jurassienne : les quotités cantonale et communales figurent dans le même PDF (quotites_2026.pdf). Deux entrées distinctes car elles alimentent deux données différentes du moteur. PDF à archiver dans sources/pdf/2026/ ; nouveau fichier chaque année.",
+		note: "Même document que l'autre ligne jurassienne : les quotités cantonale et communales figurent dans le même PDF (quotites_2026.pdf). Deux entrées distinctes car elles alimentent deux données différentes du moteur. PDF à archiver dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/ : pas encore archivé au 02.10.2026 ; nouveau fichier chaque année.",
 	},
 	{
 		id: "vd-base-tax-reduction",
@@ -668,7 +668,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine"],
-		note: "Même document que l'autre ligne jurassienne : les quotités cantonale et communales figurent dans le même PDF (quotites_2026.pdf). Deux entrées distinctes car elles alimentent deux données différentes du moteur. PDF à archiver dans sources/pdf/2026/ ; nouveau fichier chaque année. La quotité cantonale est votée au budget (art. 2 al. 3 LI), les quotités communales par chaque commune (art. 106 al. 1 LI).",
+		note: "Même document que l'autre ligne jurassienne : les quotités cantonale et communales figurent dans le même PDF (quotites_2026.pdf). Deux entrées distinctes car elles alimentent deux données différentes du moteur. PDF à archiver dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/ : pas encore archivé au 02.10.2026 ; nouveau fichier chaque année. La quotité cantonale est votée au budget (art. 2 al. 3 LI), les quotités communales par chaque commune (art. 106 al. 1 LI).",
 	},
 	{
 		id: "vs-communal-scale",
@@ -698,7 +698,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["pension.pillar-3a-buyback"],
-		note: "Version consultée le 29.09.2026 : état le 1er janvier 2025, toujours en vigueur. L'identifiant reprend celui du plan, mais l'entrée couvre aussi les art. 7 et 7b et la disposition transitoire. L'ordonnance ne donne aucun montant en francs : les plafonds viennent de ofas-pillar-3a-caps. La condition de revenu soumis à l'AVS l'année du rachat n'est pas écrite en toutes lettres : elle découle de l'art. 7a al. 1 let. c.",
+		note: "Version consultée le 29.09.2026 : état le 1er janvier 2025, toujours en vigueur. L'identifiant reprend celui du plan, mais l'entrée couvre aussi les art. 7 et 7b et la disposition transitoire. L'ordonnance ne donne aucun montant en francs : les plafonds viennent de ofas-pillar-3a-caps. La condition de revenu soumis à l'AVS l'année du rachat n'est pas écrite en toutes lettres : elle découle de l'art. 7a al. 1 let. c. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/opp-3.pdf.",
 	},
 	{
 		id: "ofas-pillar-3a-caps",
@@ -712,7 +712,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["pension.pillar-3a-buyback"],
-		note: "La page donne les montants « dès 2025 », sans ligne 2026 : les plafonds 2026 sont ceux de 2025. Montants antérieurs non repris, les lacunes d'avant 2025 n'étant pas rachetables. À rouvrir au rituel du 1er janvier : les plafonds suivent l'adaptation du montant-limite LPP. La section « Rachats dans le pilier 3a » énonce explicitement les conditions de revenu soumis à l'AVS l'année de la lacune et l'année du rachat, et de versement intégral de la cotisation ordinaire de l'année du rachat ; vérifiée le 01.10.2026.",
+		note: "La page donne les montants « dès 2025 », sans ligne 2026 : les plafonds 2026 sont ceux de 2025. Montants antérieurs non repris, les lacunes d'avant 2025 n'étant pas rachetables. À rouvrir au rituel du 1er janvier : les plafonds suivent l'adaptation du montant-limite LPP. La section « Rachats dans le pilier 3a » énonce explicitement les conditions de revenu soumis à l'AVS l'année de la lacune et l'année du rachat, et de versement intégral de la cotisation ordinaire de l'année du rachat ; vérifiée le 01.10.2026. PDF de la page archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/Le troisième pilier - OFAS.pdf.",
 	},
 ]);
 
