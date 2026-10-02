@@ -17,6 +17,12 @@
  *
  * ResultCard écoute `detail.value`, CalculationBreakdown écoute `detail.breakdown`.
  * Rien n'est envoyé nulle part.
+ *
+ * Mise en page (docs/design-system.md § 2.5) : dès `lg`, deux colonnes, saisie
+ * à gauche et carte résultat collante à droite ; en dessous, une barre fixée
+ * en bas de l'écran répète le libellé et le montant, avec un lien vers le
+ * détail. Elle porte `data-result-card` : le script de ResultCard la met à jour,
+ * sans une ligne de JavaScript de plus. Jamais d'appel commercial dans la barre.
  */
 import ScopeNotice from "../ui/ScopeNotice.astro";
 import ResultCard from "../ui/ResultCard.astro";
@@ -30,6 +36,7 @@ import CantonField from "./fields/CantonField.astro";
 import MunicipalityField from "../ui/MunicipalityField.astro";
 import TextField from "../ui/TextField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
+import Section from "../layout/Section.astro";
 import { fr } from "../../i18n/fr";
 import type { CalculatorDefinition } from "../../calculators/types";
 
@@ -85,10 +92,11 @@ const resultFor = definition.fields
 	.join(" ");
 ---
 
-<article class="flex flex-col gap-2xl">
-	<header class="flex max-w-reading flex-col gap-md">
+<article class="pb-5xl lg:pb-0">
+	<Section class="flex flex-col gap-2xl">
+	<header class="flex max-w-reading flex-col gap-sm">
 		<h1 class="text-title">{definition.title}</h1>
-		{(Array.isArray(intro) ? intro : [intro]).map((paragraph) => <p class="text-body">{paragraph}</p>)}
+		{(Array.isArray(intro) ? intro : [intro]).map((paragraph) => <p class="text-lead text-ink-muted">{paragraph}</p>)}
 	</header>
 
 	<ScopeNotice
@@ -101,7 +109,7 @@ const resultFor = definition.fields
 		<form
 			data-calculator
 			id={formId}
-			class="flex min-w-0 flex-col gap-lg lg:self-start"
+			class="flex min-w-0 flex-col gap-xl lg:self-start"
 			novalidate
 		>
 			{
@@ -161,8 +169,8 @@ const resultFor = definition.fields
 			}
 		</form>
 
-		<div class="flex min-w-0 flex-col gap-lg">
-			<div class="sticky bottom-0 z-10 lg:top-lg lg:bottom-auto">
+		<div class="min-w-0">
+			<div class="lg:sticky lg:top-5xl">
 				<ResultCard
 					id={`${formId}-result`}
 					for={resultFor}
@@ -172,7 +180,7 @@ const resultFor = definition.fields
 			</div>
 		</div>
 
-		<div class="lg:col-span-2">
+		<div id="detail-du-calcul" class="min-w-0 scroll-mt-5xl lg:col-span-2">
 			<CalculationBreakdown open={true} />
 		</div>
 	</div>
@@ -182,24 +190,42 @@ const resultFor = definition.fields
 		verifiedOn={verifiedOn}
 		sourceIds={definition.sourceIds}
 	/>
-
-	<RelatedVariants variants={variants} />
+	</Section>
 
 	{
-		definition.faq.length > 0 && (
-			<section class="flex max-w-reading flex-col gap-sm">
-				<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
-				<div class="border-b border-rule">
-					{definition.faq.map((item) => (
-						<details class="border-t border-rule">
-							<summary class="cursor-pointer py-md text-label">
-								{item.question}
-							</summary>
-							<p class="pb-md text-body">{item.answer}</p>
-						</details>
-					))}
-				</div>
-			</section>
+		(variants.length > 0 || definition.faq.length > 0) && (
+			<Section tone="tint" class="flex flex-col gap-3xl">
+				<RelatedVariants variants={variants} />
+
+				{definition.faq.length > 0 && (
+					<section class="flex max-w-reading flex-col gap-lg">
+						<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
+						<div class="border-b border-hairline">
+							{definition.faq.map((item) => (
+								<details class="border-t border-hairline">
+									<summary class="flex min-h-3xl cursor-pointer items-center py-md text-body font-bold">
+										{item.question}
+									</summary>
+									<p class="max-w-reading pb-lg text-body">{item.answer}</p>
+								</details>
+							))}
+						</div>
+					</section>
+				)}
+			</Section>
 		)
 	}
+
+	<div
+		data-result-card
+		class="fixed inset-x-0 bottom-0 z-10 bg-paper px-lg py-md shadow-bar lg:hidden"
+	>
+		<div class="mx-auto flex max-w-page items-center justify-between gap-md">
+			<div class="flex min-w-0 flex-col">
+				<span class="text-fine font-bold">{resultLabel}</span>
+				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
+			</div>
+			<span data-result-value class="text-heading text-accent tabular-nums" aria-hidden="true">—</span>
+		</div>
+	</div>
 </article>

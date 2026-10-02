@@ -3,8 +3,10 @@
  * ScopeNotice — le périmètre déclaré, affiché AVANT la saisie (principe P5).
  * Élément natif : <aside>. Aucun JavaScript.
  *
- * `reinforced` : réservé aux avertissements renforcés des calculateurs A4, B3
- * et C1 — bascule le filet et le titre en `warning`. Jamais décoratif.
+ * Avis informatif sur fond `tint` (docs/design-system.md § 2.6). `reinforced` :
+ * réservé aux avertissements renforcés des calculateurs A4, B3 et C1 — filet
+ * gauche `warning-signal`, fond `warning-tint`, titres en `warning` préfixés
+ * « Attention : ». Jamais décoratif.
  */
 import { fr } from "../../i18n/fr";
 
@@ -31,24 +33,27 @@ const {
 
 <aside
 	class:list={[
-		"flex flex-col gap-lg border bg-paper p-lg",
-		reinforced ? "border-warning" : "border-rule",
+		"flex flex-col gap-lg p-lg text-label",
+		reinforced
+			? "rounded-r-panel border-l-4 border-warning-signal bg-warning-tint text-ink"
+			: "rounded-panel bg-tint",
 	]}
 >
 	<section class="flex flex-col gap-sm">
-		<h2 class:list={["text-heading", reinforced && "text-warning"]}>
+		<h2 class:list={["font-bold", reinforced && "text-warning"]}>
+			{reinforced && fr.scopeNotice.warningPrefix}
 			{fr.scopeNotice.forWhom}
 		</h2>
-		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg text-body">
+		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg">
 			{forWhom.map((item) => <li>{item}</li>)}
 		</ul>
 	</section>
 
-	<section class="flex flex-col gap-sm border-t border-rule pt-lg">
-		<h2 class:list={["text-heading", reinforced && "text-warning"]}>
+	<section class="flex flex-col gap-sm border-t border-hairline pt-lg">
+		<h2 class:list={["font-bold", reinforced && "text-warning"]}>
 			{fr.scopeNotice.notCovered}
 		</h2>
-		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg text-body">
+		<ul class="flex max-w-reading list-disc flex-col gap-xs pl-lg">
 			{
 				notCovered.map((item) => (
 					<li>
@@ -71,11 +76,11 @@ const {
 
 	{
 		assumptions.length > 0 && (
-			<section class="flex flex-col gap-sm border-t border-rule pt-lg">
-				<h2 class:list={["text-heading", reinforced && "text-warning"]}>
+			<section class="flex flex-col gap-sm border-t border-hairline pt-lg">
+				<h2 class:list={["font-bold", reinforced && "text-warning"]}>
 					{fr.scopeNotice.assumptions}
 				</h2>
-				<ol class="flex max-w-reading list-decimal flex-col gap-xs pl-lg font-serif text-body">
+				<ol class="flex max-w-reading list-decimal flex-col gap-xs pl-lg">
 					{assumptions.map((item) => (
 						<li>{item}</li>
 					))}

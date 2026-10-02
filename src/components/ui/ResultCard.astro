@@ -2,9 +2,9 @@
 /**
  * ResultCard — le résultat du calcul. Élément natif : <output>.
  *
- * C'est le seul endroit, avec les liens, où `accent` apparaît, et l'élément
- * le plus grand de la page (`text-display`). Le reste de l'interface s'efface
- * devant lui.
+ * Carte résultat (docs/design-system.md § 2.2) : fond `accent-tint`, chiffre
+ * en `text-display text-accent`, l'élément le plus grand et le plus contrasté
+ * de la page. Le reste de l'interface s'efface devant lui.
  *
  * JavaScript autorisé ici : le composant écoute un évènement émis par le
  * `<script>` de la page (calcul en JavaScript natif) et met à jour la valeur
@@ -39,11 +39,11 @@ const {
 	for={forAttr}
 	data-result-card
 	data-event={event}
-	class="flex flex-col gap-sm border border-rule bg-tint p-xl"
+	class="flex flex-col gap-sm rounded-panel bg-accent-tint p-xl md:p-2xl"
 >
-	<span class="text-label">{label}</span>
+	<span class="text-label font-bold">{label}</span>
 	<span data-result-value class="text-display text-accent tabular-nums">{value}</span>
-	{caption && <span class="text-fine">{caption}</span>}
+	{caption && <span class="text-fine text-ink-muted">{caption}</span>}
 </output>
 
 <script>

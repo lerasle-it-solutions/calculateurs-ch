@@ -1,8 +1,10 @@
 ---
 /**
  * RelatedVariants — les calculateurs liés (« variants » de la définition,
- * résolus en {slug, title} par CalculatorShell). Élément natif : <nav>.
- * Aucun rendu si la liste est vide.
+ * résolus en {slug, title} par CalculatorShell). Élément natif : <nav>, des
+ * cartes cliquables posées sur une section `tint` (docs/design-system.md
+ * § 2.2) : aucune élévation ni transformation au survol, seul le titre se
+ * souligne. Aucun rendu si la liste est vide.
  */
 import { fr } from "../../i18n/fr";
 
@@ -20,12 +22,18 @@ const { variants } = Astro.props;
 
 {
 	variants.length > 0 && (
-		<nav class="flex max-w-reading flex-col gap-sm" aria-label={fr.relatedVariants.navLabel}>
+		<nav class="flex flex-col gap-lg" aria-label={fr.relatedVariants.navLabel}>
 			<h2 class="text-heading">{fr.relatedVariants.title}</h2>
-			<ul class="flex list-disc flex-col gap-2xs pl-lg text-body">
+			<ul class="grid gap-xl md:grid-cols-2 lg:grid-cols-3">
 				{variants.map((variant) => (
 					<li>
-						<a href={variant.slug}>{variant.title}</a>
+						<a
+							href={variant.slug}
+							class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
+						>
+							<span class="text-subheading group-hover:underline">{variant.title}</span>
+							<span class="mt-auto text-label font-bold text-accent">{fr.relatedVariants.open}</span>
+						</a>
 					</li>
 				))}
 			</ul>

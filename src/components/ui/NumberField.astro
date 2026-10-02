@@ -1,9 +1,11 @@
 ---
 /**
- * NumberField — un champ numérique. Élément natif : <input type="number">.
- * Aucun JavaScript.
+ * NumberField — un champ numérique. Élément natif : <input type="number">,
+ * dans un cadre qui porte bordure, focus et états, avec son unité à droite
+ * (docs/design-system.md § 2.3). Aucun JavaScript.
  */
 import { fr } from "../../i18n/fr";
+import { fieldFrame, fieldFramedInput, fieldHint, fieldLabel, fieldRequired, fieldUnit } from "./field-styles";
 
 interface Props {
 	id: string;
@@ -35,12 +37,19 @@ const hintId = hint ? `${id}-hint` : undefined;
 ---
 
 <div class="flex flex-col gap-xs">
-	<label for={id} class="text-label">
+	<label for={id} class={fieldLabel}>
 		{label}
-		{required && <span aria-hidden="true">{fr.common.requiredMark}</span>}
+		{required && <span aria-hidden="true" class={fieldRequired}> {fr.common.requiredText}</span>}
 	</label>
+	{
+		hint && (
+			<p id={hintId} class={fieldHint}>
+				{hint}
+			</p>
+		)
+	}
 
-	<div class="flex min-w-0 items-stretch border border-rule rounded-control bg-paper focus-within:outline focus-within:outline-accent focus-within:outline-offset-2">
+	<div class={fieldFrame}>
 		<input
 			type="number"
 			id={id}
@@ -52,22 +61,14 @@ const hintId = hint ? `${id}-hint` : undefined;
 			required={required}
 			inputmode="decimal"
 			aria-describedby={hintId}
-			class="w-full min-w-0 bg-paper px-md py-sm text-body tabular-nums outline-none"
+			class={fieldFramedInput}
 		/>
 		{
 			unit && (
-				<span class="flex items-center border-l border-rule bg-tint px-md text-label">
+				<span class={fieldUnit}>
 					{unit}
 				</span>
 			)
 		}
 	</div>
-
-	{
-		hint && (
-			<p id={hintId} class="text-fine">
-				{hint}
-			</p>
-		)
-	}
 </div>

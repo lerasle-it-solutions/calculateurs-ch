@@ -10,9 +10,13 @@
  *  - le résultat complet du calcul s'affiche toujours AVANT ce formulaire ;
  *  - facultatif, jamais un mur, jamais une pop-up ;
  *  - consentement explicite, finalité annoncée, un seul partenaire nommé.
- * `accent` n'apparaît pas ici : il est réservé au résultat et aux liens.
+ * Champs § 2.3, bouton principal § 2.1, états succès et erreur § 2.6
+ * (docs/design-system.md) : le message porte toujours son préfixe en mots
+ * (« Envoyé : », « Erreur : »), la couleur ne fait que le doubler.
  */
+import Button from "./Button.astro";
 import { fr } from "../../i18n/fr";
+import { fieldControl, fieldLabel, fieldRequired } from "./field-styles";
 
 interface Props {
 	/** Nom du partenaire unique vers qui la demande est transmise. */
@@ -29,74 +33,55 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 	data-lead-form
 	method="post"
 	action={action}
-	class="flex max-w-reading flex-col gap-lg border border-rule bg-paper p-lg"
+	class="flex max-w-reading flex-col gap-xl rounded-panel bg-paper p-xl shadow-card"
 >
 	<div class="flex flex-col gap-sm">
-		<h2 class="text-heading">{fr.leadForm.heading(partner)}</h2>
-		<p class="text-fine">{purpose}</p>
+		<h2 class="text-subheading">{fr.leadForm.heading(partner)}</h2>
+		<p class="text-fine text-ink-muted">{purpose}</p>
 	</div>
 
 	<div class="flex flex-col gap-xs">
-		<label for="lead-name" class="text-label">
-			{fr.leadForm.name}<span aria-hidden="true">{fr.common.requiredMark}</span>
+		<label for="lead-name" class={fieldLabel}>
+			{fr.leadForm.name}<span aria-hidden="true" class={fieldRequired}> {fr.common.requiredText}</span>
 		</label>
-		<input
-			type="text"
-			id="lead-name"
-			name="name"
-			required
-			autocomplete="name"
-			class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
-		/>
+		<input type="text" id="lead-name" name="name" required autocomplete="name" class={fieldControl} />
 	</div>
 
 	<div class="flex flex-col gap-xs">
-		<label for="lead-email" class="text-label">
-			{fr.leadForm.email}<span aria-hidden="true">{fr.common.requiredMark}</span>
+		<label for="lead-email" class={fieldLabel}>
+			{fr.leadForm.email}<span aria-hidden="true" class={fieldRequired}> {fr.common.requiredText}</span>
 		</label>
-		<input
-			type="email"
-			id="lead-email"
-			name="email"
-			required
-			autocomplete="email"
-			class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
-		/>
+		<input type="email" id="lead-email" name="email" required autocomplete="email" class={fieldControl} />
 	</div>
 
 	<div class="flex flex-col gap-xs">
-		<label for="lead-phone" class="text-label">{fr.leadForm.phone}</label>
+		<label for="lead-phone" class={fieldLabel}>{fr.leadForm.phone}</label>
 		<input
 			type="tel"
 			id="lead-phone"
 			name="phone"
 			autocomplete="tel"
-			class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body tabular-nums"
+			class:list={[fieldControl, "tabular-nums"]}
 		/>
 	</div>
 
-	<div class="flex gap-sm">
-		<input
-			type="checkbox"
-			id="lead-consent"
-			name="consent"
-			required
-			value="yes"
-			class="mt-2xs"
-		/>
+	<div class="flex items-start gap-sm">
+		<input type="checkbox" id="lead-consent" name="consent" required value="yes" class="size-icon shrink-0" />
 		<label for="lead-consent" class="text-fine">
 			{fr.leadForm.consent(partner)}
 		</label>
 	</div>
 
-	<button
-		type="submit"
-		class="self-start border border-ink rounded-control bg-ink px-lg py-sm text-label text-paper"
-	>
-		{fr.leadForm.submit}
-	</button>
+	<Button type="submit" class="self-start" block={true}>{fr.leadForm.submit}</Button>
 
-	<p data-lead-status role="status" aria-live="polite" class="text-fine" hidden></p>
+	<p
+		data-lead-status
+		role="status"
+		aria-live="polite"
+		class="rounded-panel p-lg text-label text-ink data-[state=failed]:bg-error-tint data-[state=sent]:bg-success-tint"
+		hidden
+	>
+	</p>
 </form>
 
 <script>
@@ -105,8 +90,9 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 	for (const form of document.querySelectorAll<HTMLFormElement>("[data-lead-form]")) {
 		const status = form.querySelector<HTMLElement>("[data-lead-status]");
 
-		const say = (message: string) => {
+		const say = (message: string, state: "sending" | "sent" | "failed") => {
 			if (!status) return;
+			status.dataset.state = state;
 			status.textContent = message;
 			status.hidden = false;
 		};
@@ -117,7 +103,7 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 
 			const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
 			if (button) button.disabled = true;
-			say(fr.leadForm.sending);
+			say(fr.leadForm.sending, "sending");
 
 			try {
 				const response = await fetch(form.action, {
@@ -127,9 +113,9 @@ const { partner, purpose, action = "/api/lead" } = Astro.props;
 				});
 				if (!response.ok) throw new Error(String(response.status));
 				form.reset();
-				say(fr.leadForm.sent);
+				say(`${fr.leadForm.sentPrefix}${fr.leadForm.sent}`, "sent");
 			} catch {
-				say(fr.leadForm.failed);
+				say(`${fr.leadForm.failedPrefix}${fr.leadForm.failed}`, "failed");
 				if (button) button.disabled = false;
 			}
 		});

@@ -20,6 +20,8 @@ export const fr = {
 		skipToContent: "Aller au contenu principal",
 		/** Marque de champ obligatoire, accolée au libellé. */
 		requiredMark: " *",
+		/** Marque textuelle de champ obligatoire (docs/design-system.md § 2.3). */
+		requiredText: "(obligatoire)",
 		/** Valeur affichée tant qu'aucun résultat n'est disponible. */
 		emptyValue: "—",
 	},
@@ -61,6 +63,8 @@ export const fr = {
 		forWhom: "Pour qui",
 		notCovered: "Ce que ça ne couvre pas",
 		assumptions: "Hypothèses retenues",
+		/** Préfixe du premier titre d'un avertissement renforcé. */
+		warningPrefix: "Attention : ",
 	},
 
 	/** Canton déclaré en couverture partielle par la couche de données. */
@@ -106,10 +110,14 @@ export const fr = {
 	relatedVariants: {
 		title: "Variantes",
 		navLabel: "Variantes de ce calculateur",
+		/** Lien d'action à la fin de chaque carte de calculateur lié. */
+		open: "Ouvrir le calculateur",
 	},
 
 	calculator: {
 		faqTitle: "Questions fréquentes",
+		/** Lien de la barre de résultat mobile vers le détail du calcul. */
+		seeBreakdown: "Voir le détail",
 	},
 
 	dataPage: {
@@ -161,6 +169,9 @@ export const fr = {
 			`J'accepte que mes coordonnées soient transmises à ${partner} dans le seul but indiqué ci-dessus. Aucune autre transmission, aucune revente.`,
 		submit: "Envoyer la demande",
 		sending: "Envoi en cours…",
+		/** Préfixes des messages d'état (docs/design-system.md § 2.6). */
+		sentPrefix: "Envoyé : ",
+		failedPrefix: "Erreur : ",
 		sent: "Demande envoyée. Le partenaire vous recontacte directement.",
 		failed:
 			"L'envoi a échoué. Réessayez plus tard — votre résultat reste affiché ci-dessus.",

@@ -4,8 +4,8 @@
  * Éléments natifs : <details><summary> + <table>. Le repli est celui du
  * navigateur, pas un accordéon maison.
  *
- * Présentation en registre : libellé à gauche, montant aligné à droite,
- * comme un décompte officiel.
+ * Présentation en registre (docs/design-system.md § 2.5 et § 2.7) : libellé à
+ * gauche, montant aligné à droite, lignes séparées d'un filet.
  *
  * JavaScript : le composant écoute l'évènement `calc:update` émis par le
  * `<script>` de la page et reconstruit les lignes depuis `detail.breakdown`.
@@ -23,7 +23,7 @@ interface Row {
 	amount: string;
 	/** Précision affichée à côté du montant, p. ex. « non rachetable ». */
 	qualifier?: string;
-	/** Hypothèse retenue ou référence de barème (rendue en serif). */
+	/** Hypothèse retenue ou référence de barème, en légende. */
 	note?: string;
 }
 
@@ -51,20 +51,22 @@ const {
 	data-breakdown
 	data-event={event}
 	data-empty-label={emptyLabel}
-	class="border border-rule"
+	class="rounded-panel border border-hairline bg-paper"
 >
-	<summary class="cursor-pointer bg-tint px-lg py-md text-label">
+	<summary
+		class="flex min-h-3xl cursor-pointer items-center rounded-panel px-xl py-md text-label font-bold hover:bg-tint"
+	>
 		{summary}
 	</summary>
 
-	<div class="overflow-x-auto">
-		<table class="w-full border-collapse text-body">
+	<div class="overflow-x-auto border-t border-hairline">
+		<table class="w-full border-collapse text-label">
 			<thead>
-				<tr class="border-t border-rule bg-tint text-label">
-					<th scope="col" class="px-lg py-sm text-left font-normal">
+				<tr class="bg-tint text-left font-bold">
+					<th scope="col" class="border-b border-hairline px-md py-sm">
 						{fr.breakdown.stepColumn}
 					</th>
-					<th scope="col" class="px-lg py-sm text-right font-normal">
+					<th scope="col" class="border-b border-hairline px-md py-sm text-right">
 						{fr.breakdown.amountColumn}
 					</th>
 				</tr>
@@ -72,8 +74,8 @@ const {
 			<tbody data-breakdown-body>
 				{
 					rows.length === 0 && (
-						<tr class="border-t border-rule">
-							<td colspan="2" class="px-lg py-md text-fine">
+						<tr>
+							<td colspan="2" class="px-md py-sm text-fine text-ink-muted">
 								{emptyLabel}
 							</td>
 						</tr>
@@ -81,17 +83,15 @@ const {
 				}
 				{
 					rows.map((row) => (
-						<tr class="border-t border-rule align-top">
-							<td class="px-lg py-md">
+						<tr class="align-top">
+							<td class="border-b border-hairline px-md py-sm">
 								<span class="block">{row.label}</span>
 								{row.detail && (
-									<span class="block text-fine tabular-nums">{row.detail}</span>
+									<span class="block text-fine text-ink-muted tabular-nums">{row.detail}</span>
 								)}
-								{row.note && (
-									<span class="block font-serif text-fine">{row.note}</span>
-								)}
+								{row.note && <span class="block text-fine text-ink-muted">{row.note}</span>}
 							</td>
-							<td class="px-lg py-md text-right tabular-nums">
+							<td class="border-b border-hairline px-md py-sm text-right tabular-nums">
 								{row.amount}
 								{row.qualifier && <span class="block text-fine">{row.qualifier}</span>}
 							</td>
@@ -113,24 +113,20 @@ const {
 				({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] as string,
 		);
 
+	// Classes répétées, mises en commun pour le budget de JavaScript.
+	const cell = "border-b border-hairline px-md py-sm";
+	const fine = "block text-fine text-ink-muted";
+
 	const rowHtml = (row: Row) =>
-		`<tr class="border-t border-rule align-top">` +
-		`<td class="px-lg py-md">` +
-		`<span class="block">${escapeHtml(row.label)}</span>` +
-		(row.detail
-			? `<span class="block text-fine tabular-nums">${escapeHtml(row.detail)}</span>`
-			: "") +
-		(row.note
-			? `<span class="block font-serif text-fine">${escapeHtml(row.note)}</span>`
-			: "") +
-		`</td>` +
-		`<td class="px-lg py-md text-right tabular-nums">${escapeHtml(row.amount)}` +
+		`<tr class="align-top"><td class="${cell}"><span class="block">${escapeHtml(row.label)}</span>` +
+		(row.detail ? `<span class="${fine} tabular-nums">${escapeHtml(row.detail)}</span>` : "") +
+		(row.note ? `<span class="${fine}">${escapeHtml(row.note)}</span>` : "") +
+		`</td><td class="${cell} text-right tabular-nums">${escapeHtml(row.amount)}` +
 		(row.qualifier ? `<span class="block text-fine">${escapeHtml(row.qualifier)}</span>` : "") +
-		`</td>` +
-		`</tr>`;
+		`</td></tr>`;
 
 	const emptyRowHtml = (label: string) =>
-		`<tr class="border-t border-rule"><td colspan="2" class="px-lg py-md text-fine">${escapeHtml(label)}</td></tr>`;
+		`<tr><td colspan="2" class="px-md py-sm text-fine text-ink-muted">${escapeHtml(label)}</td></tr>`;
 
 	for (const el of document.querySelectorAll<HTMLElement>("[data-breakdown]")) {
 		const eventName = el.dataset.event ?? "calc:update";

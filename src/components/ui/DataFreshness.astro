@@ -4,7 +4,8 @@
  * Éléments natifs : <p> + <time datetime>. Aucun JavaScript :
  * la date est formatée au build.
  *
- * Rendu en serif : c'est de l'appareil de sources, pas un produit du calcul.
+ * Rendu en bloc source (docs/design-system.md § 2.6) : c'est de l'appareil de
+ * sources, pas un produit du calcul.
  * Un `verifiedOn` vide veut dire « jamais vérifiée » (R3) : aucune date n'est
  * formatée.
  *
@@ -36,18 +37,20 @@ const verifiedLabel =
 			}).format(new Date(verifiedOn));
 ---
 
-<p class="font-serif text-fine">
-	{fr.dataFreshness.scalesLabel}{" "}
-	<time datetime={String(referenceYear)}>{referenceYear}</time>,{" "}
-	{
-		verifiedLabel === null ? (
-			<span class="text-warning">{fr.dataFreshness.neverVerified}</span>
-		) : (
-			<>
-				{fr.dataFreshness.verifiedLabel}{" "}
-				<time datetime={verifiedOn}>{verifiedLabel}</time>
-			</>
-		)
-	}.
-</p>
-{attributions.map((text) => <p class="font-serif text-fine">{text}</p>)}
+<div class="flex flex-col gap-xs border-l-2 border-hairline pl-md text-fine text-ink-muted">
+	<p>
+		{fr.dataFreshness.scalesLabel}{" "}
+		<time datetime={String(referenceYear)}>{referenceYear}</time>,{" "}
+		{
+			verifiedLabel === null ? (
+				<span class="font-bold text-warning">{fr.dataFreshness.neverVerified}</span>
+			) : (
+				<>
+					{fr.dataFreshness.verifiedLabel}{" "}
+					<time datetime={verifiedOn}>{verifiedLabel}</time>
+				</>
+			)
+		}.
+	</p>
+	{attributions.map((text) => <p>{text}</p>)}
+</div>

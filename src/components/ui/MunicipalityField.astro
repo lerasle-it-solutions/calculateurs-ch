@@ -7,6 +7,7 @@
  * l'autocomplétion et le filtrage sans une ligne de script.
  */
 import { fr } from "../../i18n/fr";
+import { fieldControl, fieldHint, fieldLabel, fieldRequired } from "./field-styles";
 
 interface Option {
 	value: string;
@@ -41,10 +42,17 @@ const normalized: Option[] = options.map((option) =>
 ---
 
 <div class="flex flex-col gap-xs">
-	<label for={id} class="text-label">
+	<label for={id} class={fieldLabel}>
 		{label}
-		{required && <span aria-hidden="true">{fr.common.requiredMark}</span>}
+		{required && <span aria-hidden="true" class={fieldRequired}> {fr.common.requiredText}</span>}
 	</label>
+	{
+		hint && (
+			<p id={hintId} class={fieldHint}>
+				{hint}
+			</p>
+		)
+	}
 
 	<input
 		type="text"
@@ -55,7 +63,7 @@ const normalized: Option[] = options.map((option) =>
 		required={required}
 		autocomplete="off"
 		aria-describedby={hintId}
-		class="w-full border border-rule rounded-control bg-paper px-md py-sm text-body"
+		class={fieldControl}
 	/>
 	<datalist id={listId}>
 		{
@@ -64,12 +72,4 @@ const normalized: Option[] = options.map((option) =>
 			))
 		}
 	</datalist>
-
-	{
-		hint && (
-			<p id={hintId} class="text-fine">
-				{hint}
-			</p>
-		)
-	}
 </div>

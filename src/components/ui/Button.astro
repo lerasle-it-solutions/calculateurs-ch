@@ -1,0 +1,66 @@
+---
+/**
+ * Button — bouton ou lien d'action (docs/design-system.md § 2.1).
+ * Élément natif : <button> pour une action, <a> dès qu'un `href` est fourni
+ * (navigation). Pilule, texte en gras, casse phrase, verbe d'action.
+ *
+ * Un seul bouton `primary` par zone visible. Le focus est l'anneau global de
+ * la base (outline accent), jamais retiré.
+ */
+interface Props {
+	variant?: "primary" | "secondary" | "ghost" | "inverse";
+	size?: "sm" | "md" | "lg";
+	/** Lien de navigation : rend un <a>. */
+	href?: string;
+	type?: "button" | "submit" | "reset";
+	disabled?: boolean;
+	/** Pleine largeur sous `md`. */
+	block?: boolean;
+	class?: string;
+	[key: `data-${string}`]: string | undefined;
+}
+
+const {
+	variant = "primary",
+	size = "md",
+	href,
+	type = "button",
+	disabled = false,
+	block = false,
+	class: className,
+	...rest
+} = Astro.props;
+
+const base =
+	"inline-flex items-center justify-center gap-sm rounded-button text-label font-bold no-underline transition-colors duration-150 disabled:cursor-not-allowed aria-disabled:cursor-not-allowed";
+
+const variants = {
+	primary:
+		"border border-accent bg-accent text-paper hover:border-accent-strong hover:bg-accent-strong hover:text-paper active:bg-accent-strong disabled:border-hairline disabled:bg-hairline disabled:text-ink-muted",
+	secondary:
+		"border border-ink bg-paper text-ink hover:bg-tint hover:text-ink active:bg-hairline disabled:border-hairline disabled:text-ink-muted",
+	ghost:
+		"border border-transparent bg-transparent text-accent hover:bg-accent-tint active:bg-accent-tint disabled:text-ink-muted",
+	inverse: "border border-paper bg-paper text-ink hover:bg-tint hover:text-ink",
+};
+
+const sizes = {
+	sm: "min-h-2xl px-lg text-fine",
+	md: "min-h-3xl px-xl",
+	lg: "min-h-4xl px-2xl text-body",
+};
+
+const classes = [base, variants[variant], sizes[size], block && "w-full md:w-auto", className];
+---
+
+{
+	href ? (
+		<a href={disabled ? undefined : href} aria-disabled={disabled ? "true" : undefined} class:list={classes} {...rest}>
+			<slot />
+		</a>
+	) : (
+		<button type={type} disabled={disabled} class:list={classes} {...rest}>
+			<slot />
+		</button>
+	)
+}

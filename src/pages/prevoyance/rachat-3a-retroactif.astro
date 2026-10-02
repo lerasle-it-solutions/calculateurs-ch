@@ -71,10 +71,12 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 	/>
 
-	<p id="pillar3a-status" role="status" class="max-w-reading text-body" hidden>
-		<span data-status-text></span>
-		<a data-status-link hidden></a>
-	</p>
+	<div class="mx-auto w-full max-w-page px-lg md:px-2xl">
+		<p id="pillar3a-status" role="status" class="mb-3xl max-w-reading rounded-panel bg-tint p-lg text-label" hidden>
+			<span data-status-text></span>
+			<a data-status-link hidden></a>
+		</p>
+	</div>
 
 	<script type="application/json" id="pillar3a-data" set:html={pageDataJson} />
 </CalculatorLayout>
