@@ -918,8 +918,7 @@ Documentation complète : https://docs.astro.build
 ## Design system
 
 La spécification complète fait autorité et est chargée automatiquement dans chaque session
-Claude Code par l'import ci-dessous. Palette « marine et sapin » propre au site ; structure
-(typographie, rayons, ombres) inspirée de VIAC.
+Claude Code par l'import ci-dessous. Palette « marine et sapin » propre au site.
 
 @docs/design-system.md
 

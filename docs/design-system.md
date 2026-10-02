@@ -5,10 +5,7 @@
 > explique *quoi* utiliser, *où* et *pourquoi*. En cas de divergence, `tokens.css` gagne pour la
 > valeur, ce document gagne pour l'usage — et la divergence est signalée au mainteneur.
 
-**Palette :** « marine et sapin », propre au site (arrêtée le 2 octobre 2026 après comparaison
-de VIAC, finpension, SwissBorg et Mustachian Post).
-**Structure (typographie, rayons, ombres, composants) :** inspirée de [viac.ch/fr](https://viac.ch/fr/),
-rétro-ingénierie du 1ᵉʳ octobre 2026.
+**Palette :** « marine et sapin », propre au site (arrêtée le 2 octobre 2026).
 **Pile :** Astro 7 statique, Tailwind CSS v4, JavaScript natif, aucune bibliothèque de composants.
 
 ---
@@ -32,16 +29,6 @@ rétro-ingénierie du 1ᵉʳ octobre 2026.
    simulée, polices auto-hébergées, aucune requête tierce. Aucun ajout de dépendance d'interface.
 6. **Accessibilité AA** : contrastes du § 1.1 respectés, focus visible, cibles tactiles ≥ 44 px,
    `prefers-reduced-motion` respecté, site utilisable sans JavaScript (seul le calcul s'arrête).
-
-### Provenance des valeurs
-
-| Marque | Signification |
-| --- | --- |
-| **[V]** | Relevée dans le code de production de viac.ch (bundles JS, manifeste Vite). |
-| **[P]** | Proposée, cohérente avec le registre VIAC, **non mesurée** — à confirmer avec le script de l'annexe A. |
-
-Les couleurs ne portent pas de marque : elles sont propres au site et ne doivent pas être
-réalignées sur un prestataire (§ 1.1, « Pourquoi cette palette »).
 
 ---
 
@@ -121,13 +108,11 @@ luminosité, pas seulement par la teinte.
 
 #### Pourquoi cette palette
 
-Comparaison faite le 2 octobre 2026 : VIAC (`#253547` + vert `#3AAC90`), finpension (`#1C2A48`
-+ rose `#F62959`), SwissBorg (fond `#191E29` + menthe `#01C38D`), Mustachian Post (`#242323` +
-rouge `#DA291C`). Tous associent une encre marine presque noire à une seule couleur vive. Le site
-reprend ce schéma avec un accent qui lui est propre :
+Une encre marine presque noire pour la lecture, une seule couleur vive pour l'action et le
+résultat, avec un accent propre au site :
 
-- **Neutralité** : finpension et VIAC sont des prestataires 3a ; reprendre leurs couleurs ferait
-  paraître le site affilié à l'un d'eux.
+- **Neutralité** : reprendre les couleurs d'un prestataire de prévoyance ferait paraître le site
+  affilié à lui.
 - **Sens** : rouge et rose se lisent comme une perte ou une erreur ; ils sont réservés aux erreurs.
 - **Sujets** : le vert accompagne l'économie d'impôt, les subventions et la rénovation énergétique.
 - **White-label** : un seul token d'accent à remplacer pour mettre un calculateur embarqué aux
@@ -149,11 +134,8 @@ bibliothèque de graphiques. Chaque graphique a un `<table>` équivalent (dans u
 
 ### 1.2 Typographie
 
-**Famille de VIAC [V] (référence de structure) :** `Cera VIAC` (Cera Pro personnalisée), deux graisses seulement :
-Medium 500 et Bold 700 (`CeraVIAC-Medium`, `CeraVIAC-Bold`, woff2). Police propriétaire : **ne
-pas l'utiliser.**
-
-**Substitut retenu : `Figtree`** — sans-serif géométrique au caractère proche, libre (OFL),
+**Famille retenue : `Figtree`** — sans-serif géométrique, libre (OFL), deux graisses seulement :
+Medium 500 et Bold 700,
 auto-hébergée via `@fontsource/figtree`, chiffres tabulaires `tnum` présents.
 Fichiers chargés : `latin-500`, `latin-700` (+ `latin-ext` servis seulement si un glyphe
 l'exige, via `unicode-range`). Poids : ≈ 22 ko contre ≈ 66 ko pour l'ancien trio IBM Plex.
@@ -166,7 +148,7 @@ Une seule famille. L'ancien serif (« appareil de sources ») est remplacé par 
 (§ 2.6). L'alias de migration `font-serif` a été retiré de `tokens.css` le 2 octobre 2026 :
 la classe ne compile plus.
 
-#### Échelle [P] (fluide de 320 px à 1280 px)
+#### Échelle (fluide de 320 px à 1280 px)
 
 | Niveau | Élément | Token | Taille (mobile → bureau) | Interligne | Graisse | Approche |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -183,7 +165,7 @@ la classe ne compile plus.
 Règles :
 
 - Graisses autorisées : **500 et 700 uniquement** (`font-medium`, `font-bold`). Corps en 500,
-  comme VIAC. Pas de 400, 600 ni d'italique synthétique.
+  Pas de 400, 600 ni d'italique synthétique.
 - `tabular-nums` sur tout montant, pourcentage ou année (appliqué en base sur `input`, `output`,
   `table`, `time`, `[data-numeric]` ; ajouter `tabular-nums` ailleurs).
 - Montants au format suisse : `CHF 12'345.–` / `12'345.60` (apostrophe typographique `’`
@@ -212,7 +194,7 @@ Base 4 px. Les composants n'utilisent que ces pas (`p-*`, `m-*`, `gap-*`, `space
 Rythme vertical : sections `py-3xl md:py-4xl` (héros `md:py-5xl`) ; titres suivis de `mt-sm`
 (chapeau) puis `mt-2xl` (contenu).
 
-#### Rayons [P]
+#### Rayons
 
 | Token | Valeur | Usage |
 | --- | --- | --- |
@@ -228,13 +210,13 @@ Jamais le même rayon partout : le rayon croît avec la taille de la surface.
 | Token | Valeur | Usage |
 | --- | --- | --- |
 | `max-w-reading` | 40 rem (640 px) | Texte courant |
-| `max-w-page` | 72 rem (1152 px) [P] | Gabarit de toutes les pages |
-| `md` | 768 px [V] | Bascule mobile → bureau (même seuil que les composants VIAC) |
+| `max-w-page` | 72 rem (1152 px) | Gabarit de toutes les pages |
+| `md` | 768 px | Bascule mobile → bureau |
 | `lg` | 1024 px | Calculateur en deux colonnes |
 
 Gouttière : `px-lg` (16 px) mobile, `md:px-2xl` (32 px) au-delà. Responsive jusqu'à 320 px.
 
-### 1.4 Ombres et relief [P]
+### 1.4 Ombres et relief
 
 Ombres douces, teintées `ink`, jamais noires. Trois niveaux, pas un de plus.
 
@@ -336,7 +318,7 @@ lien d'action en `text-accent font-bold` à la fin. **Aucune** élévation ni tr
 survol : seul le titre se souligne (`group-hover:underline`).
 
 Grilles de cartes : `grid gap-xl md:grid-cols-2 lg:grid-cols-3`. Sur mobile, empilement — pas
-de carrousel (VIAC utilise Swiper : exclu, coût JS).
+de carrousel (exclu, coût JS).
 
 ### 2.3 Champs de formulaire
 
@@ -375,7 +357,7 @@ Mise en page :
 - Gap vertical entre champs `gap-xl` ; groupes thématiques dans un `<fieldset>` avec `<legend
   class="text-subheading">`.
 - `<select>` : mêmes classes que le conteneur de champ, flèche native conservée.
-- Curseur (`<input type="range">`, composant présent chez VIAC) : natif, `accent-color` via la
+- Curseur (`<input type="range">`) : natif, `accent-color` via la
   base, toujours couplé à un champ numérique éditable et à une valeur affichée en `tabular-nums`.
 - Cases et boutons radio : natifs, 20 px, libellé cliquable à droite, `gap-sm`.
 - Choix binaire fréquent (ex. « Marié·e / Célibataire ») : radios stylés en pastilles —
@@ -384,7 +366,7 @@ Mise en page :
 
 ### 2.4 Navigation
 
-**En-tête (VIAC : logo · navigation principale · recherche · langue · connexion · inscription) :**
+**En-tête :**
 
 ```
 <header class="sticky top-0 z-10 border-b border-hairline bg-paper">
@@ -473,10 +455,8 @@ qu'administrative :
 - Ton : direct, tutoiement exclu, phrases courtes, chiffres concrets.
 - Le chiffre reste le héros : rien ne doit être plus grand ou plus coloré que le résultat.
 
-**Repris de VIAC :** deux graisses, géométrie arrondie, boutons pilule, alternance de fonds,
-sobriété des graphiques. **Pas sa palette**, pour rester neutre vis-à-vis des prestataires. **Non repris :** logo, police Cera VIAC, pictogrammes et
-illustrations, modèles 3D, animations Lottie, carrousels Swiper, Alpine.js, fenêtre de
-consentement — par respect de la propriété intellectuelle et du budget de performance.
+**Exclus :** pictogrammes et illustrations, modèles 3D, animations Lottie, carrousels,
+Alpine.js, fenêtre de consentement — par respect du budget de performance.
 
 ### 3.2 Grille de mise en page
 
@@ -524,54 +504,3 @@ mode sombre, dégradés, flou d'arrière-plan, emoji, photographies et illustrat
 bandeaux de cookies, fenêtres surgissantes, barres d'appel à l'action flottantes (la barre de
 résultat mobile n'en est pas une), formulaire de mise en relation affiché avant le résultat
 complet.
-
----
-
-## Annexe A — Confirmer les valeurs [P] de structure sur viac.ch
-
-Les feuilles de style de viac.ch n'ont pas pu être lues directement lors de l'analyse (seuls les
-bundles JS et le manifeste étaient accessibles). Pour remplacer les valeurs [P] par des mesures :
-ouvrir https://viac.ch/fr/ dans Chrome → Outils de développement → Console → coller :
-
-```js
-(() => {
-  const cs = (el) => getComputedStyle(el);
-  const pick = (sel, props) => {
-    const el = document.querySelector(sel);
-    if (!el) return null;
-    const s = cs(el);
-    return Object.fromEntries(props.map((p) => [p, s.getPropertyValue(p)]));
-  };
-  const type = ["font-family", "font-size", "font-weight", "line-height", "letter-spacing", "color"];
-  const box = ["background-color", "color", "border", "border-radius", "padding", "box-shadow", "min-height", "font-size", "font-weight"];
-  const out = { body: pick("body", [...type, "background-color"]) };
-  ["h1", "h2", "h3", "h4", "h5", "h6", "p", "small", "a"].forEach((t) => (out[t] = pick(t, type)));
-  out.header = pick("header", ["height", "background-color", "box-shadow", "border-bottom"]);
-  out.buttons = [...document.querySelectorAll("a[class*='btn'], a[class*='button'], button")]
-    .slice(0, 12).map((el) => ({ text: el.textContent.trim().slice(0, 30), cls: el.className, ...Object.fromEntries(box.map((p) => [p, cs(el).getPropertyValue(p)])) }));
-  out.cards = [...document.querySelectorAll("[class*='card']")].slice(0, 6)
-    .map((el) => ({ cls: el.className, ...Object.fromEntries(box.map((p) => [p, cs(el).getPropertyValue(p)])) }));
-  const tally = (prop) => {
-    const m = {};
-    document.querySelectorAll("body *").forEach((el) => { const v = cs(el).getPropertyValue(prop); if (v && v !== "none" && v !== "0px" && v !== "rgba(0, 0, 0, 0)") m[v] = (m[v] || 0) + 1; });
-    return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 15);
-  };
-  ["color", "background-color", "border-radius", "box-shadow", "max-width", "font-size"].forEach((p) => (out["top:" + p] = tally(p)));
-  copy(JSON.stringify(out, null, 2));
-  console.log("Copié dans le presse-papiers.", out);
-})();
-```
-
-Puis, dans Claude Code : « Voici les mesures de viac.ch : <coller>. Mets à jour les valeurs [P]
-de `tokens.css` et de `docs/design-system.md`, en conservant les contrastes AA. »
-
-## Annexe B — Sources de la rétro-ingénierie
-
-- Police : configurations Chart.js des bundles `retirement-calculator-*.js` et
-  `savings-withdrawals-calculator-*.js` de viac.ch (palette VIAC relevée au même endroit, non
-  retenue — voir § 1.1).
-- Graisses : manifeste Vite du thème (`CeraVIAC-Medium`, `CeraVIAC-Bold`).
-- Point de rupture 768 px, composants BEM (`content-cards__card`), en-tête à états « menu » /
-  « recherche », sélecteur de langue, curseur de saisie : bundles `content-cards-*.js`,
-  `app-*.js`, `input-range-*.js`.
-- Pile VIAC (pour information) : WordPress (Bedrock/Sage), Vite, Alpine.js, Swiper.

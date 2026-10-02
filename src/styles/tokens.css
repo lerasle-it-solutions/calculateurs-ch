@@ -8,8 +8,8 @@
  * (bg-paper, text-ink, text-title, p-xl, rounded-button, shadow-card, …).
  *
  * Registre visuel : clair, aéré, digne de confiance — encre marine, accent
- * vert sapin, surfaces arrondies, ombres douces. Structure inspirée de VIAC
- * (viac.ch) ; palette propre au site. Le chiffre reste le héros.
+ * vert sapin, surfaces arrondies, ombres douces ; palette propre au site. Le
+ * chiffre reste le héros.
  */
 
 @import "tailwindcss";
@@ -24,7 +24,7 @@
 
   /* ------------------------------------------------------------------ *
    * Couleur — palette « marine et sapin », propre à calculateurs.ch.
-   * Aucune couleur de prestataire (VIAC, finpension…) : le site est neutre.
+   * Aucune couleur de prestataire de prévoyance : le site est neutre.
    *
    * Contrastes WCAG 2.x (texte normal : AA ≥ 4.5:1 ; UI non textuelle ≥ 3:1)
    *   ink            sur paper / tint            14.57 / 13.45:1  AAA
