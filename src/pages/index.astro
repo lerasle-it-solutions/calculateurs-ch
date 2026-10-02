@@ -3,11 +3,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/layout/PageHero.astro";
 import Section from "../components/layout/Section.astro";
 import { fr } from "../i18n/fr";
-import { FAMILY_ORDER, familyUrl } from "../calculators/families";
+import { FAMILY_ORDER, familyHasPage, familyUrl } from "../calculators/families";
 
 const title = `${fr.site.name} — calculateurs suisses romands qui affichent leurs sources`;
 const description =
-	"Des calculateurs de prévoyance, immobilier, énergie et entreprise pour la Suisse romande. Chaque chiffre provient d’une source officielle datée. Aucun compte, aucun cookie.";
+	"Calculateurs de prévoyance, immobilier, énergie et entreprise pour la Suisse romande, chaque chiffre sourcé et daté. Aucun compte, aucun cookie.";
 
 // Aperçu éditorial par famille. Les libellés viennent de l'i18n (cohérence avec
 // le Header) ; les listes ci-dessous sont du contenu de page.
@@ -39,18 +39,32 @@ const previews: Record<(typeof FAMILY_ORDER)[number], string[]> = {
 			{
 				FAMILY_ORDER.map((family) => (
 					<li>
-						<a
-							href={familyUrl(family)}
-							class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
-						>
-							<h2 class="text-subheading group-hover:underline">{fr.family[family]}</h2>
-							<ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
-								{previews[family].map((item) => (
-									<li>{item}</li>
-								))}
-							</ul>
-							<span class="mt-auto text-label font-bold text-accent">{fr.home.familyCardAction}</span>
-						</a>
+						{familyHasPage(family) ? (
+							<a
+								href={familyUrl(family)}
+								class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
+							>
+								<h2 class="text-subheading group-hover:underline">{fr.family[family]}</h2>
+								<ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
+									{previews[family].map((item) => (
+										<li>{item}</li>
+									))}
+								</ul>
+								<span class="mt-auto text-label font-bold text-accent">{fr.home.familyCardAction}</span>
+							</a>
+						) : (
+							<div class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
+								<h2 class="text-subheading">{fr.family[family]}</h2>
+								<ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
+									{previews[family].map((item) => (
+										<li>{item}</li>
+									))}
+								</ul>
+								<span class="mt-auto inline-flex items-center self-start rounded-button bg-tint px-sm text-fine font-bold text-ink">
+									{fr.common.comingSoon}
+								</span>
+							</div>
+						)}
 					</li>
 				))
 			}

@@ -1,0 +1,57 @@
+---
+/**
+ * /prevoyance/ — page minimale de la famille : les calculateurs publiés, en
+ * cartes liées, et ceux qui sont annoncés, sans lien tant que leur page
+ * n'existe pas.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/layout/PageHero.astro";
+import Section from "../../components/layout/Section.astro";
+import { publishedCalculators } from "../../calculators/catalog";
+import { fr } from "../../i18n/fr";
+
+const published = publishedCalculators("pension");
+
+// Calculateurs annoncés (CLAUDE.md § 7, A2 et A3) : contenu de page, sans lien.
+const announced = ["Économie d'impôt 3a", "Rachat LPP"];
+
+const title = `${fr.family.pension} — ${fr.site.name}`;
+const description =
+	"Calculateurs de prévoyance pour la Suisse romande, 3e pilier et 2e pilier, avec la source et la date de chaque chiffre.";
+---
+
+<BaseLayout title={title} description={description}>
+	<PageHero
+		title={fr.family.pension}
+		lead="Des calculateurs pour le 3e pilier et la prévoyance professionnelle, en Suisse romande. Chaque chiffre provient d'une source officielle datée."
+	/>
+
+	<Section tone="tint">
+		<ul class="grid gap-xl md:grid-cols-2 lg:grid-cols-3">
+			{
+				published.map((calculator) => (
+					<li>
+						<a
+							href={calculator.slug}
+							class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
+						>
+							<h2 class="text-subheading group-hover:underline">{calculator.title}</h2>
+							<p class="text-body text-ink-muted">{calculator.metaDescription}</p>
+							<span class="mt-auto text-label font-bold text-accent">{fr.relatedVariants.open}</span>
+						</a>
+					</li>
+				))
+			}
+			{
+				announced.map((name) => (
+					<li class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
+						<h2 class="text-subheading">{name}</h2>
+						<span class="mt-auto inline-flex items-center self-start rounded-button bg-tint px-sm text-fine font-bold text-ink">
+							{fr.common.comingSoon}
+						</span>
+					</li>
+				))
+			}
+		</ul>
+	</Section>
+</BaseLayout>

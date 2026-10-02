@@ -1,0 +1,33 @@
+---
+/**
+ * Page 404. Astro l'émet en dist/404.html, à la racine : Cloudflare Pages sert
+ * alors ce fichier, avec le code 404, pour toute URL qui ne correspond à aucun
+ * fichier (« Not Found behavior »). Sans lui, Pages se croit en application
+ * monopage et renvoie l'accueil avec un code 200.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/layout/Section.astro";
+import Button from "../components/ui/Button.astro";
+import { fr } from "../i18n/fr";
+---
+
+<BaseLayout
+  title={`${fr.notFound.eyebrow} — ${fr.site.name}`}
+  description={fr.notFound.metaDescription}
+  noindex={true}
+>
+  <Section hero={true}>
+    <p
+      class="inline-flex items-center rounded-button bg-tint px-sm text-fine font-bold text-ink"
+    >
+      {fr.notFound.eyebrow}
+    </p>
+    <h1 class="mt-lg max-w-reading text-title">{fr.notFound.title}</h1>
+    <p class="mt-sm max-w-reading text-lead text-ink-muted">
+      {fr.notFound.lead}
+    </p>
+    <div class="mt-2xl">
+      <Button href="/" size="lg" block={true}>{fr.notFound.home}</Button>
+    </div>
+  </Section>
+</BaseLayout>

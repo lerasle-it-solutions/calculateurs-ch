@@ -7,9 +7,10 @@
  */
 import LogoWhite from "../../assets/brand/logo-blanc.svg";
 import { fr } from "../../i18n/fr";
-import { FAMILY_ORDER, familyUrl } from "../../calculators/families";
+import { PUBLISHED_FAMILIES, familyUrl } from "../../calculators/families";
 
-const families = FAMILY_ORDER.map((family) => ({
+// Seules les familles qui ont leur page sont liées : jamais de lien vers une 404.
+const families = PUBLISHED_FAMILIES.map((family) => ({
 	label: fr.family[family],
 	url: familyUrl(family),
 }));

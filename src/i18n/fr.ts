@@ -22,8 +22,19 @@ export const fr = {
 		requiredMark: " *",
 		/** Marque textuelle de champ obligatoire (docs/design-system.md § 2.3). */
 		requiredText: "(obligatoire)",
+		/** Rubrique ou calculateur annoncé, sans page encore. */
+		comingSoon: "En préparation",
 		/** Valeur affichée tant qu'aucun résultat n'est disponible. */
 		emptyValue: "—",
+	},
+
+	notFound: {
+		/** Étiquette au-dessus du titre de la page 404. */
+		eyebrow: "Erreur 404",
+		title: "Cette page n'existe pas.",
+		lead: "L'adresse est peut-être mal saisie, ou la page a été déplacée. Les calculateurs publiés sont accessibles depuis l'accueil.",
+		home: "Retour à l'accueil",
+		metaDescription: "La page demandée n'existe pas sur calculateurs.ch.",
 	},
 
 	home: {
@@ -126,6 +137,9 @@ export const fr = {
 	},
 
 	dataPage: {
+		/** Méta-description de /donnees/, 155 caractères au plus. */
+		metaDescription:
+			"Chaque source officielle utilisée sur le site, avec sa date de vérification et l'échéance de sa prochaine relecture, générée depuis les données.",
 		title: "Données et sources",
 		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu'elle alimente et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
 		summary: (tracked: number, overdue: number): string =>
