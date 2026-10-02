@@ -1,120 +1,147 @@
 /*
- * tokens.css — source unique des valeurs du design system (voir CLAUDE.md § Design system).
+ * tokens.css — source unique des valeurs du design system.
+ * Spécification complète : docs/design-system.md (fait autorité).
  *
- * Aucune valeur littérale de couleur, de taille, de graisse ou d'espacement ne doit
- * apparaître ailleurs que dans ce fichier. Les composants et les pages n'utilisent
- * que les utilitaires Tailwind générés à partir des tokens ci-dessous
- * (bg-paper, text-ink, text-display, p-lg, rounded-control, font-serif, …).
+ * Aucune valeur littérale de couleur, de taille, de graisse, d'ombre ou
+ * d'espacement ne doit apparaître ailleurs que dans ce fichier. Composants et
+ * pages n'utilisent que les utilitaires Tailwind générés ci-dessous
+ * (bg-paper, text-ink, text-title, p-xl, rounded-button, shadow-card, …).
  *
- * Registre visuel de référence : notice fiscale cantonale, barème officiel,
- * formulaire de déclaration. Le chiffre est le héros ; tout le reste est discret.
+ * Registre visuel : clair, aéré, digne de confiance — encre marine, accent
+ * vert sapin, surfaces arrondies, ombres douces. Structure inspirée de VIAC
+ * (viac.ch) ; palette propre au site. Le chiffre reste le héros.
  */
 
 @import "tailwindcss";
 
 @theme {
-  /* ------------------------------------------------------------------ *
-   * Couleur — six rôles, pas un de plus.
-   *
-   * ink     : encre bleu-ardoise profonde, jamais un noir pur.
-   * paper   : fond de page, blanc.
-   * tint    : trame très pâle pour les panneaux et les en-têtes de tableau.
-   * rule    : filet gris-bleu d'un pixel, comme les séparations d'un formulaire.
-   * accent  : vert sapin profond, réservé au résultat du calcul et aux liens.
-   * warning : ocre sombre, réservé aux avertissements renforcés. Jamais décoratif.
-   *
-   * Contrastes WCAG (voir le rapport dans la réponse) :
-   *   ink     sur paper  14.57:1  AAA
-   *   ink     sur tint   13.42:1  AAA
-   *   accent  sur paper   9.17:1  AAA
-   *   accent  sur tint    8.45:1  AAA
-   *   warning sur paper   5.91:1  AA
-   *   warning sur tint    5.44:1  AA
-   *   paper   sur accent   9.17:1  AAA   (texte blanc sur bouton accent)
-   *   paper   sur warning  5.91:1  AA    (texte blanc sur bandeau warning)
-   *   rule    sur paper    3.29:1  — élément non textuel, seuil 3:1 atteint
-   *   rule    sur tint     3.03:1  — élément non textuel, seuil 3:1 atteint
-   * ------------------------------------------------------------------ */
-  --color-ink: #1c2a3a;
-  --color-paper: #ffffff;
-  --color-tint: #f3f6f8;
-  --color-rule: #7e90a0;
-  --color-accent: #1e5138;
-  --color-warning: #8a5a16;
+  /* Désactive la palette Tailwind par défaut : seules les couleurs ci-dessous
+   * existent. `bg-gray-100`, `text-blue-600`, … ne compilent plus. */
+  --color-*: initial;
 
   /* ------------------------------------------------------------------ *
-   * Familles de police — auto-hébergées via Fontsource, importées dans
-   * BaseLayout.astro. Aucune requête vers un domaine tiers.
+   * Couleur — palette « marine et sapin », propre à calculateurs.ch.
+   * Aucune couleur de prestataire (VIAC, finpension…) : le site est neutre.
    *
-   * sans  : IBM Plex Sans — interface, libellés, corps de texte, tous les chiffres.
-   * serif : IBM Plex Serif — appareil de sources uniquement (article de loi,
-   *         référence de barème, date de vérification). Le serif encode
-   *         l'information : « provient d'un texte officiel ».
+   * Contrastes WCAG 2.x (texte normal : AA ≥ 4.5:1 ; UI non textuelle ≥ 3:1)
+   *   ink            sur paper / tint            14.57 / 13.45:1  AAA
+   *   ink-muted      sur paper / tint             5.91 /  5.46:1  AA
+   *   accent         sur paper / tint / accent-tint 5.44 / 5.02 / 4.76:1  AA
+   *   paper          sur accent / accent-strong   5.44 /  6.83:1  AA  (texte des boutons)
+   *   slate          sur paper                    5.11:1  AA
+   *   warning        sur paper / warning-tint     5.43 /  4.99:1  AA
+   *   error          sur paper / error-tint       5.33 /  4.68:1  AA
+   *   ink            sur accent-tint / warning-tint / error-tint  12.74 / 13.40 / 12.80:1
+   *   rule           sur paper / tint             3.78 /  3.49:1  — bordure de champ (≥ 3:1)
+   *   brand          sur paper                    3.03:1  — décor et graphiques, JAMAIS du texte
+   *   warning-signal sur paper                    2.35:1  — filet décoratif, JAMAIS du texte
    * ------------------------------------------------------------------ */
-  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+
+  /* Neutres */
+  --color-ink: #1c2a3a;              /* encre marine — texte, titres, bouton secondaire */
+  --color-ink-muted: #596577;        /* texte secondaire, aide, métadonnées */
+  --color-paper: #ffffff;            /* fond de page, cartes, champs */
+  --color-tint: #f4f6f8;             /* trame — sections alternées, panneaux, en-têtes de tableau */
+  --color-hairline: #dde2e8;         /* séparateurs décoratifs, grilles de graphiques */
+  --color-rule: #7a8494;             /* bordure des champs et contrôles */
+
+  /* Sapin — résultat, liens, action principale */
+  --color-accent: #1c7853;           /* résultat du calcul, liens, bouton principal */
+  --color-accent-strong: #186748;    /* survol / pression de accent */
+  --color-accent-tint: #e8f2ee;      /* fond de la carte résultat, sélection, succès, pastille */
+  --color-brand: #3aa67b;            /* vert clair — décor et séries de graphique uniquement */
+
+  /* Graphiques — série complémentaire, neutre en valeur (ni gain ni perte) */
+  --color-slate: #4a6fa5;            /* bleu ardoise */
+  --color-slate-light: #a9b8cc;      /* ardoise clair — remplissages, série secondaire */
+
+  /* États */
+  --color-success: #1c7853;          /* = accent */
+  --color-success-tint: #e8f2ee;     /* = accent-tint */
+  --color-warning: #b54708;          /* orange vif — texte et titre des avertissements renforcés */
+  --color-warning-signal: #f79009;   /* filet gauche des avertissements (décoratif) */
+  --color-warning-tint: #fff4e5;     /* fond des avertissements */
+  --color-error: #d11f2a;            /* rouge vif — erreurs uniquement, jamais un résultat */
+  --color-error-tint: #fbedee;       /* fond d'un champ ou d'un bandeau en erreur */
 
   /* ------------------------------------------------------------------ *
-   * Typographie — six niveaux.
-   *
-   * display : le résultat du calculateur. L'élément le plus grand de la page.
-   * title   : titre de page (h1).
-   * heading : titre de section (h2).
-   * body    : corps de texte, longueur de ligne < 70 caractères.
-   * label   : intitulés de champs, métadonnées d'interface.
-   * fine    : appareil de sources, date de vérification, mentions.
+   * Police — une seule famille, deux graisses (500 et 700). Figtree,
+   * auto-hébergée via Fontsource (≈ 11 ko par graisse en latin, chiffres
+   * tabulaires `tnum` présents).
    * ------------------------------------------------------------------ */
-  --text-display: 3rem;
+  --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Alias de migration : l'ancien serif (appareil de sources) pointe vers la
+   * famille unique. À retirer une fois `font-serif` supprimé des composants. */
+  --font-serif: var(--font-sans);
+
+  /* ------------------------------------------------------------------ *
+   * Typographie — fluide entre 320 px et 1280 px de large.
+   * ------------------------------------------------------------------ */
+  --text-display: clamp(2.25rem, 1.8rem + 2.25vw, 3.5rem);   /* résultat du calcul */
   --text-display--line-height: 1.05;
-  --text-display--font-weight: var(--font-weight-semibold);
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.02em;
 
-  --text-title: 1.875rem;
-  --text-title--line-height: 1.2;
-  --text-title--font-weight: var(--font-weight-semibold);
+  --text-title: clamp(1.875rem, 1.5rem + 1.75vw, 2.75rem);   /* h1 */
+  --text-title--line-height: 1.15;
+  --text-title--font-weight: 700;
+  --text-title--letter-spacing: -0.015em;
 
-  --text-heading: 1.25rem;
-  --text-heading--line-height: 1.3;
-  --text-heading--font-weight: var(--font-weight-semibold);
+  --text-heading: clamp(1.5rem, 1.3rem + 1vw, 2rem);         /* h2 */
+  --text-heading--line-height: 1.2;
+  --text-heading--font-weight: 700;
+  --text-heading--letter-spacing: -0.01em;
 
-  --text-body: 1.0625rem;
+  --text-subheading: 1.25rem;                                 /* h3 */
+  --text-subheading--line-height: 1.3;
+  --text-subheading--font-weight: 700;
+
+  --text-lead: 1.1875rem;                                     /* chapeau sous le h1 */
+  --text-lead--line-height: 1.55;
+
+  --text-body: 1.0625rem;                                     /* corps de texte */
   --text-body--line-height: 1.6;
 
-  --text-label: 0.9375rem;
+  --text-label: 0.9375rem;                                    /* libellés, boutons, nav ; h4–h6 en bold */
   --text-label--line-height: 1.4;
 
-  --text-fine: 0.8125rem;
+  --text-fine: 0.8125rem;                                     /* aide, sources, mentions */
   --text-fine--line-height: 1.5;
 
   /* ------------------------------------------------------------------ *
-   * Espacement — une échelle unique, du filet interne à la respiration
-   * entre blocs. Les composants n'utilisent que ces pas (p-md, gap-lg, …).
+   * Espacement — base 4 px, prolongée pour le rythme des sections.
    * ------------------------------------------------------------------ */
-  --spacing-2xs: 0.125rem;
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 0.75rem;
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.5rem;
-  --spacing-2xl: 2rem;
-  --spacing-3xl: 3rem;
+  --spacing-2xs: 0.125rem;  /*  2 px */
+  --spacing-xs: 0.25rem;    /*  4 px */
+  --spacing-sm: 0.5rem;     /*  8 px */
+  --spacing-md: 0.75rem;    /* 12 px */
+  --spacing-lg: 1rem;       /* 16 px */
+  --spacing-xl: 1.5rem;     /* 24 px */
+  --spacing-2xl: 2rem;      /* 32 px */
+  --spacing-3xl: 3rem;      /* 48 px */
+  --spacing-4xl: 4rem;      /* 64 px */
+  --spacing-5xl: 6rem;      /* 96 px */
 
   /* ------------------------------------------------------------------ *
    * Largeurs de contenu.
-   *
-   * reading : texte courant, longueur de ligne < 70 caractères.
-   * page    : gabarit large des pages de calculateur (deux colonnes).
    * ------------------------------------------------------------------ */
-  --container-reading: 40rem;
-  --container-page: 68rem;
+  --container-reading: 40rem;   /* texte courant, < 70 caractères */
+  --container-page: 72rem;      /* gabarit des pages (1152 px) */
 
   /* ------------------------------------------------------------------ *
-   * Rayon — deux valeurs, jamais le même rayon partout.
-   *
-   * control : 2px sur les champs et les boutons.
-   * panel   : 0 sur les panneaux, tableaux et bandeaux.
+   * Rayons.
    * ------------------------------------------------------------------ */
-  --radius-control: 2px;
-  --radius-panel: 0px;
+  --radius-control: 0.5rem;     /*  8 px — champs, unités, cases */
+  --radius-panel: 1rem;         /* 16 px — cartes, résultat, bandeaux */
+  --radius-section: 1.5rem;     /* 24 px — grands blocs teintés */
+  --radius-button: 9999px;      /* boutons en pilule, pastilles */
+
+  /* ------------------------------------------------------------------ *
+   * Ombres — teintées ink, jamais noires. Coût de chargement nul.
+   * ------------------------------------------------------------------ */
+  --shadow-card: 0 1px 2px rgb(28 42 58 / 0.06), 0 4px 16px rgb(28 42 58 / 0.08);
+  --shadow-raised: 0 2px 4px rgb(28 42 58 / 0.08), 0 12px 32px rgb(28 42 58 / 0.12);
+  --shadow-bar: 0 -4px 16px rgb(28 42 58 / 0.1);
 }
 
 /* ------------------------------------------------------------------ *
@@ -123,8 +150,10 @@
 @layer base {
   html {
     font-family: var(--font-sans);
+    font-weight: 500;
     color: var(--color-ink);
     background-color: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
@@ -137,32 +166,42 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Les contrôles héritent de la police de l'interface. */
   :where(input, select, textarea, button) {
     font: inherit;
     color: inherit;
   }
 
+  /* Curseurs, cases et barres natifs à la couleur d'accent, sans JavaScript. */
+  :where(input[type="range"], input[type="checkbox"], input[type="radio"], progress) {
+    accent-color: var(--color-accent);
+  }
+
   /*
-   * « accent est réservé au résultat du calcul et aux liens. » Le reset
-   * Tailwind neutralise la couleur de lien par défaut du navigateur avec un
-   * sélecteur `a` simple (`color: inherit`, spécificité 0,0,1) : `:where(a)`
-   * (spécificité nulle) ne le emporterait jamais, d'où le sélecteur `a` simple
-   * ici aussi. Soulignés par défaut (WCAG 1.4.1 — la couleur seule ne doit pas
-   * porter l'information) ; les liens de navigation (Header, Footer,
-   * Breadcrumb) enlèvent le soulignement au cas par cas, la position dans la
-   * page suffisant à les identifier.
+   * Sélecteur `a` simple (pas `:where(a)`) : le reset Tailwind neutralise la
+   * couleur des liens avec une spécificité 0,0,1. Soulignés par défaut
+   * (WCAG 1.4.1) ; la navigation retire le soulignement au cas par cas.
    */
   a {
     color: var(--color-accent);
     text-decoration: underline;
+    text-decoration-thickness: 1px;
     text-underline-offset: 0.15em;
+  }
+
+  a:hover {
+    color: var(--color-accent-strong);
+    text-decoration-thickness: 2px;
   }
 
   /* Focus clavier visible sur tout élément interactif. */
   :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
     outline: var(--spacing-2xs) solid var(--color-accent);
     outline-offset: var(--spacing-2xs);
+  }
+
+  ::selection {
+    background-color: var(--color-accent-tint);
+    color: var(--color-ink);
   }
 
   @media (prefers-reduced-motion: reduce) {
