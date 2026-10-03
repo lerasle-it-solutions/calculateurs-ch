@@ -3,71 +3,81 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/layout/PageHero.astro";
 import Section from "../components/layout/Section.astro";
 import { fr } from "../i18n/fr";
-import { FAMILY_ORDER, familyHasPage, familyUrl } from "../calculators/families";
+import {
+  FAMILY_ORDER,
+  familyHasPage,
+  familyUrl,
+} from "../calculators/families";
 
 const title = `${fr.site.name} — calculateurs suisses romands qui affichent leurs sources`;
 const description =
-	"Calculateurs de fiscalité et de prévoyance pour la Suisse romande, chaque chiffre sourcé et daté. Aucun compte, aucun cookie.";
+  "Calculateurs de fiscalité et de prévoyance pour la Suisse romande, chaque chiffre sourcé et daté. Aucun compte, aucun cookie de suivi.";
 
 // Aperçu éditorial par famille. Les libellés viennent de l'i18n (cohérence avec
 // le Header) ; les listes ci-dessous sont du contenu de page.
 const previews: Record<(typeof FAMILY_ORDER)[number], string[]> = {
-	pension: ["3e pilier", "Rachats LPP", "Retrait en capital"],
-	property: ["Valeur locative", "Rénovation", "Capacité d’achat"],
-	energy: [
-		"Subventions cantonales et communales",
-		"Pompe à chaleur",
-		"Photovoltaïque",
-	],
-	business: ["Coût employeur", "Charges sociales"],
+  pension: ["3e pilier", "Rachats LPP", "Retrait en capital"],
+  property: ["Valeur locative", "Rénovation", "Capacité d’achat"],
+  energy: [
+    "Subventions cantonales et communales",
+    "Pompe à chaleur",
+    "Photovoltaïque",
+  ],
+  business: ["Coût employeur", "Charges sociales"],
 };
 ---
 
 <BaseLayout title={title} description={description}>
-	<PageHero
-		title={fr.site.name}
-		lead={[
-			fr.site.baseline,
-			"Chaque chiffre utilisé provient d'une source officielle, avec sa date de vérification. Aucun compte, aucun cookie, aucune publicité. Vos données ne quittent pas votre navigateur.",
-		]}
-	>
-		<p class="text-fine text-ink-muted">Premiers calculateurs en ligne dès octobre 2026.</p>
-	</PageHero>
+  <PageHero
+    title={fr.site.name}
+    lead={[
+      fr.site.baseline,
+      "Chaque chiffre utilisé provient d'une source officielle, avec sa date de vérification. Aucun compte, aucun cookie de suivi, aucune publicité. Vos données ne quittent pas votre navigateur.",
+    ]}
+  >
+    <p class="text-fine text-ink-muted">
+      Premiers calculateurs en ligne dès octobre 2026.
+    </p>
+  </PageHero>
 
-	<Section tone="tint">
-		<ul class="grid gap-xl md:grid-cols-2">
-			{
-				FAMILY_ORDER.map((family) => (
-					<li>
-						{familyHasPage(family) ? (
-							<a
-								href={familyUrl(family)}
-								class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
-							>
-								<h2 class="text-subheading group-hover:underline">{fr.family[family]}</h2>
-								<ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
-									{previews[family].map((item) => (
-										<li>{item}</li>
-									))}
-								</ul>
-								<span class="mt-auto text-label font-bold text-accent">{fr.home.familyCardAction}</span>
-							</a>
-						) : (
-							<div class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
-								<h2 class="text-subheading">{fr.family[family]}</h2>
-								<ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
-									{previews[family].map((item) => (
-										<li>{item}</li>
-									))}
-								</ul>
-								<span class="mt-auto inline-flex items-center self-start rounded-button bg-tint px-sm text-fine font-bold text-ink">
-									{fr.common.comingSoon}
-								</span>
-							</div>
-						)}
-					</li>
-				))
-			}
-		</ul>
-	</Section>
+  <Section tone="tint">
+    <ul class="grid gap-xl md:grid-cols-2">
+      {
+        FAMILY_ORDER.map((family) => (
+          <li>
+            {familyHasPage(family) ? (
+              <a
+                href={familyUrl(family)}
+                class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
+              >
+                <h2 class="text-subheading group-hover:underline">
+                  {fr.family[family]}
+                </h2>
+                <ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
+                  {previews[family].map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+                <span class="mt-auto text-label font-bold text-accent">
+                  {fr.home.familyCardAction}
+                </span>
+              </a>
+            ) : (
+              <div class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
+                <h2 class="text-subheading">{fr.family[family]}</h2>
+                <ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
+                  {previews[family].map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+                <span class="mt-auto inline-flex items-center self-start rounded-button bg-tint px-sm text-fine font-bold text-ink">
+                  {fr.common.comingSoon}
+                </span>
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
 </BaseLayout>

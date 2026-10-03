@@ -10,20 +10,21 @@ const description =
 
 <BaseLayout title={title} description={description} noindex>
   <Section tone="tint" hero={true}>
-      <h1 class="max-w-reading text-title">{fr.footer.privacy}</h1>
-      <p class="mt-sm text-fine text-ink-muted">Dernière mise à jour : <time datetime="2026-10-02">02.10.2026</time></p>
-      <p class="mt-lg max-w-reading text-lead text-ink-muted">
-        calculateurs.ch a été conçu pour traiter le moins de données
-        personnelles possible. Le site fonctionne sans compte, sans inscription,
-        sans cookie et sans formulaire. Cette politique explique quelles données
-        sont néanmoins traitées, pourquoi, par qui et pendant combien de temps.
-        Elle s'appuie sur la loi fédérale sur la protection des données (LPD) et
-        son ordonnance (OPDo).
-      </p>
+    <h1 class="max-w-reading text-title">{fr.footer.privacy}</h1>
+    <p class="mt-sm text-fine text-ink-muted">
+      Dernière mise à jour : <time datetime="2026-10-03">03.10.2026</time>
+    </p>
+    <p class="mt-lg max-w-reading text-lead text-ink-muted">
+      calculateurs.ch a été conçu pour traiter le moins de données personnelles
+      possible. Le site fonctionne sans compte, sans inscription, sans cookie de
+      suivi et sans formulaire. Cette politique explique quelles données sont néanmoins
+      traitées, pourquoi, par qui et pendant combien de temps. Elle s'appuie sur
+      la loi fédérale sur la protection des données (LPD) et son ordonnance
+      (OPDo).
+    </p>
   </Section>
 
   <Section class="flex flex-col gap-3xl">
-
     <section class="flex flex-col gap-md">
       <h2 class="text-heading">1. Responsable du traitement</h2>
       <p class="max-w-reading text-body">
@@ -42,11 +43,11 @@ const description =
     <section class="flex flex-col gap-md">
       <h2 class="text-heading">2. Ce que le site ne fait pas</h2>
       <p class="max-w-reading text-body">
-        Le site ne dépose aucun cookie et n'utilise pas le stockage local du
-        navigateur à des fins de suivi. Il n'utilise pas Google Analytics, les
-        pixels de réseaux sociaux ou des outils d'enregistrement de sessions. Il
-        ne crée pas de profil d'utilisateur. Il ne vend, ne loue et ne transmet
-        aucune donnée à des fins commerciales.
+        Le site ne dépose aucun cookie de suivi et n'utilise pas le stockage
+        local du navigateur à des fins de suivi. Il n'utilise pas Google
+        Analytics, les pixels de réseaux sociaux ou des outils d'enregistrement
+        de sessions. Il ne crée pas de profil d'utilisateur. Il ne vend, ne loue
+        et ne transmet aucune donnée à des fins commerciales.
       </p>
       <p class="max-w-reading text-body">
         Les valeurs saisies dans les calculateurs (revenu, commune, montants,
@@ -75,6 +76,17 @@ const description =
         vous identifier. Elles sont traitées par Cloudflare selon sa propre
         politique de confidentialité et ses durées de conservation.
       </p>
+      <p class="max-w-reading text-body">
+        Pour protéger le site contre les robots et les abus, Cloudflare peut
+        déposer dans votre navigateur un cookie de sécurité, nommé
+        <code>cf_clearance</code>, lorsque votre navigateur a passé un contrôle
+        automatique. Ce cookie enregistre seulement que le contrôle a été
+        réussi, pour qu'il ne vous soit pas redemandé à chaque page. Selon
+        Cloudflare, il est strictement nécessaire à la sécurité du site, propre
+        à ce site et sans lien avec un identifiant d'utilisateur. Il ne sert ni
+        à la mesure d'audience, ni à la publicité, ni à vous suivre. Sa durée de
+        validité est fixée par Cloudflare.
+      </p>
     </section>
 
     <section class="flex flex-col gap-md">
@@ -87,12 +99,12 @@ const description =
       <p class="max-w-reading text-body">
         Pour cela, votre navigateur charge un petit script depuis un domaine de
         Cloudflare (cloudflareinsights.com). Ce script envoie les informations
-        de consultation à Cloudflare. Il ne dépose aucun cookie, n'utilise pas
-        le stockage local et n'attribue aucun identifiant à votre appareil. Il
-        ne permet pas de vous suivre d'une visite à l'autre. L'adresse IP sert à
-        déterminer le pays de consultation. Les statistiques mises à disposition
-        de l'éditeur sont agrégées et ne permettent pas d'identifier un
-        visiteur.
+        de consultation à Cloudflare. Il ne dépose aucun cookie de suivi,
+        n'utilise pas le stockage local et n'attribue aucun identifiant à votre
+        appareil. Il ne permet pas de vous suivre d'une visite à l'autre.
+        L'adresse IP sert à déterminer le pays de consultation. Les statistiques
+        mises à disposition de l'éditeur sont agrégées et ne permettent pas
+        d'identifier un visiteur.
       </p>
     </section>
 
@@ -178,7 +190,9 @@ const description =
 
     <section class="flex flex-col gap-md">
       <h2 class="text-heading">9. Vos droits</h2>
-      <p class="max-w-reading text-body">Conformément à la LPD, vous pouvez gratuitement :</p>
+      <p class="max-w-reading text-body">
+        Conformément à la LPD, vous pouvez gratuitement :
+      </p>
       <ul class="max-w-reading flex list-disc flex-col gap-xs pl-lg text-body">
         <li>
           demander l'accès aux données vous concernant et obtenir les

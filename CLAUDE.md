@@ -12,14 +12,14 @@ vers `../calculateurs-ch-data/plan`, clone voisin du dépôt privé. Toute modif
 plan se commite et se pousse dans ce dépôt-là. La commande `/session NN` ouvre et
 exécute une semaine.
 
-| Besoin | Fichier |
-| --- | --- |
-| Ce que je fais cette semaine | `docs/plan/WNN.md` (voir `docs/plan/INDEX.md`) |
-| Ajouter une source | `docs/plan/sources.md` |
-| Ce que doivent contenir `/methodologie/` et `/donnees/` | `docs/plan/pages.md` |
-| Contrat complet du moteur et des cas de référence | `docs/plan/engine.md` |
-| Avant une mise en ligne | `docs/plan/checklist.md` |
-| Pourquoi telle décision | `docs/plan/changelog.md` |
+| Besoin                                                  | Fichier                                        |
+| ------------------------------------------------------- | ---------------------------------------------- |
+| Ce que je fais cette semaine                            | `docs/plan/WNN.md` (voir `docs/plan/INDEX.md`) |
+| Ajouter une source                                      | `docs/plan/sources.md`                         |
+| Ce que doivent contenir `/methodologie/` et `/donnees/` | `docs/plan/pages.md`                           |
+| Contrat complet du moteur et des cas de référence       | `docs/plan/engine.md`                          |
+| Avant une mise en ligne                                 | `docs/plan/checklist.md`                       |
+| Pourquoi telle décision                                 | `docs/plan/changelog.md`                       |
 
 ---
 
@@ -84,10 +84,10 @@ section suivante sans jamais inventer de synonyme. Détail complet et exceptions
 Le critère n'est pas la sensibilité, mais le **coût de reconstitution** : combien
 d'heures faudrait-il à un tiers pour refaire ce fichier sans nous ?
 
-| Classe | Exemples | Où elle vit | Licence |
-| --- | --- | --- | --- |
-| **Publique** — reconstituable en moins d'une heure, ou déjà publiée ailleurs, et dont la réutilisation est permise | barèmes, coefficients et déductions fiscales ; données fédérales ; prix de référence de l'OFEN | dépôt public, `src/data/` | CC BY 4.0 sur la compilation ; conditions de l'AFC sur ses données |
-| **Compilée** — assemblée à la main, commercialement sensible, ou dont la diffusion n'est pas permise | subventions cantonales et communales ; tarifs de reprise par gestionnaire ; table de routage des partenaires ; cas de référence issus du calculateur de l'AFC | dépôt privé `calculateurs-ch-data`, injecté à la construction dans `src/data/private/` et `tests/calculations/private/` | aucune — tous droits réservés |
+| Classe                                                                                                             | Exemples                                                                                                                                                      | Où elle vit                                                                                                             | Licence                                                            |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Publique** — reconstituable en moins d'une heure, ou déjà publiée ailleurs, et dont la réutilisation est permise | barèmes, coefficients et déductions fiscales ; données fédérales ; prix de référence de l'OFEN                                                                | dépôt public, `src/data/`                                                                                               | CC BY 4.0 sur la compilation ; conditions de l'AFC sur ses données |
+| **Compilée** — assemblée à la main, commercialement sensible, ou dont la diffusion n'est pas permise               | subventions cantonales et communales ; tarifs de reprise par gestionnaire ; table de routage des partenaires ; cas de référence issus du calculateur de l'AFC | dépôt privé `calculateurs-ch-data`, injecté à la construction dans `src/data/private/` et `tests/calculations/private/` | aucune — tous droits réservés                                      |
 
 Dans le doute, un fichier est **compilé**. On publie plus tard ce qu'on a gardé ; on ne
 dépublie jamais ce qui est passé sur GitHub.
@@ -113,14 +113,14 @@ en français. Cette frontière est stricte et ne souffre aucune exception, parce
 base de code à moitié traduite est pire que l'une ou l'autre convention prise seule :
 personne, ni toi ni l'IA, ne se souvient de quel côté se trouve un fichier donné.
 
-| En anglais — lu par la machine | En français — lu par un humain |
-| --- | --- |
-| Noms de dossiers et de fichiers du code | URL publiques : `/prevoyance/rachat-3a-retroactif/` |
-| Noms de types, fonctions, variables, composants | Titres, textes, intitulés de champs, FAQ |
-| Clés des fichiers de données (`pillar3aEmployeeCap`) | Valeurs des chaînes dans `src/i18n/fr.ts` |
-| Noms des tests et des scripts | Documents de pilotage : `DECISIONS.md`, `JOURNAL.md` |
-| Messages de commit Git | Contenu des articles |
-| Commentaires dans le code | Le plan, la méthodologie, la politique de confidentialité |
+| En anglais — lu par la machine                       | En français — lu par un humain                            |
+| ---------------------------------------------------- | --------------------------------------------------------- |
+| Noms de dossiers et de fichiers du code              | URL publiques : `/prevoyance/rachat-3a-retroactif/`       |
+| Noms de types, fonctions, variables, composants      | Titres, textes, intitulés de champs, FAQ                  |
+| Clés des fichiers de données (`pillar3aEmployeeCap`) | Valeurs des chaînes dans `src/i18n/fr.ts`                 |
+| Noms des tests et des scripts                        | Documents de pilotage : `DECISIONS.md`, `JOURNAL.md`      |
+| Messages de commit Git                               | Contenu des articles                                      |
+| Commentaires dans le code                            | Le plan, la méthodologie, la politique de confidentialité |
 
 **Le point à ne pas rater : les URL restent en français.** Elles sont du contenu, pas
 du code. `/prevoyance/rachat-3a-retroactif/` contient tes mots-clés et s'affiche dans
@@ -139,28 +139,28 @@ française — c'est la définition du calculateur qui porte le slug.
 À conserver ici pour que l'IA nomme toujours de la même façon. Ne jamais inventer de
 synonyme.
 
-| Domaine | Français | Anglais retenu |
-| --- | --- | --- |
-| Calculateur | calculateur | `calculator` |
-| Prévoyance | prévoyance | `pension` |
-| Immobilier | immobilier | `property` |
-| Énergie | énergie | `energy` |
-| Entreprise | entreprise | `business` |
-| 3e pilier | 3a | `pillar3a` / `pillar-3a` |
-| Rachat | rachat | `buyback` |
-| Lacune de cotisation | lacune | `contributionGap` |
-| Retrait en capital | retrait en capital | `capitalWithdrawal` |
-| Revenu imposable | revenu imposable | `taxableIncome` |
-| Économie d'impôt sur déduction | économie d'impôt | `taxSavingOnDeduction` |
-| Valeur locative | valeur locative | `imputedRentalValue` |
-| Subvention | subvention | `subsidy` |
-| Barème | barème | `taxScale` |
-| Coefficient / centimes additionnels | coefficient communal | `municipalMultiplier` |
-| Commune | commune | `municipality` |
-| Périmètre déclaré | périmètre | `scope` |
-| Trace du calcul | trace | `breakdown` |
-| Fraîcheur des données | fraîcheur | `freshness` |
-| Projection retraite consolidée (A5), identifiant réservé | projection retraite | `pension.retirement-projection` |
+| Domaine                                                  | Français             | Anglais retenu                  |
+| -------------------------------------------------------- | -------------------- | ------------------------------- |
+| Calculateur                                              | calculateur          | `calculator`                    |
+| Prévoyance                                               | prévoyance           | `pension`                       |
+| Immobilier                                               | immobilier           | `property`                      |
+| Énergie                                                  | énergie              | `energy`                        |
+| Entreprise                                               | entreprise           | `business`                      |
+| 3e pilier                                                | 3a                   | `pillar3a` / `pillar-3a`        |
+| Rachat                                                   | rachat               | `buyback`                       |
+| Lacune de cotisation                                     | lacune               | `contributionGap`               |
+| Retrait en capital                                       | retrait en capital   | `capitalWithdrawal`             |
+| Revenu imposable                                         | revenu imposable     | `taxableIncome`                 |
+| Économie d'impôt sur déduction                           | économie d'impôt     | `taxSavingOnDeduction`          |
+| Valeur locative                                          | valeur locative      | `imputedRentalValue`            |
+| Subvention                                               | subvention           | `subsidy`                       |
+| Barème                                                   | barème               | `taxScale`                      |
+| Coefficient / centimes additionnels                      | coefficient communal | `municipalMultiplier`           |
+| Commune                                                  | commune              | `municipality`                  |
+| Périmètre déclaré                                        | périmètre            | `scope`                         |
+| Trace du calcul                                          | trace                | `breakdown`                     |
+| Fraîcheur des données                                    | fraîcheur            | `freshness`                     |
+| Projection retraite consolidée (A5), identifiant réservé | projection retraite  | `pension.retirement-projection` |
 
 ### Deux exceptions assumées
 
@@ -177,10 +177,10 @@ synonyme.
 export type Value<T> = {
   value: T;
   unit?: string;
-  sourceId: string;        // acte officiel, présent dans le registre
-  verifiedOn: string;      // ISO 8601
-  effectiveFrom: string;   // ISO 8601
-  collectedFrom?: string;  // outil de collecte, distinct de la source
+  sourceId: string; // acte officiel, présent dans le registre
+  verifiedOn: string; // ISO 8601
+  effectiveFrom: string; // ISO 8601
+  collectedFrom?: string; // outil de collecte, distinct de la source
   note?: string;
 };
 ```
@@ -199,11 +199,11 @@ contradiction résiduelle, **cette section prime**.
 Réponse écrite de l'Administration fédérale des contributions, septembre 2026. Elle
 distingue deux catégories, et la distinction est structurante.
 
-| | Données de base | Résultats du calculateur |
-| --- | --- | --- |
-| Ce que c'est | barèmes, coefficients communaux, déductions, publiés par le module « Rechercher des données de base » | impôts calculés pour un profil donné |
-| Statut | **réutilisables, à condition de citer la source et sans garantie** | **pas des données ouvertes** ; calculateur exploité par un prestataire tiers ; consultation **exclusivement par l'interface web** |
-| Usage autorisé | `src/data/`, dépôt public, avec attribution | oracle de test par saisie manuelle ; fichier de référence dans le dépôt privé |
+|                | Données de base                                                                                       | Résultats du calculateur                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Ce que c'est   | barèmes, coefficients communaux, déductions, publiés par le module « Rechercher des données de base » | impôts calculés pour un profil donné                                                                                              |
+| Statut         | **réutilisables, à condition de citer la source et sans garantie**                                    | **pas des données ouvertes** ; calculateur exploité par un prestataire tiers ; consultation **exclusivement par l'interface web** |
+| Usage autorisé | `src/data/`, dépôt public, avec attribution                                                           | oracle de test par saisie manuelle ; fichier de référence dans le dépôt privé                                                     |
 
 **Trois interdits permanents :**
 
@@ -633,11 +633,11 @@ bandeau, les liens de variantes, la FAQ, le JSON-LD et les tests.
 ```ts
 // src/calculators/types.ts
 export type CalculatorDefinition = {
-  id: string;   // "family.name" — ex. "pension.pillar-3a-buyback"
+  id: string; // "family.name" — ex. "pension.pillar-3a-buyback"
   family: "pension" | "property" | "energy" | "business";
   slug: string; // FRANÇAIS — URL publique, indépendante du nom du fichier
-  title: string;            // FRANÇAIS
-  metaDescription: string;  // FRANÇAIS
+  title: string; // FRANÇAIS
+  metaDescription: string; // FRANÇAIS
 
   scope: {
     forWhom: string[];
@@ -648,8 +648,8 @@ export type CalculatorDefinition = {
   };
 
   fields: FieldDefinition[];
-  engine: string;       // chemin dans lib/calculations/
-  sourceIds: string[];  // alimente /methodologie/ et le test d'attribution
+  engine: string; // chemin dans lib/calculations/
+  sourceIds: string[]; // alimente /methodologie/ et le test d'attribution
   variants: string[];
   faq: { question: string; answer: string }[];
 
@@ -670,11 +670,11 @@ d'attribution affiché s'il est requis. La rigueur devient exécutable.
 
 ## 3. Rendu et interactivité
 
-| Cas | Technique | Poids |
-| --- | --- | --- |
+| Cas                                | Technique                       | Poids             |
+| ---------------------------------- | ------------------------------- | ----------------- |
 | Calculateur (tous, sans exception) | `<script>` vanilla dans la page | 0 kb de framework |
-| Sélecteur de commune | `<input list>` + `<datalist>` | 0 kb |
-| Comparatif, tableau | `<table>` rendu au build | 0 kb |
+| Sélecteur de commune               | `<input list>` + `<datalist>`   | 0 kb              |
+| Comparatif, tableau                | `<table>` rendu au build        | 0 kb              |
 
 **Aucun framework d'interface.** Ni React, ni Preact, ni Vue, ni Svelte, ni îlot
 hydraté. L'inventaire réel du site est de huit composants, dont six ne demandent aucun
@@ -714,13 +714,13 @@ moment :
 
 ## 5. Mesure
 
-| Outil | Usage | Cookies |
-| --- | --- | --- |
-| Cloudflare Web Analytics | trafic, pages, référents — activé depuis le projet Pages, pas par un script collé | aucun |
-| Google Search Console | requêtes, positions, indexation — propriété de type **Domaine**, validée par TXT | — |
-| Bing Webmaster Tools | idem, plus IndexNow via Crawler Hints | — |
+| Outil                    | Usage                                                                             | Cookies |
+| ------------------------ | --------------------------------------------------------------------------------- | ------- |
+| Cloudflare Web Analytics | trafic, pages, référents — activé depuis le projet Pages, pas par un script collé | aucun   |
+| Google Search Console    | requêtes, positions, indexation — propriété de type **Domaine**, validée par TXT  | —       |
+| Bing Webmaster Tools     | idem, plus IndexNow via Crawler Hints                                             | —       |
 
-Aucun cookie, donc **aucune bannière de consentement**. Meilleure expérience, meilleure
+Aucun cookie de suivi, donc **aucune bannière de consentement**. Meilleure expérience, meilleure
 conversion, conformité nLPD triviale, et un argument commercial pour le white-label
 auprès des fiduciaires.
 
@@ -732,13 +732,15 @@ auprès des fiduciaires.
 // src/content/config.ts
 const articles = defineCollection({
   schema: z.object({
-    title: z.string(),        // FRANÇAIS
-    description: z.string(),  // FRANÇAIS
+    title: z.string(), // FRANÇAIS
+    description: z.string(), // FRANÇAIS
     family: z.enum(["pension", "property", "energy", "business"]),
     publishedOn: z.date(),
     updatedOn: z.date(),
     relatedCalculators: z.array(z.string()).min(1), // ≥ 1 obligatoire
-    sources: z.array(z.object({ name: z.string(), url: z.string().url() })).min(2),
+    sources: z
+      .array(z.object({ name: z.string(), url: z.string().url() }))
+      .min(2),
     reviewedBy: z.string().optional(),
     faq: z.boolean().default(false),
   }),
@@ -755,30 +757,30 @@ Route : `/{famille}/guides/{slug}/`.
 
 52 heures disponibles. Ce qui est construit :
 
-| Ordre | Calculateur | URL | Semaines |
-| --- | --- | --- | --- |
-| 1 | Rachat 3a rétroactif | `/prevoyance/rachat-3a-retroactif/` | 6 |
-| 2 | Économie d'impôt 3a | `/prevoyance/economie-impot-3a/` | 8 |
-| 3 | Rachat LPP | `/prevoyance/rachat-lpp/` | 9 |
-| 4 | Retrait en capital LPP/3a | `/prevoyance/retrait-capital-lpp-3a/` | 11–12 |
-| 5 | Suppression valeur locative | `/immobilier/suppression-valeur-locative/` | 13–14 |
-| 6 | Rénover avant la réforme | `/immobilier/renover-avant-la-reforme/` | 16–17 |
-| 7 | Amortir ou investir | `/immobilier/amortir-ou-investir/` | 18 |
-| 8 | Capacité d'achat | `/immobilier/capacite-achat/` | 19 |
-| 9 | Subventions rénovation | `/energie/subventions-renovation/` | 21–23 |
-| 10 | Pompe à chaleur sur 15 ans | `/energie/pompe-a-chaleur/` | 24–25 |
-| 11 | Photovoltaïque | `/energie/photovoltaique/` | 26 → M7 |
+| Ordre | Calculateur                 | URL                                        | Semaines |
+| ----- | --------------------------- | ------------------------------------------ | -------- |
+| 1     | Rachat 3a rétroactif        | `/prevoyance/rachat-3a-retroactif/`        | 6        |
+| 2     | Économie d'impôt 3a         | `/prevoyance/economie-impot-3a/`           | 8        |
+| 3     | Rachat LPP                  | `/prevoyance/rachat-lpp/`                  | 9        |
+| 4     | Retrait en capital LPP/3a   | `/prevoyance/retrait-capital-lpp-3a/`      | 11–12    |
+| 5     | Suppression valeur locative | `/immobilier/suppression-valeur-locative/` | 13–14    |
+| 6     | Rénover avant la réforme    | `/immobilier/renover-avant-la-reforme/`    | 16–17    |
+| 7     | Amortir ou investir         | `/immobilier/amortir-ou-investir/`         | 18       |
+| 8     | Capacité d'achat            | `/immobilier/capacite-achat/`              | 19       |
+| 9     | Subventions rénovation      | `/energie/subventions-renovation/`         | 21–23    |
+| 10    | Pompe à chaleur sur 15 ans  | `/energie/pompe-a-chaleur/`                | 24–25    |
+| 11    | Photovoltaïque              | `/energie/photovoltaique/`                 | 26 → M7  |
 
 **Ce qui n'est PAS construit en année 1**, et pourquoi — cette liste vaut la précédente :
 
-| Écarté | Raison |
-| --- | --- |
-| Salaire brut → net (et variantes IS / frontalier) | Requête la plus disputée, visiteur le moins monétisable |
-| Pages d'impôt cantonal (`impot-vaud`, etc.) | Les simulateurs officiels sont gratuits et font autorité. Le moteur reste, les pages non |
-| Épargne, intérêts composés, inflation | Mathématiques universelles, aucune barrière, concurrence mondiale |
-| Assurances LAMal | Domaine de comparis et des courtiers, budgets sans commune mesure |
-| Allocations, chômage, APG, pourboire | Volume correct, valeur commerciale nulle |
-| Cantons alémaniques | Après validation du modèle en romand |
+| Écarté                                            | Raison                                                                                   |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Salaire brut → net (et variantes IS / frontalier) | Requête la plus disputée, visiteur le moins monétisable                                  |
+| Pages d'impôt cantonal (`impot-vaud`, etc.)       | Les simulateurs officiels sont gratuits et font autorité. Le moteur reste, les pages non |
+| Épargne, intérêts composés, inflation             | Mathématiques universelles, aucune barrière, concurrence mondiale                        |
+| Assurances LAMal                                  | Domaine de comparis et des courtiers, budgets sans commune mesure                        |
+| Allocations, chômage, APG, pourboire              | Volume correct, valeur commerciale nulle                                                 |
+| Cantons alémaniques                               | Après validation du modèle en romand                                                     |
 
 Le backlog complet reste dans le catalogue v2 et dans le fichier articles v1,
 requalifiés en **réserve stratégique années 2 à 5**.
@@ -791,19 +793,19 @@ daté.
 
 ## 8. Conventions
 
-| Élément | Convention | Exemple |
-| --- | --- | --- |
-| Fichiers et dossiers de code | `kebab-case`, **anglais** | `pillar-3a-buyback.ts` |
-| Types et composants | `PascalCase`, **anglais** | `ScopeNotice.astro` |
-| Fonctions et variables | `camelCase`, **anglais** | `computeTaxSavingOnDeduction()` |
-| Clés de données | `camelCase`, **anglais** | `pillar3aEmployeeCap` |
-| Fichiers de pages (`src/pages/`) | `kebab-case`, **français** (deviennent l'URL) | `rachat-3a-retroactif.astro` |
-| URL publiques | `kebab-case`, **français** | `/prevoyance/rachat-3a-retroactif/` |
-| Ids de calculateur | `family.name`, **anglais** | `pension.pillar-3a-buyback` |
-| Ids de source | `kebab-case`, acronymes officiels conservés | `opp3-art-7a`, `vd-li` |
-| Chaînes d'interface | **français**, dans `src/i18n/fr.ts` | — |
-| Messages de commit | **anglais**, préfixés de la semaine | `W06 - publish pillar-3a buyback calculator` |
-| Variables CSS | tokens `@theme` dans `tokens.css` | `--color-accent` |
+| Élément                          | Convention                                    | Exemple                                      |
+| -------------------------------- | --------------------------------------------- | -------------------------------------------- |
+| Fichiers et dossiers de code     | `kebab-case`, **anglais**                     | `pillar-3a-buyback.ts`                       |
+| Types et composants              | `PascalCase`, **anglais**                     | `ScopeNotice.astro`                          |
+| Fonctions et variables           | `camelCase`, **anglais**                      | `computeTaxSavingOnDeduction()`              |
+| Clés de données                  | `camelCase`, **anglais**                      | `pillar3aEmployeeCap`                        |
+| Fichiers de pages (`src/pages/`) | `kebab-case`, **français** (deviennent l'URL) | `rachat-3a-retroactif.astro`                 |
+| URL publiques                    | `kebab-case`, **français**                    | `/prevoyance/rachat-3a-retroactif/`          |
+| Ids de calculateur               | `family.name`, **anglais**                    | `pension.pillar-3a-buyback`                  |
+| Ids de source                    | `kebab-case`, acronymes officiels conservés   | `opp3-art-7a`, `vd-li`                       |
+| Chaînes d'interface              | **français**, dans `src/i18n/fr.ts`           | —                                            |
+| Messages de commit               | **anglais**, préfixés de la semaine           | `W06 - publish pillar-3a buyback calculator` |
+| Variables CSS                    | tokens `@theme` dans `tokens.css`             | `--color-accent`                             |
 
 **Toutes les chaînes d'interface dans `src/i18n/fr.ts` dès le jour 1.** Ça ne coûte
 presque rien maintenant et rend l'extension alémanique mécanique plus tard. Ne pas
@@ -868,7 +870,10 @@ valeurs fictives, et rejouable sur n'importe quelle année.
 
 ```ts
 // ✅
-export function computePillar3aTaxSaving(amount: number, scales: TaxScales): Result;
+export function computePillar3aTaxSaving(
+  amount: number,
+  scales: TaxScales,
+): Result;
 
 // ❌
 import rates2026 from "../../data/federal/2026.json";
@@ -882,23 +887,23 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 
 ## 11. Journal des décisions
 
-| # | Décision | Motif |
-| --- | --- | --- |
-| 1 | Pas de pages d'impôt cantonal | Impossible de battre les simulateurs officiels ; le moteur suffit |
-| 2 | 6 cantons romands, pas 26 | Divise le travail de données par 4, permet le niveau communal |
-| 3 | **Aucun framework d'interface** (remplace « Preact plutôt que React ») | Huit composants, dont six sans JavaScript. Le budget de 30 kb et les éléments natifs rendent tout framework superflu |
-| 4 | Pages Functions limitées et sans état | Le routage de lead ne peut pas être statique ; la protection de la table de subventions non plus |
-| 5 | Aucun cookie | Pas de bannière, conformité nLPD triviale, argument white-label |
-| 6 | Fraîcheur des données bloquante au build | Le seul défaut fatal serait un chiffre périmé affiché avec assurance |
-| 7 | i18n préparé, non implémenté | Coût quasi nul maintenant, coût élevé plus tard |
-| 8 | Périmètre déclaré structuré et non textuel | Alimente 4 usages, et devient vérifiable par test |
-| 9 | Code en anglais, contenu en français, frontière stricte | Une base à moitié traduite est pire que l'une ou l'autre convention. Les URL restent françaises : c'est du contenu |
-| 10 | **Deux revenus imposables en entrée du moteur** | LHID art. 1 al. 3 et art. 9 : les montants des déductions restent cantonaux |
-| 11 | **Économie d'impôt par différence de deux impôts**, jamais par taux marginal | Une déduction de plusieurs milliers de francs franchit des seuils qu'une dérivée ne voit pas |
-| 12 | **Deux classes de données** (R6), dépôt privé injecté à la construction | Les subventions communales sont le seul actif réellement coûteux à reconstituer |
-| 13 | **Apex canonique**, `www` redirigé en 301 | Cloudflare aplatit le CNAME ; le nom se dicte mieux au téléphone |
-| 14 | **Import par exports manuels** de l'AFC, aucun appel programmatique | Réponse écrite de l'AFC : consultation par l'interface web uniquement |
-| 15 | **Tests avant code** sur le moteur, et tests immuables (R7) | Piloter une IA par la spécification plutôt que par la relecture |
+| #   | Décision                                                                     | Motif                                                                                                                |
+| --- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1   | Pas de pages d'impôt cantonal                                                | Impossible de battre les simulateurs officiels ; le moteur suffit                                                    |
+| 2   | 6 cantons romands, pas 26                                                    | Divise le travail de données par 4, permet le niveau communal                                                        |
+| 3   | **Aucun framework d'interface** (remplace « Preact plutôt que React »)       | Huit composants, dont six sans JavaScript. Le budget de 30 kb et les éléments natifs rendent tout framework superflu |
+| 4   | Pages Functions limitées et sans état                                        | Le routage de lead ne peut pas être statique ; la protection de la table de subventions non plus                     |
+| 5   | Aucun cookie de suivi                                                        | Pas de bannière, conformité nLPD triviale, argument white-label                                                      |
+| 6   | Fraîcheur des données bloquante au build                                     | Le seul défaut fatal serait un chiffre périmé affiché avec assurance                                                 |
+| 7   | i18n préparé, non implémenté                                                 | Coût quasi nul maintenant, coût élevé plus tard                                                                      |
+| 8   | Périmètre déclaré structuré et non textuel                                   | Alimente 4 usages, et devient vérifiable par test                                                                    |
+| 9   | Code en anglais, contenu en français, frontière stricte                      | Une base à moitié traduite est pire que l'une ou l'autre convention. Les URL restent françaises : c'est du contenu   |
+| 10  | **Deux revenus imposables en entrée du moteur**                              | LHID art. 1 al. 3 et art. 9 : les montants des déductions restent cantonaux                                          |
+| 11  | **Économie d'impôt par différence de deux impôts**, jamais par taux marginal | Une déduction de plusieurs milliers de francs franchit des seuils qu'une dérivée ne voit pas                         |
+| 12  | **Deux classes de données** (R6), dépôt privé injecté à la construction      | Les subventions communales sont le seul actif réellement coûteux à reconstituer                                      |
+| 13  | **Apex canonique**, `www` redirigé en 301                                    | Cloudflare aplatit le CNAME ; le nom se dicte mieux au téléphone                                                     |
+| 14  | **Import par exports manuels** de l'AFC, aucun appel programmatique          | Réponse écrite de l'AFC : consultation par l'interface web uniquement                                                |
+| 15  | **Tests avant code** sur le moteur, et tests immuables (R7)                  | Piloter une IA par la spécification plutôt que par la relecture                                                      |
 
 ---
 
