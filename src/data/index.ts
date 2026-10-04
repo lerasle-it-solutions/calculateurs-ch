@@ -177,19 +177,10 @@ export const availableCantons = (): string[] =>
 	[...loadCantons().keys()].sort();
 
 /**
- * Résout l'année fiscale applicable : l'année demandée si elle existe, sinon la
- * plus récente année disponible qui la précède.
+ * Données fédérales de `year` ; à défaut, celles de la plus récente année
+ * disponible qui la précède. Ne choisit pas l'année de calcul d'un
+ * calculateur : voir resolveTaxYear (src/data/tax-years.ts).
  */
-/**
- * Année fiscale des données : la plus récente des années fédérales publiées.
- * C'est l'année de calcul des calculateurs, jamais l'horloge du visiteur.
- */
-export const latestFederalYear = (): number => {
-	const years = [...loadFederal().keys()];
-	if (years.length === 0) throw new Error("Aucune donnée fédérale publiée.");
-	return Math.max(...years);
-};
-
 export const getFederalData = (year: number): FederalData => {
 	const table = loadFederal();
 	const exact = table.get(year);

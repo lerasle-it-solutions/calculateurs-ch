@@ -11,7 +11,7 @@
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "./index";
 import type { TaxScalesBundle } from "../lib/calculations/tax-scales-bundle";
 import { SOURCE_BY_CANTON } from "./sources";
-import type { Todo, Value } from "./schema";
+import type { CantonData, Todo, Value } from "./schema";
 import type {
 	ChurchDenomination,
 	FamilyModel,
@@ -27,6 +27,30 @@ import type {
 } from "../lib/calculations/tax";
 
 export type TaxScalesQuery = Pick<TaxInput, "taxYear" | "canton" | "municipalityOfsId">;
+
+/**
+ * Clés des fichiers cantonaux que `getTaxScales` lit : une année n'est
+ * disponible pour un calculateur qui appelle le moteur que si aucune d'elles
+ * ne contient de TODO (src/data/tax-years.ts). Tenue à jour par
+ * tests/data/tax-years.test.ts, qui la compare au code ci-dessous.
+ */
+export const TAX_ENGINE_CANTONAL_KEYS = [
+	"incomeTaxScale",
+	"wealthTaxScale",
+	"cantonalMultiplier",
+	"baseTaxReduction",
+	"unreducedCantonalMultiplier",
+	"familyModel",
+	"taxBaseRounding",
+	"incomeScaleIndexation",
+	"supplementaryWealthTax",
+	"taxCreditPerChild",
+	"personalTax",
+	"maximumTaxBurden",
+	"incomeTaxRounding",
+	"communalScale",
+	"coverage",
+] as const satisfies readonly (keyof CantonData)[];
 
 /**
  * « Sujet fiscal » des exports de l'AFC → ménages du moteur. Les tables pour

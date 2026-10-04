@@ -48,6 +48,8 @@ interface Props {
 	resultLabel: string;
 	/** Réserve affichée sous le résultat (estimation indicative…). FRANÇAIS. */
 	resultNote?: string;
+	/** Annonce rendue au build au-dessus du formulaire (année de calcul antérieure…). FRANÇAIS. */
+	notice?: string;
 	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
 	verifiedOn: string;
 	/**
@@ -63,6 +65,7 @@ const {
 	intro,
 	resultLabel,
 	resultNote,
+	notice,
 	verifiedOn,
 	catalog = [],
 } = Astro.props;
@@ -107,6 +110,8 @@ const resultFor = definition.fields
 		notCovered={notCovered}
 		assumptions={definition.scope.assumptions}
 	/>
+
+	{notice && <p class="max-w-reading rounded-panel bg-tint p-lg text-label font-bold">{notice}</p>}
 
 	<div class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
 		<form

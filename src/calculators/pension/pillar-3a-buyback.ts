@@ -7,13 +7,21 @@
  * lacune sont toutes supposées avec 2e pilier, donc plafonnées à la « petite »
  * cotisation.
  */
-import { allDataFiles, eachValue, getFederalData, getMunicipalMultipliers, latestFederalYear, sourceRegistry } from "../../data";
+import { allDataFiles, eachValue, getFederalData, getMunicipalMultipliers, sourceRegistry } from "../../data";
+import { resolveTaxYear } from "../../data/tax-years";
 import { SOURCE_BY_CANTON } from "../../data/sources";
 import { taxEngineCoverage } from "../tax-coverage";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
 
-/** Année du rachat : l'année fiscale des données. */
-export const pillar3aBuybackYear = latestFederalYear();
+export const PILLAR_3A_BUYBACK_ID = "pension.pillar-3a-buyback";
+
+/**
+ * Année du rachat et de calcul : l'année civile de la construction si toutes
+ * les données d'A1 sont relevées pour elle, sinon la plus récente année
+ * complète qui la précède (src/data/tax-years.ts).
+ */
+export const pillar3aBuybackTaxYear = resolveTaxYear(PILLAR_3A_BUYBACK_ID);
+export const pillar3aBuybackYear = pillar3aBuybackTaxYear.year;
 
 const pillar3a = getFederalData(pillar3aBuybackYear).pillar3a;
 const firstGapYear = pillar3a.buyback.firstGapYear.value;
@@ -176,7 +184,7 @@ const fields: FieldDefinition[] = [
 ];
 
 export const pillar3aBuyback: CalculatorDefinition = {
-	id: "pension.pillar-3a-buyback",
+	id: PILLAR_3A_BUYBACK_ID,
 	family: "pension",
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",

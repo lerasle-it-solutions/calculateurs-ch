@@ -130,6 +130,12 @@ export const fr = {
 		open: "Ouvrir le calculateur",
 	},
 
+	taxYear: {
+		/** Annonce statique, au-dessus du formulaire, quand l'année civile n'est pas encore relevée. */
+		fallbackNotice: (year: number, calendarYear: number): string =>
+			`Calcul sur les barèmes ${year} : ceux de ${calendarYear} ne sont pas encore relevés.`,
+	},
+
 	calculator: {
 		faqTitle: "Questions fréquentes",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */

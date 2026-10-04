@@ -13,6 +13,7 @@ import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
 import {
 	pillar3aBuyback,
 	pillar3aBuybackIntro,
+	pillar3aBuybackTaxYear,
 	pillar3aBuybackTexts,
 	pillar3aBuybackYear,
 	pillar3aGapYears,
@@ -20,6 +21,7 @@ import {
 import { ROMANDE_CANTONS } from "../../calculators/cantons";
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
 import { getTaxScalesBundle } from "../../data/tax-scales";
+import { fr } from "../../i18n/fr";
 
 const pillar3a = getFederalData(pillar3aBuybackYear).pillar3a;
 const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
@@ -69,6 +71,11 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		intro={pillar3aBuybackIntro}
 		resultLabel={pillar3aBuybackTexts.resultLabel}
 		resultNote={pillar3aBuybackTexts.disclaimer}
+		notice={
+			pillar3aBuybackTaxYear.isFallback
+				? fr.taxYear.fallbackNotice(pillar3aBuybackTaxYear.year, pillar3aBuybackTaxYear.calendarYear)
+				: undefined
+		}
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 	/>
 

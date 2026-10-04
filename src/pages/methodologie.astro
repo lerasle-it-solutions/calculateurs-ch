@@ -4,7 +4,9 @@ import Section from "../components/layout/Section.astro";
 import { attributionTextsFor } from "../lib/attribution";
 import { sourceFreshnessReport } from "../lib/data-report";
 import { ROMANDE_CANTONS } from "../calculators/cantons";
-import { getCantonData, getFederalData, getMunicipalMultipliers, latestFederalYear } from "../data";
+import { getCantonData, getFederalData, getMunicipalMultipliers } from "../data";
+import { resolveTaxYear } from "../data/tax-years";
+import { PILLAR_3A_BUYBACK_ID } from "../calculators/pension/pillar-3a-buyback";
 import { fr } from "../i18n/fr";
 
 const title = `${fr.footer.methodology} — ${fr.site.name}`;
@@ -49,7 +51,9 @@ const valaisCovered = (getMunicipalMultipliers()?.multipliers ?? [])
 	.sort((a, b) => a.localeCompare(b, "fr"));
 
 // Rachat 3a : règles lues dans les données fédérales
-const pillar3a = getFederalData(latestFederalYear()).pillar3a;
+// Année de calcul d'A1 : les règles décrites sont celles que le calculateur applique.
+const pillar3aYear = resolveTaxYear(PILLAR_3A_BUYBACK_ID).year;
+const pillar3a = getFederalData(pillar3aYear).pillar3a;
 
 // Partie générée : sources des calculateurs de prévoyance, d'après `usedBy`
 const UNOFFICIAL_NATURES = ["self-regulation", "industry", "association"];
@@ -296,7 +300,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				{numberFormat.format(pillar3a.buyback.lookbackYears.value)} années qui
 				suivent. Le total des rachats d'une même année est plafonné à la
 				« petite » cotisation de cette année ({numberFormat.format(pillar3a.smallContributionCap.value)}&nbsp;CHF
-				en {latestFederalYear()}), quel que soit le nombre de lacunes comblées. Il
+				en {pillar3aYear}), quel que soit le nombre de lacunes comblées. Il
 				faut un revenu soumis à l'AVS l'année de la lacune et l'année du
 				rachat, et la cotisation de l'année du rachat doit être versée
 				entièrement. Une année ne se rachète qu'une fois : une lacune comblée en

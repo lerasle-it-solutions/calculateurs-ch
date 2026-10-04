@@ -1,0 +1,78 @@
+{
+	"year": 2027,
+	"pillar3a": {
+		"smallContributionCap": {
+			"value": 7373,
+			"unit": "CHF",
+			"sourceId": "ofas-amounts-2027",
+			"verifiedOn": "2026-10-04",
+			"effectiveFrom": "2027-01-01",
+			"note": "OPP 3 art. 7 al. 1 let. a : « petite » cotisation, 8 % du montant-limite supérieur de l'art. 8 al. 1 LPP. Relevé dans la vue d'ensemble des montants valables à partir du 1er janvier 2027 (Conseil fédéral, 2 octobre 2026). Plafonne aussi le rachat effectué en 2027 (art. 7a al. 2)."
+		},
+		"largeContributionCap": {
+			"value": 36864,
+			"unit": "CHF",
+			"sourceId": "ofas-amounts-2027",
+			"verifiedOn": "2026-10-04",
+			"effectiveFrom": "2027-01-01",
+			"note": "OPP 3 art. 7 al. 1 let. b : « grande » cotisation, 40 % du montant-limite supérieur de l'art. 8 al. 1 LPP. Relevé dans la vue d'ensemble des montants valables à partir du 1er janvier 2027 (Conseil fédéral, 2 octobre 2026)."
+		},
+		"largeContributionIncomeRate": {
+			"value": 0.2,
+			"sourceId": "opp3-art-7a",
+			"verifiedOn": "2026-09-29",
+			"effectiveFrom": "2025-01-01",
+			"note": "OPP 3 art. 7 al. 1 let. b : part du revenu, exprimée en fraction (0,20 = 20 %), plafonnée à la « grande » cotisation. Règle inchangée, reprise de 2026.json sans nouvelle vérification ; l'entrée opp3-art-7a du registre couvre aussi l'art. 7."
+		},
+		"buyback": {
+			"firstGapYear": {
+				"value": 2025,
+				"sourceId": "opp3-art-7a",
+				"verifiedOn": "2026-09-29",
+				"effectiveFrom": "2025-01-01",
+				"note": "OPP 3, disposition transitoire de la modification du 6 novembre 2024 : les lacunes antérieures au 1er janvier 2025 ne sont pas rachetables. Règle inchangée, reprise de 2026.json."
+			},
+			"lookbackYears": {
+				"value": 10,
+				"sourceId": "opp3-art-7a",
+				"verifiedOn": "2026-09-29",
+				"effectiveFrom": "2025-01-01",
+				"note": "OPP 3 art. 7a al. 1 let. a et al. 2 : rachat pour les dix années précédentes. Règle inchangée, reprise de 2026.json."
+			}
+		}
+	},
+	"directFederalTax": {
+		"incomeTaxScales": {
+			"todo": "Barèmes de l'impôt fédéral direct pour l'année fiscale 2027 (art. 36 al. 1 et 2 LIFD), à relever dans l'ordonnance du DFF sur la progression à froid (RS 642.119.2) modifiée le 22 septembre 2026, renchérissement compensé de 0,47 %. Même structure que federal/2026.json. Contrôle, barème pour époux : premier seuil 29 900 (29 700 en 2026), seuil du taux maximal 946 000 (941 400 en 2026), selon le communiqué du DFF du 22 septembre 2026.",
+			"sourceId": "fedlex-ifd-cold-progression"
+		},
+		"maximumRatePercent": {
+			"value": 11.5,
+			"unit": "%",
+			"sourceId": "cst-art-128",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Taux maximal fixé par l'art. 128 Cst., non indexé. Repris de 2026.json."
+		},
+		"taxReductionPerDependant": {
+			"todo": "Art. 36 al. 2bis LIFD : réduction par enfant et par personne nécessiteuse pour 2027, à relever dans RS 642.119.2 modifiée le 22 septembre 2026 (263 francs en 2026).",
+			"sourceId": "fedlex-ifd-cold-progression"
+		},
+		"minimumLeviedTax": {
+			"value": 25,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 36 al. 3 LIFD : les montants d'impôt inférieurs à 25 francs ne sont pas perçus. Montant fixé par la loi, repris de 2026.json ; vérifier lors du relevé que l'ordonnance 2027 ne le modifie pas. Seuil apprécié sur l'impôt arrondi."
+		},
+		"taxRoundingToNearest": {
+			"value": 1,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-09-28",
+			"effectiveFrom": "2026-01-01",
+			"note": "Arrondi de l'impôt final au franc le plus proche : confirmé par les cas de référence 01, 07 et 13 sur 2026 ; aucune base dans la LIFD. Repris de 2026.json."
+		}
+	}
+}
