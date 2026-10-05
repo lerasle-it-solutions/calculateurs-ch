@@ -9,6 +9,7 @@
  * Les années 2026 et 2027 sont celles dont parle le texte, en toutes lettres.
  */
 import { federalNumber } from "../../data/read-value";
+import { formatChf, formatPercent } from "../format/chf";
 import { getMunicipalMultipliers } from "../../data";
 import { getTaxScales } from "../../data/tax-scales";
 import { resolveTaxYear } from "../../data/tax-years";
@@ -16,21 +17,9 @@ import { PILLAR_3A_BUYBACK_ID } from "../../calculators/pension/pillar-3a-buybac
 import { computePillar3aBuyback, computePillar3aGaps } from "../calculations/pension/pillar-3a-buyback";
 import type { TaxInput } from "../calculations/tax";
 
-const amount = new Intl.NumberFormat("fr-CH");
-/**
- * Montant à la suisse avec l'apostrophe typographique, « 7’258 », quel que soit
- * l'ICU de Node : selon la version, Intl sépare les milliers en fr-CH par une
- * apostrophe droite (Node 24) ou par une espace fine (Node 22, celui de la
- * construction sur Cloudflare). Le séparateur est donc imposé, pas transformé.
- * L'apostrophe typographique est aussi celle que la ponctuation de Markdown
- * donne aux montants écrits dans le texte (« 3’000 »).
- */
-const chf = (value: number): string =>
-	amount
-		.formatToParts(value)
-		.map((part) => (part.type === "group" ? "\u2019" : part.value))
-		.join("");
-const percent = (rate: number): string => `${amount.format(rate * 100)} %`;
+// Montants à la suisse par le formateur unique du site : 7’258, 20 %.
+const chf = formatChf;
+const percent = (rate: number): string => formatPercent(rate);
 
 // Données
 const firstGap = federalNumber(2026, "pillar3a.buyback.firstGapYear");

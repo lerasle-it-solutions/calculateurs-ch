@@ -9,6 +9,8 @@
  * Le routage multilingue n'est pas construit (décision 7) : un seul fichier,
  * importé directement.
  */
+import { formatSwissNumber } from "../lib/format/chf";
+
 export const fr = {
 	site: {
 		name: "calculateurs.ch",
@@ -193,12 +195,12 @@ export const fr = {
 			heading: "Outils de collecte",
 			intro:
 				"Ces outils ont servi à relever les valeurs ; la source juridique de chacune reste l'acte officiel cité dans le tableau ci-dessus. Les conditions d'usage d'un outil s'appliquent aux données qu'il a fournies.",
-			collectedValues: (count: number): string => `${count} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
+			collectedValues: (count: number): string => `${formatSwissNumber(count)} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
 		},
 		municipalCsv: {
 			heading: "Détail communal",
 			intro: (count: number): string =>
-				`Les coefficients communaux (${count} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
+				`Les coefficients communaux (${formatSwissNumber(count)} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
 			downloadLabel: "Télécharger les coefficients communaux (CSV)",
 			unitCaveat:
 				"Les coefficients sont repris tels que reçus de l'AFC ; leur unité (points d'indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant usage dans un calculateur — voir la méthodologie.",

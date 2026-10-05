@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "prebuild": "tsx scripts/fetch-private-data.ts",
     "build": "astro build",
+    "postbuild": "VITEST_DIST=1 vitest run",
     "preview": "astro preview",
     "astro": "astro",
     "pretest": "tsx scripts/fetch-private-data.ts",

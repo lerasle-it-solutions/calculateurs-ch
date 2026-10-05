@@ -9,6 +9,7 @@
  */
 import { allDataFiles, eachValue, getFederalData, getMunicipalMultipliers, sourceRegistry } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
+import { formatChf, formatPercent } from "../../lib/format/chf";
 import { SOURCE_BY_CANTON } from "../../data/sources";
 import { taxEngineCoverage } from "../tax-coverage";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
@@ -32,8 +33,9 @@ const largeRate = pillar3a.largeContributionIncomeRate.value;
 /** Première année où un rachat est possible : celle qui suit la première année de lacune. */
 const firstBuybackYear = firstGapYear + 1;
 
-const chf = (amount: number): string => new Intl.NumberFormat("fr-CH").format(amount);
-const percent = (rate: number): string => new Intl.NumberFormat("fr-CH", { style: "percent" }).format(rate);
+// Montants rendus à la construction (introduction, FAQ) : formateur unique du site.
+const chf = formatChf;
+const percent = (rate: number): string => formatPercent(rate);
 
 /** Années de lacune proposées à la saisie pour l'année du rachat. */
 export const pillar3aGapYears: number[] = Array.from(
