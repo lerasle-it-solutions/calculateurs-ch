@@ -848,7 +848,8 @@ export default defineConfig({
 
 Dépendances : `astro@5`, `@astrojs/sitemap`, `@astrojs/tailwind`, `tailwindcss@4`,
 `@fontsource/figtree`, `zod`, `vitest`, `tsx`,
-`@astrojs/check`, `typescript`. **Ni `@astrojs/preact`, ni `preact`, ni aucune
+`@astrojs/check`, `typescript`, `@astrojs/mdx` (composants Astro dans les articles
+(figures, tableaux générés depuis src/data/)). **Ni `@astrojs/preact`, ni `preact`, ni aucune
 bibliothèque de composants.**
 
 ---
@@ -904,7 +905,7 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 13  | **Apex canonique**, `www` redirigé en 301                                    | Cloudflare aplatit le CNAME ; le nom se dicte mieux au téléphone                                                     |
 | 14  | **Import par exports manuels** de l'AFC, aucun appel programmatique          | Réponse écrite de l'AFC : consultation par l'interface web uniquement                                                |
 | 15  | **Tests avant code** sur le moteur, et tests immuables (R7)                  | Piloter une IA par la spécification plutôt que par la relecture                                                      |
-| 16  | 04.10.2026 — L'année de calcul est résolue par calculateur à la date de construction (`src/data/tax-years.ts`), jamais déduite de la dernière année présente. Repli sur la dernière année complète, annoncé sur la page. | |
+| 16  | **Année de calcul résolue par calculateur à la date de construction, repli annoncé** | Déposer 2027.json faisait passer A1 en 2027 avec des barèmes cantonaux 2026 (04.10.2026) |
 
 ---
 

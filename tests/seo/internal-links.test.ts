@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { decodeEntities, pageRoutes, renderAllPages, staticFiles } from "./site-pages";
 
@@ -7,7 +7,10 @@ import { decodeEntities, pageRoutes, renderAllPages, staticFiles } from "./site-
  * qui commence par « / » désigne une page de src/pages/, une route générée
  * (src/pages/**\/*.ts) ou un fichier de public/.
  */
-const targets = new Set([...pageRoutes, ...staticFiles]);
+let targets: Set<string>;
+beforeAll(async () => {
+	targets = new Set([...(await pageRoutes()), ...staticFiles]);
+});
 
 /** « /prevoyance » et « /prevoyance/ » désignent la même page ; fragment et requête ignorés. */
 const normalize = (href: string): string => {

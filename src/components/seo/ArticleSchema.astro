@@ -1,0 +1,39 @@
+---
+/**
+ * ArticleSchema — JSON-LD schema.org/Article d'un guide. Auteur et éditeur :
+ * l'entité calculateurs.ch, jamais une personne.
+ */
+import { jsonLd } from "../../lib/utils/json-ld";
+import { fr } from "../../i18n/fr";
+
+interface Props {
+	headline: string;
+	description: string;
+	url: string;
+	publishedOn: Date;
+	updatedOn: Date;
+}
+
+const { headline, description, url, publishedOn, updatedOn } = Astro.props;
+
+const organization = {
+	"@type": "Organization",
+	name: fr.site.name,
+	url: new URL("/", Astro.site).href,
+};
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "Article",
+	headline,
+	description,
+	url: new URL(url, Astro.site).href,
+	inLanguage: "fr-CH",
+	datePublished: publishedOn.toISOString().slice(0, 10),
+	dateModified: updatedOn.toISOString().slice(0, 10),
+	author: organization,
+	publisher: organization,
+};
+---
+
+<script type="application/ld+json" is:inline set:html={jsonLd(schema)} />

@@ -1,0 +1,183 @@
+---
+/**
+ * Figure 1 — fenêtre de rachat. Une barre par année de lacune, de la première
+ * année rachetable à l'année de calcul, jusqu'à sa dernière année de rachat ;
+ * les deux années qui précèdent la première, grisées, « non rachetables » ; un
+ * repère sur l'année de calcul (resolveTaxYear, comme A1).
+ *
+ * SVG en ligne rendu à la construction, aucun JavaScript. Deux dispositions :
+ * horizontale dès `md`, verticale en dessous (320 px). Couleurs par tokens
+ * (classes fill-* et stroke-*), sens porté par les libellés.
+ */
+import { federalNumber } from "../../data/read-value";
+import { resolveTaxYear } from "../../data/tax-years";
+import { PILLAR_3A_BUYBACK_ID } from "../../calculators/pension/pillar-3a-buyback";
+
+interface Props {
+	/** Préfixe des identifiants de titre et de description, unique dans la page. */
+	id?: string;
+}
+
+const { id = "figure-fenetre-rachat" } = Astro.props;
+
+const firstGap = federalNumber(2026, "pillar3a.buyback.firstGapYear");
+const lookback = federalNumber(2026, "pillar3a.buyback.lookbackYears");
+const currentYear = resolveTaxYear(PILLAR_3A_BUYBACK_ID).year;
+
+const excludedYears = [firstGap - 2, firstGap - 1];
+const gapYears = Array.from({ length: Math.max(1, currentYear - firstGap + 1) }, (_, index) => firstGap + index);
+const startYear = excludedYears[0]!;
+const endYear = gapYears.at(-1)! + lookback;
+const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index);
+
+const title = "Fenêtre de rachat de chaque lacune";
+const description = [
+	`Lacunes de ${excludedYears.join(" et ")} : non rachetables.`,
+	...gapYears.map((year) => `Lacune ${year} : rachetable de ${year + 1} à ${year + lookback}.`),
+	`Année en cours : ${currentYear}.`,
+].join(" ");
+
+// Disposition horizontale
+const H = { width: 640, label: 112, right: 8, top: 36, row: 36, bar: 24, axis: 28 };
+const hCol = (H.width - H.label - H.right) / years.length;
+const hX = (year: number) => H.label + (year - startYear) * hCol;
+const hRows = [...excludedYears, ...gapYears];
+const hHeight = H.top + hRows.length * H.row + H.axis;
+
+// Disposition verticale
+const V = { width: 288, axis: 44, header: 44, row: 22 };
+const vCol = (V.width - V.axis) / hRows.length;
+const vY = (year: number) => V.header + (year - startYear) * V.row;
+const vHeight = V.header + years.length * V.row + 8;
+---
+
+<figure class="flex max-w-reading flex-col gap-sm">
+	<svg
+		class="hidden w-full md:block"
+		viewBox={`0 0 ${H.width} ${hHeight}`}
+		role="img"
+		aria-labelledby={`${id}-h-title ${id}-h-desc`}
+	>
+		<title id={`${id}-h-title`}>{title}</title>
+		<desc id={`${id}-h-desc`}>{description}</desc>
+		{
+			hRows.map((year, index) => {
+				const y = H.top + index * H.row;
+				const excluded = year < firstGap;
+				return (
+					<g>
+						<text x="0" y={y + H.bar / 2 + 5} class:list={["text-label", excluded ? "fill-ink-muted" : "fill-ink"]}>
+							{`Lacune ${year}`}
+						</text>
+						{excluded ? (
+							<text x={hX(startYear) + 4} y={y + H.bar / 2 + 5} class="fill-ink-muted text-fine">
+								non rachetable
+							</text>
+						) : (
+							<>
+								<rect
+									x={hX(year + 1)}
+									y={y}
+									width={hCol * lookback}
+									height={H.bar}
+									class="fill-accent-tint stroke-accent"
+								/>
+								<text x={hX(year + 1) + hCol * lookback - 8} y={y + H.bar / 2 + 5} text-anchor="end" class="fill-ink text-fine">
+									{`rachetable de ${year + 1} à ${year + lookback}`}
+								</text>
+							</>
+						)}
+					</g>
+				);
+			})
+		}
+		<line
+			x1={hX(currentYear) + hCol / 2}
+			x2={hX(currentYear) + hCol / 2}
+			y1={H.top - 12}
+			y2={H.top + hRows.length * H.row}
+			class="stroke-ink stroke-2"
+		/>
+		<text x={hX(currentYear) + hCol / 2} y={H.top - 18} text-anchor="middle" class="fill-ink text-fine font-bold">
+			{`${currentYear} : année en cours`}
+		</text>
+		{
+			years.map((year) => (
+				<text
+					x={hX(year) + hCol / 2}
+					y={hHeight - 8}
+					text-anchor="middle"
+					class:list={["text-fine tabular-nums", year === currentYear ? "fill-ink font-bold" : "fill-ink-muted"]}
+				>
+					{year}
+				</text>
+			))
+		}
+	</svg>
+
+	<svg
+		class="w-full md:hidden"
+		viewBox={`0 0 ${V.width} ${vHeight}`}
+		role="img"
+		aria-labelledby={`${id}-v-title ${id}-v-desc`}
+	>
+		<title id={`${id}-v-title`}>{title}</title>
+		<desc id={`${id}-v-desc`}>{description}</desc>
+		{
+			hRows.map((year, index) => {
+				const x = V.axis + index * vCol;
+				const excluded = year < firstGap;
+				return (
+					<g>
+						<text x={x + vCol / 2} y="16" text-anchor="middle" class:list={["text-fine", excluded ? "fill-ink-muted" : "fill-ink font-bold"]}>
+							Lacune
+						</text>
+						<text x={x + vCol / 2} y="32" text-anchor="middle" class:list={["text-fine tabular-nums", excluded ? "fill-ink-muted" : "fill-ink font-bold"]}>
+							{year}
+						</text>
+						{excluded ? null : (
+							<>
+								<rect
+									x={x + 6}
+									y={vY(year + 1)}
+									width={vCol - 12}
+									height={V.row * lookback}
+									class="fill-accent-tint stroke-accent"
+								/>
+								<text x={x + vCol / 2} y={vY(year + lookback) + 15} text-anchor="middle" class="fill-ink text-fine">
+									{`→ ${year + lookback}`}
+								</text>
+							</>
+						)}
+					</g>
+				);
+			})
+		}
+		<text x={V.axis + vCol} y={vY(firstGap - 1) + 15} text-anchor="middle" class="fill-ink-muted text-fine">
+			non rachetables
+		</text>
+		<line
+			x1={V.axis - 4}
+			x2={V.width}
+			y1={vY(currentYear) + V.row / 2}
+			y2={vY(currentYear) + V.row / 2}
+			class="stroke-ink stroke-2"
+		/>
+		{
+			years.map((year) => (
+				<text
+					x="0"
+					y={vY(year) + 15}
+					class:list={["text-fine tabular-nums", year === currentYear ? "fill-ink font-bold" : "fill-ink-muted"]}
+				>
+					{year}
+				</text>
+			))
+		}
+	</svg>
+
+	<figcaption class="text-fine text-ink-muted">
+		Figure 1 — Chaque lacune est rachetable pendant {lookback} ans, à partir de l'année qui la
+		suit. Les lacunes antérieures à {firstGap} ne le sont jamais. Trait épais : {currentYear}, année en cours.
+	</figcaption>
+</figure>

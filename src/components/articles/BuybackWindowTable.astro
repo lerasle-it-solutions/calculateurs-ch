@@ -1,0 +1,73 @@
+---
+/**
+ * BuybackWindowTable — « année du rachat / lacunes rachetables », généré
+ * depuis la première année de lacune rachetable et le délai de rachat
+ * (OPP 3, art. 7a al. 1 let. a). Rendu à la construction, tableau § 2.7.
+ * Affiche les trois premières années de rachat, puis les deux dernières de la
+ * première lacune, celle où elle est encore rachetable et celle où elle est
+ * périmée.
+ */
+import { federalNumber } from "../../data/read-value";
+
+const firstGap = federalNumber(2026, "pillar3a.buyback.firstGapYear");
+const lookback = federalNumber(2026, "pillar3a.buyback.lookbackYears");
+
+const span = (from: number, to: number): string =>
+	from === to ? String(from) : to === from + 1 ? `${from} et ${to}` : `${from} à ${to}`;
+
+/** Lacunes rachetables l'année du rachat `year`, et lacunes périmées entre la première et la plus ancienne encore rachetable. */
+const row = (year: number) => {
+	const from = Math.max(firstGap, year - lookback);
+	const expired = from > firstGap ? span(firstGap, from - 1) : null;
+	return {
+		year,
+		gaps: span(from, year - 1),
+		expired: expired === null ? null : from - 1 === firstGap ? `${expired} est périmée` : `${expired} sont périmées`,
+	};
+};
+
+const firstBuyback = firstGap + 1;
+const lastRows = [firstGap + lookback, firstGap + lookback + 1];
+const rows = [firstBuyback, firstBuyback + 1, firstBuyback + 2].map(row);
+const tail = lastRows.map(row);
+const cell = "border-b border-hairline px-md py-sm";
+---
+
+<div class="overflow-x-auto rounded-panel border border-hairline bg-paper">
+	<table class="w-full border-collapse text-label [&_tbody_tr:last-child>td]:border-b-0">
+		<caption class="caption-top px-md py-sm text-left text-fine text-ink-muted">
+			Lacunes rachetables selon l'année du rachat
+		</caption>
+		<thead>
+			<tr class="bg-tint text-left font-bold">
+				<th scope="col" class={cell}>Année du rachat</th>
+				<th scope="col" class={cell}>Lacunes rachetables</th>
+			</tr>
+		</thead>
+		<tbody>
+			{
+				rows.map((entry) => (
+					<tr>
+						<td class:list={[cell, "tabular-nums"]}>{entry.year}</td>
+						<td class:list={[cell, "tabular-nums"]}>{entry.gaps}</td>
+					</tr>
+				))
+			}
+			<tr>
+				<td class={cell} aria-hidden="true">…</td>
+				<td class={cell} aria-hidden="true">…</td>
+			</tr>
+			{
+				tail.map((entry) => (
+					<tr>
+						<td class:list={[cell, "tabular-nums"]}>{entry.year}</td>
+						<td class:list={[cell, "tabular-nums"]}>
+							{entry.gaps}
+							{entry.expired && <span class="text-ink-muted"> ({entry.expired})</span>}
+						</td>
+					</tr>
+				))
+			}
+		</tbody>
+	</table>
+</div>

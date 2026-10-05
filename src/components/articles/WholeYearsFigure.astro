@@ -1,0 +1,133 @@
+---
+/**
+ * Figure 2 — années entières ou années entamées (piège 4). Même plafond, celui
+ * de l'année du rachat : à gauche, l'année entière la plus élevée est
+ * rachetée et l'autre gardée intacte ; à droite, le plafond partagé clôt les
+ * deux années et leur solde est perdu (OPP 3, art. 7a al. 3).
+ *
+ * Les montants viennent du module de valeurs de l'article. SVG en ligne rendu
+ * à la construction ; deux panneaux côte à côte dès `md`, l'un sous l'autre en
+ * dessous. Le sens est porté par les libellés, jamais par la seule couleur.
+ */
+import { formatAmount, numbers } from "../../lib/articles/rachat-3a-retroactif";
+
+interface Props {
+	id?: string;
+}
+
+const { id = "figure-annees-entieres" } = Astro.props;
+const { pitfall4 } = numbers;
+
+type Bar = { year: number; gap: number; bought: number };
+
+const panels = [
+	{
+		key: "whole",
+		heading: "Années entières",
+		bars: pitfall4.whole as Bar[],
+	},
+	{
+		key: "split",
+		heading: "Années entamées",
+		bars: pitfall4.split as Bar[],
+	},
+].map((panel) => {
+	const bought = panel.bars.reduce((sum, bar) => sum + bar.bought, 0);
+	const lost = panel.key === "split" ? panel.bars.reduce((sum, bar) => sum + bar.gap - bar.bought, 0) : 0;
+	return {
+		...panel,
+		bought,
+		lost,
+		summary:
+			lost === 0
+				? `Rachat ${pitfall4.buybackYear} : ${formatAmount(bought)} francs, rien de perdu.`
+				: `Rachat ${pitfall4.buybackYear} : ${formatAmount(bought)} francs, ${formatAmount(lost)} francs de lacune perdus.`,
+	};
+});
+
+const maxGap = Math.max(...pitfall4.whole.map((bar) => bar.gap));
+const P = { width: 300, height: 250, top: 28, base: 200, barWidth: 100 };
+const scale = (amount: number) => ((P.base - P.top) * amount) / maxGap;
+const barX = (index: number) => 30 + index * 140;
+const capY = P.base - scale(pitfall4.cap);
+---
+
+<figure class="flex max-w-reading flex-col gap-sm">
+	<div class="grid gap-lg md:grid-cols-2">
+		{
+			panels.map((panel) => (
+				<div class="flex flex-col gap-xs">
+					<p class="text-label font-bold">{panel.heading}</p>
+					<svg
+						class="w-full"
+						viewBox={`0 0 ${P.width} ${P.height}`}
+						role="img"
+						aria-labelledby={`${id}-${panel.key}-title ${id}-${panel.key}-desc`}
+					>
+						<title id={`${id}-${panel.key}-title`}>{panel.heading}</title>
+						<desc id={`${id}-${panel.key}-desc`}>
+							{panel.bars
+								.map((bar) =>
+									bar.bought === 0
+										? `Lacune ${bar.year} de ${formatAmount(bar.gap)} francs, gardée intacte.`
+										: bar.bought === bar.gap
+											? `Lacune ${bar.year} de ${formatAmount(bar.gap)} francs, rachetée entière.`
+											: `Lacune ${bar.year} de ${formatAmount(bar.gap)} francs, rachetée à hauteur de ${formatAmount(bar.bought)} francs ; le solde de ${formatAmount(bar.gap - bar.bought)} francs est perdu.`,
+								)
+								.join(" ")}{" "}
+							{panel.summary}
+						</desc>
+						<line x1="16" x2={P.width - 16} y1={capY} y2={capY} class="stroke-ink stroke-2" />
+						<text x={P.width - 16} y={capY - 6} text-anchor="end" class="fill-ink text-fine font-bold">
+							{`plafond ${pitfall4.buybackYear} : ${formatAmount(pitfall4.cap)}`}
+						</text>
+						{panel.bars.map((bar, index) => {
+							const x = barX(index);
+							const gapTop = P.base - scale(bar.gap);
+							const boughtTop = P.base - scale(bar.bought);
+							const rest = bar.gap - bar.bought;
+							return (
+								<g>
+									<rect x={x} y={gapTop} width={P.barWidth} height={scale(bar.gap)} class="fill-paper stroke-rule" />
+									{bar.bought > 0 && (
+										<rect x={x} y={boughtTop} width={P.barWidth} height={scale(bar.bought)} class="fill-accent-tint stroke-accent" />
+									)}
+									{bar.bought > 0 && (
+										<text x={x + P.barWidth / 2} y={P.base - 8} text-anchor="middle" class="fill-ink text-fine tabular-nums">
+											{formatAmount(bar.bought)}
+										</text>
+									)}
+									{rest > 0 && panel.key === "split" && (
+										<text x={x + P.barWidth / 2} y={gapTop + (boughtTop - gapTop) / 2 + 5} text-anchor="middle" class="fill-ink-muted text-fine">
+											perdu <tspan class="line-through tabular-nums">{formatAmount(rest)}</tspan>
+										</text>
+									)}
+									{rest > 0 && panel.key === "whole" && (
+										<>
+											<text x={x + P.barWidth / 2} y={gapTop + (boughtTop - gapTop) / 2 - 3} text-anchor="middle" class="fill-ink-muted text-fine">
+												gardée
+											</text>
+											<text x={x + P.barWidth / 2} y={gapTop + (boughtTop - gapTop) / 2 + 13} text-anchor="middle" class="fill-ink-muted text-fine">
+												{`pour ${pitfall4.nextBuybackYear}`}
+											</text>
+										</>
+									)}
+									<text x={x + P.barWidth / 2} y={P.base + 20} text-anchor="middle" class="fill-ink text-fine font-bold tabular-nums">
+										{`Lacune ${bar.year}`}
+									</text>
+									<text x={x + P.barWidth / 2} y={P.base + 38} text-anchor="middle" class="fill-ink-muted text-fine tabular-nums">
+										{formatAmount(bar.gap)}
+									</text>
+								</g>
+							);
+						})}
+					</svg>
+					<p class="text-fine">{panel.summary}</p>
+				</div>
+			))
+		}
+	</div>
+	<figcaption class="text-fine text-ink-muted">
+		Figure 2 — Même plafond, deux choix. Une année entamée ne se complète plus : son solde est perdu.
+	</figcaption>
+</figure>

@@ -140,6 +140,16 @@ export const fr = {
 			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
+	article: {
+		/** Avant la date de mise à jour, en tête d'article. */
+		updatedOn: "Mis à jour le",
+		readingTime: (minutes: number): string => `Lecture : ${minutes} minutes`,
+		sourcesHeading: "Sources officielles",
+		/** Réserve en fin d'article, datée de sa mise à jour. */
+		disclaimer: (date: string): string =>
+			`Cet article décrit le droit en vigueur au ${date}. Il ne constitue pas un conseil fiscal ou financier personnalisé.`,
+	},
+
 	calculator: {
 		faqTitle: "Questions fréquentes",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */

@@ -1,0 +1,17 @@
+---
+/**
+ * SourceLink — lien vers une source du registre, dans le texte d'un article :
+ * l'URL vient de src/data/sources.ts. Le texte du lien est le contenu du
+ * composant ; à défaut, le nom de la source.
+ */
+import { sourceLink } from "../../lib/source-links";
+
+interface Props {
+	id: string;
+}
+
+const link = sourceLink(Astro.props.id);
+const hasText = Astro.slots.has("default");
+---
+
+<a href={link.url}>{hasText ? <slot /> : link.name}</a>
