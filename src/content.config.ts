@@ -10,10 +10,14 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
-/** Une source : citée en toutes lettres, ou lue dans le registre par son identifiant. */
+/**
+ * Une source : citée en toutes lettres, ou lue dans le registre par son
+ * identifiant (URL du registre, libellé facultatif). `publisher` s'affiche
+ * après le lien : « OPP 3, art. 7a — Fedlex ».
+ */
 const sourceSchema = z.union([
-	z.object({ name: z.string().min(1), url: z.url() }).strict(),
-	z.object({ sourceId: z.string().min(1), name: z.string().min(1).optional() }).strict(),
+	z.object({ name: z.string().min(1), url: z.url(), publisher: z.string().min(1).optional() }).strict(),
+	z.object({ sourceId: z.string().min(1), name: z.string().min(1).optional(), publisher: z.string().min(1).optional() }).strict(),
 ]);
 
 const articles = defineCollection({

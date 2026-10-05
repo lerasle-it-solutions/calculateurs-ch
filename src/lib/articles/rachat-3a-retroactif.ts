@@ -11,11 +11,19 @@
 import { federalNumber } from "../../data/read-value";
 import { getMunicipalMultipliers } from "../../data";
 import { getTaxScales } from "../../data/tax-scales";
+import { resolveTaxYear } from "../../data/tax-years";
+import { PILLAR_3A_BUYBACK_ID } from "../../calculators/pension/pillar-3a-buyback";
 import { computePillar3aBuyback, computePillar3aGaps } from "../calculations/pension/pillar-3a-buyback";
 import type { TaxInput } from "../calculations/tax";
 
 const amount = new Intl.NumberFormat("fr-CH");
-const chf = (value: number): string => amount.format(value);
+/**
+ * Montant à la suisse avec l'apostrophe typographique, « 7’258 » : le texte
+ * de l'article passe par la ponctuation typographique de Markdown, qui
+ * transforme ses propres « 3'000 » en « 3’000 » ; les valeurs insérées
+ * doivent avoir la même apostrophe.
+ */
+const chf = (value: number): string => amount.format(value).replace(/'/g, "\u2019");
 const percent = (rate: number): string => `${amount.format(rate * 100)} %`;
 
 // Données
@@ -164,6 +172,8 @@ export const numbers = {
 	smallCap2027: small2027,
 	pitfall4,
 	example,
+	/** Année de calcul d'A1 (resolveTaxYear) : repère « année en cours » de la figure 1. */
+	currentTaxYear: resolveTaxYear(PILLAR_3A_BUYBACK_ID).year,
 } as const;
 
 /** Montant formaté à la suisse, pour les composants de l'article. */

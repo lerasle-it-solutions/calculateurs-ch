@@ -26,8 +26,11 @@ describe("accesseur strict des valeurs d'article", () => {
 		expect(values.lookbackYears).toBe("10");
 		expect(values.firstGapLastBuybackYear).toBe("2035");
 		expect(values.firstGapExpiredYear).toBe("2036");
-		expect(values.smallCap2027).toBe(new Intl.NumberFormat("fr-CH").format(getFederalData(2027).pillar3a.smallContributionCap.value));
-		expect(values.lostWhenSplit2027).toBe(new Intl.NumberFormat("fr-CH").format(7143));
+		// Apostrophe typographique, comme le texte de l'article après la ponctuation de Markdown
+		const swiss = (value: number) => new Intl.NumberFormat("fr-CH").format(value).replace(/'/g, "\u2019");
+		expect(values.smallCap2027).toBe(swiss(getFederalData(2027).pillar3a.smallContributionCap.value));
+		expect(values.smallCap2027).toBe("7\u2019373");
+		expect(values.lostWhenSplit2027).toBe(swiss(7143));
 	});
 });
 

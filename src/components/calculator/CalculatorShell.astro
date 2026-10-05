@@ -50,6 +50,8 @@ interface Props {
 	resultNote?: string;
 	/** Annonce rendue au build au-dessus du formulaire (année de calcul antérieure…). FRANÇAIS. */
 	notice?: string;
+	/** Lien vers le guide qui explique le calculateur, sous l'introduction. HTML statique. */
+	guide?: { label: string; url: string };
 	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
 	verifiedOn: string;
 	/**
@@ -66,6 +68,7 @@ const {
 	resultLabel,
 	resultNote,
 	notice,
+	guide,
 	verifiedOn,
 	catalog = [],
 } = Astro.props;
@@ -103,6 +106,11 @@ const resultFor = definition.fields
 	<header class="flex max-w-reading flex-col gap-sm">
 		<h1 class="text-title">{definition.title}</h1>
 		{(Array.isArray(intro) ? intro : [intro]).map((paragraph) => <p class="text-lead text-ink-muted">{paragraph}</p>)}
+		{guide && (
+			<p class="text-label font-bold">
+				<a href={guide.url}>{guide.label}</a>
+			</p>
+		)}
 	</header>
 
 	<ScopeNotice

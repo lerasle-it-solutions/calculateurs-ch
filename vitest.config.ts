@@ -8,5 +8,7 @@ export default getViteConfig({
 	test: {
 		include: ["tests/**/*.test.ts"],
 		environment: "node",
+		// Collections de contenu synchronisées avant les tests (articles MDX).
+		globalSetup: ["tests/setup/content-store.ts"],
 	},
 });

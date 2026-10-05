@@ -3,15 +3,14 @@
  * Figure 1 — fenêtre de rachat. Une barre par année de lacune, de la première
  * année rachetable à l'année de calcul, jusqu'à sa dernière année de rachat ;
  * les deux années qui précèdent la première, grisées, « non rachetables » ; un
- * repère sur l'année de calcul (resolveTaxYear, comme A1).
+ * repère sur l'année de calcul (resolveTaxYear, comme A1). Toutes les années
+ * viennent du module de valeurs de l'article.
  *
  * SVG en ligne rendu à la construction, aucun JavaScript. Deux dispositions :
  * horizontale dès `md`, verticale en dessous (320 px). Couleurs par tokens
  * (classes fill-* et stroke-*), sens porté par les libellés.
  */
-import { federalNumber } from "../../data/read-value";
-import { resolveTaxYear } from "../../data/tax-years";
-import { PILLAR_3A_BUYBACK_ID } from "../../calculators/pension/pillar-3a-buyback";
+import { numbers } from "../../lib/articles/rachat-3a-retroactif";
 
 interface Props {
 	/** Préfixe des identifiants de titre et de description, unique dans la page. */
@@ -20,9 +19,9 @@ interface Props {
 
 const { id = "figure-fenetre-rachat" } = Astro.props;
 
-const firstGap = federalNumber(2026, "pillar3a.buyback.firstGapYear");
-const lookback = federalNumber(2026, "pillar3a.buyback.lookbackYears");
-const currentYear = resolveTaxYear(PILLAR_3A_BUYBACK_ID).year;
+const firstGap = numbers.firstGapYear;
+const lookback = numbers.lookbackYears;
+const currentYear = numbers.currentTaxYear;
 
 const excludedYears = [firstGap - 2, firstGap - 1];
 const gapYears = Array.from({ length: Math.max(1, currentYear - firstGap + 1) }, (_, index) => firstGap + index);

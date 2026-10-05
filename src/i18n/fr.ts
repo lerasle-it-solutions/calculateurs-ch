@@ -140,6 +140,12 @@ export const fr = {
 			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
+	familyPage: {
+		guidesHeading: "Guides",
+		/** Lien d'action à la fin de chaque carte de guide. */
+		readGuide: "Lire le guide",
+	},
+
 	article: {
 		/** Avant la date de mise à jour, en tête d'article. */
 		updatedOn: "Mis à jour le",

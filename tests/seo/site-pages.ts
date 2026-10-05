@@ -7,7 +7,9 @@ import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { getContainerRenderer as mdxRenderer } from "@astrojs/mdx/container-renderer";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { loadRenderers } from "astro:container";
 
 const PAGES_PREFIX = "../../src/pages";
 const PUBLIC_DIR = fileURLToPath(new URL("../../public/", import.meta.url));
@@ -71,7 +73,9 @@ let rendered: Promise<RenderedPage[]> | undefined;
 /** Toutes les pages, rendues une seule fois par fichier de test. */
 export const renderAllPages = (): Promise<RenderedPage[]> => {
 	rendered ??= (async () => {
-		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
+		// Le rendu MDX des articles (collection `articles`) demande son moteur de rendu.
+		const renderers = await loadRenderers([mdxRenderer()]);
+		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" }, renderers });
 		const pages: RenderedPage[] = [];
 		for (const { route, Page, params, props } of await pagesToRender()) {
 			const html = await container.renderToString(Page, {
