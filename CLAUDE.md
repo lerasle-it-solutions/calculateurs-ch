@@ -852,6 +852,10 @@ Dépendances : `astro@5`, `@astrojs/sitemap`, `@astrojs/tailwind`, `tailwindcss@
 (figures, tableaux générés depuis src/data/)). **Ni `@astrojs/preact`, ni `preact`, ni aucune
 bibliothèque de composants.**
 
+Node.js : **24.21.0** (LTS), fixé par `.node-version`, la même version en local et pour la
+construction sur Cloudflare Pages. Sur Cloudflare (`CF_PAGES=1`),
+`tests/environment/node-version.test.ts` fait échouer la construction si une autre version tourne.
+
 ---
 
 ## 10. Séparation des responsabilités

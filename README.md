@@ -48,6 +48,8 @@ src/ calculateurs/ définitions déclaratives (périmètre, champs, hypothèses,
 
 ## Développement
 
+Node.js **24.21.0** (LTS), fixé par `.node-version` : la même version en local et pour la construction sur Cloudflare Pages.
+
 ```bash
 npm install
 npm run dev
