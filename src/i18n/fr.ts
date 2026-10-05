@@ -130,10 +130,14 @@ export const fr = {
 		open: "Ouvrir le calculateur",
 	},
 
-	taxYear: {
-		/** Annonce statique, au-dessus du formulaire, quand l'année civile n'est pas encore relevée. */
-		fallbackNotice: (year: number, calendarYear: number): string =>
-			`Calcul sur les barèmes ${year} : ceux de ${calendarYear} ne sont pas encore relevés.`,
+	/**
+	 * Annonce propre à chaque calculateur, rendue au build au-dessus du
+	 * formulaire, quand l'année civile n'est pas encore relevée et que le
+	 * calcul se fait sur une année antérieure (src/data/tax-years.ts).
+	 */
+	taxYearFallback: {
+		pillar3aBuyback: (year: number, calendarYear: number): string =>
+			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
 	calculator: {

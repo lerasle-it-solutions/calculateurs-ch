@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fr } from "../../src/i18n/fr";
 
 /**
  * Annonce de l'année de calcul sur A1 : rendue à la construction, au-dessus
@@ -26,7 +25,7 @@ afterEach(() => {
 describe("annonce de l'année de calcul sur A1", () => {
 	it("le 02.01.2027, la page annonce le calcul sur les barèmes 2026, au-dessus du formulaire", async () => {
 		const html = await renderA1At("2027-01-02T09:00:00+01:00");
-		const notice = fr.taxYear.fallbackNotice(2026, 2027);
+		const notice = "Ce calcul porte sur un rachat effectué en 2026 : les barèmes de 2027 ne sont pas encore relevés.";
 		expect(html).toContain(notice);
 		expect(html.indexOf(notice)).toBeLessThan(html.indexOf("<form"));
 	});

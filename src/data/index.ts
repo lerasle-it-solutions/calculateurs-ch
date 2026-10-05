@@ -177,25 +177,18 @@ export const availableCantons = (): string[] =>
 	[...loadCantons().keys()].sort();
 
 /**
- * Données fédérales de `year` ; à défaut, celles de la plus récente année
- * disponible qui la précède. Ne choisit pas l'année de calcul d'un
- * calculateur : voir resolveTaxYear (src/data/tax-years.ts).
+ * Données fédérales de `year`, et seulement de `year` : une année absente lève
+ * une erreur, jamais de repli silencieux sur une année antérieure. L'année de
+ * calcul d'un calculateur se choisit avec resolveTaxYear (src/data/tax-years.ts).
  */
 export const getFederalData = (year: number): FederalData => {
-	const table = loadFederal();
-	const exact = table.get(year);
-	if (exact) return exact;
-
-	const fallback = [...table.keys()]
-		.filter((available) => available < year)
-		.sort((a, b) => b - a)[0];
-
-	if (fallback === undefined) {
+	const data = loadFederal().get(year);
+	if (data === undefined) {
 		throw new Error(
-			`Aucune donnée fédérale disponible pour ${year} ou une année antérieure.`,
+			`Aucune donnée fédérale pour ${year} (années disponibles : ${availableFederalYears().join(", ") || "aucune"}).`,
 		);
 	}
-	return table.get(fallback) as FederalData;
+	return data;
 };
 
 /** Données d'un canton romand par son code (VD, GE, VS, FR, NE, JU). */

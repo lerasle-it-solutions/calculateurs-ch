@@ -904,6 +904,7 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 13  | **Apex canonique**, `www` redirigé en 301                                    | Cloudflare aplatit le CNAME ; le nom se dicte mieux au téléphone                                                     |
 | 14  | **Import par exports manuels** de l'AFC, aucun appel programmatique          | Réponse écrite de l'AFC : consultation par l'interface web uniquement                                                |
 | 15  | **Tests avant code** sur le moteur, et tests immuables (R7)                  | Piloter une IA par la spécification plutôt que par la relecture                                                      |
+| 16  | 04.10.2026 — L'année de calcul est résolue par calculateur à la date de construction (`src/data/tax-years.ts`), jamais déduite de la dernière année présente. Repli sur la dernière année complète, annoncé sur la page. | |
 
 ---
 

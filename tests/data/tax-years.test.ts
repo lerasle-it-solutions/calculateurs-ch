@@ -104,6 +104,10 @@ describe("année fiscale de calcul", () => {
 		expect(resolveYear([2026, 2027], new Date("2026-12-31T23:30:00Z")).calendarYear).toBe(2027);
 	});
 
+	it("getFederalData est stricte : une année absente lève une erreur, sans repli", () => {
+		expect(() => getFederalData(2030)).toThrow(/Aucune donnée fédérale pour 2030/);
+	});
+
 	it("les plafonds 3a de 2027 se lisent explicitement : petite cotisation de 7 373 CHF", () => {
 		expect(getFederalData(2027).year).toBe(2027);
 		expect(getFederalData(2027).pillar3a.smallContributionCap.value).toBe(7373);

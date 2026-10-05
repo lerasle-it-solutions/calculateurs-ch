@@ -73,7 +73,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		resultNote={pillar3aBuybackTexts.disclaimer}
 		notice={
 			pillar3aBuybackTaxYear.isFallback
-				? fr.taxYear.fallbackNotice(pillar3aBuybackTaxYear.year, pillar3aBuybackTaxYear.calendarYear)
+				? fr.taxYearFallback.pillar3aBuyback(pillar3aBuybackTaxYear.year, pillar3aBuybackTaxYear.calendarYear)
 				: undefined
 		}
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
