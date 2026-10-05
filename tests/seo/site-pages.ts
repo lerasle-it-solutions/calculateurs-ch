@@ -7,12 +7,18 @@ import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { getContainerRenderer as mdxRenderer } from "@astrojs/mdx/container-renderer";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { loadRenderers } from "astro:container";
 
 const PAGES_PREFIX = "../../src/pages";
 const PUBLIC_DIR = fileURLToPath(new URL("../../public/", import.meta.url));
 
-const pageModules = import.meta.glob<{ default: Parameters<AstroContainer["renderToString"]>[0] }>("../../src/pages/**/*.astro");
+type PageModule = {
+	default: Parameters<AstroContainer["renderToString"]>[0];
+	getStaticPaths?: () => Promise<{ params: Record<string, string>; props?: Record<string, unknown> }[]>;
+};
+const pageModules = import.meta.glob<PageModule>("../../src/pages/**/*.astro");
 const endpointModules = import.meta.glob("../../src/pages/**/*.ts");
 
 /** « ../../src/pages/prevoyance/index.astro » → « /prevoyance/ » ; « 404.astro » → « /404/ ». */
@@ -32,7 +38,33 @@ export const staticFiles: string[] = [
 	...Object.keys(endpointModules).map((path) => path.slice(PAGES_PREFIX.length).replace(/\.ts$/, "")),
 ];
 
-export const pageRoutes: string[] = Object.keys(pageModules).map(routeOf);
+/** « /prevoyance/guides/[slug]/ » + { slug: "x" } → « /prevoyance/guides/x/ ». */
+const fill = (route: string, params: Record<string, string>): string =>
+	route.replace(/\[(\w+)\]/g, (_, name: string) => params[name] ?? `[${name}]`);
+
+/** Chaque page à rendre : une par fichier, une par jeu de paramètres pour une route dynamique. */
+const pagesToRender = async (): Promise<{ route: string; Page: PageModule["default"]; params?: Record<string, string>; props?: Record<string, unknown> }[]> => {
+	const out = [];
+	for (const [path, load] of Object.entries(pageModules)) {
+		const module = await load();
+		const route = routeOf(path);
+		if (!route.includes("[")) {
+			out.push({ route, Page: module.default });
+			continue;
+		}
+		for (const { params, props } of (await module.getStaticPaths?.()) ?? []) {
+			out.push({ route: fill(route, params), Page: module.default, params, props });
+		}
+	}
+	return out;
+};
+
+let routes: Promise<string[]> | undefined;
+/** Routes des pages du site, routes dynamiques résolues. */
+export const pageRoutes = (): Promise<string[]> => {
+	routes ??= pagesToRender().then((pages) => pages.map((page) => page.route));
+	return routes;
+};
 
 export type RenderedPage = { route: string; html: string };
 
@@ -41,13 +73,15 @@ let rendered: Promise<RenderedPage[]> | undefined;
 /** Toutes les pages, rendues une seule fois par fichier de test. */
 export const renderAllPages = (): Promise<RenderedPage[]> => {
 	rendered ??= (async () => {
-		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
+		// Le rendu MDX des articles (collection `articles`) demande son moteur de rendu.
+		const renderers = await loadRenderers([mdxRenderer()]);
+		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" }, renderers });
 		const pages: RenderedPage[] = [];
-		for (const [path, load] of Object.entries(pageModules)) {
-			const route = routeOf(path);
-			const { default: Page } = await load();
+		for (const { route, Page, params, props } of await pagesToRender()) {
 			const html = await container.renderToString(Page, {
 				request: new Request(`https://calculateurs.ch${route}`),
+				...(params ? { params } : {}),
+				...(props ? { props } : {}),
 			});
 			pages.push({ route, html });
 		}

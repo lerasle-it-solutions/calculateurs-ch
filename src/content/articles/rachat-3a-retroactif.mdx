@@ -1,0 +1,128 @@
+---
+title: "Rachat rétroactif du 3e pilier : ce qui change depuis 2026"
+metaTitle: "Rachat 3a rétroactif : conditions, plafond et 5 pièges"
+description: "Racheter les lacunes de son 3e pilier depuis 2025 : conditions de l'OPP 3, plafond annuel, exemple chiffré et cinq pièges qui font perdre une déduction."
+family: pension
+publishedOn: 2026-10-05
+updatedOn: 2026-10-05
+readingMinutes: 6
+relatedCalculators:
+  - pension.pillar-3a-buyback
+sources:
+  - sourceId: opp3-art-7a
+    name: "OPP 3, art. 7, 7a, 7b et 8"
+    publisher: Fedlex
+  - sourceId: ofas-pillar-3a-caps
+    name: "Le troisième pilier"
+    publisher: OFAS
+  - sourceId: afc-circular-18a
+    name: "Circulaire n° 18a du 22 décembre 2025"
+    publisher: AFC
+  - name: "Communiqué du 6 novembre 2024"
+    url: "https://www.bsv.admin.ch/bsv/fr/home/publications-et-services/medieninformationen/nsb-anzeigeseite-unter-aktuell.msg-id-103044.html"
+    publisher: Conseil fédéral
+  - sourceId: ofas-amounts-2027
+    name: "Montants valables à partir du 1er janvier 2027"
+    publisher: Conseil fédéral et OFAS
+---
+
+import { contributionAndBuyback2026, contributionAndBuyback2027, exampleBuyback, exampleCantonalSaving, exampleFederalSaving, exampleGap, exampleNetCost, exampleTotalSaving, firstBuybackYear, firstGapLastBuybackYear, firstGapYear, largeCap2026, largeCap2027, largeCapRate2026, lookbackYears, lostWhenSplit2027, smallCap2026, smallCap2027 } from "../../lib/articles/rachat-3a-retroactif";
+import BuybackWindowTable from "../../components/articles/BuybackWindowTable.astro";
+import BuybackWindowFigure from "../../components/articles/BuybackWindowFigure.astro";
+import WholeYearsFigure from "../../components/articles/WholeYearsFigure.astro";
+import SourceLink from "../../components/articles/SourceLink.astro";
+
+**Calculez votre lacune et votre économie d'impôt : [calculateur de rachat 3a rétroactif](/prevoyance/rachat-3a-retroactif/).**
+
+**La réponse courte.** Depuis 2026, vous pouvez verser après coup dans votre pilier 3a ce que vous n'avez pas versé depuis {firstGapYear}. Chaque lacune reste rachetable pendant {lookbackYears} ans. Le rachat est plafonné, chaque année, à la « petite cotisation » de l'année du rachat ({smallCap2026} francs en 2026), toutes lacunes confondues, et il se déduit entièrement du revenu imposable. Deux conditions préalables : un revenu soumis à l'AVS l'année de la lacune comme l'année du rachat, et la cotisation ordinaire de l'année du rachat versée en entier. Les lacunes antérieures à {firstGapYear} restent perdues.
+
+## Ce qui a changé : une année manquée n'est plus perdue
+
+Depuis l'entrée en vigueur de l'OPP 3, le 1er janvier 1987, une année sans versement au 3a était perdue, avec la déduction fiscale qui allait avec. Le 6 novembre 2024, le Conseil fédéral a modifié l'ordonnance pour mettre en œuvre la motion 19.3702 du conseiller aux États Erich Ettlin ([communiqué](https://www.bsv.admin.ch/bsv/fr/home/publications-et-services/medieninformationen/nsb-anzeigeseite-unter-aktuell.msg-id-103044.html)). Les nouveaux articles 7a et 7b de l'[OPP 3](https://www.fedlex.admin.ch/eli/cc/1985/1778_1778_1778/fr) sont en vigueur depuis le 1er janvier 2025.
+
+Seules les lacunes nées à partir de {firstGapYear} comptent. Le premier rachat possible a donc lieu en {firstBuybackYear}, pour l'année {firstGapYear}.
+
+<BuybackWindowFigure />
+
+<BuybackWindowTable />
+
+## Qui est concerné ?
+
+Toute personne qui touche un revenu soumis à l'AVS et qui n'a pas versé le maximum une année depuis {firstGapYear}. Le revenu peut être un salaire, un revenu d'indépendant ou un revenu de remplacement soumis à l'AVS : les personnes au chômage qui perçoivent des indemnités journalières peuvent aussi cotiser au 3a ([OFAS](https://www.bsv.admin.ch/fr/le-troisieme-pilier)).
+
+**C'est l'affiliation à un 2e pilier qui fixe votre plafond ordinaire, pas votre statut.**
+
+- Affilié à une caisse de pension, salarié ou indépendant, à titre obligatoire ou facultatif : la petite cotisation, {smallCap2026} francs en 2026 (art. 7 al. 1 let. a OPP 3).
+- Non affilié, par exemple un indépendant sans caisse de pension : {largeCapRate2026} du revenu de l'activité lucrative, au plus {largeCap2026} francs en 2026 (art. 7 al. 1 let. b OPP 3).
+
+Le rachat, lui, reste plafonné à la petite cotisation pour tout le monde, même sans 2e pilier. Une lacune de 10'000 francs ne se rachète qu'à hauteur de {smallCap2026} francs en 2026, et le solde ne pourra plus jamais être comblé, puisqu'une année de lacune ne se rachète qu'une fois.
+
+**Toucher une rente AVS n'empêche pas le rachat.** Si vous continuez à travailler après l'âge de référence, vous pouvez cotiser et racheter jusqu'à cinq ans après cet âge (art. 7a al. 5 et art. 7 al. 3 OPP 3). Ce qui ferme définitivement le rachat, c'est d'avoir déjà perçu une prestation de vieillesse **du 3a** (art. 7a al. 4 OPP 3). Attention : selon l'AFC, tout retrait du 3a dans les cinq ans qui précèdent l'âge de référence compte comme une prestation de vieillesse ([circulaire n° 18a](https://www.estv.admin.ch/dam/fr/sd-web/yQgKmvu80LEr/dbst-ks-2025-1-018a-dv-fr.pdf), ch. 5.6). Le retrait du premier compte, dans une stratégie de retraits échelonnés, met donc fin aux rachats.
+
+**Vous êtes imposé à la source ?** Le barème ne tient pas compte des versements au 3a. Pour les déduire, il faut une taxation ordinaire ultérieure, à demander par écrit avant le 31 mars de l'année suivante si elle n'est pas déjà obligatoire (art. 89a LIFD ; circulaire n° 18a, ch. 5.7 d). Si vous n'habitez pas en Suisse, d'autres règles s'appliquent (art. 99a LIFD) : renseignez-vous auprès de l'administration fiscale du canton où vous travaillez.
+
+*Le calculateur couvre aujourd'hui les personnes affiliées à une caisse de pension.*
+
+## Les conditions, une par une
+
+Toutes découlent des articles 7a et 7b de l'[OPP 3](https://www.fedlex.admin.ch/eli/cc/1985/1778_1778_1778/fr), que l'[OFAS](https://www.bsv.admin.ch/fr/le-troisieme-pilier) résume et que l'AFC détaille dans sa [circulaire n° 18a](https://www.estv.admin.ch/dam/fr/sd-web/yQgKmvu80LEr/dbst-ks-2025-1-018a-dv-fr.pdf) du 22 décembre 2025.
+
+| Condition | Base |
+| --- | --- |
+| Droit de cotiser au 3a, donc revenu soumis à l'AVS, l'année de la lacune | art. 7a al. 1 let. b et art. 7b al. 2 let. b OPP 3 |
+| Revenu soumis à l'AVS l'année du rachat | art. 7a al. 1 let. c OPP 3, qui l'implique ; OFAS, qui l'écrit en toutes lettres |
+| Cotisation ordinaire maximale de l'année du rachat versée en entier | art. 7a al. 1 let. c et art. 7b al. 2 let. a OPP 3 |
+| Plafond : au plus les lacunes des {lookbackYears} dernières années, et jamais plus que la petite cotisation de l'année du rachat | art. 7a al. 2 OPP 3 |
+| Un seul rachat par année de lacune ; un rachat peut combler plusieurs années | art. 7a al. 3 OPP 3 |
+| Un seul rachat par année fiscale | circulaire 18a, ch. 5.6 |
+| {lookbackYears} ans au plus entre la lacune et son rachat | art. 7a al. 1 let. a et al. 2 OPP 3 |
+| Aucune prestation de vieillesse du 3a déjà perçue | art. 7a al. 4 OPP 3, qui renvoie à l'art. 3 al. 1 |
+| Après l'âge de référence : activité lucrative, cinq ans au plus | art. 7a al. 5 et art. 7 al. 3 OPP 3 |
+| Demande écrite à l'institution, qui autorise le rachat | art. 7b al. 1 et 3 OPP 3 |
+
+Vous demandez le rachat **par écrit** à votre fondation bancaire ou à votre assurance 3a, en indiquant le montant, les années à combler et ce que vous avez déjà versé ces années-là (art. 7b al. 1 OPP 3). Vous y confirmez avoir versé la cotisation maximale de l'année, avoir eu un revenu soumis à l'AVS les années à combler, ne pas les avoir déjà rachetées et ne pas avoir touché de prestation de vieillesse du 3a (al. 2). L'institution autorise le rachat si les conditions sont remplies (al. 3) : ne versez qu'après son accord. Elle vous délivre ensuite une attestation qui indique la date et le montant du rachat, les années comblées et les cotisations déjà versées ces années-là (art. 8 OPP 3 ; circulaire 18a, ch. 8). Le rachat n'a pas besoin d'être versé sur le compte qui a reçu les cotisations ordinaires.
+
+Fiscalement, le rachat se déduit du revenu imposable comme la cotisation ordinaire, pour l'impôt fédéral direct comme pour les impôts cantonaux et communaux (OFAS).
+
+## Exemple chiffré
+
+*Calcul effectué le 5 octobre 2026 sur le calculateur de rachat 3a rétroactif, barèmes 2026. Les revenus sont des montants ronds choisis pour l'exemple.*
+
+Une personne seule, sans enfant, habite Lausanne et est affiliée à une caisse de pension. Pour 2026, son revenu imposable cantonal est estimé à 70'000 francs et son revenu imposable fédéral à 72'000 francs. Elle a versé 2'500 francs en 2025, puis sa cotisation complète de {smallCap2026} francs en 2026, avant de demander le rachat.
+
+| Résultat | Montant |
+| --- | --- |
+| Lacune {firstGapYear} | {exampleGap} francs |
+| Rachat possible en 2026 | {exampleBuyback} francs, sous le plafond de {smallCap2026} francs |
+| Économie, impôts cantonal et communal | {exampleCantonalSaving} francs |
+| Économie, impôt fédéral direct | {exampleFederalSaving} francs |
+| Économie totale | {exampleTotalSaving} francs |
+| Dernière année pour racheter {firstGapYear} | {firstGapLastBuybackYear} |
+
+Ce rachat de {exampleBuyback} francs réduit les impôts 2026 de {exampleTotalSaving} francs, soit environ un quart du montant versé : il ne coûte donc que {exampleNetCost} francs nets cette année-là. Près de neuf dixièmes de l'économie viennent des impôts cantonal et communal, l'impôt fédéral direct étant beaucoup plus faible à ce niveau de revenu.
+
+## Les cinq pièges
+
+**1. Le solde perdu.** Une année de lacune ne se rachète qu'une fois (art. 7a al. 3 OPP 3). Un rachat partiel la clôt, et le solde est perdu. Exemple : rien n'a été versé en 2025 ni en 2026, soit deux lacunes de {smallCap2026} francs. En 2027, partager le plafond de {smallCap2027} francs entre les deux années les clôt toutes les deux, et {lostWhenSplit2027} francs de lacune disparaissent. Racheter {firstGapYear} en entier en 2027, puis 2026 en entier en 2028, n'en perd aucun.
+
+**2. La cotisation de l'année d'abord.** Pas de rachat tant que la cotisation ordinaire maximale de l'année n'est pas versée en entier (art. 7a al. 1 let. c OPP 3). Pour combler une lacune entière en 2026, une personne affiliée mobilise donc jusqu'à {contributionAndBuyback2026} francs la même année : {smallCap2026} de cotisation, puis {smallCap2026} de rachat. En 2027, ce sera {contributionAndBuyback2027} francs. Sans 2e pilier, la cotisation ordinaire à verser d'abord peut atteindre {largeCap2026} francs en 2026.
+
+**3. Le revenu AVS, exigé deux fois.** Il faut un revenu soumis à l'AVS l'année de la lacune et l'année du rachat. Une année entière sans revenu AVS, comme un congé non payé ou une année d'études, ne crée aucune lacune rachetable. Une interruption couverte par un revenu de remplacement soumis à l'AVS, comme le chômage ou la maladie, conserve le droit (circulaire 18a, ch. 5.1). Et le jour où votre activité prend fin, les fondations ne peuvent plus accepter ni cotisation ni rachat (circulaire 18a, ch. 5.7 e) : rachetez avant votre dernier jour de travail, pas seulement avant la fin de l'année.
+
+**4. Le plafond vaut pour le total de l'année.** Un seul rachat par an peut couvrir plusieurs années de lacune, mais leur total ne dépasse pas la petite cotisation de l'année du rachat. Avec des lacunes de 3'000 francs en {firstGapYear} et de 4'000 francs en 2026, un rachat de 7'000 francs en 2027 les comble toutes les deux, sous le plafond de {smallCap2027} francs. Avec des lacunes de 5'000 et de {smallCap2026} francs, elles ne tiennent pas ensemble : rachetez en 2027 l'année entière la plus élevée, 2026, et gardez {firstGapYear}, entière, pour 2028. Une seule exception : une lacune qui arrive à sa dernière année de rachat passe toujours en premier, sinon elle expire.
+
+<WholeYearsFigure />
+
+**5. Les délais de fin d'année.** Un versement compte pour une année s'il est crédité sur le compte ou la police 3a au plus tard le 31 décembre : le débit de votre compte bancaire ne suffit pas (circulaire 18a, ch. 5.1). Votre fondation doit en plus autoriser le rachat avant que vous ne versiez (art. 7b al. 3 OPP 3), et chacune fixe ses propres délais de traitement. Renseignez-vous auprès de la vôtre dès l'automne.
+
+## Ce qui change en 2027
+
+Le 2 octobre 2026, le Conseil fédéral a relevé les montants de la prévoyance au 1er janvier 2027. La petite cotisation passe à {smallCap2027} francs et la grande à {largeCap2027} francs (<SourceLink id="ofas-amounts-2027">Conseil fédéral, montants valables dès 2027</SourceLink>). En 2027, vous pourrez donc racheter jusqu'à {smallCap2027} francs, après avoir versé une cotisation ordinaire du même montant. Les lacunes de {firstGapYear} et 2026 restent mesurées par rapport au plafond de leur année, {smallCap2026} francs.
+
+## Avant de racheter : pensez à la sortie
+
+L'économie d'impôt de l'année du rachat n'est qu'une moitié du calcul. Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : pour l'impôt fédéral direct, au cinquième du barème ordinaire (art. 38 LIFD), et selon les règles de votre canton pour l'impôt cantonal et communal. L'avantage net est donc inférieur à l'économie affichée aujourd'hui.
+
+## Calculez votre propre lacune
+
+Indiquez vos versements depuis {firstGapYear}, votre canton et votre commune. Le [calculateur de rachat 3a rétroactif](/prevoyance/rachat-3a-retroactif/) affiche la lacune rachetable année par année, l'économie d'impôt et la dernière année de rachat de chaque lacune. Gratuit, sans inscription.

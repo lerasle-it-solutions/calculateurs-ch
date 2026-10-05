@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/layout/Section.astro";
 import Button from "../components/ui/Button.astro";
 import { fr } from "../i18n/fr";
+import { formatSwissNumber } from "../lib/format/chf";
 import { collectionToolsReport, sourceFreshnessReport } from "../lib/data-report";
 import { attributionTextsFor } from "../lib/attribution";
 import { getMunicipalMultipliers } from "../data";
@@ -20,7 +21,6 @@ const dateFormat = new Intl.DateTimeFormat("fr-CH", {
 	month: "2-digit",
 	year: "numeric",
 });
-const numberFormat = new Intl.NumberFormat("fr-CH");
 
 const formatDate = (isoDate: string): string =>
 	dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
@@ -100,7 +100,7 @@ const formatDate = (isoDate: string): string =>
 										{row.source ? fr.dataPage.cadence[row.source.cadence] : "—"}
 									</td>
 									<td class="border-b border-hairline px-md py-sm text-right tabular-nums">
-										{numberFormat.format(row.trackedValues)}
+										{formatSwissNumber(row.trackedValues)}
 									</td>
 									<td class="border-b border-hairline px-md py-sm tabular-nums">
 										{row.oldestVerifiedOn === null ? (

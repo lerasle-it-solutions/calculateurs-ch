@@ -9,6 +9,8 @@
  * Le routage multilingue n'est pas construit (décision 7) : un seul fichier,
  * importé directement.
  */
+import { formatSwissNumber } from "../lib/format/chf";
+
 export const fr = {
 	site: {
 		name: "calculateurs.ch",
@@ -140,6 +142,22 @@ export const fr = {
 			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
+	familyPage: {
+		guidesHeading: "Guides",
+		/** Lien d'action à la fin de chaque carte de guide. */
+		readGuide: "Lire le guide",
+	},
+
+	article: {
+		/** Avant la date de mise à jour, en tête d'article. */
+		updatedOn: "Mis à jour le",
+		readingTime: (minutes: number): string => `Lecture : ${minutes} minutes`,
+		sourcesHeading: "Sources officielles",
+		/** Réserve en fin d'article, datée de sa mise à jour. */
+		disclaimer: (date: string): string =>
+			`Cet article décrit le droit en vigueur au ${date}. Il ne constitue pas un conseil fiscal ou financier personnalisé.`,
+	},
+
 	calculator: {
 		faqTitle: "Questions fréquentes",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
@@ -177,12 +195,12 @@ export const fr = {
 			heading: "Outils de collecte",
 			intro:
 				"Ces outils ont servi à relever les valeurs ; la source juridique de chacune reste l'acte officiel cité dans le tableau ci-dessus. Les conditions d'usage d'un outil s'appliquent aux données qu'il a fournies.",
-			collectedValues: (count: number): string => `${count} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
+			collectedValues: (count: number): string => `${formatSwissNumber(count)} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
 		},
 		municipalCsv: {
 			heading: "Détail communal",
 			intro: (count: number): string =>
-				`Les coefficients communaux (${count} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
+				`Les coefficients communaux (${formatSwissNumber(count)} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
 			downloadLabel: "Télécharger les coefficients communaux (CSV)",
 			unitCaveat:
 				"Les coefficients sont repris tels que reçus de l'AFC ; leur unité (points d'indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant usage dans un calculateur — voir la méthodologie.",

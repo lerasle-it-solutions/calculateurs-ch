@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { includeInSitemap } from "./src/lib/seo/sitemap.ts";
@@ -12,6 +13,9 @@ export default defineConfig({
   site: "https://calculateurs.ch",
   output: "static",
   integrations: [
+    // Articles en MDX : composants Astro (figures, tableaux générés depuis src/data/)
+    // rendus à la construction, aucun JavaScript envoyé.
+    mdx(),
     sitemap({
       changefreq: "monthly",
       lastmod: new Date(),

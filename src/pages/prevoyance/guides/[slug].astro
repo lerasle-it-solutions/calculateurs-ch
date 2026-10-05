@@ -1,0 +1,89 @@
+---
+/**
+ * Guides de la famille Prévoyance : /prevoyance/guides/{slug}/ (CLAUDE.md § 6).
+ * Un article MDX de la collection `articles`, rendu à la construction : aucun
+ * JavaScript. En tête, la date de mise à jour et la durée de lecture ; en fin,
+ * les sources (lues dans le registre quand elles y sont) et la réserve datée.
+ * Fil d'Ariane : Accueil › Prévoyance › article — /prevoyance/guides/ n'existe pas.
+ */
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Section from "../../../components/layout/Section.astro";
+import Breadcrumb from "../../../components/layout/Breadcrumb.astro";
+import type { Crumb } from "../../../components/layout/Breadcrumb.astro";
+import BreadcrumbSchema from "../../../components/seo/BreadcrumbSchema.astro";
+import ArticleSchema from "../../../components/seo/ArticleSchema.astro";
+import { proseComponents } from "../../../components/articles/prose";
+import { sourceLink } from "../../../lib/source-links";
+import { familyUrl } from "../../../calculators/families";
+import { fr } from "../../../i18n/fr";
+
+export async function getStaticPaths() {
+	const articles = await getCollection("articles", (entry) => entry.data.family === "pension");
+	return articles.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const article = entry.data;
+
+const url = `${familyUrl(article.family)}guides/${entry.id}/`;
+const trail: Crumb[] = [
+	{ label: fr.common.home, url: "/" },
+	{ label: fr.family[article.family], url: familyUrl(article.family) },
+	{ label: article.title, url },
+];
+const sources = article.sources.map((source) =>
+	"sourceId" in source
+		? { ...sourceLink(source.sourceId), ...(source.name ? { name: source.name } : {}), publisher: source.publisher }
+		: source,
+);
+const date = new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long", year: "numeric" });
+const updatedOn = date.format(article.updatedOn);
+const updatedIso = article.updatedOn.toISOString().slice(0, 10);
+---
+
+<BaseLayout title={article.metaTitle ?? article.title} description={article.description}>
+	<Fragment slot="head">
+		<ArticleSchema
+			headline={article.title}
+			description={article.description}
+			url={url}
+			publishedOn={article.publishedOn}
+			updatedOn={article.updatedOn}
+		/>
+		<BreadcrumbSchema trail={trail} />
+	</Fragment>
+
+	<div class="mx-auto w-full max-w-page px-lg pt-xl md:px-2xl">
+		<Breadcrumb trail={trail} />
+	</div>
+
+	<article>
+		<Section class="flex flex-col gap-lg">
+			<header class="flex max-w-reading flex-col gap-sm">
+				<h1 class="text-title">{article.title}</h1>
+				<p class="text-fine text-ink-muted">
+					{fr.article.updatedOn} <time datetime={updatedIso}>{updatedOn}</time>
+					{article.readingMinutes && <> · {fr.article.readingTime(article.readingMinutes)}</>}
+				</p>
+			</header>
+			<Content components={proseComponents} />
+		</Section>
+
+		<Section tone="tint" class="flex flex-col gap-lg">
+			<h2 class="text-heading">{fr.article.sourcesHeading}</h2>
+			<ul class="flex max-w-reading flex-col gap-xs border-l-2 border-hairline pl-md text-fine text-ink-muted">
+				{sources.map((source) => (
+					<li>
+						<a href={source.url}>{source.name}</a>
+						{source.publisher && <> — {source.publisher}</>}
+					</li>
+				))}
+			</ul>
+			<p class="max-w-reading text-fine text-ink-muted">
+				{fr.article.disclaimer(updatedOn)}
+			</p>
+		</Section>
+	</article>
+</BaseLayout>

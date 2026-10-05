@@ -22,6 +22,7 @@ import {
 	fieldLabel,
 	fieldUnit,
 } from "../components/ui/field-styles";
+import { formatChf } from "../lib/format/chf";
 
 // Page de démonstration du design system (docs/design-system.md) — NON liée
 // depuis le site, noindex, hors sitemap. Montre chaque token et chaque
@@ -55,7 +56,7 @@ const colors = [
 ];
 
 const typeScale = [
-	{ token: "text-display", element: "<output>", sample: "12\u00a0480\u00a0CHF", classes: "text-display text-accent tabular-nums" },
+	{ token: "text-display", element: "<output>", sample: `${formatChf(12480)}\u00a0CHF`, classes: "text-display text-accent tabular-nums" },
 	{ token: "text-title", element: "<h1>", sample: "Rachat rétroactif du pilier 3a", classes: "text-title" },
 	{ token: "text-heading", element: "<h2>", sample: "Comment nous vérifions", classes: "text-heading" },
 	{ token: "text-subheading", element: "<h3>", sample: "Rachat dans le pilier 3a", classes: "text-subheading" },
@@ -323,22 +324,22 @@ const typeScale = [
 				id="demo-result"
 				for="demo-number"
 				label="Économie d'impôt"
-				value={"1\u00a0842\u00a0CHF"}
+				value={`${formatChf(1842)}\u00a0CHF`}
 				caption="Montant fictif, pour le rendu."
 			/>
 		</div>
 		<CalculationBreakdown
 			open={true}
 			rows={[
-				{ label: "Revenu imposable", detail: "Saisi", amount: "85\u00a0000\u00a0CHF" },
+				{ label: "Revenu imposable", detail: "Saisi", amount: `${formatChf(85000)}\u00a0CHF` },
 				{
 					label: "Déduction",
-					detail: "85 000 − 5 000",
-					amount: "80\u00a0000\u00a0CHF",
+					detail: `${formatChf(85000)} − ${formatChf(5000)}`,
+					amount: `${formatChf(80000)}\u00a0CHF`,
 					note: "Hypothèse ou référence de barème, en légende.",
 				},
-				{ label: "Lacune 2024", detail: "max(0 ; 5 000 − 5 000)", amount: "0\u00a0CHF", qualifier: "non rachetable" },
-				{ label: "Impôt dû", detail: "Barème fictif", amount: "9\u00a0480\u00a0CHF" },
+				{ label: "Lacune 2024", detail: `max(0 ; ${formatChf(5000)} − ${formatChf(5000)})`, amount: "0\u00a0CHF", qualifier: "non rachetable" },
+				{ label: "Impôt dû", detail: "Barème fictif", amount: `${formatChf(9480)}\u00a0CHF` },
 			]}
 		/>
 		<DataFreshness referenceYear={2026} verifiedOn="2026-01-08" />
@@ -405,7 +406,7 @@ const typeScale = [
 					</tr>
 					<tr>
 						<th scope="row" class="border-b border-hairline px-md py-sm text-left font-medium">2</th>
-						<td class="border-b border-hairline px-md py-sm text-right tabular-nums">20&nbsp;000</td>
+						<td class="border-b border-hairline px-md py-sm text-right tabular-nums">{formatChf(20000)}</td>
 						<td class="border-b border-hairline px-md py-sm text-right tabular-nums">5,00&nbsp;%</td>
 						<td class="border-b border-hairline px-md py-sm text-right tabular-nums">200</td>
 					</tr>

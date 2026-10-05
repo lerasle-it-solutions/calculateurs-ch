@@ -8,6 +8,7 @@ import { getCantonData, getFederalData, getMunicipalMultipliers } from "../data"
 import { resolveTaxYear } from "../data/tax-years";
 import { PILLAR_3A_BUYBACK_ID } from "../calculators/pension/pillar-3a-buyback";
 import { fr } from "../i18n/fr";
+import { formatChf, formatSwissNumber } from "../lib/format/chf";
 
 const title = `${fr.footer.methodology} — ${fr.site.name}`;
 // Texte d'attribution du module de données de base de l'AFC, tel que le registre le porte
@@ -15,7 +16,6 @@ const [estvAttribution] = attributionTextsFor(["estv-base-data-module"]);
 const description =
 	"D'où viennent les chiffres, comment nous les vérifions contre le calculateur de l'AFC, le moteur fiscal, les mises à jour et les corrections.";
 
-const numberFormat = new Intl.NumberFormat("fr-CH");
 const dateFormat = new Intl.DateTimeFormat("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
 const formatDate = (isoDate: string): string => dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
 
@@ -162,7 +162,7 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 			<p class="max-w-reading text-body">
 				Sur les montants, la tolérance est de 1&nbsp;%, avec un plancher d'un
 				franc ; la taxe personnelle et l'impôt paroissial doivent être
-				identiques. Sur la pente — l'impôt supplémentaire pour 1&nbsp;000 francs
+				identiques. Sur la pente — l'impôt supplémentaire pour 1’000 francs
 				de revenu imposable —, elle est d'un demi-point. Ces cas sont rejoués à
 				chaque modification du moteur ou des barèmes, et avant chaque
 				publication : nous lançons la suite de tests complète avant de verser
@@ -260,16 +260,16 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				dépend de toute la famille{
 					vaudParts && (
 						<>
-							{" "}— {numberFormat.format(vaudParts.single)} pour une personne
-							seule, {numberFormat.format(vaudParts.married)} pour des époux,{" "}
-							{numberFormat.format(vaudParts.singleWithChildren)} pour un parent
-							seul, plus {numberFormat.format(vaudParts.perChild)} par enfant
+							{" "}— {formatSwissNumber(vaudParts.single, 2)} pour une personne
+							seule, {formatSwissNumber(vaudParts.married, 2)} pour des époux,{" "}
+							{formatSwissNumber(vaudParts.singleWithChildren, 2)} pour un parent
+							seul, plus {formatSwissNumber(vaudParts.perChild, 2)} par enfant
 						</>
 					)
 				} ; le taux lu sur ce quotient s'applique ensuite au revenu entier, et
 				la réduction obtenue grâce aux parts d'enfants est plafonnée. Comme le
 				quotient est arrondi, le revenu qui détermine le taux avance par
-				marches : c'est pourquoi la pente se mesure sur 1&nbsp;000 francs, et
+				marches : c'est pourquoi la pente se mesure sur 1’000 francs, et
 				non sur 100.
 			</p>
 			<p class="max-w-reading text-body">
@@ -297,9 +297,9 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				au pilier 3a laisse une lacune que vous pouvez combler plus tard. Les
 				lacunes rachetables commencent en {pillar3a.buyback.firstGapYear.value} ;
 				chacune peut être rachetée pendant les{" "}
-				{numberFormat.format(pillar3a.buyback.lookbackYears.value)} années qui
+				{formatSwissNumber(pillar3a.buyback.lookbackYears.value)} années qui
 				suivent. Le total des rachats d'une même année est plafonné à la
-				« petite » cotisation de cette année ({numberFormat.format(pillar3a.smallContributionCap.value)}&nbsp;CHF
+				« petite » cotisation de cette année ({formatChf(pillar3a.smallContributionCap.value)}&nbsp;CHF
 				en {pillar3aYear}), quel que soit le nombre de lacunes comblées. Il
 				faut un revenu soumis à l'AVS l'année de la lacune et l'année du
 				rachat, et la cotisation de l'année du rachat doit être versée

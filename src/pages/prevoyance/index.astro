@@ -1,16 +1,18 @@
 ---
 /**
  * /prevoyance/ — page minimale de la famille : les calculateurs publiés, en
- * cartes liées, et ceux qui sont annoncés, sans lien tant que leur page
- * n'existe pas.
+ * cartes liées, ceux qui sont annoncés, sans lien tant que leur page n'existe
+ * pas, et les guides de la famille (collection `articles`).
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHero from "../../components/layout/PageHero.astro";
 import Section from "../../components/layout/Section.astro";
+import { getCollection } from "astro:content";
 import { publishedCalculators } from "../../calculators/catalog";
 import { fr } from "../../i18n/fr";
 
 const published = publishedCalculators("pension");
+const guides = await getCollection("articles", (entry) => entry.data.family === "pension");
 
 // Calculateurs annoncés (CLAUDE.md § 7, A2 et A3) : contenu de page, sans lien.
 const announced = ["Économie d'impôt 3a", "Rachat LPP"];
@@ -54,4 +56,26 @@ const description =
 			}
 		</ul>
 	</Section>
+
+	{
+		guides.length > 0 && (
+			<Section class="flex flex-col gap-lg">
+				<h2 class="text-heading">{fr.familyPage.guidesHeading}</h2>
+				<ul class="grid gap-xl md:grid-cols-2 lg:grid-cols-3">
+					{guides.map((guide) => (
+						<li>
+							<a
+								href={`/prevoyance/guides/${guide.id}/`}
+								class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline shadow-card hover:text-ink"
+							>
+								<h3 class="text-subheading group-hover:underline">{guide.data.title}</h3>
+								<p class="text-body text-ink-muted">{guide.data.description}</p>
+								<span class="mt-auto text-label font-bold text-accent">{fr.familyPage.readGuide}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</Section>
+		)
+	}
 </BaseLayout>
