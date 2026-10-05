@@ -18,12 +18,18 @@ import type { TaxInput } from "../calculations/tax";
 
 const amount = new Intl.NumberFormat("fr-CH");
 /**
- * Montant à la suisse avec l'apostrophe typographique, « 7’258 » : le texte
- * de l'article passe par la ponctuation typographique de Markdown, qui
- * transforme ses propres « 3'000 » en « 3’000 » ; les valeurs insérées
- * doivent avoir la même apostrophe.
+ * Montant à la suisse avec l'apostrophe typographique, « 7’258 », quel que soit
+ * l'ICU de Node : selon la version, Intl sépare les milliers en fr-CH par une
+ * apostrophe droite (Node 24) ou par une espace fine (Node 22, celui de la
+ * construction sur Cloudflare). Le séparateur est donc imposé, pas transformé.
+ * L'apostrophe typographique est aussi celle que la ponctuation de Markdown
+ * donne aux montants écrits dans le texte (« 3’000 »).
  */
-const chf = (value: number): string => amount.format(value).replace(/'/g, "\u2019");
+const chf = (value: number): string =>
+	amount
+		.formatToParts(value)
+		.map((part) => (part.type === "group" ? "\u2019" : part.value))
+		.join("");
 const percent = (rate: number): string => `${amount.format(rate * 100)} %`;
 
 // Données
