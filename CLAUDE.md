@@ -685,6 +685,10 @@ les bibliothèques de composants, et que nous n'avons pas.
 Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée, moins de 30 kb de JS
 par page (minifié, non compressé, préchargement compris), polices auto-hébergées, **aucune requête vers un domaine tiers**.
 
+Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget
+de 30 000 octets et ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans
+la page (décision du 05.10.2026, W08 étape 0).
+
 ---
 
 ## 4. Mise en relation
