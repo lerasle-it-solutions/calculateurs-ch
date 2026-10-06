@@ -27,13 +27,15 @@ const pillar3a = getFederalData(pillar3aBuybackYear).pillar3a;
 const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
 const cantons = pillar3aBuyback.scope.cantonsCovered as (typeof ROMANDE_CANTONS)[number]["code"][];
 
+const bundle = getTaxScalesBundle(pillar3aBuybackYear, cantons);
+
 const pageData = {
 	buybackYear: pillar3aBuybackYear,
 	gapYears: pillar3aGapYears,
 	firstGapYear: sourced(pillar3a.buyback.firstGapYear),
 	lookbackYears: sourced(pillar3a.buyback.lookbackYears),
 	smallContributionCap: sourced(pillar3a.smallContributionCap),
-	bundle: getTaxScalesBundle(pillar3aBuybackYear, cantons),
+	bundle,
 	municipalities: Object.fromEntries(
 		(getMunicipalMultipliers()?.multipliers ?? [])
 			.filter((entry) => cantons.includes(entry.canton))
@@ -51,10 +53,14 @@ const pageData = {
 		outOfScope: Object.fromEntries(
 			ROMANDE_CANTONS.map((canton) => [canton.code, pillar3aBuybackTexts.outOfScope(canton.name)]),
 		),
+		// Seules les communes non couvertes en entier en ont besoin : le moteur ne lève leur
+		// erreur de couverture qu'avec ce nom (PartialCoverageError.municipality).
 		outOfScopeMunicipality: Object.fromEntries(
-			(getMunicipalMultipliers()?.multipliers ?? [])
-				.filter((entry) => cantons.includes(entry.canton))
-				.map((entry) => [entry.municipality, pillar3aBuybackTexts.outOfScopeMunicipality(entry.municipality)]),
+			bundle.municipalities.flatMap(({ coverage }) =>
+				coverage?.municipality === undefined
+					? []
+					: [[coverage.municipality, pillar3aBuybackTexts.outOfScopeMunicipality(coverage.municipality)]],
+			),
 		),
 		missingData: pillar3aBuybackTexts.missingData,
 		municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
