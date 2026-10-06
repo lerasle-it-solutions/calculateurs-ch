@@ -12,7 +12,8 @@ import { describe, expect, it } from "vitest";
  *
  * Seul le texte des pages est examiné, après décodage des entités : ni les
  * balises et leurs attributs (géométrie SVG), ni les scripts — le script
- * d'A1 calcule dans le navigateur, son format est tranché à l'étape 0 de W08.
+ * d'A1 calcule dans le navigateur avec le même formateur, format tranché le
+ * 05.10.2026 (« 12’346 CHF », tests/lib/browser-format.test.ts).
  * Les exceptions sont listées par la sortie du test, jamais masquées.
  */
 const DIST = fileURLToPath(new URL("../../dist/", import.meta.url));
