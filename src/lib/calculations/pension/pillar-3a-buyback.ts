@@ -11,6 +11,7 @@
 import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
 import { assertTaxCoverage, computeTaxSavingOnDeduction, type TaxInput, type TaxResult, type TaxScales } from "../tax";
+import * as labels from "../trace-labels";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
 export type Sourced<T> = { value: T; sourceId: string };
@@ -102,7 +103,7 @@ const expiresEarlier = (a: number[], b: number[]): boolean => {
 /** Conditions qui bloquent tout rachat l'année R, dans l'ordre où elles sont examinées. */
 const blockingConditionOf = (params: Pillar3aGapsParams): string | null => {
 	if (params.receivedOldAgeBenefit) {
-		return "Une prestation de vieillesse a été perçue : aucun rachat n'est possible (art. 7a al. 4 OPP 3).";
+		return labels.OLD_AGE_BENEFIT_RECEIVED;
 	}
 	if (!params.currentYearContributionPaidInFull) {
 		return `La cotisation ordinaire de ${params.buybackYear} n'est pas versée intégralement : aucun rachat n'est possible (art. 7a al. 1 let. c OPP 3).`;
@@ -171,27 +172,27 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 	}
 
 	line({
-		label: "Années de lacune rachetables",
+		label: labels.BUYBACK_GAP_YEARS,
 		operands: { buybackYear: R, firstGapYear: params.firstGapYear.value, lookbackYears },
 		formula: `de max(${params.firstGapYear.value} ; ${R} − ${lookbackYears}) à ${R} − 1, soit de ${Math.max(params.firstGapYear.value, R - lookbackYears)} à ${R - 1}`,
 		value: Math.max(0, R - Math.max(params.firstGapYear.value, R - lookbackYears)),
 		sourceId: params.lookbackYears.sourceId,
-		assumption: "Les lacunes antérieures à la première année de lacune rachetable ne le sont jamais (disposition transitoire).",
+		assumption: labels.GAPS_BEFORE_FIRST_YEAR,
 	});
 	line({
-		label: "Limite d'âge non examinée",
+		label: labels.AGE_LIMIT_NOT_EXAMINED,
 		operands: {},
-		formula: "art. 7a al. 5 OPP 3, qui renvoie à l'art. 7 al. 3 : non traité par ce calcul",
+		formula: labels.AGE_LIMIT_REFERENCE,
 		value: 0,
 		noAmount: true,
 		sourceId: params.lookbackYears.sourceId,
-		assumption: "La limite d'âge du rachat doit être vérifiée à part.",
+		assumption: labels.AGE_LIMIT_ASSUMPTION,
 	});
 
 	const blocking = blockingConditionOf(params);
 	if (blocking !== null) {
 		line({
-			label: "Rachat impossible l'année du rachat",
+			label: labels.BUYBACK_BLOCKED,
 			operands: { buybackYear: R },
 			formula: blocking,
 			value: 0,
@@ -214,7 +215,7 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 			sourceId: gapYear.maxContribution.sourceId,
 			assumption:
 				refusalReason ?? `Rachetable jusqu'en ${lastBuybackYear} (art. 7a al. 1 let. a OPP 3).`,
-			...(refusalReason !== null ? { qualifier: "non rachetable" } : {}),
+			...(refusalReason !== null ? { qualifier: labels.NOT_BUYABLE } : {}),
 		});
 		return { year: gapYear.year, gap, lastBuybackYear, refusalReason };
 	});
@@ -255,9 +256,9 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 				assumption: partiallyFilled
 					? `Dernière année de rachat de cette lacune : comblée en partie, le solde de ${fmt(lostBalance)} CHF est perdu, un seul rachat étant admis par année de lacune (art. 7a al. 3 OPP 3).`
 					: proposedBuyback === gap && lastBuybackYear === R
-						? "Dernière année de rachat de cette lacune : comblée en priorité, entière."
+						? labels.LAST_YEAR_FILLED_WHOLE
 						: proposedBuyback === gap
-							? "Année comblée entièrement : ensemble d'années entières le plus élevé sous le plafond restant, les années qui expirent le plus tôt en priorité à égalité."
+							? labels.YEAR_FILLED_WHOLE
 							: `Non retenue en ${R} pour ne pas entamer cette année : elle reste rachetable jusqu'en ${lastBuybackYear}.`,
 			});
 		}
@@ -272,7 +273,7 @@ export function computePillar3aGaps(params: Pillar3aGapsParams): Pillar3aGapsRes
 		value: totalBuyback,
 		unit: "CHF",
 		sourceId: cap.sourceId,
-		assumption: "Le plafond s'applique au total des rachats de l'année, et non à chaque lacune (art. 7a al. 2 OPP 3).",
+		assumption: labels.CAP_ON_YEAR_TOTAL,
 	});
 
 	return { years, totalBuyback, breakdown };
@@ -335,18 +336,18 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 	const lines: BreakdownLine[] = [];
 	for (const line of saving?.breakdown ?? []) {
 		// Impôt sur une fortune nulle : sans objet, A1 ne saisit pas la fortune
-		if (line.formula === "assiette nulle" && line.label.includes("fortune")) continue;
-		if (line.label === "Économie d'impôt") continue;
-		if (line.label.startsWith("Impôt total")) {
-			const { components, total } = line.label === "Impôt total" ? before : after;
+		if (line.formula === labels.ZERO_BASE && line.label.includes("fortune")) continue;
+		if (line.label === labels.TAX_SAVING) continue;
+		if (line.label.startsWith(labels.TOTAL_TAX)) {
+			const { components, total } = line.label === labels.TOTAL_TAX ? before : after;
 			lines.push({
-				label: `Impôt sur le revenu (hors impôt sur la fortune)${line.label.slice(11)}`,
+				label: `Impôt sur le revenu (hors impôt sur la fortune)${line.label.slice(labels.TOTAL_TAX.length)}`,
 				operands: components,
 				formula: Object.values(components).map(fmt).join(" + "),
 				value: total,
 				unit: "CHF",
 				sourceId: null,
-				assumption: "Montants arrondis au franc ; l'impôt sur la fortune ne change pas (hypothèse 6).",
+				assumption: labels.INCOME_ONLY_TOTALS_ASSUMPTION,
 			});
 		} else lines.push(line);
 	}
@@ -361,9 +362,9 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 			...gaps.breakdown,
 			...lines,
 			{
-				label: "Économie d'impôt",
+				label: labels.TAX_SAVING,
 				operands: { totalTaxBefore: before.total, totalTaxAfter: after.total, deduction: amount },
-				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : "aucun montant rachetable",
+				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : labels.NOTHING_TO_BUY_BACK,
 				value: taxSaving,
 				unit: "CHF",
 				sourceId: null,
@@ -371,7 +372,7 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 			...(saving
 				? [
 						{
-							label: "Économie d'impôt, canton et commune",
+							label: labels.TAX_SAVING_CANTONAL_AND_MUNICIPAL,
 							operands: { taxSaving, federalSaving },
 							formula: `${fmt(taxSaving)} − ${fmt(federalSaving)}`,
 							value: cantonalAndMunicipalSaving,
@@ -379,7 +380,7 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 							sourceId: null,
 						},
 						{
-							label: "Économie d'impôt, Confédération",
+							label: labels.TAX_SAVING_FEDERAL,
 							operands: { federalTaxBefore: federalBefore, federalTaxAfter: federalAfter },
 							formula: `${fmt(federalBefore)} − ${fmt(federalAfter)}`,
 							value: federalSaving,

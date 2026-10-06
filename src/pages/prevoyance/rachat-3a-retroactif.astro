@@ -10,6 +10,7 @@
  */
 import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
+import TraceLabels from "../../components/calculator/TraceLabels.astro";
 import {
 	pillar3aBuyback,
 	pillar3aBuybackIntro,
@@ -94,6 +95,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 	</div>
 
 	<script type="application/json" id="pillar3a-data" set:html={pageDataJson} />
+	<TraceLabels />
 </CalculatorLayout>
 
 <script>

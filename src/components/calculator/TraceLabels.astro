@@ -1,0 +1,14 @@
+---
+/**
+ * Libellés fixes de la trace, en JSON dans la page, pour le script d'un
+ * calculateur qui exécute le moteur dans le navigateur. Son module de libellés
+ * les lit par position (src/lib/build/browser-trace-labels.ts) : toute page dont
+ * le script importe le moteur inclut ce composant.
+ */
+import { TRACE_LABELS_ELEMENT_ID, traceLabelValues } from "../../lib/build/browser-trace-labels";
+
+// Sans « < » qui fermerait la balise
+const json = JSON.stringify(traceLabelValues()).replace(/</g, "\\u003c");
+---
+
+<script type="application/json" id={TRACE_LABELS_ELEMENT_ID} set:html={json} />

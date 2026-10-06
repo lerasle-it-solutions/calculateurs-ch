@@ -15,6 +15,7 @@
  */
 import type { BreakdownLine } from "../utils/breakdown";
 import { formatNumber } from "../utils/format-number";
+import * as labels from "./trace-labels";
 
 export type TaxInput = {
 	taxYear: number;
@@ -373,7 +374,7 @@ export function evaluateDeflatedScale(
 	deflation: StepwiseDeflation,
 ): { tax: number; ratePercent: number; rateIncome: number; formula: string } {
 	if (table.scaleType === "marginal") throw new Error("Barème marginal : déflation non définie.");
-	if (amount <= 0) return { tax: 0, ratePercent: 0, rateIncome: 0, formula: "assiette nulle" };
+	if (amount <= 0) return { tax: 0, ratePercent: 0, rateIncome: 0, formula: labels.ZERO_BASE };
 	const { value: rateIncome, divisorsPercent } = deflateStepwise(amount, deflation);
 	const ratePercent = rateOf(table, rateIncome);
 	return {
@@ -393,7 +394,7 @@ export function evaluateScale(
 	amount: number,
 	lookupFactor = 1,
 ): { tax: number; formula: string } {
-	if (amount <= 0) return { tax: 0, formula: "assiette nulle" };
+	if (amount <= 0) return { tax: 0, formula: labels.ZERO_BASE };
 	const { brackets } = table;
 
 	if (table.scaleType === "marginal") {
@@ -450,7 +451,7 @@ const evaluateWithDivisor = (
 			formula: `${fmt(divisor)} × [${divided.formula}], assiette ${fmt(amount)} / ${fmt(divisor)}`,
 		};
 	}
-	if (rateIncome <= 0) return { tax: 0, formula: "revenu déterminant pour le taux nul" };
+	if (rateIncome <= 0) return { tax: 0, formula: labels.ZERO_RATE_INCOME };
 	const atRate = evaluateScale(table, rateIncome, lookupFactor);
 	return {
 		tax: (amount * atRate.tax) / rateIncome,
@@ -478,7 +479,7 @@ export function evaluateFederalScale(
 	) {
 		throw new Error("Barème fédéral : dernière ligne contraire au taux maximal.");
 	}
-	if (amount <= 0) return { tax: 0, formula: "assiette nulle" };
+	if (amount <= 0) return { tax: 0, formula: labels.ZERO_BASE };
 	if (amount >= capRow.threshold) {
 		return {
 			tax: (amount * maximumRatePercent) / 100,
@@ -532,10 +533,10 @@ const needInto =
 // --- Impôt fédéral direct ----------------------------------------------------------
 
 const FEDERAL_SITUATION_LABELS: Record<FederalTaxSituation, string> = {
-	marriedCoupleLivingTogether: "époux vivant en ménage commun",
+	marriedCoupleLivingTogether: labels.FEDERAL_SITUATION_MARRIED,
 	livingWithSupportedDependants:
-		"contribuable veuf, séparé, divorcé ou célibataire vivant en ménage commun avec des enfants ou des personnes nécessiteuses dont il assume pour l'essentiel l'entretien",
-	otherTaxpayer: "autre contribuable",
+		labels.FEDERAL_SITUATION_WITH_DEPENDANTS,
+	otherTaxpayer: labels.FEDERAL_SITUATION_OTHER,
 };
 
 /**
@@ -568,15 +569,15 @@ const federalIncomeTax = (
 				: "otherTaxpayer";
 
 	let tables: FederalScaleTable[] | undefined;
-	if (isPending(federal.income)) need(federal.income, "Barème de l'impôt fédéral direct");
+	if (isPending(federal.income)) need(federal.income, labels.FEDERAL_SCALE);
 	else tables = federal.income;
-	const maximumRate = need(federal.maximumRatePercent, "Taux maximal de l'impôt fédéral direct");
+	const maximumRate = need(federal.maximumRatePercent, labels.FEDERAL_MAXIMUM_RATE);
 	const reductionPerDependant =
 		dependants > 0
-			? need(federal.taxReductionPerDependant, "Réduction de l'impôt fédéral par enfant et par personne nécessiteuse")
+			? need(federal.taxReductionPerDependant, labels.FEDERAL_REDUCTION_PER_DEPENDANT)
 			: undefined;
-	const rounding = need(federal.taxRoundingToNearest, "Arrondi de l'impôt fédéral direct");
-	const minimum = need(federal.minimumLeviedTax, "Montant minimal perçu de l'impôt fédéral direct");
+	const rounding = need(federal.taxRoundingToNearest, labels.FEDERAL_TAX_ROUNDING);
+	const minimum = need(federal.minimumLeviedTax, labels.FEDERAL_MINIMUM_LEVIED_TAX);
 	if (!tables || !maximumRate || !rounding || !minimum || (dependants > 0 && !reductionPerDependant)) return 0;
 
 	// Barème applicable
@@ -586,7 +587,7 @@ const federalIncomeTax = (
 	}
 	const table = matching[0]!;
 	const assumptions = [
-		...(situation === "marriedCoupleLivingTogether" ? ["Les époux vivent en ménage commun."] : []),
+		...(situation === "marriedCoupleLivingTogether" ? [labels.SPOUSES_LIVE_TOGETHER] : []),
 		...(declared === undefined && children > 0
 			? [
 					`Les ${children} enfant(s) vivent en ménage commun avec le contribuable, qui assume pour l'essentiel leur entretien ; aucune personne nécessiteuse.`,
@@ -594,7 +595,7 @@ const federalIncomeTax = (
 			: []),
 	];
 	line({
-		label: "Barème de l'impôt fédéral direct applicable",
+		label: labels.FEDERAL_SCALE_APPLIED,
 		operands: { children, needyPersons },
 		formula: `${FEDERAL_SITUATION_LABELS[situation]}, ${children} enfant(s) et ${needyPersons} personne(s) nécessiteuse(s) en ménage commun → ${table.label}`,
 		value: dependants,
@@ -607,7 +608,7 @@ const federalIncomeTax = (
 	const scale = evaluateFederalScale(table, input.federalTaxableIncome, maximumRate.value);
 	let federalTax = scale.tax;
 	line({
-		label: "Impôt fédéral direct selon le barème",
+		label: labels.FEDERAL_TAX_PER_SCALE,
 		operands: { federalTaxableIncome: input.federalTaxableIncome, maximumRatePercent: maximumRate.value },
 		formula: scale.formula,
 		value: scale.tax,
@@ -620,13 +621,13 @@ const federalIncomeTax = (
 		const before = federalTax;
 		federalTax = Math.max(0, federalTax - reductionPerDependant.value * dependants);
 		line({
-			label: "Impôt fédéral direct après réduction pour enfants et personnes nécessiteuses",
+			label: labels.FEDERAL_TAX_AFTER_REDUCTION,
 			operands: { federalTax: before, reductionPerDependant: reductionPerDependant.value, dependants },
 			formula: `max(0 ; ${fmt(before)} − ${fmt(reductionPerDependant.value)} × ${dependants})`,
 			value: federalTax,
 			unit: "CHF",
 			sourceId: reductionPerDependant.sourceId,
-			assumption: "La réduction ne rend pas l'impôt négatif.",
+			assumption: labels.REDUCTION_NOT_NEGATIVE,
 		});
 	}
 
@@ -634,13 +635,13 @@ const federalIncomeTax = (
 	const beforeRounding = federalTax;
 	federalTax = Math.round(federalTax / rounding.value) * rounding.value;
 	line({
-		label: "Impôt fédéral direct arrondi",
+		label: labels.FEDERAL_TAX_ROUNDED,
 		operands: { federalTax: beforeRounding, step: rounding.value },
 		formula: `${fmt(beforeRounding)} arrondi à ${fmt(rounding.value)} CHF le plus proche`,
 		value: federalTax,
 		unit: "CHF",
 		sourceId: rounding.sourceId,
-		assumption: "Arrondi retenu d'après les cas de référence ; aucune base identifiée dans la LIFD.",
+		assumption: labels.FEDERAL_ROUNDING_ASSUMPTION,
 	});
 
 	// Montant minimal perçu
@@ -648,7 +649,7 @@ const federalIncomeTax = (
 		const notLevied = federalTax;
 		federalTax = 0;
 		line({
-			label: "Impôt fédéral direct non perçu",
+			label: labels.FEDERAL_TAX_NOT_LEVIED,
 			operands: { federalTax: notLevied, minimumLeviedTax: minimum.value },
 			formula: `${fmt(notLevied)} < ${fmt(minimum.value)} : montant non perçu`,
 			value: federalTax,
@@ -708,16 +709,16 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	const children = input.children;
 
 	// 1. Arrondi des assiettes cantonales ; celui de la fortune n'est requis que s'il y a une fortune
-	const incomeRounding = need(scales.taxBaseRounding.income, "Arrondi du revenu imposable cantonal");
+	const incomeRounding = need(scales.taxBaseRounding.income, labels.CANTONAL_INCOME_ROUNDING);
 	const wealthRounding =
-		input.taxableWealth > 0 ? need(scales.taxBaseRounding.wealth, "Arrondi de la fortune imposable") : undefined;
+		input.taxableWealth > 0 ? need(scales.taxBaseRounding.wealth, labels.WEALTH_ROUNDING) : undefined;
 	const incomeStep = incomeRounding?.value ?? 1;
 	const wealthStep = wealthRounding?.value ?? 1;
 	const cantonalIncome = Math.floor(input.cantonalTaxableIncome / incomeStep) * incomeStep;
 	const wealth = Math.floor(input.taxableWealth / wealthStep) * wealthStep;
 	if (incomeRounding) {
 		line({
-			label: "Revenu imposable cantonal retenu",
+			label: labels.CANTONAL_INCOME_RETAINED,
 			operands: { cantonalTaxableIncome: input.cantonalTaxableIncome, step: incomeStep },
 			formula: `${fmt(input.cantonalTaxableIncome)} arrondi à ${fmt(incomeStep)} CHF inférieurs`,
 			value: cantonalIncome,
@@ -727,7 +728,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	}
 	if (wealthRounding) {
 		line({
-			label: "Fortune imposable retenue",
+			label: labels.WEALTH_RETAINED,
 			operands: { taxableWealth: input.taxableWealth, step: wealthStep },
 			formula: `${fmt(input.taxableWealth)} arrondi à ${fmt(wealthStep)} CHF inférieurs`,
 			value: wealth,
@@ -737,8 +738,8 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	}
 
 	// 2. Tables et diviseurs selon le modèle familial
-	const incomeTable = selectTable(scales.canton.income, household, "Barème cantonal du revenu");
-	const wealthTable = selectTable(scales.canton.wealth, household, "Barème cantonal de la fortune");
+	const incomeTable = selectTable(scales.canton.income, household, labels.CANTONAL_INCOME_SCALE);
+	const wealthTable = selectTable(scales.canton.wealth, household, labels.CANTONAL_WEALTH_SCALE);
 	let incomeDivisor = 1;
 	let wealthDivisor = 1;
 	let familySourceId: string | null = null;
@@ -747,7 +748,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	let familyTaxReduction: Sourced<{ ratePercent: number; minimumAmount: number; maximumAmount: number }> | undefined;
 	const familyModel = scales.familyModel;
 	if (isPending(familyModel)) {
-		missing.push({ label: "Modèle familial cantonal", todo: familyModel.pending, sourceId: familyModel.sourceId });
+		missing.push({ label: labels.CANTONAL_FAMILY_MODEL, todo: familyModel.pending, sourceId: familyModel.sourceId });
 	} else {
 		familySourceId = familyModel.sourceId;
 		switch (familyModel.type) {
@@ -757,13 +758,13 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			case "taxReduction": {
 				// La déduction dégressive des autres ménages (let. b) réduit le revenu imposable : elle
 				// relève du passage du revenu net au revenu imposable, pas du moteur.
-				const households = need(familyModel.households, "Ménages ayant droit à l'abattement familial");
-				const reduction = need(familyModel.reduction, "Abattement familial sur l'impôt");
+				const households = need(familyModel.households, labels.FAMILY_REDUCTION_HOUSEHOLDS);
+				const reduction = need(familyModel.reduction, labels.FAMILY_TAX_REDUCTION);
 				if (households && reduction && households.value.includes(household)) familyTaxReduction = reduction;
 				break;
 			}
 			case "divisorOnIncomeAndWealth": {
-				const households = need(familyModel.households, "Ménages soumis au splitting");
+				const households = need(familyModel.households, labels.SPLITTING_HOUSEHOLDS);
 				if (households?.value.includes(household)) {
 					incomeDivisor = incomeTable.rateSplittingDivisor ?? 1;
 					wealthDivisor = wealthTable.rateSplittingDivisor ?? 1;
@@ -772,10 +773,10 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 				break;
 			}
 			case "familyQuotient": {
-				const coefficients = need(familyModel.coefficients, "Coefficients du quotient familial");
+				const coefficients = need(familyModel.coefficients, labels.FAMILY_QUOTIENT_COEFFICIENTS);
 				const cap =
 					children > 0 && familyModel.childReductionCap !== null
-						? need(familyModel.childReductionCap, "Plafond de la réduction pour enfants du quotient familial")
+						? need(familyModel.childReductionCap, labels.FAMILY_QUOTIENT_CHILD_CAP)
 						: undefined;
 				if (coefficients) {
 					const base = coefficients.value[household];
@@ -789,7 +790,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		}
 		if (incomeDivisor !== 1 || wealthDivisor !== 1) {
 			line({
-				label: "Diviseur familial",
+				label: labels.FAMILY_DIVISOR,
 				operands: { incomeDivisor, wealthDivisor, children },
 				formula: familyFormula,
 				value: incomeDivisor,
@@ -802,7 +803,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	const cantonalDeflation =
 		scales.canton.incomeScaleIndexation === null
 			? undefined
-			: need(scales.canton.incomeScaleIndexation, "Indexation du barème cantonal du revenu");
+			: need(scales.canton.incomeScaleIndexation, labels.CANTONAL_INCOME_INDEXATION);
 	const lookupFactor = 1;
 	const taxRounding = scales.canton.incomeTaxRounding;
 	/** Impôt selon le barème, déflation par étapes s'il y a lieu, puis arrondi s'il y a lieu. */
@@ -842,7 +843,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			unit: "CHF",
 			sourceId: familyTaxReduction.sourceId,
 			assumption:
-				"L'abattement porte sur l'impôt sur le revenu selon le barème, avant le coefficient ; autorité parentale commune non examinée.",
+				labels.FAMILY_REDUCTION_ASSUMPTION,
 		});
 		return tax - reduction;
 	};
@@ -851,7 +852,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	if (rateRounding && incomeDivisor !== 1) {
 		const dividedAmount = cantonalIncome / incomeDivisor;
 		line({
-			label: "Revenu déterminant pour le taux",
+			label: labels.RATE_DETERMINING_INCOME,
 			operands: { cantonalTaxableIncome: cantonalIncome, divisor: incomeDivisor, step: rateRounding.value },
 			formula: `${fmt(cantonalIncome)} / ${fmt(incomeDivisor)} = ${fmt(dividedAmount)}, arrondi à ${fmt(rateRounding.value)} CHF inférieurs`,
 			value: Math.floor(dividedAmount / rateRounding.value) * rateRounding.value,
@@ -859,9 +860,9 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			sourceId: rateRounding.sourceId,
 		});
 	}
-	const baseIncome = scaleTax(incomeTable, cantonalIncome, cantonalDeflation, "impôt cantonal");
+	const baseIncome = scaleTax(incomeTable, cantonalIncome, cantonalDeflation, labels.CANTONAL_TAX_NOUN);
 	line({
-		label: "Impôt cantonal de base sur le revenu",
+		label: labels.BASE_CANTONAL_INCOME_TAX,
 		operands: { cantonalTaxableIncome: cantonalIncome, divisor: incomeDivisor },
 		formula: baseIncome.formula,
 		value: baseIncome.tax,
@@ -880,10 +881,10 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		// Réduction pour un enfant au revenu de référence : plancher du plafond quelle que soit la
 		// lecture de l'augmentation par enfant supplémentaire, la réduction croissant avec le revenu.
 		const oneChildCap = taxWithParts(reference, base) - taxWithParts(reference, base + perChild);
-		const referenceAssumption = "La réduction de référence se calcule avec les parts du ménage du contribuable.";
+		const referenceAssumption = labels.CHILD_CAP_REFERENCE_ASSUMPTION;
 		if (reduction <= oneChildCap) {
 			line({
-				label: "Plafond de la réduction pour enfants",
+				label: labels.CHILD_REDUCTION_CAP,
 				operands: { reduction, cap: oneChildCap, referenceTaxableIncome: reference },
 				formula: `${fmt(reduction)} ≤ ${fmt(oneChildCap)}, réduction pour un enfant à ${fmt(reference)} : plafond non atteint`,
 				value: reduction,
@@ -894,7 +895,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		} else if (children === 1) {
 			baseIncome.tax = withoutChildParts - oneChildCap;
 			line({
-				label: "Impôt cantonal de base sur le revenu, réduction pour enfants plafonnée",
+				label: labels.BASE_CANTONAL_INCOME_TAX_CAPPED,
 				operands: { withoutChildParts, cap: oneChildCap, referenceTaxableIncome: reference },
 				formula: `${fmt(withoutChildParts)} − ${fmt(oneChildCap)}, réduction pour un enfant à ${fmt(reference)}`,
 				value: baseIncome.tax,
@@ -904,19 +905,19 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			});
 		} else {
 			missing.push({
-				label: "Plafond de la réduction pour plusieurs enfants",
+				label: labels.CHILD_REDUCTION_CAP_SEVERAL,
 				todo: `Plafond atteint avec ${children} enfants : l'augmentation par enfant supplémentaire porte-t-elle sur le revenu de référence ou sur la réduction ?`,
 				sourceId: cap.sourceId,
 			});
 		}
 	}
 
-	baseIncome.tax = afterFamilyTaxReduction(baseIncome.tax, "Impôt cantonal de base sur le revenu");
+	baseIncome.tax = afterFamilyTaxReduction(baseIncome.tax, labels.BASE_CANTONAL_INCOME_TAX);
 
 	// 4. Impôt cantonal de base sur la fortune
 	const baseWealth = evaluateWithDivisor(wealthTable, wealth, wealthDivisor, 1);
 	line({
-		label: "Impôt cantonal de base sur la fortune",
+		label: labels.BASE_CANTONAL_WEALTH_TAX,
 		operands: { taxableWealth: wealth, divisor: wealthDivisor },
 		formula: baseWealth.formula,
 		value: baseWealth.tax,
@@ -928,7 +929,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	const reduction =
 		scales.canton.baseTaxReduction === null
 			? undefined
-			: need(scales.canton.baseTaxReduction, "Réduction de l'impôt cantonal de base");
+			: need(scales.canton.baseTaxReduction, labels.BASE_TAX_REDUCTION);
 	const reductionFactor = (tax: "income" | "wealth"): number =>
 		reduction?.value.appliesTo.includes(tax) ? 1 - reduction.value.ratePercent / 100 : 1;
 	const multiplier = scales.canton.multiplier;
@@ -938,16 +939,16 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	let cantonalFormula = `${fmt(baseIncome.tax)} × ${fmt(reductionFactor("income"))} × ${fmt(multiplier.income.value)} % + ${fmt(baseWealth.tax)} × ${fmt(reductionFactor("wealth"))} × ${fmt(multiplier.wealth.value)} %`;
 	if (reduction) {
 		line({
-			label: "Réduction de l'impôt cantonal de base",
+			label: labels.BASE_TAX_REDUCTION,
 			operands: { ratePercent: reduction.value.ratePercent },
-			formula: `${fmt(reduction.value.ratePercent)} % sur ${reduction.value.appliesTo.map((tax) => (tax === "income" ? "le revenu" : "la fortune")).join(" et ")}, part cantonale seulement`,
+			formula: `${fmt(reduction.value.ratePercent)} % sur ${reduction.value.appliesTo.map((tax) => (tax === "income" ? "le revenu" : labels.WEALTH_NOUN)).join(" et ")}, part cantonale seulement`,
 			value: reduction.value.ratePercent,
 			unit: "%",
 			sourceId: reduction.sourceId,
 		});
 	}
 	if (scales.canton.unreducedMultiplier !== null) {
-		const unreduced = need(scales.canton.unreducedMultiplier, "Part du coefficient cantonal hors réduction");
+		const unreduced = need(scales.canton.unreducedMultiplier, labels.UNREDUCED_MULTIPLIER);
 		if (unreduced) {
 			cantonalIncomeTax += (baseIncome.tax * unreduced.value.income) / 100;
 			cantonalWealthTax += (baseWealth.tax * unreduced.value.wealth) / 100;
@@ -956,7 +957,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		}
 	}
 	line({
-		label: "Impôt cantonal",
+		label: labels.CANTONAL_TAX,
 		operands: {
 			baseCantonalIncomeTax: baseIncome.tax,
 			baseCantonalWealthTax: baseWealth.tax,
@@ -971,39 +972,39 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 
 	// 5b. Impôt supplémentaire sur la fortune : ni coefficient, ni réduction
 	if (scales.canton.supplementaryWealthTax !== null && wealth > 0) {
-		const supplementary = need(scales.canton.supplementaryWealthTax, "Impôt supplémentaire sur la fortune");
+		const supplementary = need(scales.canton.supplementaryWealthTax, labels.SUPPLEMENTARY_WEALTH_TAX);
 		if (supplementary) {
 			const extra = evaluateScale(supplementary.value, wealth);
 			cantonalWealthTax += extra.tax;
 			cantonalTax = cantonalIncomeTax + cantonalWealthTax;
 			line({
-				label: "Impôt supplémentaire sur la fortune",
+				label: labels.SUPPLEMENTARY_WEALTH_TAX,
 				operands: { taxableWealth: wealth },
 				formula: extra.formula,
 				value: extra.tax,
 				unit: "CHF",
 				sourceId: supplementary.sourceId,
-				assumption: "Aucun coefficient ni réduction ne s'applique à cet impôt ; il s'ajoute à l'impôt cantonal.",
+				assumption: labels.SUPPLEMENTARY_WEALTH_TAX_ASSUMPTION,
 			});
 		}
 	}
 
 	// 6. Rabais d'impôt par enfant
 	if (scales.canton.taxCreditPerChild !== null && children > 0) {
-		const credit = need(scales.canton.taxCreditPerChild, "Rabais d'impôt par enfant");
+		const credit = need(scales.canton.taxCreditPerChild, labels.TAX_CREDIT_PER_CHILD);
 		if (credit) {
 			const before = cantonalIncomeTax;
 			cantonalIncomeTax = Math.max(0, cantonalIncomeTax - credit.value * children);
 			cantonalTax = cantonalIncomeTax + cantonalWealthTax;
 			line({
-				label: "Impôt cantonal sur le revenu après rabais pour enfants",
+				label: labels.CANTONAL_INCOME_TAX_AFTER_CREDIT,
 				operands: { cantonalIncomeTax: before, creditPerChild: credit.value, children },
 				formula: `max(0 ; ${fmt(before)} − ${fmt(credit.value)} × ${children})`,
 				value: cantonalIncomeTax,
 				unit: "CHF",
 				sourceId: credit.sourceId,
 				assumption:
-					"Le rabais se déduit de l'impôt cantonal sur le revenu, coefficient cantonal appliqué, sans le rendre négatif ; chaque enfant déclaré y ouvre droit.",
+					labels.TAX_CREDIT_ASSUMPTION,
 			});
 		}
 	}
@@ -1016,7 +1017,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			(baseIncome.tax * municipality.multiplier.income.value) / 100 +
 			(baseWealth.tax * municipality.multiplier.wealth.value) / 100;
 		line({
-			label: "Impôt communal",
+			label: labels.MUNICIPAL_TAX,
 			operands: {
 				incomeMultiplierPercent: municipality.multiplier.income.value,
 				wealthMultiplierPercent: municipality.multiplier.wealth.value,
@@ -1025,23 +1026,23 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			value: municipalTax,
 			unit: "CHF",
 			sourceId: municipality.multiplier.income.sourceId,
-			assumption: "Le coefficient communal s'applique à l'impôt cantonal de base non réduit.",
+			assumption: labels.MUNICIPAL_MULTIPLIER_ASSUMPTION,
 		});
 	} else {
-		const communalIncomeTable = selectTable(municipality.income, household, "Barème communal du revenu");
+		const communalIncomeTable = selectTable(municipality.income, household, labels.COMMUNAL_INCOME_SCALE);
 		const communalDeflation =
 			municipality.incomeScaleIndexation === null
 				? undefined
-				: need(municipality.incomeScaleIndexation, "Indexation du barème communal du revenu");
-		const communalIncome = scaleTax(communalIncomeTable, cantonalIncome, communalDeflation, "impôt communal");
-		communalIncome.tax = afterFamilyTaxReduction(communalIncome.tax, "Impôt communal de base sur le revenu");
+				: need(municipality.incomeScaleIndexation, labels.COMMUNAL_INCOME_INDEXATION);
+		const communalIncome = scaleTax(communalIncomeTable, cantonalIncome, communalDeflation, labels.MUNICIPAL_TAX_NOUN);
+		communalIncome.tax = afterFamilyTaxReduction(communalIncome.tax, labels.BASE_COMMUNAL_INCOME_TAX);
 		let communalWealthTax = 0;
 		let communalWealthFormula = "";
 		if (isPending(municipality.wealth)) {
-			if (wealth > 0) need(municipality.wealth, "Barème communal de la fortune");
+			if (wealth > 0) need(municipality.wealth, labels.COMMUNAL_WEALTH_SCALE);
 		} else {
 			const communalWealth = evaluateWithDivisor(
-				selectTable(municipality.wealth, household, "Barème communal de la fortune"),
+				selectTable(municipality.wealth, household, labels.COMMUNAL_WEALTH_SCALE),
 				wealth,
 				wealthDivisor,
 				1,
@@ -1054,7 +1055,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			(taxRounding ? roundToNearest(communalIncomePart, taxRounding.value) : communalIncomePart) +
 			(communalWealthTax * municipality.multiplier.wealth.value) / 100;
 		line({
-			label: "Impôt communal selon le barème communal",
+			label: labels.COMMUNAL_TAX_PER_SCALE,
 			operands: {
 				communalIncomeTax: communalIncome.tax,
 				communalWealthTax,
@@ -1084,14 +1085,14 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 			);
 		}
 		line({
-			label: "Charge fiscale maximale",
+			label: labels.MAXIMUM_TAX_BURDEN,
 			operands: { cantonalAndMunicipalTax: burdenTax, ceilingFloor: floorCeiling },
 			formula: `${fmt(burdenTax)} ≤ ${fmt(percent)} % × ${fmt(input.cantonalTaxableIncome)} = ${fmt(floorCeiling)} : plafond non atteint`,
 			value: burdenTax,
 			unit: "CHF",
 			sourceId: burden.sourceId,
 			assumption:
-				"Le revenu déterminant du plafond vaut au moins le revenu imposable ; en deçà, le plafond ne peut pas jouer.",
+				labels.MAXIMUM_TAX_BURDEN_ASSUMPTION,
 		});
 	}
 
@@ -1102,27 +1103,27 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 		const churchWealth = scales.church.wealth[input.denomination];
 		churchTax = (baseIncome.tax * churchIncome.value) / 100 + (baseWealth.tax * churchWealth.value) / 100;
 		line({
-			label: "Impôt paroissial",
+			label: labels.CHURCH_TAX,
 			operands: { incomeMultiplierPercent: churchIncome.value, wealthMultiplierPercent: churchWealth.value },
 			formula: `${fmt(baseIncome.tax)} × ${fmt(churchIncome.value)} % + ${fmt(baseWealth.tax)} × ${fmt(churchWealth.value)} %`,
 			value: churchTax,
 			unit: "CHF",
 			sourceId: churchIncome.sourceId,
-			assumption: "Le coefficient paroissial s'applique à l'impôt cantonal de base non réduit.",
+			assumption: labels.CHURCH_MULTIPLIER_ASSUMPTION,
 		});
 	}
 
 	// 9. Taxe personnelle
 	let personalTax = 0;
 	if (scales.personalTax !== null) {
-		const flat = need(scales.personalTax, "Taxe personnelle");
+		const flat = need(scales.personalTax, labels.PERSONAL_TAX);
 		if (flat) {
 			personalTax = flat.value;
 			line({
-				label: "Taxe personnelle",
+				label: labels.PERSONAL_TAX,
 				operands: {},
-				formula: "montant forfaitaire",
-				assumption: "Montant forfaitaire par contribuable ou par couple, sans examen des cas d'exemption.",
+				formula: labels.FLAT_AMOUNT,
+				assumption: labels.PERSONAL_TAX_ASSUMPTION,
 				value: personalTax,
 				unit: "CHF",
 				sourceId: flat.sourceId,
@@ -1138,7 +1139,7 @@ export function computeIncomeAndWealthTax(input: TaxInput, scales: TaxScales): T
 	// 11. Total
 	const totalTax = cantonalTax + municipalTax + churchTax + personalTax + federalTax;
 	line({
-		label: "Impôt total",
+		label: labels.TOTAL_TAX,
 		operands: { cantonalTax, municipalTax, churchTax, personalTax, federalTax },
 		formula: `${fmt(cantonalTax)} + ${fmt(municipalTax)} + ${fmt(churchTax)} + ${fmt(personalTax)} + ${fmt(federalTax)}`,
 		value: totalTax,
@@ -1191,7 +1192,7 @@ export function computeMarginalRate(input: TaxInput, scales: TaxScales): Margina
 		marginalRatePercent,
 		breakdown: [
 			{
-				label: "Taux marginal sur le revenu imposable",
+				label: labels.MARGINAL_RATE,
 				operands: { totalTaxBefore: before, totalTaxAfter: after, step: MARGINAL_STEP_CHF },
 				formula: `(${fmt(after)} − ${fmt(before)}) / ${MARGINAL_STEP_CHF} × 100`,
 				value: marginalRatePercent,
@@ -1235,7 +1236,7 @@ export function computeTaxSavingOnDeduction(
 			...before.breakdown,
 			...after.breakdown.map((entry) => ({ ...entry, label: `${entry.label} (après déduction)` })),
 			{
-				label: "Économie d'impôt",
+				label: labels.TAX_SAVING,
 				operands: { totalTaxBefore: before.totalTax, totalTaxAfter: after.totalTax, deduction },
 				formula: `${fmt(before.totalTax)} − ${fmt(after.totalTax)}`,
 				value: taxSaving,
