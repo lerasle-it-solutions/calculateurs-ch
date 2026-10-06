@@ -1,5 +1,6 @@
 /**
- * Formateur suisse unique des nombres et montants rendus à la construction.
+ * Formateur suisse unique des nombres et montants, à la construction et dans
+ * le navigateur.
  *
  * Le séparateur de milliers est imposé ici, l'apostrophe typographique
  * « ’ » (7’373, 36’864), sans passer par Intl : selon la version de son ICU,
@@ -7,8 +8,9 @@
  * une espace fine (Node 22). La virgule décimale suit l'usage fr-CH d'Intl
  * (« 1,8 »).
  *
- * Ne sert pas au script d'A1 exécuté dans le navigateur : son format sera
- * tranché à l'étape 0 de W08, avec le budget JavaScript.
+ * Sert aussi dans le navigateur (affichage et trace d'A1), décision de l'étape 0
+ * de W08 : la même chaîne à la construction et à l'écran, quel que soit le
+ * navigateur.
  */
 
 /** Séparateur de milliers : apostrophe typographique. */

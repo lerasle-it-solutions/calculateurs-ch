@@ -1,14 +1,9 @@
 /**
- * Nombres de la trace du calcul, format suisse romand. Un seul formateur par
- * nombre de décimales, partagé par les modules de calcul.
+ * Nombres de la trace du calcul, format suisse romand : le formateur unique de
+ * src/lib/format/chf.ts, apostrophe typographique imposée, sans Intl. La trace
+ * se lit donc de la même façon dans tous les navigateurs et à la construction.
  */
-const formats = new Map<number, Intl.NumberFormat>();
+import { formatSwissNumber } from "../format/chf";
 
-export const formatNumber = (value: number, maximumFractionDigits: number): string => {
-	let format = formats.get(maximumFractionDigits);
-	if (format === undefined) {
-		format = new Intl.NumberFormat("fr-CH", { maximumFractionDigits });
-		formats.set(maximumFractionDigits, format);
-	}
-	return format.format(value);
-};
+export const formatNumber = (value: number, maximumFractionDigits: number): string =>
+	formatSwissNumber(value, maximumFractionDigits);

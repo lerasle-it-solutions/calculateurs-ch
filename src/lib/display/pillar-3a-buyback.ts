@@ -6,6 +6,7 @@
  */
 import { computePillar3aBuyback, type Pillar3aBuybackParams } from "../calculations/pension/pillar-3a-buyback";
 import { MissingTaxDataError, PartialCoverageError } from "../calculations/tax";
+import { formatChf, formatSwissNumber } from "../format/chf";
 
 export type StatusLink = { label: string; url: string };
 
@@ -26,8 +27,12 @@ export type Pillar3aBuybackDisplay = {
 	status: { text: string; link?: StatusLink } | null;
 };
 
-const chf = new Intl.NumberFormat("fr-CH", { style: "currency", currency: "CHF", maximumFractionDigits: 0 });
-const number = new Intl.NumberFormat("fr-CH", { maximumFractionDigits: 2 });
+/**
+ * Montant affiché dans le navigateur : le formateur de la construction
+ * (src/lib/format/chf.ts), unité après le nombre, « 12’346 CHF ». Sans Intl,
+ * le séparateur ne dépend pas du navigateur.
+ */
+export const formatChfAmount = (value: number): string => `${formatChf(value)}\u00a0CHF`;
 
 export function displayPillar3aBuyback(
 	params: Pillar3aBuybackParams,
@@ -37,15 +42,15 @@ export function displayPillar3aBuyback(
 	try {
 		const result = computePillar3aBuyback(params);
 		return {
-			value: chf.format(result.taxSaving),
+			value: formatChfAmount(result.taxSaving),
 			breakdown: result.breakdown.map((line) => ({
 				label: line.label,
 				detail: line.formula,
 				amount: line.noAmount
 					? "—"
 					: line.unit === "CHF"
-						? chf.format(line.value)
-						: `${number.format(line.value)}${line.unit ? ` ${line.unit}` : ""}`,
+						? formatChfAmount(line.value)
+						: `${formatSwissNumber(line.value, 2)}${line.unit ? ` ${line.unit}` : ""}`,
 				qualifier: line.qualifier,
 				note: line.assumption,
 			})),
