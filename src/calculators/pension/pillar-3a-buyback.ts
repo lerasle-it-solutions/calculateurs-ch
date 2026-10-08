@@ -7,11 +7,11 @@
  * lacune sont toutes supposées avec 2e pilier, donc plafonnées à la « petite »
  * cotisation.
  */
-import { allDataFiles, eachValue, getFederalData, getMunicipalMultipliers, sourceRegistry } from "../../data";
+import { getFederalData, getMunicipalMultipliers, sourceRegistry } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf, formatPercent } from "../../lib/format/chf";
-import { SOURCE_BY_CANTON } from "../../data/sources";
 import { taxEngineCoverage } from "../tax-coverage";
+import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
 
 export const PILLAR_3A_BUYBACK_ID = "pension.pillar-3a-buyback";
@@ -53,27 +53,8 @@ const opp3 = sourceRegistry().get("opp3-art-7a");
 if (!opp3) throw new Error("Source opp3-art-7a absente du registre.");
 const opp3Link = { label: "Le texte de l'OPP 3 sur Fedlex", url: opp3.url };
 
-/**
- * Sources lues par le moteur fiscal : rôles de SOURCE_BY_CANTON des six cantons
- * et sources des valeurs cantonales, communales et de l'impôt fédéral direct ;
- * puis l'outil de collecte de l'AFC et les sources du pilier 3a. Jamais l'outil
- * de référence estv-tax-calculator.
- */
-const sourceIds = (() => {
-	const ids = new Set<string>();
-	for (const roles of Object.values(SOURCE_BY_CANTON)) {
-		for (const id of Object.values(roles)) if (id !== null) ids.add(id);
-	}
-	for (const file of allDataFiles()) {
-		if (/^cantons\/[a-z]{2}\.json$/.test(file.path) || file.path.startsWith("municipalities/")) {
-			eachValue(file.data, (value) => ids.add(value.sourceId));
-		}
-	}
-	eachValue(getFederalData(pillar3aBuybackYear).directFederalTax, (value) => ids.add(value.sourceId));
-	for (const id of ["estv-base-data-module", "opp3-art-7a", "ofas-pillar-3a-caps"]) ids.add(id);
-	ids.delete("estv-tax-calculator");
-	return [...ids];
-})();
+/** Sources du moteur fiscal, puis celles du pilier 3a. */
+const sourceIds = [...new Set([...taxEngineSourceIds(pillar3aBuybackYear), "opp3-art-7a", "ofas-pillar-3a-caps"])];
 
 const yesNo = [
 	{ value: "yes", label: "Oui" },
@@ -210,8 +191,8 @@ export const pillar3aBuyback: CalculatorDefinition = {
 				alternative: opp3Link,
 			},
 			{
-				case: "Personnes non affiliées à un 2e pilier (indépendants sans caisse de pension, salariés sous le seuil LPP), dont la lacune se calcule sur la « grande » cotisation.",
-				alternative: "pension.pillar-3a-tax-saving",
+				case: "Rachat des personnes non affiliées à un 2e pilier (indépendants sans caisse de pension, salariés sous le seuil LPP), dont la lacune se calcule sur la « grande » cotisation : il n'est pas encore couvert.",
+				alternative: { label: "Adressez-vous à votre fondation ou à votre assurance 3a." },
 			},
 			{
 				case: "Rendement futur du capital racheté.",
@@ -272,7 +253,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 		},
 		{
 			question: "Je suis indépendant, ou salarié sans caisse de pension : qu'est-ce que cela change ?",
-			answer: `Ce qui compte, c'est l'affiliation à un 2e pilier, pas le statut. Sans caisse de pension, votre lacune se calcule sur la « grande » cotisation (${percent(largeRate)} du revenu, au plus ${chf(largeCap)} CHF), mais le rachat annuel reste plafonné à la petite. Ce cas relève de la variante A2.`,
+			answer: `Ce qui compte, c'est l'affiliation à un 2e pilier, pas le statut. Sans caisse de pension, votre lacune se calcule sur la « grande » cotisation (${percent(largeRate)} du revenu, au plus ${chf(largeCap)} CHF), mais le rachat annuel reste plafonné à la petite. Ce calculateur ne couvre pas encore ce rachat : adressez-vous à votre fondation ou à votre assurance 3a.`,
 		},
 		{
 			question: "Pourquoi ne pas multiplier le rachat par mon taux marginal ?",

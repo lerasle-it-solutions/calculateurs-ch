@@ -10,8 +10,10 @@
  * restent dans le code qui les compose.
  *
  * Une constante par libellé, exportée seule : le paquet du navigateur en
- * raccourcit le nom. Ajouter un libellé ici suffit, la page et le module du
- * navigateur suivent.
+ * raccourcit le nom. Les libellés propres à un calculateur vivent à côté de
+ * son module (pension/pillar-3a-buyback-labels.ts…) : le paquet d'une page
+ * n'embarque ainsi que ceux qu'elle lit. Un nouveau module de libellés se
+ * déclare dans TRACE_LABEL_MODULES (src/lib/build/browser-trace-labels.ts).
  */
 
 // Moteur fiscal (tax.ts)
@@ -84,19 +86,7 @@ export const TOTAL_TAX = "Impôt total";
 export const MARGINAL_RATE = "Taux marginal sur le revenu imposable";
 export const TAX_SAVING = "Économie d'impôt";
 
-// A1 — rachat rétroactif du pilier 3a (pension/pillar-3a-buyback.ts)
-export const OLD_AGE_BENEFIT_RECEIVED = "Une prestation de vieillesse a été perçue : aucun rachat n'est possible (art. 7a al. 4 OPP 3).";
-export const BUYBACK_GAP_YEARS = "Années de lacune rachetables";
-export const GAPS_BEFORE_FIRST_YEAR = "Les lacunes antérieures à la première année de lacune rachetable ne le sont jamais (disposition transitoire).";
-export const AGE_LIMIT_NOT_EXAMINED = "Limite d'âge non examinée";
-export const AGE_LIMIT_REFERENCE = "art. 7a al. 5 OPP 3, qui renvoie à l'art. 7 al. 3 : non traité par ce calcul";
-export const AGE_LIMIT_ASSUMPTION = "La limite d'âge du rachat doit être vérifiée à part.";
-export const BUYBACK_BLOCKED = "Rachat impossible l'année du rachat";
-export const NOT_BUYABLE = "non rachetable";
-export const LAST_YEAR_FILLED_WHOLE = "Dernière année de rachat de cette lacune : comblée en priorité, entière.";
-export const YEAR_FILLED_WHOLE = "Année comblée entièrement : ensemble d'années entières le plus élevé sous le plafond restant, les années qui expirent le plus tôt en priorité à égalité.";
-export const CAP_ON_YEAR_TOTAL = "Le plafond s'applique au total des rachats de l'année, et non à chaque lacune (art. 7a al. 2 OPP 3).";
+// Économie d'impôt d'une déduction 3a, commune à A1 et A2 (pension/income-tax-saving.ts)
 export const INCOME_ONLY_TOTALS_ASSUMPTION = "Montants arrondis au franc ; l'impôt sur la fortune ne change pas (hypothèse 6).";
-export const NOTHING_TO_BUY_BACK = "aucun montant rachetable";
 export const TAX_SAVING_CANTONAL_AND_MUNICIPAL = "Économie d'impôt, canton et commune";
 export const TAX_SAVING_FEDERAL = "Économie d'impôt, Confédération";

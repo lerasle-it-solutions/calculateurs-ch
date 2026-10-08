@@ -6,10 +6,12 @@
  */
 import { computePillar3aBuyback, type Pillar3aBuybackParams } from "../calculations/pension/pillar-3a-buyback";
 import { MissingTaxDataError, PartialCoverageError } from "../calculations/tax";
-import { formatChf, formatSwissNumber } from "../format/chf";
+import { formatSwissNumber } from "../format/chf";
+import { formatChfAmount } from "./amounts";
 import type { ResultStatus, StatusLink } from "./result-card";
 
 export type { StatusLink };
+export { formatChfAmount };
 
 export type BreakdownRow = { label: string; detail?: string; amount: string; qualifier?: string; note?: string };
 
@@ -32,12 +34,6 @@ export type Pillar3aBuybackDisplay = {
 	status: ResultStatus | null;
 };
 
-/**
- * Montant affiché dans le navigateur : le formateur de la construction
- * (src/lib/format/chf.ts), unité après le nombre, « 12’346 CHF ». Sans Intl,
- * le séparateur ne dépend pas du navigateur.
- */
-export const formatChfAmount = (value: number): string => `${formatChf(value)}\u00a0CHF`;
 
 export function displayPillar3aBuyback(
 	params: Pillar3aBuybackParams,

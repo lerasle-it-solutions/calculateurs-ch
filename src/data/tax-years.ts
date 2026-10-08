@@ -28,6 +28,11 @@ export const CALCULATOR_DATA_REQUIREMENTS: Readonly<Record<string, DataRequireme
 		cantonal: TAX_ENGINE_CANTONAL_KEYS,
 		municipalMultipliers: true,
 	},
+	"pension.pillar-3a-tax-saving": {
+		federal: ["pillar3a", "directFederalTax"],
+		cantonal: TAX_ENGINE_CANTONAL_KEYS,
+		municipalMultipliers: true,
+	},
 };
 
 /** Les données parmi lesquelles chercher, en argument pour rester testable. */

@@ -10,8 +10,9 @@
  */
 import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
-import { assertTaxCoverage, computeTaxSavingOnDeduction, type TaxInput, type TaxResult, type TaxScales } from "../tax";
-import * as labels from "../trace-labels";
+import { assertTaxCoverage, type TaxInput, type TaxScales } from "../tax";
+import { computeIncomeTaxSaving } from "./income-tax-saving";
+import * as labels from "./pillar-3a-buyback-labels";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
 export type Sourced<T> = { value: T; sourceId: string };
@@ -299,17 +300,6 @@ export type Pillar3aBuybackResult = {
 	breakdown: BreakdownLine[];
 };
 
-const TAX_COMPONENTS = ["cantonalTax", "municipalTax", "churchTax", "personalTax", "federalTax"] as const;
-
-/**
- * Composantes de l'impôt sur le revenu, chacune arrondie au franc comme dans la
- * trace affichée, et leur somme ; sans calcul d'impôt, des zéros.
- */
-const roundedIncomeTax = (tax: TaxResult | undefined) => {
-	const components = Object.fromEntries(TAX_COMPONENTS.map((key) => [key, Math.round(tax?.[key] ?? 0)]));
-	return { components, total: Object.values(components).reduce((sum, amount) => sum + amount, 0) };
-};
-
 /**
  * Calcul complet du rachat rétroactif : lacunes et répartition, puis économie
  * d'impôt sur le total rachetable, retranché des deux revenus imposables — par
@@ -324,71 +314,6 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 	assertTaxCoverage(params.taxInput, params.scales);
 	const gaps = computePillar3aGaps(params.gaps);
 	const amount = gaps.totalBuyback;
-	const saving = amount > 0 ? computeTaxSavingOnDeduction(params.taxInput, params.scales, amount) : undefined;
-	const before = roundedIncomeTax(saving?.before);
-	const after = roundedIncomeTax(saving?.after);
-	const taxSaving = before.total - after.total;
-	const federalBefore = before.components.federalTax!;
-	const federalAfter = after.components.federalTax!;
-	const federalSaving = federalBefore - federalAfter;
-	const cantonalAndMunicipalSaving = taxSaving - federalSaving;
-
-	const lines: BreakdownLine[] = [];
-	for (const line of saving?.breakdown ?? []) {
-		// Impôt sur une fortune nulle : sans objet, A1 ne saisit pas la fortune
-		if (line.formula === labels.ZERO_BASE && line.label.includes("fortune")) continue;
-		if (line.label === labels.TAX_SAVING) continue;
-		if (line.label.startsWith(labels.TOTAL_TAX)) {
-			const { components, total } = line.label === labels.TOTAL_TAX ? before : after;
-			lines.push({
-				label: `Impôt sur le revenu (hors impôt sur la fortune)${line.label.slice(labels.TOTAL_TAX.length)}`,
-				operands: components,
-				formula: Object.values(components).map(fmt).join(" + "),
-				value: total,
-				unit: "CHF",
-				sourceId: null,
-				assumption: labels.INCOME_ONLY_TOTALS_ASSUMPTION,
-			});
-		} else lines.push(line);
-	}
-
-	return {
-		gaps,
-		buybackAmount: amount,
-		taxSaving,
-		cantonalAndMunicipalSaving,
-		federalSaving,
-		breakdown: [
-			...gaps.breakdown,
-			...lines,
-			{
-				label: labels.TAX_SAVING,
-				operands: { totalTaxBefore: before.total, totalTaxAfter: after.total, deduction: amount },
-				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : labels.NOTHING_TO_BUY_BACK,
-				value: taxSaving,
-				unit: "CHF",
-				sourceId: null,
-			},
-			...(saving
-				? [
-						{
-							label: labels.TAX_SAVING_CANTONAL_AND_MUNICIPAL,
-							operands: { taxSaving, federalSaving },
-							formula: `${fmt(taxSaving)} − ${fmt(federalSaving)}`,
-							value: cantonalAndMunicipalSaving,
-							unit: "CHF",
-							sourceId: null,
-						},
-						{
-							label: labels.TAX_SAVING_FEDERAL,
-							operands: { federalTaxBefore: federalBefore, federalTaxAfter: federalAfter },
-							formula: `${fmt(federalBefore)} − ${fmt(federalAfter)}`,
-							value: federalSaving,
-							unit: "CHF",
-							sourceId: null,
-						},
-					]
-				: []),
-		],
-	};
+	const saving = computeIncomeTaxSaving(params.taxInput, params.scales, amount, labels.NOTHING_TO_BUY_BACK);
+	return { ...saving, gaps, buybackAmount: amount, breakdown: [...gaps.breakdown, ...saving.breakdown] };
 }

@@ -1,0 +1,261 @@
+---
+/**
+ * A2 — Économie d'impôt d'un versement 3a.
+ *
+ * Le calcul se fait dans le navigateur, en JavaScript natif : plafond et
+ * montant déductible de chaque personne, puis économie par
+ * computeTaxSavingOnDeduction sur la somme des déductions, retranchée des deux
+ * revenus imposables. Les barèmes arrivent par un paquet JSON construit à la
+ * compilation ; l'année est l'année fiscale des données, jamais l'horloge du
+ * visiteur.
+ */
+import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
+import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
+import TraceLabels from "../../components/calculator/TraceLabels.astro";
+import {
+	pillar3aTaxSaving,
+	pillar3aTaxSavingIntro,
+	pillar3aTaxSavingTaxYear,
+	pillar3aTaxSavingTexts,
+	pillar3aTaxSavingYear,
+} from "../../calculators/pension/pillar-3a-tax-saving";
+import { publishedCalculators } from "../../calculators/catalog";
+import { ROMANDE_CANTONS } from "../../calculators/cantons";
+import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
+import { getTaxScalesBundle } from "../../data/tax-scales";
+import { fr } from "../../i18n/fr";
+
+const texts = pillar3aTaxSavingTexts;
+const pillar3a = getFederalData(pillar3aTaxSavingYear).pillar3a;
+const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
+const cantons = pillar3aTaxSaving.scope.cantonsCovered as (typeof ROMANDE_CANTONS)[number]["code"][];
+
+const bundle = getTaxScalesBundle(pillar3aTaxSavingYear, cantons);
+
+const pageData = {
+	taxYear: pillar3aTaxSavingYear,
+	smallContributionCap: sourced(pillar3a.smallContributionCap),
+	largeContributionCap: sourced(pillar3a.largeContributionCap),
+	largeContributionIncomeRate: sourced(pillar3a.largeContributionIncomeRate),
+	ruleSources: { ordinance: "opp3-art-7a", circular: "afc-circular-18a" },
+	bundle,
+	municipalities: Object.fromEntries(
+		(getMunicipalMultipliers()?.multipliers ?? [])
+			.filter((entry) => cantons.includes(entry.canton))
+			.map((entry) => [`${entry.municipality} (${entry.canton})`, { ofsId: entry.bfsId, canton: entry.canton }]),
+	),
+	// Calculette officielle du canton, lue dans coverage.officialCalculator des données
+	officialCalculators: Object.fromEntries(
+		cantons.flatMap((code) => {
+			const official = getCantonData(code).coverage?.officialCalculator;
+			return official && "url" in official ? [[code, official]] : [];
+		}),
+	),
+	texts: {
+		outOfScope: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, texts.outOfScope(canton.name)])),
+		// Seules les communes non couvertes en entier en ont besoin (PartialCoverageError.municipality)
+		outOfScopeMunicipality: Object.fromEntries(
+			bundle.municipalities.flatMap(({ coverage }) =>
+				coverage?.municipality === undefined ? [] : [[coverage.municipality, texts.outOfScopeMunicipality(coverage.municipality)]],
+			),
+		),
+		missingData: texts.missingData,
+		municipalityMismatch: texts.municipalityMismatch,
+		unknownMunicipality: texts.unknownMunicipality,
+		earnedIncomeMissing: texts.earnedIncomeMissing,
+		outOfScopeShort: texts.outOfScopeShort,
+		missingDataShort: texts.missingDataShort,
+		inputShort: texts.inputShort,
+		blockedShort: texts.blockedShort,
+		earnedIncomeMissingShort: texts.earnedIncomeMissingShort,
+		excessWarning: texts.excessWarning,
+	},
+};
+// Données en JSON dans la page, sans « < » qui fermerait la balise
+const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
+---
+
+<CalculatorLayout definition={pillar3aTaxSaving}>
+	<CalculatorShell
+		definition={pillar3aTaxSaving}
+		intro={pillar3aTaxSavingIntro}
+		resultLabel={texts.resultLabel}
+		resultNote={texts.disclaimer}
+		notice={
+			pillar3aTaxSavingTaxYear.isFallback
+				? fr.taxYearFallback.pillar3aTaxSaving(pillar3aTaxSavingTaxYear.year, pillar3aTaxSavingTaxYear.calendarYear)
+				: undefined
+		}
+		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
+		catalog={publishedCalculators("pension")}
+	>
+		<div slot="result" class="mt-md flex max-w-reading flex-col gap-md">
+			<dl id="pillar3a-saving-summary" class="flex flex-col text-label" hidden>
+				{
+					Object.entries(texts.summary).map(([key, label]) => (
+						<div class="flex justify-between gap-md border-b border-hairline py-sm">
+							<dt>{label}</dt>
+							<dd data-summary={key} class="text-right font-bold tabular-nums" />
+						</div>
+					))
+				}
+			</dl>
+			<p id="pillar3a-saving-excess" class="text-label font-bold" hidden></p>
+			<ul class="flex flex-col gap-xs text-fine text-ink-muted">
+				{texts.reminders.map((reminder) => <li>{reminder}</li>)}
+			</ul>
+		</div>
+	</CalculatorShell>
+
+	<script type="application/json" id="pillar3a-saving-data" set:html={pageDataJson} />
+	<TraceLabels modules={["pillar-3a-tax-saving"]} />
+</CalculatorLayout>
+
+<script>
+	import type { Pillar3aContributor } from "../../lib/calculations/pension/pillar-3a-tax-saving";
+	import { taxScalesFromBundle, type TaxScalesBundle } from "../../lib/calculations/tax-scales-bundle";
+	import type { TaxInput } from "../../lib/calculations/tax";
+	import type { BreakdownRow, StatusLink } from "../../lib/display/pillar-3a-buyback";
+	import {
+		displayPillar3aTaxSaving,
+		type Pillar3aTaxSavingDisplayTexts,
+		type Pillar3aTaxSavingSummary,
+	} from "../../lib/display/pillar-3a-tax-saving";
+	import type { ResultStatus } from "../../lib/display/result-card";
+
+	type Sourced = { value: number; sourceId: string };
+	type PageData = {
+		taxYear: number;
+		smallContributionCap: Sourced;
+		largeContributionCap: Sourced;
+		largeContributionIncomeRate: Sourced;
+		ruleSources: { ordinance: string; circular: string };
+		bundle: TaxScalesBundle;
+		municipalities: Record<string, { ofsId: number; canton: TaxInput["canton"] }>;
+		officialCalculators: Record<string, StatusLink>;
+		texts: Pillar3aTaxSavingDisplayTexts & {
+			municipalityMismatch: string;
+			unknownMunicipality: string;
+			earnedIncomeMissing: string;
+			inputShort: string;
+			earnedIncomeMissingShort: string;
+			excessWarning: string;
+		};
+	};
+
+	const dataElement = document.getElementById("pillar3a-saving-data");
+	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
+	const summary = document.getElementById("pillar3a-saving-summary");
+	const excess = document.getElementById("pillar3a-saving-excess");
+
+	if (dataElement && form && summary && excess) {
+		const data = JSON.parse(dataElement.textContent ?? "{}") as PageData;
+
+		/** Bloc d'un champ : l'enfant du formulaire qui le contient. */
+		const fieldBlock = (name: string): HTMLElement | null => {
+			let element = form.elements.namedItem(name) as HTMLElement | null;
+			while (element && element.parentElement !== form) element = element.parentElement;
+			return element;
+		};
+		const showField = (name: string, shown: boolean) => {
+			const block = fieldBlock(name);
+			if (block) block.hidden = !shown;
+		};
+
+		// Un message remplace le montant dans la carte de résultat, et sa mention courte dans la barre mobile.
+		const publish = (value: string, breakdown: BreakdownRow[], status: ResultStatus | null, shown: Pillar3aTaxSavingSummary | null) => {
+			summary.hidden = shown === null;
+			for (const slot of summary.querySelectorAll<HTMLElement>("[data-summary]")) {
+				slot.textContent = shown?.[slot.dataset.summary as keyof Pillar3aTaxSavingSummary] ?? "";
+			}
+			excess.hidden = !shown?.excess;
+			excess.textContent = shown?.excess ? data.texts.excessWarning.replace("{amount}", shown.excess) : "";
+			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown, status } }));
+		};
+		const inputStatus = (text: string, short = data.texts.inputShort): ResultStatus => ({ text, short });
+
+		const update = () => {
+			const fields = Object.fromEntries(new FormData(form)) as Record<string, string>;
+			const married = fields.maritalStatus === "married";
+			// Champs affichés selon les réponses : conjoint, revenu sans caisse de pension, activité après l'âge de référence
+			showField("workingAfterReferenceAge", fields.reachedReferenceAge === "yes");
+			showField("earnedIncome", fields.affiliated === "no");
+			for (const name of ["spouseAffiliated", "spouseEarnedIncome", "spouseContribution"]) {
+				showField(name, married && (name !== "spouseEarnedIncome" || fields.spouseAffiliated === "no"));
+			}
+
+			const municipality = data.municipalities[fields.municipality ?? ""];
+			const cantonalTaxableIncome = Number(fields.cantonalTaxableIncome);
+			const federalTaxableIncome = Number(fields.federalTaxableIncome);
+			const children = Number(fields.children || 0);
+
+			if (!municipality) {
+				return publish("—", [], fields.municipality ? inputStatus(data.texts.unknownMunicipality) : null, null);
+			}
+			if (municipality.canton !== fields.canton) {
+				return publish("—", [], inputStatus(data.texts.municipalityMismatch), null);
+			}
+			if (
+				fields.cantonalTaxableIncome === "" ||
+				fields.federalTaxableIncome === "" ||
+				![cantonalTaxableIncome, federalTaxableIncome, children].every((value) => Number.isFinite(value) && value >= 0)
+			) {
+				return publish("—", [], null, null);
+			}
+
+			const contributor = (prefix: "" | "spouse"): Pillar3aContributor | null => {
+				const key = (name: string) => (prefix === "" ? name : `${prefix}${name[0]!.toUpperCase()}${name.slice(1)}`);
+				const affiliated = fields[key("affiliated")] !== "no";
+				const income = fields[key("earnedIncome")] ?? "";
+				if (!affiliated && (income === "" || !Number.isFinite(Number(income)))) return null;
+				return {
+					affiliated,
+					earnedIncome: affiliated ? null : Number(income),
+					contribution: Math.max(0, Number(fields[key("contribution")] || 0)),
+				};
+			};
+			const contributors = (married ? (["", "spouse"] as const) : ([""] as const)).map(contributor);
+			if (contributors.some((entry) => entry === null)) {
+				return publish("—", [], inputStatus(data.texts.earnedIncomeMissing, data.texts.earnedIncomeMissingShort), null);
+			}
+
+			const taxInput: TaxInput = {
+				taxYear: data.taxYear,
+				canton: municipality.canton,
+				municipalityOfsId: municipality.ofsId,
+				maritalStatus: married ? "married" : "single",
+				children,
+				childrenAges: (fields.childrenAges ?? "")
+					.split(",")
+					.map((age) => Number(age.trim()))
+					.filter((age) => age !== 0 && Number.isFinite(age)),
+				denomination: "none",
+				federalTaxableIncome,
+				cantonalTaxableIncome,
+				taxableWealth: 0,
+			};
+
+			const shown = displayPillar3aTaxSaving(
+				{
+					taxInput,
+					scales: taxScalesFromBundle(data.bundle, municipality.ofsId),
+					smallContributionCap: data.smallContributionCap,
+					largeContributionCap: data.largeContributionCap,
+					largeContributionIncomeRate: data.largeContributionIncomeRate,
+					hasAvsIncome: fields.hasAvsIncome !== "no",
+					reachedReferenceAge: fields.reachedReferenceAge === "yes",
+					workingWithinFiveYearsOfReferenceAge: fields.workingAfterReferenceAge === "yes",
+					contributors: contributors as Pillar3aContributor[],
+					ruleSources: data.ruleSources,
+				},
+				data.texts,
+				data.officialCalculators,
+			);
+			publish(shown.value, shown.breakdown, shown.status, shown.summary);
+		};
+
+		form.addEventListener("input", update);
+		form.addEventListener("change", update);
+		requestAnimationFrame(update);
+	}
+</script>

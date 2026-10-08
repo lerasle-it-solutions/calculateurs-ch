@@ -19,6 +19,7 @@ import {
 	pillar3aBuybackYear,
 	pillar3aGapYears,
 } from "../../calculators/pension/pillar-3a-buyback";
+import { publishedCalculators } from "../../calculators/catalog";
 import { ROMANDE_CANTONS } from "../../calculators/cantons";
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
 import { getTaxScalesBundle } from "../../data/tax-scales";
@@ -88,10 +89,11 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 				: undefined
 		}
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
+		catalog={publishedCalculators("pension")}
 	/>
 
 	<script type="application/json" id="pillar3a-data" set:html={pageDataJson} />
-	<TraceLabels />
+	<TraceLabels modules={["pillar-3a-buyback"]} />
 </CalculatorLayout>
 
 <script>

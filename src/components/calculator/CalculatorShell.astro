@@ -197,6 +197,8 @@ const resultFor = definition.fields
 					label={resultLabel}
 					value="—"
 				/>
+				{/* Compléments du résultat propres à un calculateur (parts, rappels), rendus par la page */}
+				<slot name="result" />
 				{resultNote && <p class="mt-md max-w-reading text-fine text-ink-muted">{resultNote}</p>}
 			</div>
 		</div>

@@ -140,6 +140,8 @@ export const fr = {
 	taxYearFallback: {
 		pillar3aBuyback: (year: number, calendarYear: number): string =>
 			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
+		pillar3aTaxSaving: (year: number, calendarYear: number): string =>
+			`Ce calcul porte sur un versement effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
 	familyPage: {

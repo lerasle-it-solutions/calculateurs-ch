@@ -697,7 +697,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["pension.pillar-3a-buyback"],
+		usedBy: ["pension.pillar-3a-buyback", "pension.pillar-3a-tax-saving"],
 		note: "Version consultée le 29.09.2026 : état le 1er janvier 2025, toujours en vigueur. L'identifiant reprend celui du plan, mais l'entrée couvre aussi les art. 7 et 7b et la disposition transitoire. L'ordonnance ne donne aucun montant en francs : les plafonds viennent de ofas-pillar-3a-caps. La condition de revenu soumis à l'AVS l'année du rachat n'est pas écrite en toutes lettres : elle découle de l'art. 7a al. 1 let. c. PDF archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/opp-3.pdf.",
 	},
 	{
@@ -711,7 +711,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["pension.pillar-3a-buyback"],
+		usedBy: ["pension.pillar-3a-buyback", "pension.pillar-3a-tax-saving"],
 		note: "La page donne les montants « dès 2025 », sans ligne 2026 : les plafonds 2026 sont ceux de 2025. Montants antérieurs non repris, les lacunes d'avant 2025 n'étant pas rachetables. À rouvrir au rituel du 1er janvier : les plafonds suivent l'adaptation du montant-limite LPP. La section « Rachats dans le pilier 3a » énonce explicitement les conditions de revenu soumis à l'AVS l'année de la lacune et l'année du rachat, et de versement intégral de la cotisation ordinaire de l'année du rachat ; vérifiée le 01.10.2026. PDF de la page archivé dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2026/Le troisième pilier - OFAS.pdf.",
 	},
 	{
@@ -725,7 +725,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["pension.pillar-3a-buyback"],
+		usedBy: ["pension.pillar-3a-buyback", "pension.pillar-3a-tax-saving"],
 		note: "Communiqué du Conseil fédéral du 2 octobre 2026 et ses annexes (vue d'ensemble des montants, textes d'ordonnances). PDF archivés dans le dépôt privé calculateurs-ch-data, sous sources/pdf/2027/.",
 	},
 	{
@@ -739,7 +739,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["pension.pillar-3a-buyback"],
+		usedBy: ["pension.pillar-3a-buyback", "pension.pillar-3a-tax-saving"],
 		note: "Remplace la circulaire n° 18 au 1er janvier 2026. PDF archivé dans le dépôt privé, sous sources/pdf/2026/.",
 	},
 ]);
