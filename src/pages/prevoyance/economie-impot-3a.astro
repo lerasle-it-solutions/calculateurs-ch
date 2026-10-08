@@ -177,11 +177,14 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		const update = () => {
 			const fields = Object.fromEntries(new FormData(form)) as Record<string, string>;
 			const married = fields.maritalStatus === "married";
-			// Champs affichés selon les réponses : conjoint, revenu sans caisse de pension, activité après l'âge de référence
-			showField("workingAfterReferenceAge", fields.reachedReferenceAge === "yes");
-			showField("earnedIncome", fields.affiliated === "no");
-			for (const name of ["spouseAffiliated", "spouseEarnedIncome", "spouseContribution"]) {
-				showField(name, married && (name !== "spouseEarnedIncome" || fields.spouseAffiliated === "no"));
+			// Champs affichés selon les réponses : conjoint ou partenaire, activité après l'âge de référence,
+			// revenu de l'activité lucrative sans caisse de pension
+			for (const prefix of ["", "spouse"] as const) {
+				const key = (name: string) => (prefix === "" ? name : `${prefix}${name[0]!.toUpperCase()}${name.slice(1)}`);
+				const shown = prefix === "" || married;
+				for (const name of ["hasAvsIncome", "reachedReferenceAge", "affiliated", "contribution"]) showField(key(name), shown);
+				showField(key("workingAfterReferenceAge"), shown && fields[key("reachedReferenceAge")] === "yes");
+				showField(key("earnedIncome"), shown && fields[key("affiliated")] === "no");
 			}
 
 			const municipality = data.municipalities[fields.municipality ?? ""];
@@ -206,12 +209,21 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			const contributor = (prefix: "" | "spouse"): Pillar3aContributor | null => {
 				const key = (name: string) => (prefix === "" ? name : `${prefix}${name[0]!.toUpperCase()}${name.slice(1)}`);
 				const affiliated = fields[key("affiliated")] !== "no";
+				const hasAvsIncome = fields[key("hasAvsIncome")] !== "no";
+				const reachedReferenceAge = fields[key("reachedReferenceAge")] === "yes";
+				const workingWithinFiveYearsOfReferenceAge = fields[key("workingAfterReferenceAge")] === "yes";
 				const income = fields[key("earnedIncome")] ?? "";
-				if (!affiliated && (income === "" || !Number.isFinite(Number(income)))) return null;
+				// Le revenu n'est requis que si la personne peut déduire : sans caisse de pension et conditions remplies
+				const eligible = hasAvsIncome && (!reachedReferenceAge || workingWithinFiveYearsOfReferenceAge);
+				const incomeGiven = income !== "" && Number.isFinite(Number(income));
+				if (!affiliated && eligible && !incomeGiven) return null;
 				return {
 					affiliated,
-					earnedIncome: affiliated ? null : Number(income),
+					earnedIncome: affiliated || !incomeGiven ? null : Number(income),
 					contribution: Math.max(0, Number(fields[key("contribution")] || 0)),
+					hasAvsIncome,
+					reachedReferenceAge,
+					workingWithinFiveYearsOfReferenceAge,
 				};
 			};
 			const contributors = (married ? (["", "spouse"] as const) : ([""] as const)).map(contributor);
@@ -242,9 +254,6 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 					smallContributionCap: data.smallContributionCap,
 					largeContributionCap: data.largeContributionCap,
 					largeContributionIncomeRate: data.largeContributionIncomeRate,
-					hasAvsIncome: fields.hasAvsIncome !== "no",
-					reachedReferenceAge: fields.reachedReferenceAge === "yes",
-					workingWithinFiveYearsOfReferenceAge: fields.workingAfterReferenceAge === "yes",
 					contributors: contributors as Pillar3aContributor[],
 					ruleSources: data.ruleSources,
 				},

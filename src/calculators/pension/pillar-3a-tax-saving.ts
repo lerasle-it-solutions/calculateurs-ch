@@ -63,42 +63,57 @@ const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
 	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
 const taxableIncomeHint =
-	"Il figure sur votre dernière décision de taxation, ligne revenu imposable : avant la déduction 3a calculée ici.";
+	"Partez du revenu imposable de votre dernière décision de taxation et ajoutez-y la déduction 3a qui y figure, s'il y en a une : le calcul porte sur le revenu avant cette déduction.";
+const avsIncomeHint = "Salaire, revenu d'indépendant ou revenu de remplacement, comme les indemnités de chômage.";
 const affiliationHint =
 	"Affilié à une caisse de pension, à titre obligatoire ou facultatif. Après l'âge de référence, une personne qui touche une rente de sa caisse et n'y est plus assurée n'est plus affiliée ; si elle y reste assurée, même sans cotiser, elle l'est encore.";
 const earnedIncomeHint =
 	"Seulement sans caisse de pension. Salarié : salaire brut moins les cotisations AVS, AI, APG et AC. Indépendant : résultat après rectifications fiscales, moins les cotisations AVS, AI et APG.";
 
-/** Champs d'une personne qui cotise : `prefix` vide pour vous, « spouse » pour le conjoint ou partenaire. */
-const contributorFields = (prefix: "" | "spouse", whose: string, subject: string): FieldDefinition[] => {
-	const name = (field: string) => (prefix === "" ? field : `${prefix}${field[0]!.toUpperCase()}${field.slice(1)}`);
+/** Libellés des champs d'une personne : vous, ou votre conjoint ou partenaire (règles 1 à 4, conditions personnelles). */
+const CONTRIBUTOR_LABELS = {
+	you: {
+		hasAvsIncome: `Avez-vous un revenu soumis à l'AVS en ${year} ?`,
+		reachedReferenceAge: "Avez-vous atteint l'âge de référence AVS ?",
+		workingAfterReferenceAge:
+			"Exercez-vous encore une activité lucrative, et avez-vous atteint l'âge de référence il y a moins de cinq ans ?",
+		affiliated: "Êtes-vous affilié à une caisse de pension (2e pilier) ?",
+		earnedIncome: `Revenu de votre activité lucrative en ${year}`,
+		contribution: `Montant versé au pilier 3a en ${year}`,
+	},
+	spouse: {
+		hasAvsIncome: `Votre conjoint ou partenaire a-t-il un revenu soumis à l'AVS en ${year} ?`,
+		reachedReferenceAge: "Votre conjoint ou partenaire a-t-il atteint l'âge de référence AVS ?",
+		workingAfterReferenceAge:
+			"Votre conjoint ou partenaire exerce-t-il encore une activité lucrative, et a-t-il atteint l'âge de référence il y a moins de cinq ans ?",
+		affiliated: "Votre conjoint ou partenaire est-il affilié à une caisse de pension (2e pilier) ?",
+		earnedIncome: `Revenu de l'activité lucrative de votre conjoint ou partenaire en ${year}`,
+		contribution: `Montant versé au pilier 3a par votre conjoint ou partenaire en ${year}`,
+	},
+};
+
+/** Nom d'un champ de personne : « affiliated » pour vous, « spouseAffiliated » pour le conjoint ou partenaire. */
+export const contributorFieldName = (person: "you" | "spouse", field: string): string =>
+	person === "you" ? field : `spouse${field[0]!.toUpperCase()}${field.slice(1)}`;
+
+/** Champs d'une personne qui cotise, dans l'ordre des règles de la fiche. */
+const contributorFields = (person: "you" | "spouse"): FieldDefinition[] => {
+	const label = CONTRIBUTOR_LABELS[person];
+	const name = (field: keyof typeof label) => contributorFieldName(person, field);
 	return [
+		{ kind: "select", name: name("hasAvsIncome"), label: label.hasAvsIncome, options: yesNo, defaultValue: "yes", hint: avsIncomeHint, required: true },
+		{ kind: "select", name: name("reachedReferenceAge"), label: label.reachedReferenceAge, options: yesNo, defaultValue: "no", required: true },
 		{
 			kind: "select",
-			name: name("affiliated"),
-			label: `${subject} affilié à une caisse de pension (2e pilier) ?`,
+			name: name("workingAfterReferenceAge"),
+			label: label.workingAfterReferenceAge,
 			options: yesNo,
 			defaultValue: "yes",
-			hint: affiliationHint,
 			required: true,
 		},
-		{
-			kind: "number",
-			name: name("earnedIncome"),
-			label: `Revenu de ${whose} activité lucrative en ${year}`,
-			unit: "CHF",
-			step: 100,
-			hint: earnedIncomeHint,
-		},
-		{
-			kind: "number",
-			name: name("contribution"),
-			label: `Montant versé au pilier 3a en ${year}${prefix === "" ? "" : `, ${whose} conjoint ou partenaire`}`,
-			unit: "CHF",
-			min: 0,
-			step: 1,
-			required: true,
-		},
+		{ kind: "select", name: name("affiliated"), label: label.affiliated, options: yesNo, defaultValue: "yes", hint: affiliationHint, required: true },
+		{ kind: "number", name: name("earnedIncome"), label: label.earnedIncome, unit: "CHF", step: 100, hint: earnedIncomeHint },
+		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true },
 	];
 };
 
@@ -152,33 +167,8 @@ const fields: FieldDefinition[] = [
 		hint: taxableIncomeHint,
 		required: true,
 	},
-	{
-		kind: "select",
-		name: "hasAvsIncome",
-		label: `Avez-vous un revenu soumis à l'AVS en ${year} ?`,
-		options: yesNo,
-		defaultValue: "yes",
-		hint: "Salaire, revenu d'indépendant ou revenu de remplacement, comme les indemnités de chômage.",
-		required: true,
-	},
-	{
-		kind: "select",
-		name: "reachedReferenceAge",
-		label: "Avez-vous atteint l'âge de référence AVS ?",
-		options: yesNo,
-		defaultValue: "no",
-		required: true,
-	},
-	{
-		kind: "select",
-		name: "workingAfterReferenceAge",
-		label: "Exercez-vous encore une activité lucrative, et l'avez-vous atteint il y a moins de cinq ans ?",
-		options: yesNo,
-		defaultValue: "yes",
-		required: true,
-	},
-	...contributorFields("", "votre", "Êtes-vous"),
-	...contributorFields("spouse", "votre", "Votre conjoint ou partenaire est-il"),
+	...contributorFields("you"),
+	...contributorFields("spouse"),
 ];
 
 export const pillar3aTaxSaving: CalculatorDefinition = {
@@ -228,7 +218,7 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			"L'impôt sur la fortune ne change pas.",
 			`Barèmes et plafonds de l'année de calcul, ${year}.`,
 			"L'économie est la différence entre l'impôt total (canton, commune et Confédération) avant et après la déduction, retranchée des deux revenus imposables ; jamais un taux marginal multiplié par le versement.",
-			"Pour un couple marié ou lié par un partenariat enregistré, chacun a sa propre déduction, selon sa propre affiliation (art. 7 al. 2 OPP 3) ; l'économie porte sur leur somme.",
+			"Pour un couple marié ou lié par un partenariat enregistré, chacun a sa propre déduction, selon sa propre affiliation (art. 7 al. 2 OPP 3) et ses propres conditions : revenu soumis à l'AVS (circulaire AFC n° 18a, ch. 3), âge de référence (art. 7 al. 3 OPP 3). Celui qui ne les remplit pas n'a pas de déduction ; l'autre garde la sienne. L'économie porte sur leur somme.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
 		referenceYear: pillar3aTaxSavingYear,

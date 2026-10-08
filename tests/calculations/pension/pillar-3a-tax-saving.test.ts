@@ -46,11 +46,23 @@ const taxInput = (municipality: string, canton: TaxInput["canton"], overrides: P
 	...overrides,
 });
 
-const affiliated = (contribution: number): Pillar3aContributor => ({ affiliated: true, earnedIncome: null, contribution });
-const notAffiliated = (earnedIncome: number, contribution: number): Pillar3aContributor => ({
+/** Conditions personnelles des règles 3 et 4 : par défaut, revenu soumis à l'AVS, âge de référence non atteint. */
+type Conditions = Partial<Pick<Pillar3aContributor, "hasAvsIncome" | "reachedReferenceAge" | "workingWithinFiveYearsOfReferenceAge">>;
+const eligible = { hasAvsIncome: true, reachedReferenceAge: false, workingWithinFiveYearsOfReferenceAge: false };
+
+const affiliated = (contribution: number, conditions: Conditions = {}): Pillar3aContributor => ({
+	affiliated: true,
+	earnedIncome: null,
+	contribution,
+	...eligible,
+	...conditions,
+});
+const notAffiliated = (earnedIncome: number, contribution: number, conditions: Conditions = {}): Pillar3aContributor => ({
 	affiliated: false,
 	earnedIncome,
 	contribution,
+	...eligible,
+	...conditions,
 });
 
 const params = (
@@ -63,9 +75,6 @@ const params = (
 	smallContributionCap: small,
 	largeContributionCap: large,
 	largeContributionIncomeRate: rate,
-	hasAvsIncome: true,
-	reachedReferenceAge: false,
-	workingWithinFiveYearsOfReferenceAge: false,
 	contributors,
 	ruleSources: { ordinance: "opp3-art-7a", circular: "afc-circular-18a" },
 	...overrides,
@@ -93,7 +102,7 @@ describe("A2, règle 1 : plafond selon l'affiliation à un 2e pilier", () => {
 	it("affilié : la petite cotisation ; même économie qu'A1 pour la même déduction à Lausanne (1’842)", () => {
 		const input = taxInput("Lausanne", "VD");
 		const result = run(input, [affiliated(small.value)]);
-		expect(result.contributors[0]).toEqual({ cap: small.value, contribution: small.value, deductible: small.value, excess: 0 });
+		expect(result.contributors[0]).toEqual({ blockedReason: null, cap: small.value, contribution: small.value, deductible: small.value, excess: 0 });
 		expect(result.deduction).toBe(small.value);
 		// A1 donne 1 842 CHF pour un rachat de la petite cotisation sur ces revenus (tests d'A1)
 		expect(result.taxSaving).toBe(1_842);
@@ -121,10 +130,9 @@ describe("A2, règle 1 : plafond selon l'affiliation à un 2e pilier", () => {
 	it("rentier LPP non affilié, encore actif moins de cinq ans après l'âge de référence : plafond des non-affiliés", () => {
 		const input = taxInput("Lausanne", "VD");
 		const income = 40_000;
-		const result = run(input, [notAffiliated(income, small.value)], {
-			reachedReferenceAge: true,
-			workingWithinFiveYearsOfReferenceAge: true,
-		});
+		const result = run(input, [
+			notAffiliated(income, small.value, { reachedReferenceAge: true, workingWithinFiveYearsOfReferenceAge: true }),
+		]);
 		expect(result.blockedReason).toBeNull();
 		expect(result.contributors[0]!.cap).toBe(income * rate.value);
 		expect(result.deduction).toBe(Math.min(small.value, income * rate.value));
@@ -135,7 +143,7 @@ describe("A2, règle 1 : plafond selon l'affiliation à un 2e pilier", () => {
 describe("A2, règle 2 : revenu de l'activité lucrative des non-affiliés", () => {
 	it("résultat d'activité négatif : aucune déduction, aucune économie", () => {
 		const result = run(taxInput("Lausanne", "VD"), [notAffiliated(-12_000, 3_000)]);
-		expect(result.contributors[0]).toEqual({ cap: 0, contribution: 3_000, deductible: 0, excess: 3_000 });
+		expect(result.contributors[0]).toEqual({ blockedReason: null, cap: 0, contribution: 3_000, deductible: 0, excess: 3_000 });
 		expect(result.deduction).toBe(0);
 		expect(result.taxSaving).toBe(0);
 		expect(result.effectiveRate).toBeNull();
@@ -152,11 +160,11 @@ describe("A2, règle 2 : revenu de l'activité lucrative des non-affiliés", () 
 describe("A2, règle 3 : revenu soumis à l'AVS l'année du versement", () => {
 	it("sans revenu soumis à l'AVS : aucune déduction, et le résultat l'explique", () => {
 		const input = taxInput("Lausanne", "VD");
-		const result = run(input, [affiliated(small.value)], { hasAvsIncome: false });
+		const result = run(input, [affiliated(small.value, { hasAvsIncome: false })]);
 		expect(result.blockedReason).toBe(labels.NO_AVS_INCOME);
 		expect(result.deduction).toBe(0);
 		expect(result.taxSaving).toBe(0);
-		const shown = displayPillar3aTaxSaving(params(input, [affiliated(small.value)], { hasAvsIncome: false }), texts, officialCalculators);
+		const shown = displayPillar3aTaxSaving(params(input, [affiliated(small.value, { hasAvsIncome: false })]), texts, officialCalculators);
 		expect(shown.status).toEqual({ text: labels.NO_AVS_INCOME, short: pillar3aTaxSavingTexts.blockedShort });
 		expect(shown.summary).toBeNull();
 		expect(shown.breakdown[0]).toMatchObject({ label: labels.DEDUCTION_BLOCKED, detail: labels.NO_AVS_INCOME });
@@ -165,10 +173,9 @@ describe("A2, règle 3 : revenu soumis à l'AVS l'année du versement", () => {
 
 describe("A2, règle 4 : après l'âge de référence AVS", () => {
 	it("âge atteint, sans activité ou depuis cinq ans ou plus : aucune déduction", () => {
-		const result = run(taxInput("Lausanne", "VD"), [affiliated(small.value)], {
-			reachedReferenceAge: true,
-			workingWithinFiveYearsOfReferenceAge: false,
-		});
+		const result = run(taxInput("Lausanne", "VD"), [
+			affiliated(small.value, { reachedReferenceAge: true, workingWithinFiveYearsOfReferenceAge: false }),
+		]);
 		expect(result.blockedReason).toBe(labels.AFTER_REFERENCE_AGE_BLOCKED);
 		expect(result.deduction).toBe(0);
 		expect(result.taxSaving).toBe(0);
@@ -176,7 +183,9 @@ describe("A2, règle 4 : après l'âge de référence AVS", () => {
 
 	it("âge atteint, encore actif depuis moins de cinq ans : cotisation possible", () => {
 		const input = taxInput("Lausanne", "VD");
-		const result = run(input, [affiliated(small.value)], { reachedReferenceAge: true, workingWithinFiveYearsOfReferenceAge: true });
+		const result = run(input, [
+			affiliated(small.value, { reachedReferenceAge: true, workingWithinFiveYearsOfReferenceAge: true }),
+		]);
 		expect(result.blockedReason).toBeNull();
 		expect(result.taxSaving).toBe(expectedSaving(input, small.value));
 	});
@@ -200,6 +209,49 @@ describe("A2, règle 6 : couple marié ou partenaires enregistrés", () => {
 		expect(result.deduction).toBe(small.value + spouseIncome * rate.value);
 		expect(result.taxSaving).toBe(expectedSaving(input, small.value + spouseIncome * rate.value));
 		expect(result.breakdown.some((line) => line.label === labels.TOTAL_DEDUCTION)).toBe(true);
+	});
+
+	it("un seul conjoint a un revenu soumis à l'AVS : l'autre n'a pas de déduction, l'économie est celle de la seule déduction du premier", () => {
+		const input = taxInput("Lausanne", "VD", { maritalStatus: "married", federalTaxableIncome: 120_000, cantonalTaxableIncome: 115_000 });
+		const result = run(input, [affiliated(small.value), affiliated(small.value, { hasAvsIncome: false })]);
+		expect(result.blockedReason).toBeNull();
+		expect(result.contributors[0]).toMatchObject({ blockedReason: null, deductible: small.value });
+		expect(result.contributors[1]).toMatchObject({ blockedReason: labels.NO_AVS_INCOME, deductible: 0, excess: 0 });
+		expect(result.deduction).toBe(small.value);
+		expect(result.taxSaving).toBe(expectedSaving(input, small.value));
+		expect(result.breakdown.find((line) => line.formula === labels.NO_AVS_INCOME)?.label).toBe(
+			`${labels.DEDUCTION_BLOCKED}, ${labels.CONTRIBUTOR_SPOUSE}`,
+		);
+	});
+
+	it("un conjoint a atteint l'âge de référence sans activité : l'économie est celle de la seule déduction de l'autre", () => {
+		const input = taxInput("Lausanne", "VD", { maritalStatus: "married", federalTaxableIncome: 120_000, cantonalTaxableIncome: 115_000 });
+		const spouseIncome = 20_000;
+		const result = run(input, [
+			affiliated(small.value, { reachedReferenceAge: true, workingWithinFiveYearsOfReferenceAge: false }),
+			notAffiliated(spouseIncome, 5_000),
+		]);
+		expect(result.blockedReason).toBeNull();
+		expect(result.contributors[0]).toMatchObject({ blockedReason: labels.AFTER_REFERENCE_AGE_BLOCKED, deductible: 0, excess: 0 });
+		expect(result.contributors[1]).toMatchObject({ blockedReason: null, deductible: spouseIncome * rate.value });
+		expect(result.deduction).toBe(spouseIncome * rate.value);
+		expect(result.taxSaving).toBe(expectedSaving(input, spouseIncome * rate.value));
+	});
+
+	it("aucun des deux ne remplit les conditions : aucune déduction, le motif de chacun est affiché", () => {
+		const input = taxInput("Lausanne", "VD", { maritalStatus: "married", federalTaxableIncome: 120_000, cantonalTaxableIncome: 115_000 });
+		const contributors = [
+			affiliated(small.value, { hasAvsIncome: false }),
+			affiliated(small.value, { reachedReferenceAge: true, workingWithinFiveYearsOfReferenceAge: false }),
+		];
+		const result = run(input, contributors);
+		expect(result.deduction).toBe(0);
+		expect(result.taxSaving).toBe(0);
+		expect(result.blockedReason).toBe(
+			`${labels.PERSON_YOU} : ${labels.NO_AVS_INCOME} ${labels.PERSON_SPOUSE} : ${labels.AFTER_REFERENCE_AGE_BLOCKED}`,
+		);
+		const shown = displayPillar3aTaxSaving(params(input, contributors), texts, officialCalculators);
+		expect(shown.status?.text).toBe(result.blockedReason);
 	});
 
 	it("le nombre de personnes suit l'état civil", () => {
@@ -239,7 +291,7 @@ describe("A2, hors périmètre valaisan", () => {
 
 	it("commune sans indexation relevée, même sans déduction : message de la commune", () => {
 		const input = taxInput("Brig-Glis", "VS");
-		const shown = displayPillar3aTaxSaving(params(input, [affiliated(0)], { hasAvsIncome: false }), texts, officialCalculators);
+		const shown = displayPillar3aTaxSaving(params(input, [affiliated(0, { hasAvsIncome: false })]), texts, officialCalculators);
 		expect(shown.status?.text).toBe(texts.outOfScopeMunicipality["Brig-Glis"]);
 	});
 });

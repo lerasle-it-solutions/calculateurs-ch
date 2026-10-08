@@ -25,6 +25,12 @@ export type Pillar3aContributor = {
 	earnedIncome: number | null;
 	/** Montant versé au pilier 3a pour l'année. */
 	contribution: number;
+	/** Revenu soumis à l'AVS l'année du versement, y compris un revenu de remplacement (règle 3). */
+	hasAvsIncome: boolean;
+	/** Âge de référence AVS atteint (règle 4). */
+	reachedReferenceAge: boolean;
+	/** Activité lucrative encore exercée, l'âge de référence atteint il y a moins de cinq ans (règle 4). */
+	workingWithinFiveYearsOfReferenceAge: boolean;
 };
 
 export type Pillar3aTaxSavingParams = {
@@ -37,12 +43,6 @@ export type Pillar3aTaxSavingParams = {
 	largeContributionCap: Sourced<number>;
 	/** Part du revenu de l'activité lucrative, pour une personne non affiliée (art. 7 al. 1 let. b OPP 3). */
 	largeContributionIncomeRate: Sourced<number>;
-	/** Revenu soumis à l'AVS l'année du versement, y compris un revenu de remplacement (règle 3). */
-	hasAvsIncome: boolean;
-	/** Âge de référence AVS atteint (règle 4). */
-	reachedReferenceAge: boolean;
-	/** Activité lucrative encore exercée, l'âge de référence atteint il y a moins de cinq ans (règle 4). */
-	workingWithinFiveYearsOfReferenceAge: boolean;
 	/** Une personne, ou deux pour un couple marié ou lié par un partenariat enregistré (règle 6). */
 	contributors: Pillar3aContributor[];
 	/** Actes qui fondent les règles : l'OPP 3 et la circulaire AFC n° 18a, identifiants du registre. */
@@ -50,6 +50,8 @@ export type Pillar3aTaxSavingParams = {
 };
 
 export type Pillar3aContributorResult = {
+	/** Motif qui exclut sa déduction cette année (règles 3 et 4) ; `null` sinon. */
+	blockedReason: string | null;
 	/** Plafond de la déduction de cette personne. */
 	cap: number;
 	contribution: number;
@@ -60,7 +62,11 @@ export type Pillar3aContributorResult = {
 };
 
 export type Pillar3aTaxSavingResult = {
-	/** Motif qui exclut toute déduction cette année (règles 3 et 4) ; `null` sinon. */
+	/**
+	 * Motif qui exclut toute déduction du ménage cette année : celui de chaque
+	 * personne, quand aucune ne remplit les conditions des règles 3 et 4 ; `null`
+	 * dès qu'une personne les remplit.
+	 */
 	blockedReason: string | null;
 	contributors: Pillar3aContributorResult[];
 	/** Somme des montants déductibles, retranchée des deux revenus imposables. */
@@ -81,16 +87,23 @@ const fmt = (value: number): string => formatNumber(value, 2);
 /** Arrondi au centime : évite le bruit binaire d'un produit (0,2 × 12 345). */
 const toCents = (value: number): number => Math.round(value * 100) / 100;
 
-/** Motif qui exclut toute déduction cette année, dans l'ordre des règles 3 et 4 de la fiche. */
-const blockingReasonOf = (params: Pillar3aTaxSavingParams): string | null => {
-	if (!params.hasAvsIncome) return labels.NO_AVS_INCOME;
-	if (params.reachedReferenceAge && !params.workingWithinFiveYearsOfReferenceAge) return labels.AFTER_REFERENCE_AGE_BLOCKED;
+/**
+ * Motif qui exclut la déduction d'une personne cette année, dans l'ordre des
+ * règles 3 et 4 de la fiche : conditions personnelles (circulaire 18a, ch. 3 ;
+ * art. 7 al. 3 OPP 3), examinées pour chacun.
+ */
+const blockingReasonOf = (contributor: Pillar3aContributor): string | null => {
+	if (!contributor.hasAvsIncome) return labels.NO_AVS_INCOME;
+	if (contributor.reachedReferenceAge && !contributor.workingWithinFiveYearsOfReferenceAge) {
+		return labels.AFTER_REFERENCE_AGE_BLOCKED;
+	}
 	return null;
 };
 
 /**
- * Calcul complet : conditions de l'année, plafond et montant déductible de
- * chaque personne, puis économie d'impôt sur leur somme. Un ménage hors du
+ * Calcul complet : pour chaque personne, conditions de l'année, plafond et
+ * montant déductible ; puis économie d'impôt sur leur somme. Une personne qui
+ * ne remplit pas les conditions a une déduction nulle, l'autre garde la sienne. Un ménage hors du
  * périmètre du moteur fiscal lève `PartialCoverageError` avant tout autre
  * examen. Sans déduction, l'impôt n'est pas calculé et l'économie est nulle.
  */
@@ -110,35 +123,36 @@ export function computePillar3aTaxSaving(params: Pillar3aTaxSavingParams): Pilla
 		breakdown.push(entry);
 	};
 
-	// Règles 3 et 4 : conditions de l'année
-	const blockedReason = blockingReasonOf(params);
-	if (blockedReason !== null) {
-		line({
-			label: labels.DEDUCTION_BLOCKED,
-			operands: {},
-			formula: blockedReason,
-			value: 0,
-			unit: "CHF",
-			sourceId: params.hasAvsIncome ? ordinance : circular,
-		});
-	} else if (params.reachedReferenceAge) {
-		line({
-			label: labels.AFTER_REFERENCE_AGE_ALLOWED,
-			operands: {},
-			formula: labels.REFERENCE_AGE_WORKING,
-			value: 0,
-			noAmount: true,
-			sourceId: ordinance,
-			assumption: labels.AFTER_REFERENCE_AGE_ASSUMPTION,
-		});
-	}
-
-	// Règles 1, 2 et 7 : plafond et montant déductible de chaque personne
 	const contributors = params.contributors.map((contributor, index): Pillar3aContributorResult => {
 		if (!Number.isFinite(contributor.contribution) || contributor.contribution < 0) {
 			throw new Error(`Versement invalide : ${contributor.contribution}.`);
 		}
 		const who = couple ? `, ${index === 0 ? labels.CONTRIBUTOR_YOU : labels.CONTRIBUTOR_SPOUSE}` : "";
+
+		// Règles 3 et 4 : conditions personnelles de l'année
+		const blockedReason = blockingReasonOf(contributor);
+		if (blockedReason !== null) {
+			line({
+				label: `${labels.DEDUCTION_BLOCKED}${who}`,
+				operands: {},
+				formula: blockedReason,
+				value: 0,
+				unit: "CHF",
+				sourceId: contributor.hasAvsIncome ? ordinance : circular,
+			});
+		} else if (contributor.reachedReferenceAge) {
+			line({
+				label: `${labels.AFTER_REFERENCE_AGE_ALLOWED}${who}`,
+				operands: {},
+				formula: labels.REFERENCE_AGE_WORKING,
+				value: 0,
+				noAmount: true,
+				sourceId: ordinance,
+				assumption: labels.AFTER_REFERENCE_AGE_ASSUMPTION,
+			});
+		}
+
+		// Règles 1, 2 et 7 : plafond et montant déductible
 		let cap = 0;
 		if (blockedReason !== null) {
 			cap = 0;
@@ -180,7 +194,8 @@ export function computePillar3aTaxSaving(params: Pillar3aTaxSavingParams): Pilla
 			}
 		}
 		const deductible = Math.min(contributor.contribution, cap);
-		const excess = toCents(contributor.contribution - deductible);
+		// Sans les conditions de l'année, rien n'est déductible : ce n'est pas un excédent sur le plafond (règle 7)
+		const excess = blockedReason === null ? toCents(contributor.contribution - deductible) : 0;
 		if (blockedReason === null) {
 			line({
 				label: `Montant déductible retenu${who}`,
@@ -196,12 +211,13 @@ export function computePillar3aTaxSaving(params: Pillar3aTaxSavingParams): Pilla
 					: {}),
 			});
 		}
-		return { cap, contribution: contributor.contribution, deductible, excess };
+		return { blockedReason, cap, contribution: contributor.contribution, deductible, excess };
 	});
+	const allBlocked = contributors.every((contributor) => contributor.blockedReason !== null);
 
 	// Règle 6 : la déduction d'un couple est la somme des deux
 	const deduction = toCents(contributors.reduce((sum, contributor) => sum + contributor.deductible, 0));
-	if (couple && blockedReason === null) {
+	if (couple && !allBlocked) {
 		line({
 			label: labels.TOTAL_DEDUCTION,
 			operands: Object.fromEntries(contributors.map((contributor, index) => [`deductible${index + 1}`, contributor.deductible])),
@@ -217,7 +233,13 @@ export function computePillar3aTaxSaving(params: Pillar3aTaxSavingParams): Pilla
 	const effectiveRate = deduction > 0 ? saving.taxSaving / deduction : null;
 
 	return {
-		blockedReason,
+		blockedReason: allBlocked
+			? contributors
+					.map((contributor, index) =>
+						couple ? `${index === 0 ? labels.PERSON_YOU : labels.PERSON_SPOUSE} : ${contributor.blockedReason}` : contributor.blockedReason,
+					)
+					.join(" ")
+			: null,
 		contributors,
 		deduction,
 		excess: toCents(contributors.reduce((sum, contributor) => sum + contributor.excess, 0)),

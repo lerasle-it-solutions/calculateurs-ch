@@ -40,6 +40,43 @@ describe("page d'A2", () => {
 	});
 });
 
+describe("champs de la page d'A2", () => {
+	it("aucun libellé de champ en double", async () => {
+		const html = decode(await render("economie-impot-3a", pillar3aTaxSaving.slug));
+		const form = html.slice(html.indexOf("<form"), html.indexOf("</form>"));
+		const fieldLabels = [...form.matchAll(/<label\b[^>]*>([\s\S]*?)<\/label>/g)].map((match) =>
+			match[1]!
+				.replace(/<span\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, "")
+				.replace(/<[^>]+>/g, "")
+				.replace(/\s+/g, " ")
+				.trim(),
+		);
+		expect(fieldLabels.length).toBe(pillar3aTaxSaving.fields.length);
+		const duplicates = fieldLabels.filter((label, index) => fieldLabels.indexOf(label) !== index);
+		expect(duplicates).toEqual([]);
+	});
+
+	it("chaque personne répond aux questions des règles 3 et 4, avec la tournure du conjoint ou partenaire", () => {
+		const labelOf = (name: string) => pillar3aTaxSaving.fields.find((field) => field.name === name)?.label;
+		expect(labelOf("workingAfterReferenceAge")).toBe(
+			"Exercez-vous encore une activité lucrative, et avez-vous atteint l'âge de référence il y a moins de cinq ans ?",
+		);
+		for (const name of ["spouseHasAvsIncome", "spouseReachedReferenceAge", "spouseWorkingAfterReferenceAge"]) {
+			expect(labelOf(name)).toMatch(/^Votre conjoint ou partenaire (a-t-il|exerce-t-il) /);
+		}
+		expect(labelOf("spouseEarnedIncome")).toMatch(/^Revenu de l'activité lucrative de votre conjoint ou partenaire en \d{4}$/);
+		expect(labelOf("spouseContribution")).toMatch(/^Montant versé au pilier 3a par votre conjoint ou partenaire en \d{4}$/);
+	});
+
+	it("l'aide du revenu imposable demande le revenu avant la déduction 3a de la dernière taxation", () => {
+		const hint =
+			"Partez du revenu imposable de votre dernière décision de taxation et ajoutez-y la déduction 3a qui y figure, s'il y en a une : le calcul porte sur le revenu avant cette déduction.";
+		for (const name of ["cantonalTaxableIncome", "federalTaxableIncome"]) {
+			expect(pillar3aTaxSaving.fields.find((field) => field.name === name)?.hint).toBe(hint);
+		}
+	});
+});
+
 describe("page d'A1", () => {
 	it("lien statique vers A2", async () => {
 		const html = await render("rachat-3a-retroactif", pillar3aBuyback.slug);
