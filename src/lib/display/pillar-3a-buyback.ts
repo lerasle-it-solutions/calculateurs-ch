@@ -7,8 +7,9 @@
 import { computePillar3aBuyback, type Pillar3aBuybackParams } from "../calculations/pension/pillar-3a-buyback";
 import { MissingTaxDataError, PartialCoverageError } from "../calculations/tax";
 import { formatChf, formatSwissNumber } from "../format/chf";
+import type { ResultStatus, StatusLink } from "./result-card";
 
-export type StatusLink = { label: string; url: string };
+export type { StatusLink };
 
 export type BreakdownRow = { label: string; detail?: string; amount: string; qualifier?: string; note?: string };
 
@@ -18,13 +19,17 @@ export type Pillar3aBuybackDisplayTexts = {
 	/** Commune non couverte, par nom de commune. */
 	outOfScopeMunicipality: Record<string, string>;
 	missingData: string;
+	/** Mentions courtes de la barre de résultat mobile. */
+	outOfScopeShort: string;
+	missingDataShort: string;
 };
 
 export type Pillar3aBuybackDisplay = {
 	/** Résultat affiché ; un tiret quand aucune économie n'est calculée. */
 	value: string;
 	breakdown: BreakdownRow[];
-	status: { text: string; link?: StatusLink } | null;
+	/** Message qui remplace le montant dans la carte de résultat ; `null` quand un résultat est calculé. */
+	status: ResultStatus | null;
 };
 
 /**
@@ -60,9 +65,15 @@ export function displayPillar3aBuyback(
 		if (error instanceof PartialCoverageError) {
 			const text =
 				error.municipality !== null ? texts.outOfScopeMunicipality[error.municipality] : texts.outOfScope[error.canton];
-			return { value: "—", breakdown: [], status: { text: text ?? "", link: officialCalculators[error.canton] } };
+			return {
+				value: "—",
+				breakdown: [],
+				status: { text: text ?? "", short: texts.outOfScopeShort, link: officialCalculators[error.canton] },
+			};
 		}
-		if (error instanceof MissingTaxDataError) return { value: "—", breakdown: [], status: { text: texts.missingData } };
+		if (error instanceof MissingTaxDataError) {
+			return { value: "—", breakdown: [], status: { text: texts.missingData, short: texts.missingDataShort } };
+		}
 		throw error;
 	}
 }

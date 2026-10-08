@@ -298,4 +298,8 @@ export const pillar3aBuybackTexts = {
 	missingData: "Une donnée nécessaire au calcul pour cette commune n'est pas encore relevée : aucun résultat n'est affiché.",
 	municipalityMismatch: "La commune saisie ne correspond pas au canton choisi.",
 	unknownMunicipality: "Choisissez une commune dans la liste proposée.",
+	/** Mentions courtes de la barre de résultat mobile, à la place du montant, liées au message de la carte. */
+	outOfScopeShort: "Hors périmètre, voir le message",
+	missingDataShort: "Donnée manquante, voir le message",
+	inputShort: "Commune à préciser, voir le message",
 };

@@ -9,6 +9,11 @@
  * JavaScript autorisé ici : le composant écoute un évènement émis par le
  * `<script>` de la page (calcul en JavaScript natif) et met à jour la valeur
  * affichée et son état. Il ne contient aucune formule.
+ *
+ * Quand le calcul ne rend pas de résultat (hors périmètre, donnée manquante,
+ * saisie à corriger), `detail.status` remplace le montant par son message et
+ * son lien, dans la carte même : le visiteur le lit là où il attend le chiffre
+ * (src/lib/display/result-card.ts).
  */
 import { fr } from "../../i18n/fr";
 
@@ -39,24 +44,33 @@ const {
 	for={forAttr}
 	data-result-card
 	data-event={event}
-	class="flex flex-col gap-sm rounded-panel bg-accent-tint p-xl md:p-2xl"
+	class="flex scroll-mt-5xl flex-col gap-sm rounded-panel bg-accent-tint p-xl md:p-2xl"
 >
 	<span class="text-label font-bold">{label}</span>
 	<span data-result-value class="text-display text-accent tabular-nums">{value}</span>
+	<span data-result-status hidden class="max-w-reading text-body">
+		<span data-status-text></span>{" "}<a data-status-link hidden class="font-bold"></a>
+	</span>
 	{caption && <span class="text-fine text-ink-muted">{caption}</span>}
 </output>
 
 <script>
+	import { applyResult, type ResultDetail } from "../../lib/display/result-card";
+
 	for (const card of document.querySelectorAll<HTMLElement>("[data-result-card]")) {
 		const eventName = card.dataset.event ?? "calc:update";
-		const target = card.querySelector<HTMLElement>("[data-result-value]");
-		if (!target) continue;
+		const value = card.querySelector<HTMLElement>("[data-result-value]");
+		if (!value) continue;
+		const slots = {
+			value,
+			message: card.querySelector<HTMLElement>("[data-result-status]"),
+			messageText: card.querySelector<HTMLElement>("[data-status-text]"),
+			messageLink: card.querySelector<HTMLAnchorElement>("[data-status-link]"),
+		};
 
 		document.addEventListener(eventName, (raw) => {
-			const detail = (raw as CustomEvent<{ value?: string }>).detail;
-			if (detail && typeof detail.value === "string") {
-				target.textContent = detail.value;
-			}
+			const detail = (raw as CustomEvent<ResultDetail>).detail;
+			if (detail) applyResult(slots, detail);
 		});
 	}
 </script>

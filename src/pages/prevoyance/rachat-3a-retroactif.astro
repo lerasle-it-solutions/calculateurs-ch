@@ -66,6 +66,9 @@ const pageData = {
 		missingData: pillar3aBuybackTexts.missingData,
 		municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
 		unknownMunicipality: pillar3aBuybackTexts.unknownMunicipality,
+		outOfScopeShort: pillar3aBuybackTexts.outOfScopeShort,
+		missingDataShort: pillar3aBuybackTexts.missingDataShort,
+		inputShort: pillar3aBuybackTexts.inputShort,
 	},
 };
 // Données en JSON dans la page, sans « < » qui fermerait la balise
@@ -87,13 +90,6 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 	/>
 
-	<div class="mx-auto w-full max-w-page px-lg md:px-2xl">
-		<p id="pillar3a-status" role="status" class="mb-3xl max-w-reading rounded-panel bg-tint p-lg text-label" hidden>
-			<span data-status-text></span>
-			<a data-status-link hidden></a>
-		</p>
-	</div>
-
 	<script type="application/json" id="pillar3a-data" set:html={pageDataJson} />
 	<TraceLabels />
 </CalculatorLayout>
@@ -108,6 +104,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		type Pillar3aBuybackDisplayTexts,
 		type StatusLink,
 	} from "../../lib/display/pillar-3a-buyback";
+	import type { ResultStatus } from "../../lib/display/result-card";
 
 	type Sourced = { value: number; sourceId: string };
 	type PageData = {
@@ -123,29 +120,21 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		texts: Pillar3aBuybackDisplayTexts & {
 			municipalityMismatch: string;
 			unknownMunicipality: string;
+			inputShort: string;
 		};
 	};
 
 	const dataElement = document.getElementById("pillar3a-data");
 	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
-	const status = document.getElementById("pillar3a-status");
 
-	if (dataElement && form && status) {
+	if (dataElement && form) {
 		const data = JSON.parse(dataElement.textContent ?? "{}") as PageData;
-		const statusText = status.querySelector<HTMLElement>("[data-status-text]")!;
-		const statusLink = status.querySelector<HTMLAnchorElement>("[data-status-link]")!;
 
-		const showStatus = (text: string | null, link?: StatusLink) => {
-			status.hidden = text === null;
-			statusText.textContent = text ?? "";
-			statusLink.hidden = !link;
-			if (link) {
-				statusLink.textContent = link.label;
-				statusLink.href = link.url;
-			}
-		};
-		const publish = (value: string, breakdown: BreakdownRow[]) =>
-			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown } }));
+		// Un message (hors périmètre, donnée manquante, commune à corriger) remplace le montant
+		// dans la carte de résultat, et sa mention courte dans la barre mobile (ResultCard).
+		const publish = (value: string, breakdown: BreakdownRow[], status: ResultStatus | null = null) =>
+			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown, status } }));
+		const inputStatus = (text: string): ResultStatus => ({ text, short: data.texts.inputShort });
 
 		const update = () => {
 			const fields = Object.fromEntries(new FormData(form)) as Record<string, string>;
@@ -155,19 +144,16 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			const children = Number(fields.children || 0);
 
 			if (!municipality) {
-				showStatus(fields.municipality ? data.texts.unknownMunicipality : null);
-				return publish("—", []);
+				return publish("—", [], fields.municipality ? inputStatus(data.texts.unknownMunicipality) : null);
 			}
 			if (municipality.canton !== fields.canton) {
-				showStatus(data.texts.municipalityMismatch);
-				return publish("—", []);
+				return publish("—", [], inputStatus(data.texts.municipalityMismatch));
 			}
 			if (
 				fields.cantonalTaxableIncome === "" ||
 				fields.federalTaxableIncome === "" ||
 				![cantonalTaxableIncome, federalTaxableIncome, children].every((value) => Number.isFinite(value) && value >= 0)
 			) {
-				showStatus(null);
 				return publish("—", []);
 			}
 
@@ -212,8 +198,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 				data.texts,
 				data.officialCalculators,
 			);
-			showStatus(shown.status?.text ?? null, shown.status?.link);
-			publish(shown.value, shown.breakdown);
+			publish(shown.value, shown.breakdown, shown.status);
 		};
 
 		form.addEventListener("input", update);

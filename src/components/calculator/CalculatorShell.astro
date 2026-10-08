@@ -12,10 +12,14 @@
  * lit le formulaire à chaque frappe et émet un évènement `calc:update` :
  *
  *   document.dispatchEvent(new CustomEvent("calc:update", {
- *     detail: { value: "<chaîne formatée>", breakdown: [ { label, detail?, amount, note? } ] }
+ *     detail: { value: "<chaîne formatée>", breakdown: [ { label, detail?, amount, note? } ],
+ *               status?: { text, short, link? } }
  *   }));
  *
- * ResultCard écoute `detail.value`, CalculationBreakdown écoute `detail.breakdown`.
+ * ResultCard écoute `detail.value` et `detail.status`, CalculationBreakdown
+ * écoute `detail.breakdown`. Un `status` remplace le montant par son message
+ * dans la carte, et par sa mention courte, liée à la carte, dans la barre
+ * mobile.
  * Rien n'est envoyé nulle part.
  *
  * Mise en page (docs/design-system.md § 2.5) : dès `lg`, deux colonnes, saisie
@@ -243,6 +247,7 @@ const resultFor = definition.fields
 				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
 			</div>
 			<span data-result-value class="text-heading text-accent tabular-nums" aria-hidden="true">—</span>
+			<a data-result-status hidden href={`#${formId}-result`} class="text-label font-bold"></a>
 		</div>
 	</div>
 </article>
