@@ -733,7 +733,7 @@ export const SOURCES = defineSources([
 		name: "Circulaire n° 18a — Traitement fiscal des cotisations et des prestations du pilier 3a",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv.admin.ch/dam/fr/sd-web/yQgKmvu80LEr/dbst-ks-2025-1-018a-dv-fr.pdf",
-		legalReference: "Circulaire AFC n° 18a, ch. 3, 5.1, 5.5, 5.6, 5.7 e à g et 9.1",
+		legalReference: "Circulaire AFC n° 18a du 22 décembre 2025, 1-018a-DV-2025-f, ch. 3, 5.1, 5.5, 5.6, 5.7 e à g et 9.1",
 		cadence: "irregular",
 		verifiedOn: "2026-10-04",
 		dataClass: "public",
