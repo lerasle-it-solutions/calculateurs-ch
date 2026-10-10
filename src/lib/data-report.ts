@@ -183,3 +183,42 @@ export const collectionToolsReport = (files: DataFile[] = allDataFiles()): Colle
 
 	return [...byTool.values()].sort((a, b) => b.collectedValues - a.collectedValues);
 };
+
+export interface RuleSourceRow {
+	sourceId: string;
+	source: Source;
+}
+
+/**
+ * Sources des règles : les sources du registre utilisées par un calculateur —
+ * déclarées dans sa définition ou nommées dans leur `usedBy` — qui n'alimentent
+ * aucune valeur de `src/data/` et ne servent pas d'outil de collecte. Elles
+ * fondent une règle du calcul (une circulaire, un article) sans fournir de
+ * chiffre : sans cette liste, elles n'apparaîtraient sur aucune page. Jamais
+ * une source `reference-tool`.
+ */
+export const ruleSourcesReport = (
+	calculators: readonly { id: string; sourceIds: readonly string[] }[],
+	files: DataFile[] = allDataFiles(),
+): RuleSourceRow[] => {
+	const registry = sourceRegistry();
+	const feeding = new Set<string>();
+	for (const file of files) {
+		eachValue(file.data, (value) => {
+			feeding.add(value.sourceId);
+			if (value.collectedFrom !== undefined) feeding.add(value.collectedFrom);
+		});
+	}
+	const calculatorIds = new Set(calculators.map((calculator) => calculator.id));
+	const used = new Set(calculators.flatMap((calculator) => calculator.sourceIds));
+	for (const source of registry.values()) {
+		if (source.usedBy.some((usage) => calculatorIds.has(usage))) used.add(source.id);
+	}
+	return [...used]
+		.filter((id) => !feeding.has(id))
+		.flatMap((id) => {
+			const source = registry.get(id);
+			return source && source.nature !== "reference-tool" ? [{ sourceId: id, source }] : [];
+		})
+		.sort((a, b) => a.source.name.localeCompare(b.source.name, "fr"));
+};

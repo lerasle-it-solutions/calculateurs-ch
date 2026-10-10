@@ -193,6 +193,12 @@ export const fr = {
 			irregular: "Irrégulière",
 			event: "Événementielle",
 		},
+		ruleSources: {
+			heading: "Sources des règles",
+			intro:
+				"Ces sources fondent une règle de calcul — un plafond, une condition, une méthode — sans fournir de valeur chiffrée : elles ne figurent donc pas dans le tableau ci-dessus.",
+			verifiedOn: "vérifiée le",
+		},
 		collectionTools: {
 			heading: "Outils de collecte",
 			intro:

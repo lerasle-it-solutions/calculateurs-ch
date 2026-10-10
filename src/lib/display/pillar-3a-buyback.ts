@@ -8,6 +8,7 @@ import { computePillar3aBuyback, type Pillar3aBuybackParams } from "../calculati
 import { MissingTaxDataError, PartialCoverageError } from "../calculations/tax";
 import { formatSwissNumber } from "../format/chf";
 import { formatChfAmount } from "./amounts";
+import { coverageStatus } from "./coverage";
 import type { ResultStatus, StatusLink } from "./result-card";
 
 export type { StatusLink };
@@ -59,13 +60,7 @@ export function displayPillar3aBuyback(
 		};
 	} catch (error) {
 		if (error instanceof PartialCoverageError) {
-			const text =
-				error.municipality !== null ? texts.outOfScopeMunicipality[error.municipality] : texts.outOfScope[error.canton];
-			return {
-				value: "—",
-				breakdown: [],
-				status: { text: text ?? "", short: texts.outOfScopeShort, link: officialCalculators[error.canton] },
-			};
+			return { value: "—", breakdown: [], status: coverageStatus(error, texts, officialCalculators) };
 		}
 		if (error instanceof MissingTaxDataError) {
 			return { value: "—", breakdown: [], status: { text: texts.missingData, short: texts.missingDataShort } };

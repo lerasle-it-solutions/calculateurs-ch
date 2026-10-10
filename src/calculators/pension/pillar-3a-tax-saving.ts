@@ -230,31 +230,31 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	variants: [PILLAR_3A_BUYBACK_ID, "pension.lpp-buyback"],
 	faq: [
 		{
-			question: "Combien puis-je déduire ?",
+			question: "Quel montant puis-je déduire de mes impôts ?",
 			answer: `Affilié à une caisse de pension, à titre obligatoire ou facultatif : au plus la « petite » cotisation, ${chf(smallCap)} CHF en ${year}. Sans caisse de pension : ${percent(largeRate)} du revenu de votre activité lucrative, au plus ${chf(largeCap)} CHF. C'est l'affiliation qui compte, pas le statut de salarié ou d'indépendant (art. 7 al. 1 OPP 3).`,
 		},
 		{
-			question: "Je touche une rente de ma caisse de pension : suis-je encore affilié ?",
+			question: "Je touche une rente de ma caisse de pension : suis-je encore affilié au 2e pilier ?",
 			answer:
 				"Si vous n'y êtes plus assuré, non : votre plafond est alors celui des personnes sans caisse de pension. Si vous y restez assuré, même sans cotiser, vous l'êtes encore (circulaire AFC n° 18a, ch. 5.7 f).",
 		},
 		{
-			question: "Et si j'ai versé plus que le plafond ?",
+			question: "Que se passe-t-il si j'ai versé plus que le plafond ?",
 			answer:
 				"L'excédent n'est pas déductible : le calculateur ramène le montant au plafond, et votre fondation doit vous rembourser la différence (circulaire AFC n° 18a, ch. 9.1).",
 		},
 		{
-			question: "Jusqu'à quand puis-je verser ?",
+			question: "Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ?",
 			answer:
 				"Le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).",
 		},
 		{
-			question: "Puis-je encore cotiser après l'âge de référence AVS ?",
+			question: "Puis-je encore cotiser au pilier 3a après l'âge de référence AVS ?",
 			answer:
 				"Oui, si vous exercez encore une activité lucrative, et au plus pendant cinq ans après l'âge de référence (art. 7 al. 3 OPP 3). L'activité doit être prouvée chaque année.",
 		},
 		{
-			question: "Pourquoi ne pas multiplier mon versement par mon taux marginal ?",
+			question: "Pourquoi ne pas simplement multiplier mon versement par mon taux marginal ?",
 			answer:
 				"Parce que la déduction peut faire changer de tranche de barème. Le calculateur calcule votre impôt deux fois, avant et après la déduction, et affiche la différence exacte.",
 		},

@@ -122,6 +122,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		type Pillar3aTaxSavingDisplayTexts,
 		type Pillar3aTaxSavingSummary,
 	} from "../../lib/display/pillar-3a-tax-saving";
+	import { coverageStatusOf } from "../../lib/display/coverage";
 	import type { ResultStatus } from "../../lib/display/result-card";
 
 	type Sourced = { value: number; sourceId: string };
@@ -199,6 +200,15 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			if (municipality.canton !== fields.canton) {
 				return publish("—", [], inputStatus(data.texts.municipalityMismatch), null);
 			}
+
+			// Couverture établie dès le canton, la commune, l'état civil et les enfants : le message
+			// hors périmètre s'affiche sans attendre les revenus ni les autres champs.
+			const scales = taxScalesFromBundle(data.bundle, municipality.ofsId);
+			const maritalStatus = fields.maritalStatus === "married" ? "married" : "single";
+			if (Number.isFinite(children) && children >= 0) {
+				const coverage = coverageStatusOf({ canton: municipality.canton, maritalStatus, children }, scales, data.texts, data.officialCalculators);
+				if (coverage) return publish("—", [], coverage, null);
+			}
 			if (
 				fields.cantonalTaxableIncome === "" ||
 				fields.federalTaxableIncome === "" ||
@@ -251,7 +261,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			const shown = displayPillar3aTaxSaving(
 				{
 					taxInput,
-					scales: taxScalesFromBundle(data.bundle, municipality.ofsId),
+					scales,
 					smallContributionCap: data.smallContributionCap,
 					largeContributionCap: data.largeContributionCap,
 					largeContributionIncomeRate: data.largeContributionIncomeRate,

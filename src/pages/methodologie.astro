@@ -2,7 +2,8 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/layout/Section.astro";
 import { attributionTextsFor } from "../lib/attribution";
-import { sourceFreshnessReport } from "../lib/data-report";
+import { ruleSourcesReport, sourceFreshnessReport } from "../lib/data-report";
+import { publishedCalculators } from "../calculators/catalog";
 import { ROMANDE_CANTONS } from "../calculators/cantons";
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "../data";
 import { resolveTaxYear } from "../data/tax-years";
@@ -65,6 +66,8 @@ const UNOFFICIAL_NATURES = ["self-regulation", "industry", "association"];
 const pensionSources = sourceFreshnessReport().filter((row) =>
 	row.source?.usedBy.some((usage) => usage.startsWith("pension.")),
 );
+// Sources des règles des calculateurs de prévoyance : elles fondent un calcul sans fournir de valeur
+const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 ---
 
 <BaseLayout title={title} description={description}>
@@ -365,11 +368,14 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				remplacement comme les indemnités de chômage (circulaire AFC n° 18a,
 				ch. 3). Après l'âge de référence AVS, elle reste possible pendant cinq
 				ans au plus, à condition d'exercer encore une activité lucrative
-				(art. 7 al. 3 OPP 3). Dans un couple marié ou lié par un partenariat
+				(art. 7 al. 3 OPP 3 ; circulaire AFC n° 18a, ch. 3). Dans un couple marié ou lié par un partenariat
 				enregistré, chacun a sa propre déduction, selon sa propre affiliation et
 				ses propres conditions (art. 7 al. 2 OPP 3) : celui qui ne les remplit
 				pas n'a pas de déduction, l'autre garde la sienne, et l'économie porte
-				sur leur somme.
+				sur leur somme. Le versement doit être crédité sur le compte ou la police
+				3a au plus tard le 31 décembre (ch. 5.1). L'année où l'activité cesse, la
+				cotisation entière reste déductible si elle est versée avant la fin de
+				l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Le même calcul que pour le rachat.</strong> L'économie est
@@ -417,6 +423,27 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 					))
 				}
 			</ul>
+			{
+				pensionRuleSources.length > 0 && (
+					<>
+						<p class="max-w-reading text-body">{fr.dataPage.ruleSources.heading} :</p>
+						<ul class="flex max-w-reading flex-col gap-xs border-l-2 border-hairline pl-md text-fine text-ink-muted">
+							{pensionRuleSources.map(({ source }) => (
+								<li>
+									{source.name}
+									{source.legalReference && <>, {source.legalReference}</>}
+									{source.verifiedOn && (
+										<>
+											{" "}— vérifiée le{" "}
+											<time datetime={source.verifiedOn}>{formatDate(source.verifiedOn)}</time>
+										</>
+									)}
+								</li>
+							))}
+						</ul>
+					</>
+				)
+			}
 		</Section>
 
 		<Section tone="tint" class="flex flex-col gap-lg">

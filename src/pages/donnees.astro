@@ -4,12 +4,15 @@ import Section from "../components/layout/Section.astro";
 import Button from "../components/ui/Button.astro";
 import { fr } from "../i18n/fr";
 import { formatSwissNumber } from "../lib/format/chf";
-import { collectionToolsReport, sourceFreshnessReport } from "../lib/data-report";
+import { collectionToolsReport, ruleSourcesReport, sourceFreshnessReport } from "../lib/data-report";
+import { allCalculators, isPublished } from "../calculators/catalog";
 import { attributionTextsFor } from "../lib/attribution";
 import { getMunicipalMultipliers } from "../data";
 
 const rows = sourceFreshnessReport();
 const collectionTools = collectionToolsReport();
+// Sources des règles des calculateurs publiés : aucune valeur, mais une règle du calcul
+const ruleSources = ruleSourcesReport(allCalculators.filter(isPublished));
 const overdueCount = rows.filter(
 	(row) => row.overdueCount > 0 || row.neverVerifiedCount > 0,
 ).length;
@@ -129,6 +132,32 @@ const formatDate = (isoDate: string): string =>
 							))}
 						</tbody>
 					</table>
+				</div>
+			)
+		}
+
+		{
+			ruleSources.length > 0 && (
+				<div class="mt-3xl flex flex-col gap-lg">
+					<h2 class="text-heading">{fr.dataPage.ruleSources.heading}</h2>
+					<p class="max-w-reading text-body">{fr.dataPage.ruleSources.intro}</p>
+					<ul class="flex flex-col gap-md">
+						{ruleSources.map(({ source }) => (
+							<li class="flex flex-col gap-2xs">
+								<a href={source.url}>{source.name}</a>
+								<span class="text-fine text-ink-muted">
+									{source.authority}
+									{source.legalReference && <> · {source.legalReference}</>}
+									{source.verifiedOn && (
+										<>
+											{" "}· {fr.dataPage.ruleSources.verifiedOn}{" "}
+											<time datetime={source.verifiedOn} class="tabular-nums">{formatDate(source.verifiedOn)}</time>
+										</>
+									)}
+								</span>
+							</li>
+						))}
+					</ul>
 				</div>
 			)
 		}
