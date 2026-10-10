@@ -34,9 +34,10 @@ describe("page d'A2", () => {
 		expect(result).toContain(pillar3aTaxSavingTexts.reminders[0]!);
 	});
 
-	it("renvoie à A1 par un lien statique", async () => {
+	it("renvoie à A1 et à l'article 1 par des liens statiques", async () => {
 		const html = await render("economie-impot-3a", pillar3aTaxSaving.slug);
 		expect(html).toContain(`href="${pillar3aBuyback.slug}"`);
+		expect(html).toContain('href="/prevoyance/guides/rachat-3a-retroactif/"');
 	});
 });
 
@@ -98,5 +99,21 @@ describe("article 1", () => {
 		const source = readFileSync(new URL("../../src/content/articles/rachat-3a-retroactif.mdx", import.meta.url), "utf8");
 		const section = source.slice(source.indexOf("## Calculez votre propre lacune"));
 		expect(section).toContain(`](${pillar3aTaxSaving.slug})`);
+	});
+});
+
+describe("méthodologie, section Prévoyance", () => {
+	it("décrit A2 : plafond selon l'affiliation, revenu de l'activité lucrative, conditions personnelles, différence de deux impôts, périmètre", async () => {
+		const { default: Page } = await import("../../src/pages/methodologie.astro");
+		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
+		const html = decode(await container.renderToString(Page, { request: new Request("https://calculateurs.ch/methodologie/") }));
+		const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+		const section = text.slice(text.indexOf("Économie d'impôt d'un versement 3a"), text.indexOf("Sources rattachées aux calculateurs de prévoyance"));
+		expect(section.length).toBeGreaterThan(0);
+		for (const reference of ["art. 7 al. 1 OPP 3", "ch. 5.5", "ch. 3", "art. 7 al. 3 OPP 3", "art. 7 al. 2 OPP 3", "ch. 5.7 g"]) {
+			expect(section, reference).toContain(reference);
+		}
+		expect(section).toMatch(/jamais un taux marginal/);
+		expect(section).toMatch(/Ce que le calculateur ne couvre pas/);
 	});
 });

@@ -85,7 +85,10 @@ const run = (input: TaxInput, contributors: Pillar3aContributor[], overrides: Pa
 
 /** Économie de référence : même différence de deux impôts, sur la déduction attendue. */
 const expectedSaving = (input: TaxInput, deduction: number) =>
-	computeIncomeTaxSaving(input, getTaxScales(input), deduction, labels.NO_DEDUCTION).taxSaving;
+	computeIncomeTaxSaving(input, getTaxScales(input), deduction, {
+		noDeduction: labels.NO_DEDUCTION,
+		incomeOnlyTotals: labels.INCOME_ONLY_TOTALS_ASSUMPTION,
+	}).taxSaving;
 
 const texts = {
 	outOfScope: { VS: pillar3aTaxSavingTexts.outOfScope("Valais") },
@@ -293,5 +296,15 @@ describe("A2, hors périmètre valaisan", () => {
 		const input = taxInput("Brig-Glis", "VS");
 		const shown = displayPillar3aTaxSaving(params(input, [affiliated(0, { hasAvsIncome: false })]), texts, officialCalculators);
 		expect(shown.status?.text).toBe(texts.outOfScopeMunicipality["Brig-Glis"]);
+	});
+});
+
+describe("A2, trace lisible", () => {
+	it("les totaux sur le seul impôt sur le revenu ne renvoient pas à la numérotation des hypothèses d'A1", () => {
+		const result = run(taxInput("Lausanne", "VD"), [affiliated(small.value)]);
+		const totals = result.breakdown.filter((line) => line.label.startsWith("Impôt sur le revenu (hors impôt sur la fortune)"));
+		expect(totals).toHaveLength(2);
+		for (const line of totals) expect(line.assumption).toBe(labels.INCOME_ONLY_TOTALS_ASSUMPTION);
+		expect(result.breakdown.some((line) => /hypothèse \d/.test(line.assumption ?? ""))).toBe(false);
 	});
 });

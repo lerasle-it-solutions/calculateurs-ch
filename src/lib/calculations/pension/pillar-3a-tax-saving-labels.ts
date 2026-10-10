@@ -23,3 +23,4 @@ export const EFFECTIVE_RATE = "Économie rapportée au montant déduit";
 export const EFFECTIVE_RATE_ASSUMPTION = "Taux effectif de ce versement : un résultat, pas une méthode. L'économie elle-même se calcule par différence de deux impôts.";
 export const PERSON_YOU = "Vous";
 export const PERSON_SPOUSE = "Votre conjoint ou partenaire";
+export const INCOME_ONLY_TOTALS_ASSUMPTION = "Montants arrondis au franc ; l'impôt sur la fortune ne change pas.";

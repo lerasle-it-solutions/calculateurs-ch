@@ -229,7 +229,10 @@ export function computePillar3aTaxSaving(params: Pillar3aTaxSavingParams): Pilla
 		});
 	}
 
-	const saving = computeIncomeTaxSaving(params.taxInput, params.scales, deduction, labels.NO_DEDUCTION);
+	const saving = computeIncomeTaxSaving(params.taxInput, params.scales, deduction, {
+		noDeduction: labels.NO_DEDUCTION,
+		incomeOnlyTotals: labels.INCOME_ONLY_TOTALS_ASSUMPTION,
+	});
 	const effectiveRate = deduction > 0 ? saving.taxSaving / deduction : null;
 
 	return {

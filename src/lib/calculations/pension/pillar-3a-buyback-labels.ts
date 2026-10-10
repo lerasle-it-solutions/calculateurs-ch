@@ -16,3 +16,4 @@ export const LAST_YEAR_FILLED_WHOLE = "Dernière année de rachat de cette lacun
 export const YEAR_FILLED_WHOLE = "Année comblée entièrement : ensemble d'années entières le plus élevé sous le plafond restant, les années qui expirent le plus tôt en priorité à égalité.";
 export const CAP_ON_YEAR_TOTAL = "Le plafond s'applique au total des rachats de l'année, et non à chaque lacune (art. 7a al. 2 OPP 3).";
 export const NOTHING_TO_BUY_BACK = "aucun montant rachetable";
+export const INCOME_ONLY_TOTALS_ASSUMPTION = "Montants arrondis au franc ; l'impôt sur la fortune ne change pas (hypothèse 6).";

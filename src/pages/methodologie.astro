@@ -7,8 +7,9 @@ import { ROMANDE_CANTONS } from "../calculators/cantons";
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "../data";
 import { resolveTaxYear } from "../data/tax-years";
 import { PILLAR_3A_BUYBACK_ID } from "../calculators/pension/pillar-3a-buyback";
+import { PILLAR_3A_TAX_SAVING_ID } from "../calculators/pension/pillar-3a-tax-saving";
 import { fr } from "../i18n/fr";
-import { formatChf, formatSwissNumber } from "../lib/format/chf";
+import { formatChf, formatPercent, formatSwissNumber } from "../lib/format/chf";
 
 const title = `${fr.footer.methodology} — ${fr.site.name}`;
 // Texte d'attribution du module de données de base de l'AFC, tel que le registre le porte
@@ -54,6 +55,10 @@ const valaisCovered = (getMunicipalMultipliers()?.multipliers ?? [])
 // Année de calcul d'A1 : les règles décrites sont celles que le calculateur applique.
 const pillar3aYear = resolveTaxYear(PILLAR_3A_BUYBACK_ID).year;
 const pillar3a = getFederalData(pillar3aYear).pillar3a;
+
+// Économie d'impôt d'un versement 3a : plafonds de l'année de calcul d'A2, lus dans les données
+const taxSavingYear = resolveTaxYear(PILLAR_3A_TAX_SAVING_ID).year;
+const taxSavingPillar3a = getFederalData(taxSavingYear).pillar3a;
 
 // Partie générée : sources des calculateurs de prévoyance, d'après `usedBy`
 const UNOFFICIAL_NATURES = ["self-regulation", "industry", "association"];
@@ -327,6 +332,65 @@ const pensionSources = sourceFreshnessReport().filter((row) =>
 				qu'un taux marginal ne voit pas. Chaque composante de l'impôt est
 				arrondie au franc, et l'économie est la différence des totaux affichés.
 				L'impôt sur la fortune, que le rachat ne change pas, n'est pas calculé.
+			</p>
+			<h3 class="text-subheading">Économie d'impôt d'un versement 3a</h3>
+			<p class="max-w-reading text-body">
+				<strong>Un plafond selon l'affiliation, pas selon le statut.</strong>{" "}
+				Ce qui fixe le plafond de la déduction, c'est l'affiliation à un 2e
+				pilier, pas le statut de salarié ou d'indépendant (art. 7 al. 1 OPP 3).
+				Une personne affiliée à une institution de prévoyance, à titre
+				obligatoire ou facultatif, déduit au plus la « petite » cotisation
+				({formatChf(taxSavingPillar3a.smallContributionCap.value)}&nbsp;CHF en{" "}
+				{taxSavingYear}). Une personne sans caisse de pension déduit au plus{" "}
+				{formatPercent(taxSavingPillar3a.largeContributionIncomeRate.value)} du
+				revenu de son activité lucrative, sans dépasser la « grande » cotisation
+				({formatChf(taxSavingPillar3a.largeContributionCap.value)}&nbsp;CHF). Après
+				l'âge de référence, une personne qui touche une rente de sa caisse et n'y
+				est plus assurée n'est plus affiliée ; si elle y reste assurée, même sans
+				cotiser, elle l'est encore (circulaire AFC n° 18a, ch. 5.7 f). Un montant
+				versé au-delà du plafond est ramené au plafond : l'excédent n'est pas
+				déductible et doit être remboursé par la fondation (ch. 9.1).
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Le revenu de l'activité lucrative.</strong> Pour une personne
+				sans caisse de pension, c'est le revenu défini par la circulaire AFC
+				n° 18a, ch. 5.5 : pour un salarié, le salaire brut moins les cotisations
+				AVS, AI, APG et AC ; pour un indépendant, le résultat après rectifications
+				fiscales, moins les cotisations AVS, AI et APG. Un résultat nul ou
+				négatif ne donne droit à aucune déduction.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Des conditions personnelles.</strong> La déduction exige un
+				revenu soumis à l'AVS l'année du versement, y compris un revenu de
+				remplacement comme les indemnités de chômage (circulaire AFC n° 18a,
+				ch. 3). Après l'âge de référence AVS, elle reste possible pendant cinq
+				ans au plus, à condition d'exercer encore une activité lucrative
+				(art. 7 al. 3 OPP 3). Dans un couple marié ou lié par un partenariat
+				enregistré, chacun a sa propre déduction, selon sa propre affiliation et
+				ses propres conditions (art. 7 al. 2 OPP 3) : celui qui ne les remplit
+				pas n'a pas de déduction, l'autre garde la sienne, et l'économie porte
+				sur leur somme.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Le même calcul que pour le rachat.</strong> L'économie est
+				l'impôt calculé sur votre situation moins l'impôt calculé avec les deux
+				revenus imposables, cantonal et fédéral, diminués de la déduction ;
+				jamais un taux marginal multiplié par le versement. Les revenus
+				imposables saisis s'entendent avant cette déduction, et l'impôt sur la
+				fortune ne change pas. Le calculateur affiche aussi l'économie rapportée
+				au montant déduit : c'est un résultat, pas une méthode de calcul.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Ce que le calculateur ne couvre pas.</strong> Le rachat de
+				lacunes, qui relève du calculateur de rachat rétroactif pour les
+				personnes affiliées et, pour les autres, de leur fondation ou de leur
+				assurance 3a ; l'imposition du capital à son retrait, rappelée avec
+				chaque résultat ; les personnes imposées à la source ; le passage d'une
+				activité salariée à une activité indépendante, ou l'inverse, en cours
+				d'année (circulaire AFC n° 18a, ch. 5.7 g) ; les ménages hors du
+				périmètre du moteur fiscal, qui reçoivent un lien vers la calculette
+				officielle de leur canton ; le rendement du placement et la comparaison
+				entre banque et assurance.
 			</p>
 			<p class="max-w-reading text-body">
 				Sources rattachées aux calculateurs de prévoyance ; l'ensemble des

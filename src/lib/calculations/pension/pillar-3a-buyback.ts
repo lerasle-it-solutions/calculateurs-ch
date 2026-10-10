@@ -314,6 +314,9 @@ export function computePillar3aBuyback(params: Pillar3aBuybackParams): Pillar3aB
 	assertTaxCoverage(params.taxInput, params.scales);
 	const gaps = computePillar3aGaps(params.gaps);
 	const amount = gaps.totalBuyback;
-	const saving = computeIncomeTaxSaving(params.taxInput, params.scales, amount, labels.NOTHING_TO_BUY_BACK);
+	const saving = computeIncomeTaxSaving(params.taxInput, params.scales, amount, {
+		noDeduction: labels.NOTHING_TO_BUY_BACK,
+		incomeOnlyTotals: labels.INCOME_ONLY_TOTALS_ASSUMPTION,
+	});
 	return { ...saving, gaps, buybackAmount: amount, breakdown: [...gaps.breakdown, ...saving.breakdown] };
 }

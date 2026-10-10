@@ -38,14 +38,19 @@ const roundedIncomeTax = (tax: TaxResult | undefined) => {
 };
 
 /**
- * `noDeductionFormula` : la formule de la ligne « Économie d'impôt » quand la
- * déduction est nulle (« aucun montant rachetable », « aucune déduction »).
+ * Textes propres au calculateur : `noDeduction`, la formule de la ligne
+ * « Économie d'impôt » quand la déduction est nulle (« aucun montant
+ * rachetable », « aucune déduction ») ; `incomeOnlyTotals`, l'hypothèse des
+ * totaux sur le seul impôt sur le revenu, qui renvoie à la liste d'hypothèses
+ * du calculateur.
  */
+export type IncomeTaxSavingTexts = { noDeduction: string; incomeOnlyTotals: string };
+
 export function computeIncomeTaxSaving(
 	taxInput: TaxInput,
 	scales: TaxScales,
 	deduction: number,
-	noDeductionFormula: string,
+	texts: IncomeTaxSavingTexts,
 ): IncomeTaxSaving {
 	const saving = deduction > 0 ? computeTaxSavingOnDeduction(taxInput, scales, deduction) : undefined;
 	const before = roundedIncomeTax(saving?.before);
@@ -70,7 +75,7 @@ export function computeIncomeTaxSaving(
 				value: total,
 				unit: "CHF",
 				sourceId: null,
-				assumption: labels.INCOME_ONLY_TOTALS_ASSUMPTION,
+				assumption: texts.incomeOnlyTotals,
 			});
 		} else lines.push(line);
 	}
@@ -84,7 +89,7 @@ export function computeIncomeTaxSaving(
 			{
 				label: labels.TAX_SAVING,
 				operands: { totalTaxBefore: before.total, totalTaxAfter: after.total, deduction },
-				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : noDeductionFormula,
+				formula: saving ? `${fmt(before.total)} − ${fmt(after.total)}` : texts.noDeduction,
 				value: taxSaving,
 				unit: "CHF",
 				sourceId: null,

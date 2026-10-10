@@ -87,6 +87,5 @@ export const MARGINAL_RATE = "Taux marginal sur le revenu imposable";
 export const TAX_SAVING = "Économie d'impôt";
 
 // Économie d'impôt d'une déduction 3a, commune à A1 et A2 (pension/income-tax-saving.ts)
-export const INCOME_ONLY_TOTALS_ASSUMPTION = "Montants arrondis au franc ; l'impôt sur la fortune ne change pas (hypothèse 6).";
 export const TAX_SAVING_CANTONAL_AND_MUNICIPAL = "Économie d'impôt, canton et commune";
 export const TAX_SAVING_FEDERAL = "Économie d'impôt, Confédération";
