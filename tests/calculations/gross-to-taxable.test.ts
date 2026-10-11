@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+import { getFederalData } from "../../src/data";
 import { getGrossToTaxableData } from "../../src/data/gross-to-taxable";
 import {
 	estimateTaxableIncome,
@@ -141,6 +142,33 @@ describe("estimateur : paramètres et règles", () => {
 		};
 		expect(() => estimateTaxableIncome({ ...base, maritalStatus: "married", earners: [earner] }, data)).toThrow(/2 personne/);
 		expect(() => estimateTaxableIncome({ ...base, maritalStatus: "single", earners: [earner, earner] }, data)).toThrow(/1 personne/);
+	});
+
+	it("Genève : plafond des primes de 8 760 par adulte et 17 520 pour un couple, jamais 2 × 17 520", () => {
+		const data = getGrossToTaxableData(YEAR, "GE");
+		const premiumsLine = (maritalStatus: "single" | "married") => {
+			const earner = { grossSalary: 90_000, age: 40 };
+			const { breakdown } = estimateTaxableIncome(
+				{
+					maritalStatus,
+					childrenAges: [],
+					earners: maritalStatus === "married" ? [earner, { ...earner }] : [earner],
+					nonOccupationalAccidentRate: { value: 0, assumption: labels.USER_VALUE },
+					// Primes payées au-delà de tout plafond : la déduction vaut le plafond
+					insurancePremiums: { perAdult: 20_000, perChild: 0, assumption: labels.USER_VALUE },
+				},
+				data,
+			);
+			return breakdown.find((line) => line.label === `${labels.INSURANCE_PREMIUMS}, ${labels.CANTON}`)!.value;
+		};
+		// Décision du 11.10.2026 : « Prime moyenne adulte » de cantons/ge.json est le montant d'un couple
+		const couple = data.cantonal.insurancePremiums.married.bothWithPension.value;
+		expect(premiumsLine("married")).toBe(couple);
+		expect(premiumsLine("single")).toBe(couple / 2);
+		expect(premiumsLine("married")).not.toBe(2 * couple);
+		// Recoupement : deux fois la prime adulte genevoise de l'ordonnance du DFI (federal/2026.json)
+		const ordinance = getFederalData(YEAR).averageHealthInsurancePremiums as { GE: { value: { adult: number } } };
+		expect(couple).toBe(2 * ordinance.GE.value.adult);
 	});
 
 	it("sous le seuil d'entrée LPP, aucune cotisation par défaut", () => {

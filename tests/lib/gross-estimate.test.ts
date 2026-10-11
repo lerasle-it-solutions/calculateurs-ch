@@ -114,6 +114,24 @@ describe("sens du revenu estimé", () => {
 	});
 });
 
+describe("A1, couple", () => {
+	it("une seule cotisation ordinaire retranchée, hypothèse déclarée dans la trace", () => {
+		const couple = single("VD", {
+			married: true,
+			persons: [
+				{ grossSalary: 60_000, age: 40, pensionContribution: null },
+				{ grossSalary: 60_000, age: 40, pensionContribution: null },
+			],
+		});
+		const without = computeEstimate(couple, ruleSet, null);
+		const estimate = computeEstimate(couple, ruleSet, { value: smallCap.value, sourceId: smallCap.sourceId });
+		expect(estimate.federalTaxableIncome).toBe(without.federalTaxableIncome - smallCap.value);
+		const line = estimate.rows.find((row) => row.label === labels.ORDINARY_CONTRIBUTION)!;
+		expect(line.note).toContain(labels.ORDINARY_CONTRIBUTION_COUPLE);
+		expect(line.note).toContain("Si votre conjoint verse aussi au 3a, saisissez directement votre revenu imposable.");
+	});
+});
+
 describe("pages : bloc « salaire brut » dans le formulaire", () => {
 	const render = async (page: string) => {
 		const { default: Page } = await import(`../../src/pages/prevoyance/${page}.astro`);

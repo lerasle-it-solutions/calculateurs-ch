@@ -302,9 +302,10 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 			<p class="max-w-reading text-body">
 				Quand vous ne connaissez pas votre revenu imposable, il peut être estimé
 				depuis votre salaire brut. Du salaire, on retranche les cotisations AVS,
-				AI et APG, l'assurance-chômage et l'assurance-accidents non
-				professionnelle, jusqu'au gain maximal assuré, puis la cotisation à la
-				prévoyance professionnelle : c'est le revenu net du travail. La
+				AI et APG, puis celles de l'assurance-chômage et de l'assurance-accidents
+				non professionnelle, ces deux dernières jusqu'au gain maximal assuré, puis
+				la cotisation à la prévoyance professionnelle : c'est le revenu net du
+				travail. La
 				Confédération et le canton en retranchent ensuite, chacun selon ses
 				propres règles et plafonds, les frais professionnels forfaitaires, les
 				primes d'assurance, les déductions pour enfants, pour couple et pour
@@ -319,8 +320,7 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 					<> (au-delà de {formatChf(lppUpperSalaryLimit)}&nbsp;CHF)</>
 				)} : le
 				salaire coordonné légal s'arrête là, alors que beaucoup
-				de caisses assurent davantage, et le calculateur de l'AFC compte lui
-				aussi une cotisation plus élevée pour ces salaires. Les primes
+				de caisses assurent davantage. Les primes
 				d'assurance maladie et accidents valent par défaut la prime moyenne de
 				votre canton pour l'assurance obligatoire des soins, accident comprise,
 				fixée par le Département fédéral de l'intérieur, par adulte et par
@@ -332,6 +332,14 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				frais de transport, de repas ni de garde ne sont déduits, et les frais
 				professionnels forfaitaires supposent une activité à plein temps sur
 				toute l'année.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Pour le rachat 3a.</strong> L'estimateur ne déduit aucune
+				cotisation 3a. Le rachat supposant la cotisation ordinaire de l'année
+				versée, le calculateur de rachat la retranche des deux revenus imposables
+				estimés. Pour un couple, il n'en retranche qu'une, celle de la personne
+				qui rachète : si votre conjoint verse aussi au 3a, saisissez directement
+				votre revenu imposable.
 			</p>
 		</Section>
 

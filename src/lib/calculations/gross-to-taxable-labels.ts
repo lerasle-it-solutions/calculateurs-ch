@@ -54,3 +54,5 @@ export const ORDINARY_CONTRIBUTION_ASSUMPTION =
 export const FEDERAL_TAXABLE_INCOME_USED = "Revenu imposable fédéral retenu";
 export const CANTONAL_TAXABLE_INCOME_USED = "Revenu imposable cantonal retenu";
 export const CHILDREN_AGES_MISSING = "Indiquez l'âge de chaque enfant : l'estimation depuis le salaire brut en dépend.";
+export const ORDINARY_CONTRIBUTION_COUPLE =
+	"Couple : une seule cotisation ordinaire est retranchée, celle de la personne qui rachète. Si votre conjoint verse aussi au 3a, saisissez directement votre revenu imposable.";

@@ -107,13 +107,15 @@ const cantonalRules = (canton: CantonCode, data: CantonData): DeductionRules => 
 				singleWithChildren: read.amount("Déduction pour les personnes célibataires avec enfants"),
 			};
 		case "GE": {
-			// Primes LAMal jusqu'à la prime moyenne cantonale, par adulte et par enfant mineur
-			const adult = read.amount("Caisse maladie Prime moyenne adulte");
+			// Primes LAMal jusqu'à la prime moyenne cantonale. « Prime moyenne adulte » est le montant
+			// d'un couple (décision du 11.10.2026 : 17 520 = 2 × 8 760, prime adulte de l'ordonnance du DFI) :
+			// la moitié par adulte seul, le montant entier pour un couple, jamais le double.
+			const couple = read.amount("Caisse maladie Prime moyenne adulte");
 			return {
 				...base,
 				insurancePremiums: sameCaps(
-					adult,
-					{ value: 2 * adult.value, sourceId: adult.sourceId },
+					{ value: couple.value / 2, sourceId: couple.sourceId },
+					couple,
 					read.amount("Caisse maladie Prime moyenne Mineurs"),
 				),
 				children: [everyChild(read.amount("Déduction pour enfants", "amount"))],

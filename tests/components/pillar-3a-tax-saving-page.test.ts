@@ -52,7 +52,12 @@ describe("champs de la page d'A2", () => {
 				.replace(/\s+/g, " ")
 				.trim(),
 		);
-		expect(fieldLabels.length).toBe(pillar3aTaxSaving.fields.length);
+		// Décision du mainteneur du 11.10.2026 : le formulaire compte les champs déclarés par A2
+		// plus ceux du mode « salaire brut » (bloc [data-estimator]) ; la vérification des doublons est inchangée.
+		const estimatorBlock = form.slice(form.indexOf("data-estimator"), form.indexOf("</details>"));
+		const estimatorFields = [...estimatorBlock.matchAll(/<label\b/g)].length;
+		expect(estimatorFields).toBeGreaterThan(0);
+		expect(fieldLabels.length).toBe(pillar3aTaxSaving.fields.length + estimatorFields);
 		const duplicates = fieldLabels.filter((label, index) => fieldLabels.indexOf(label) !== index);
 		expect(duplicates).toEqual([]);
 	});

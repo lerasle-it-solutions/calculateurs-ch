@@ -108,7 +108,15 @@ export function computeEstimate(input: EstimateInput, ruleSet: GrossToTaxableRul
 	const cantonalTaxableIncome = Math.max(0, result.cantonalTaxableIncome - amount);
 	const fmt = (value: number) => formatSwissNumber(value, 2);
 	rows.push(
-		row({ label: labels.ORDINARY_CONTRIBUTION, formula: fmt(amount), value: amount, unit: "CHF", assumption: labels.ORDINARY_CONTRIBUTION_ASSUMPTION }),
+		row({
+			label: labels.ORDINARY_CONTRIBUTION,
+			formula: fmt(amount),
+			value: amount,
+			unit: "CHF",
+			assumption: input.married
+				? `${labels.ORDINARY_CONTRIBUTION_ASSUMPTION} ${labels.ORDINARY_CONTRIBUTION_COUPLE}`
+				: labels.ORDINARY_CONTRIBUTION_ASSUMPTION,
+		}),
 		row({ label: labels.FEDERAL_TAXABLE_INCOME_USED, formula: `${fmt(result.federalTaxableIncome)} − ${fmt(amount)}`, value: federalTaxableIncome, unit: "CHF" }),
 		row({ label: labels.CANTONAL_TAXABLE_INCOME_USED, formula: `${fmt(result.cantonalTaxableIncome)} − ${fmt(amount)}`, value: cantonalTaxableIncome, unit: "CHF" }),
 	);
