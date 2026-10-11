@@ -12,6 +12,7 @@
 import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
 import TraceLabels from "../../components/calculator/TraceLabels.astro";
+import GrossEstimator from "../../components/calculator/GrossEstimator.astro";
 import {
 	pillar3aTaxSaving,
 	pillar3aTaxSavingIntro,
@@ -23,6 +24,7 @@ import { publishedCalculators } from "../../calculators/catalog";
 import { ROMANDE_CANTONS } from "../../calculators/cantons";
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
 import { getTaxScalesBundle } from "../../data/tax-scales";
+import { getGrossToTaxableRuleSet } from "../../data/gross-to-taxable";
 import { fr } from "../../i18n/fr";
 
 const texts = pillar3aTaxSavingTexts;
@@ -32,6 +34,15 @@ const cantons = pillar3aTaxSaving.scope.cantonsCovered as (typeof ROMANDE_CANTON
 
 const bundle = getTaxScalesBundle(pillar3aTaxSavingYear, cantons);
 
+// Mode « salaire brut » : seulement si l'estimateur a ses données pour l'année de calcul (2026 seulement, décision du 10.10.2026)
+const estimator = (() => {
+	try {
+		return getGrossToTaxableRuleSet(pillar3aTaxSavingYear, cantons);
+	} catch {
+		return null;
+	}
+})();
+
 const pageData = {
 	taxYear: pillar3aTaxSavingYear,
 	smallContributionCap: sourced(pillar3a.smallContributionCap),
@@ -39,6 +50,7 @@ const pageData = {
 	largeContributionIncomeRate: sourced(pillar3a.largeContributionIncomeRate),
 	ruleSources: { ordinance: "opp3-art-7a", circular: "afc-circular-18a" },
 	bundle,
+	estimator,
 	municipalities: Object.fromEntries(
 		(getMunicipalMultipliers()?.multipliers ?? [])
 			.filter((entry) => cantons.includes(entry.canton))
@@ -69,6 +81,7 @@ const pageData = {
 		blockedShort: texts.blockedShort,
 		earnedIncomeMissingShort: texts.earnedIncomeMissingShort,
 		excessWarning: texts.excessWarning,
+		estimateNote: fr.grossEstimator.resultNote,
 	},
 };
 // Données en JSON dans la page, sans « < » qui fermerait la balise
@@ -89,7 +102,9 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		}
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 		catalog={publishedCalculators("pension")}
+		formExtraAfter="federalTaxableIncome"
 	>
+		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex max-w-reading flex-col gap-md">
 			<dl id="pillar3a-saving-summary" class="flex flex-col text-label" hidden>
 				{
@@ -109,7 +124,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 	</CalculatorShell>
 
 	<script type="application/json" id="pillar3a-saving-data" set:html={pageDataJson} />
-	<TraceLabels modules={["pillar-3a-tax-saving"]} />
+	<TraceLabels modules={estimator ? ["pillar-3a-tax-saving", "gross-to-taxable"] : ["pillar-3a-tax-saving"]} />
 </CalculatorLayout>
 
 <script>
@@ -124,6 +139,8 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 	} from "../../lib/display/pillar-3a-tax-saving";
 	import { coverageStatusOf } from "../../lib/display/coverage";
 	import type { ResultStatus } from "../../lib/display/result-card";
+	import type { GrossToTaxableRuleSet } from "../../lib/calculations/gross-to-taxable";
+	import type { EstimatorReading, Household } from "../../lib/display/gross-estimator-ui";
 
 	type Sourced = { value: number; sourceId: string };
 	type PageData = {
@@ -142,7 +159,9 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			inputShort: string;
 			earnedIncomeMissingShort: string;
 			excessWarning: string;
+			estimateNote: string;
 		};
+		estimator: GrossToTaxableRuleSet | null;
 	};
 
 	const dataElement = document.getElementById("pillar3a-saving-data");
@@ -165,15 +184,25 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		};
 
 		// Un message remplace le montant dans la carte de résultat, et sa mention courte dans la barre mobile.
-		const publish = (value: string, breakdown: BreakdownRow[], status: ResultStatus | null, shown: Pillar3aTaxSavingSummary | null) => {
+		const publish = (
+			value: string,
+			breakdown: BreakdownRow[],
+			status: ResultStatus | null,
+			shown: Pillar3aTaxSavingSummary | null,
+			note: string | null = null,
+		) => {
 			summary.hidden = shown === null;
 			for (const slot of summary.querySelectorAll<HTMLElement>("[data-summary]")) {
 				slot.textContent = shown?.[slot.dataset.summary as keyof Pillar3aTaxSavingSummary] ?? "";
 			}
 			excess.hidden = !shown?.excess;
 			excess.textContent = shown?.excess ? data.texts.excessWarning.replace("{amount}", shown.excess) : "";
-			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown, status } }));
+			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown, status, note } }));
 		};
+
+		// Mode « salaire brut » : l'estimateur se charge à la demande, à la première ouverture du bloc
+		const estimatorBox = form.querySelector<HTMLDetailsElement>("[data-estimator]");
+		let estimator: ((household: Household) => EstimatorReading) | undefined;
 		const inputStatus = (text: string, short = data.texts.inputShort): ResultStatus => ({ text, short });
 
 		const update = () => {
@@ -190,9 +219,11 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 			}
 
 			const municipality = data.municipalities[fields.municipality ?? ""];
-			const cantonalTaxableIncome = Number(fields.cantonalTaxableIncome);
-			const federalTaxableIncome = Number(fields.federalTaxableIncome);
 			const children = Number(fields.children || 0);
+			const childrenAges = (fields.childrenAges ?? "")
+				.split(",")
+				.map((age) => Number(age.trim()))
+				.filter((age) => age !== 0 && Number.isFinite(age));
 
 			if (!municipality) {
 				return publish("—", [], fields.municipality ? inputStatus(data.texts.unknownMunicipality) : null, null);
@@ -209,9 +240,14 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 				const coverage = coverageStatusOf({ canton: municipality.canton, maritalStatus, children }, scales, data.texts, data.officialCalculators);
 				if (coverage) return publish("—", [], coverage, null);
 			}
+			// Revenus imposables estimés depuis le salaire brut, A2 : non diminués, la cotisation est la déduction calculée
+			const estimate = estimatorBox?.open && estimator ? estimator({ canton: municipality.canton, married: maritalStatus === "married", children, childrenAges }) : null;
+			if (estimate && "status" in estimate) return publish("—", [], inputStatus(estimate.status), null);
+			if (estimatorBox?.open && !estimate) return publish("—", [], null, null);
+			const cantonalTaxableIncome = estimate ? estimate.cantonalTaxableIncome : Number(fields.cantonalTaxableIncome);
+			const federalTaxableIncome = estimate ? estimate.federalTaxableIncome : Number(fields.federalTaxableIncome);
 			if (
-				fields.cantonalTaxableIncome === "" ||
-				fields.federalTaxableIncome === "" ||
+				(!estimate && (fields.cantonalTaxableIncome === "" || fields.federalTaxableIncome === "")) ||
 				![cantonalTaxableIncome, federalTaxableIncome, children].every((value) => Number.isFinite(value) && value >= 0)
 			) {
 				return publish("—", [], null, null);
@@ -248,10 +284,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 				municipalityOfsId: municipality.ofsId,
 				maritalStatus: married ? "married" : "single",
 				children,
-				childrenAges: (fields.childrenAges ?? "")
-					.split(",")
-					.map((age) => Number(age.trim()))
-					.filter((age) => age !== 0 && Number.isFinite(age)),
+				childrenAges,
 				denomination: "none",
 				federalTaxableIncome,
 				cantonalTaxableIncome,
@@ -271,9 +304,21 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 				data.texts,
 				data.officialCalculators,
 			);
-			publish(shown.value, shown.breakdown, shown.status, shown.summary);
+			publish(
+				shown.value,
+				estimate && !shown.status ? [...estimate.rows, ...shown.breakdown] : shown.breakdown,
+				shown.status,
+				shown.summary,
+				estimate && !shown.status ? data.texts.estimateNote : null,
+			);
 		};
 
+		estimatorBox?.addEventListener("toggle", async () => {
+			if (estimatorBox.open && !estimator && data.estimator) {
+				estimator = (await import("../../lib/display/gross-estimator-ui")).attachEstimator(form, data.estimator, null);
+			}
+			update();
+		});
 		form.addEventListener("input", update);
 		form.addEventListener("change", update);
 		requestAnimationFrame(update);

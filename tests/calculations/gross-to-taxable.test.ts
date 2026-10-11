@@ -60,8 +60,8 @@ describe.skipIf(!hasPrivateFiles)("estimateur du revenu imposable, 18 cas de ré
 			maritalStatus: taxpayer.maritalStatus,
 			childrenAges: taxpayer.childrenAges ?? [],
 			earners: married ? [earner, { ...earner }] : [earner],
-			nonOccupationalAccidentRate: { value: defaults!.nonOccupationalAccidentRate.value, isDefault: true },
-			insurancePremiums: { ...defaults!.insurancePremiums, isDefault: true },
+			nonOccupationalAccidentRate: { value: defaults!.nonOccupationalAccidentRate.value, assumption: labels.AFC_CHAIN_ASSUMPTION },
+			insurancePremiums: { ...defaults!.insurancePremiums, assumption: labels.AFC_CHAIN_ASSUMPTION },
 		};
 	};
 	const run = (referenceCase: (typeof cases)[number], withAfcPension = true) =>
@@ -136,8 +136,8 @@ describe("estimateur : paramètres et règles", () => {
 		const earner = { grossSalary: 50_000, age: 30 };
 		const base = {
 			childrenAges: [],
-			nonOccupationalAccidentRate: { value: 0, isDefault: false },
-			insurancePremiums: { perAdult: 0, perChild: 0, isDefault: false },
+			nonOccupationalAccidentRate: { value: 0, assumption: labels.USER_VALUE },
+			insurancePremiums: { perAdult: 0, perChild: 0, assumption: labels.USER_VALUE },
 		};
 		expect(() => estimateTaxableIncome({ ...base, maritalStatus: "married", earners: [earner] }, data)).toThrow(/2 personne/);
 		expect(() => estimateTaxableIncome({ ...base, maritalStatus: "single", earners: [earner, earner] }, data)).toThrow(/1 personne/);

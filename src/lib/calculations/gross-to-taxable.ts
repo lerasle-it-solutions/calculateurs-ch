@@ -49,6 +49,8 @@ export type ChildDeductionRule = {
 	toAge: number | null;
 	amount: Sourced<number>;
 	additive: boolean;
+	/** Hypothèse de lecture de la règle, déclarée dans la trace. */
+	assumption?: string;
 };
 
 /**
@@ -80,6 +82,25 @@ export type GrossToTaxableData = {
 	cantonal: DeductionRules;
 };
 
+/**
+ * Règles de plusieurs cantons, embarquées par une page : celles d'un canton
+ * s'en extraient par `rulesFor`. `averagePremiums` porte les défauts publics des
+ * primes d'assurance (prime moyenne du canton, par adulte et par enfant).
+ */
+export type GrossToTaxableRuleSet = {
+	year: number;
+	socialInsurance: SocialInsuranceRules;
+	federal: DeductionRules;
+	cantonal: Partial<Record<string, DeductionRules>>;
+	averagePremiums: Partial<Record<string, Sourced<{ adult: number; child: number }>>>;
+};
+
+export const rulesFor = (ruleSet: GrossToTaxableRuleSet, canton: string): GrossToTaxableData => {
+	const cantonal = ruleSet.cantonal[canton];
+	if (!cantonal) throw new Error(`Déductions du canton ${canton} absentes.`);
+	return { socialInsurance: ruleSet.socialInsurance, federal: ruleSet.federal, cantonal };
+};
+
 /** Une personne qui travaille. */
 export type Earner = {
 	grossSalary: number;
@@ -88,8 +109,11 @@ export type Earner = {
 	occupationalPensionContribution?: number;
 };
 
-/** Paramètre de l'utilisateur avec sa valeur par défaut : `isDefault` dit laquelle s'applique. */
-export type WithDefault<T> = T & { isDefault: boolean };
+/**
+ * Paramètre de l'utilisateur, avec l'hypothèse à déclarer dans la trace : celle
+ * de la valeur par défaut, ou « valeur saisie ».
+ */
+export type WithAssumption<T> = T & { assumption: string };
 
 export type GrossToTaxableParams = {
 	maritalStatus: "single" | "married";
@@ -98,9 +122,9 @@ export type GrossToTaxableParams = {
 	/** Une personne, ou deux pour un couple marié (la seconde peut avoir un salaire nul). */
 	earners: Earner[];
 	/** Taux LAA non professionnel, en fraction du salaire jusqu'au gain maximal assuré. */
-	nonOccupationalAccidentRate: WithDefault<{ value: number }>;
+	nonOccupationalAccidentRate: WithAssumption<{ value: number }>;
 	/** Primes d'assurance maladie et accidents payées dans l'année, par adulte et par enfant. */
-	insurancePremiums: WithDefault<{ perAdult: number; perChild: number }>;
+	insurancePremiums: WithAssumption<{ perAdult: number; perChild: number }>;
 };
 
 export type EarnerResult = {
@@ -143,7 +167,11 @@ export function legalMinimumPensionContribution(
 	return { contribution: toFranc((coordinatedSalary * rate) / 2), coordinatedSalary, rate };
 }
 
-const childAmount = (rules: ChildDeductionRule[], rank: number, age: number): { amount: number; sourceIds: string[] } => {
+const childAmount = (
+	rules: ChildDeductionRule[],
+	rank: number,
+	age: number,
+): { amount: number; sourceIds: string[]; assumptions: string[] } => {
 	const applies = (rule: ChildDeductionRule) =>
 		rank >= rule.fromRank &&
 		(rule.toRank === null || rank <= rule.toRank) &&
@@ -155,6 +183,7 @@ const childAmount = (rules: ChildDeductionRule[], rank: number, age: number): { 
 	return {
 		amount: matched.reduce((sum, rule) => sum + rule.amount.value, 0),
 		sourceIds: matched.map((rule) => rule.amount.sourceId),
+		assumptions: matched.flatMap((rule) => (rule.assumption ? [rule.assumption] : [])),
 	};
 };
 
@@ -205,7 +234,7 @@ export function estimateTaxableIncome(params: GrossToTaxableParams, data: GrossT
 			value: nonOccupationalAccident,
 			unit: "CHF",
 			sourceId: social.accidentMaximumInsuredEarnings.sourceId,
-			assumption: accidentRate.isDefault ? labels.AFC_CHAIN_ASSUMPTION : labels.USER_VALUE,
+			assumption: accidentRate.assumption,
 		});
 		const legal = legalMinimumPensionContribution(gross, earner.age, pension);
 		const given = earner.occupationalPensionContribution;
@@ -286,7 +315,7 @@ export function estimateTaxableIncome(params: GrossToTaxableParams, data: GrossT
 			premiums,
 			`min(primes ${fmt(premiumsPaid)} ; plafond ${fmt(base.value)}${children > 0 ? ` + ${children} × ${fmt(caps.perChild.value)}` : ""})`,
 			base.sourceId,
-			params.insurancePremiums.isDefault ? labels.AFC_CHAIN_ASSUMPTION : labels.USER_VALUE,
+			params.insurancePremiums.assumption,
 		);
 
 		// Enfants, selon leur rang et leur âge
@@ -298,6 +327,7 @@ export function estimateTaxableIncome(params: GrossToTaxableParams, data: GrossT
 				childrenTotal,
 				perChild.map((entry) => fmt(entry.amount)).join(" + ") || labels.NO_DEDUCTION_IN_DATA,
 				perChild.flatMap((entry) => entry.sourceIds)[0] ?? null,
+				[...new Set(perChild.flatMap((entry) => entry.assumptions))].join(" ") || undefined,
 			);
 		}
 

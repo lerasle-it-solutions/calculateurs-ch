@@ -17,10 +17,12 @@ import type {
 	ChildDeductionRule,
 	DeductionRules,
 	GrossToTaxableData,
+	GrossToTaxableRuleSet,
 	InsurancePremiumCaps,
 	Sourced,
 	SocialInsuranceRules,
 } from "../lib/calculations/gross-to-taxable";
+import * as labels from "../lib/calculations/gross-to-taxable-labels";
 import { getCantonData, getFederalData } from "./index";
 import type { CantonData } from "./schema";
 
@@ -140,7 +142,7 @@ const cantonalRules = (canton: CantonCode, data: CantonData): DeductionRules => 
 					byAge(7, 16, read.amount("Déduction pour enfant, âge entre 7 et 16 ans", "amount")),
 					byAge(17, null, read.amount("Déduction pour enfants, de 17 ans", "amount")),
 					everyChild(read.amount("Déduction pour propres enfants à charge", "amount"), true),
-					byRank(3, null, read.amount("Déduction supplémentaire pour enfants, dès 3 enfants", "amount"), true),
+					{ ...byRank(3, null, read.amount("Déduction supplémentaire pour enfants, dès 3 enfants", "amount"), true), assumption: labels.VS_THIRD_CHILD },
 				],
 				marriedCouple: null,
 				singleWithoutChildren: null,
@@ -155,8 +157,8 @@ const cantonalRules = (canton: CantonCode, data: CantonData): DeductionRules => 
 					read.amount("Déduction des primes d'assurance maladie, enfant mineur"),
 				),
 				children: [
-					byRank(1, 2, read.amount("Déduction pour enfant, 1er et 2ème enfant", "minimum")),
-					byRank(3, null, read.amount("Déduction enfants dès 3 enfants", "minimum")),
+					{ ...byRank(1, 2, read.amount("Déduction pour enfant, 1er et 2ème enfant", "minimum")), assumption: labels.FR_CHILD_MINIMUM },
+					{ ...byRank(3, null, read.amount("Déduction enfants dès 3 enfants", "minimum")), assumption: labels.FR_CHILD_MINIMUM },
 				],
 				marriedCouple: null,
 				singleWithoutChildren: null,
@@ -264,3 +266,25 @@ export function getGrossToTaxableData(year: number, canton: CantonCode): GrossTo
 
 	return { socialInsurance, federal: federalRules, cantonal: cantonalRules(canton, cantonData) };
 }
+
+/** Règles de l'estimateur pour une page : Confédération, cantons couverts, primes moyennes par canton. */
+export function getGrossToTaxableRuleSet(year: number, cantons: readonly CantonCode[]): GrossToTaxableRuleSet {
+	const premiums = getFederalData(year).averageHealthInsurancePremiums;
+	if (premiums === undefined || isTodo(premiums)) throw new Error(`Primes moyennes ${year} non relevées (federal/${year}.json).`);
+	const byCanton = cantons.map((canton) => [canton, getGrossToTaxableData(year, canton)] as const);
+	const [, first] = byCanton[0] ?? [];
+	if (!first) throw new Error("Aucun canton demandé.");
+	return {
+		year,
+		socialInsurance: first.socialInsurance,
+		federal: first.federal,
+		cantonal: Object.fromEntries(byCanton.map(([canton, data]) => [canton, data.cantonal])),
+		averagePremiums: Object.fromEntries(
+			cantons.map((canton) => {
+				const entry = premiums[canton];
+				return [canton, { value: { adult: entry.value.adult, child: entry.value.child }, sourceId: entry.sourceId }];
+			}),
+		),
+	};
+}
+

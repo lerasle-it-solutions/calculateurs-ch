@@ -82,5 +82,9 @@
 	"directFederalTaxDeductions": {
 		"todo": "Déductions IFD 2027 (LIFD art. 33 et 35, frais professionnels) : à relever au rituel de janvier, avec les barèmes IFD 2027 (décision du 10.10.2026).",
 		"sourceId": "fedlex-lifd"
+	},
+	"averageHealthInsurancePremiums": {
+		"todo": "Primes moyennes 2027 de l'assurance obligatoire des soins (RS 831.309.1, annexe) : à relever au rituel de janvier.",
+		"sourceId": "dfi-average-health-premiums"
 	}
 }

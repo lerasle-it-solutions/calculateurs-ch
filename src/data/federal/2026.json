@@ -313,5 +313,79 @@
 			"effectiveFrom": "2024-01-01",
 			"note": "Art. 35 al. 1 let. c : couples mariés vivant en ménage commun. En vigueur depuis le 01.01.2024 (RO 2023 493). LIFD (RS 642.11), état au 02.09.2026."
 		}
+	},
+	"averageHealthInsurancePremiums": {
+		"VD": {
+			"value": {
+				"adult": 8388,
+				"child": 2040,
+				"premiumRegion": 1
+			},
+			"unit": "CHF",
+			"sourceId": "dfi-average-health-premiums",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, région de primes 1. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
+		},
+		"GE": {
+			"value": {
+				"adult": 8760,
+				"child": 2076,
+				"premiumRegion": null
+			},
+			"unit": "CHF",
+			"sourceId": "dfi-average-health-premiums",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, canton à région unique. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
+		},
+		"VS": {
+			"value": {
+				"adult": 7092,
+				"child": 1680,
+				"premiumRegion": 1
+			},
+			"unit": "CHF",
+			"sourceId": "dfi-average-health-premiums",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, région de primes 1. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
+		},
+		"FR": {
+			"value": {
+				"adult": 7332,
+				"child": 1752,
+				"premiumRegion": 1
+			},
+			"unit": "CHF",
+			"sourceId": "dfi-average-health-premiums",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, région de primes 1. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
+		},
+		"NE": {
+			"value": {
+				"adult": 8244,
+				"child": 1884,
+				"premiumRegion": null
+			},
+			"unit": "CHF",
+			"sourceId": "dfi-average-health-premiums",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, canton à région unique. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
+		},
+		"JU": {
+			"value": {
+				"adult": 8028,
+				"child": 1824,
+				"premiumRegion": null
+			},
+			"unit": "CHF",
+			"sourceId": "dfi-average-health-premiums",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, canton à région unique. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
+		}
 	}
 }

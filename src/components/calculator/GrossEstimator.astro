@@ -1,0 +1,42 @@
+---
+/**
+ * Mode « salaire brut » d'un calculateur (W08, prompt B2) : un `<details>`
+ * natif, déplié sans JavaScript, dont l'ouverture charge l'estimateur à la
+ * demande (src/lib/display/gross-estimator-ui.ts). Il se place dans le
+ * formulaire, après les champs du revenu imposable (`formExtraAfter` du Shell).
+ *
+ * Cotisation LPP, primes et taux LAA sont préremplis par l'estimateur avec
+ * leurs défauts publics et restent modifiables. Les champs du conjoint ou
+ * partenaire ne s'affichent que pour un couple.
+ */
+import NumberField from "../ui/NumberField.astro";
+import { fr } from "../../i18n/fr";
+import { formatChf } from "../../lib/format/chf";
+
+interface Props {
+	/** Borne supérieure du salaire coordonné LPP, lue dans les données (aide du champ LPP). */
+	lppUpperSalaryLimit: number;
+}
+
+const { lppUpperSalaryLimit } = Astro.props;
+const t = fr.grossEstimator;
+const pensionHint = t.pensionHint(formatChf(lppUpperSalaryLimit));
+---
+
+<details data-estimator class="rounded-panel bg-tint p-lg">
+	<summary class="flex min-h-3xl cursor-pointer items-center text-label font-bold text-accent underline">{t.toggle}</summary>
+	<div class="mt-md flex flex-col gap-xl">
+		<p class="max-w-reading text-fine text-ink-muted">{t.intro}</p>
+		<NumberField id="estimator-gross-salary" name="grossSalary" label={t.grossSalary} unit="CHF" min={0} step={100} hint={t.grossSalaryHint} />
+		<NumberField id="estimator-age" name="age" label={t.age} unit="ans" min={0} step={1} />
+		<NumberField id="estimator-pension" name="pensionContribution" label={t.pensionContribution} unit="CHF" min={0} step={1} hint={pensionHint} />
+		<div data-spouse hidden class="flex flex-col gap-xl">
+			<NumberField id="estimator-spouse-gross-salary" name="spouseGrossSalary" label={t.spouseGrossSalary} unit="CHF" min={0} step={100} hint={t.grossSalaryHint} />
+			<NumberField id="estimator-spouse-age" name="spouseAge" label={t.spouseAge} unit="ans" min={0} step={1} />
+			<NumberField id="estimator-spouse-pension" name="spousePensionContribution" label={t.spousePensionContribution} unit="CHF" min={0} step={1} hint={pensionHint} />
+		</div>
+		<NumberField id="estimator-premiums-adult" name="premiumsPerAdult" label={t.premiumsPerAdult} unit="CHF" min={0} step={1} hint={t.premiumsHint} />
+		<NumberField id="estimator-premiums-child" name="premiumsPerChild" label={t.premiumsPerChild} unit="CHF" min={0} step={1} hint={t.premiumsHint} />
+		<NumberField id="estimator-accident-rate" name="accidentRate" label={t.accidentRate} unit="%" min={0} step="0.01" hint={t.accidentRateHint} />
+	</div>
+</details>

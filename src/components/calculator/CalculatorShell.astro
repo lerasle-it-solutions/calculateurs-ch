@@ -64,6 +64,11 @@ interface Props {
 	 * en texte simple, jamais en lien mort.
 	 */
 	catalog?: CalculatorDefinition[];
+	/**
+	 * Nom du champ après lequel rendre le contenu de l'emplacement `form-extra`
+	 * (p. ex. le mode « salaire brut » de l'estimateur), dans le formulaire.
+	 */
+	formExtraAfter?: string;
 }
 
 const {
@@ -75,7 +80,10 @@ const {
 	guide,
 	verifiedOn,
 	catalog = [],
+	formExtraAfter,
 } = Astro.props;
+
+const formExtra = Astro.slots.has("form-extra") ? await Astro.slots.render("form-extra") : "";
 
 const byId = new Map(catalog.map((entry) => [entry.id, entry]));
 
@@ -133,8 +141,9 @@ const resultFor = definition.fields
 			novalidate
 		>
 			{
-				definition.fields.map((field) =>
-					field.kind === "number" ? (
+				definition.fields.map((field) => (
+					<>
+					{field.kind === "number" ? (
 						<NumberField
 							id={fieldId(field.name)}
 							name={field.name}
@@ -184,8 +193,10 @@ const resultFor = definition.fields
 							id={fieldId(field.name)}
 							only={definition.scope.cantonsCovered}
 						/>
-					),
-				)
+					)}
+					{field.name === formExtraAfter && formExtra && <Fragment set:html={formExtra} />}
+					</>
+				))
 			}
 		</form>
 

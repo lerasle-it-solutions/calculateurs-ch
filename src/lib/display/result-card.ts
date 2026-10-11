@@ -10,7 +10,8 @@ export type StatusLink = { label: string; url: string };
 /** Message qui remplace le montant : texte complet dans la carte, mention courte dans la barre mobile. */
 export type ResultStatus = { text: string; short: string; link?: StatusLink };
 
-export type ResultDetail = { value?: string; status?: ResultStatus | null };
+/** `note` : mention courte sous le montant, p. ex. « estimation » ; absente, la note s'efface. */
+export type ResultDetail = { value?: string; status?: ResultStatus | null; note?: string | null };
 
 /** Ce que la mise à jour touche d'un élément : de quoi le tester sans DOM. */
 type Slot = Pick<HTMLElement, "hidden" | "textContent">;
@@ -25,10 +26,16 @@ export type ResultCardSlots = {
 	messageText: Slot | null;
 	/** Lien du message, vers la calculette officielle du canton. */
 	messageLink: LinkSlot | null;
+	/** Mention sous le montant (carte seulement). */
+	note?: Slot | null;
 };
 
 export function applyResult(slots: ResultCardSlots, detail: ResultDetail): void {
 	if (typeof detail.value === "string") slots.value.textContent = detail.value;
+	if (slots.note) {
+		slots.note.hidden = !detail.note;
+		slots.note.textContent = detail.note ?? "";
+	}
 	const { message, messageText, messageLink } = slots;
 	if (!message) return;
 	const status = detail.status ?? null;

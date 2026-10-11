@@ -48,6 +48,7 @@ const {
 >
 	<span class="text-label font-bold">{label}</span>
 	<span data-result-value class="text-display text-accent tabular-nums">{value}</span>
+	<span data-result-note hidden class="text-label font-bold"></span>
 	<span data-result-status hidden class="max-w-reading text-body">
 		<span data-status-text></span>{" "}<a data-status-link hidden class="font-bold"></a>
 	</span>
@@ -66,6 +67,7 @@ const {
 			message: card.querySelector<HTMLElement>("[data-result-status]"),
 			messageText: card.querySelector<HTMLElement>("[data-status-text]"),
 			messageLink: card.querySelector<HTMLAnchorElement>("[data-status-link]"),
+			note: card.querySelector<HTMLElement>("[data-result-note]"),
 		};
 
 		document.addEventListener(eventName, (raw) => {

@@ -136,6 +136,21 @@ export const SOURCES = defineSources([
 		usedBy: ["gross-to-taxable"],
 	},
 	{
+		id: "dfi-average-health-premiums",
+		name: "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (prestations complémentaires et prestations transitoires)",
+		authority: "Confédération",
+		url: "https://www.fedlex.admin.ch/eli/cc/2024/659/fr",
+		legalReference:
+			"RS 831.309.1 — annexe (art. 3), primes moyennes 2026, en vigueur depuis le 01.01.2026 ; annexe : https://www.bsv.admin.ch/dam/fr/sd-web/juMQ1SfoExDq/FR%20Anhang%20(Art.%203)%20Durchschnittspr%C3%A4mien%202026.pdf",
+		cadence: "annual",
+		verifiedOn: "2026-10-11",
+		dataClass: "public",
+		nature: "official",
+		requiresAttribution: false,
+		usedBy: ["gross-to-taxable"],
+		note: "Défaut public des primes d'assurance de l'estimateur (décision du 11.10.2026) : prime moyenne du canton, région 1 pour VD, VS et FR, tarif adulte pour tous les adultes.",
+	},
+	{
 		id: "cst-art-128",
 		name: "Constitution fédérale de la Confédération suisse — art. 128, impôt fédéral direct",
 		authority: "Confédération",

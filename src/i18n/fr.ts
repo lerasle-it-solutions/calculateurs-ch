@@ -160,6 +160,29 @@ export const fr = {
 			`Cet article décrit le droit en vigueur au ${date}. Il ne constitue pas un conseil fiscal ou financier personnalisé.`,
 	},
 
+	/** Mode « salaire brut » des calculateurs (estimateur du revenu imposable, W08 B2). */
+	grossEstimator: {
+		toggle: "Je ne connais pas mon revenu imposable — l'estimer depuis mon salaire brut",
+		intro:
+			"Les revenus imposables ci-dessus seront estimés depuis votre salaire brut, avec les hypothèses détaillées dans le calcul. Le résultat devient une estimation.",
+		grossSalary: "Salaire brut annuel",
+		grossSalaryHint: "Avant toute déduction.",
+		age: "Âge",
+		pensionContribution: "Cotisation LPP annuelle",
+		spouseGrossSalary: "Salaire brut annuel de votre conjoint ou partenaire",
+		spouseAge: "Âge de votre conjoint ou partenaire",
+		spousePensionContribution: "Cotisation LPP annuelle de votre conjoint ou partenaire",
+		pensionHint: (upperSalaryLimit: string): string =>
+			`Reportez le montant de votre fiche de salaire. Le minimum légal est souvent dépassé, surtout au-delà de ${upperSalaryLimit} CHF de salaire.`,
+		premiumsPerAdult: "Primes d'assurance maladie et accidents payées dans l'année, par adulte",
+		premiumsPerChild: "Primes d'assurance maladie et accidents payées dans l'année, par enfant",
+		premiumsHint: "Montant figurant sur vos polices ou votre attestation de primes.",
+		accidentRate: "Taux de l'assurance-accidents non professionnelle",
+		accidentRateHint: "Taux figurant sur votre fiche de salaire.",
+		/** Mention sous le résultat quand les revenus imposables sont estimés. */
+		resultNote: "Estimation depuis le salaire brut",
+	},
+
 	calculator: {
 		faqTitle: "Questions fréquentes",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */

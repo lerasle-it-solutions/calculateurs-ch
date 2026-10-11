@@ -323,6 +323,27 @@ const directFederalTaxDeductionsSchema = z
 	})
 	.strict();
 
+/**
+ * Primes moyennes annuelles de l'assurance obligatoire des soins, accident
+ * comprise (ordonnance du DFI, RS 831.309.1, annexe) : défauts publics de
+ * l'estimateur pour les primes d'assurance, par canton romand.
+ */
+const averageHealthInsurancePremiumSchema = valueSchema(
+	z
+		.object({
+			adult: z.number().positive(),
+			child: z.number().positive(),
+			premiumRegion: z.number().int().positive().nullable(), // null : canton à région unique
+		})
+		.strict(),
+);
+const averageHealthInsurancePremiumsSchema = z
+	.object(Object.fromEntries(CANTON_CODES.map((code) => [code, averageHealthInsurancePremiumSchema])) as Record<
+		(typeof CANTON_CODES)[number],
+		typeof averageHealthInsurancePremiumSchema
+	>)
+	.strict();
+
 export const federalDataSchema = z
 	.object({
 		year: z.number().int(),
@@ -331,6 +352,7 @@ export const federalDataSchema = z
 		// Estimateur du revenu imposable : absents tant qu'une année n'est pas relevée, ou en TODO (R3)
 		socialInsurance: z.union([socialInsuranceSchema, todoSchema]).optional(),
 		directFederalTaxDeductions: z.union([directFederalTaxDeductionsSchema, todoSchema]).optional(),
+		averageHealthInsurancePremiums: z.union([averageHealthInsurancePremiumsSchema, todoSchema]).optional(),
 	})
 	.passthrough();
 export type FederalData = z.infer<typeof federalDataSchema>;
