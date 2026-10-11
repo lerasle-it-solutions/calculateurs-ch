@@ -134,5 +134,184 @@
 			"effectiveFrom": "2026-01-01",
 			"note": "Arrondi de l'impôt final au franc le plus proche : confirmé par les cas de référence 01, 07 et 13 ; aucune base dans la LIFD, relève probablement d'une pratique de taxation."
 		}
+	},
+	"socialInsurance": {
+		"oldAgeSurvivorsEmployeeRate": {
+			"value": 0.0435,
+			"sourceId": "ofas-ahv-contributions",
+			"verifiedOn": "2026-10-10",
+			"effectiveFrom": "2026-01-01",
+			"note": "AVS, part du salarié (LAVS art. 5) : 4,35 % ; taux total 8,7 %, moitié à la charge de l'employeur. Mémento 2.01 « Cotisations salariales à l'AVS, à l'AI et aux APG », état au 01.01.2026, ch. 3. Relevé les 10 et 11.10.2026."
+		},
+		"disabilityEmployeeRate": {
+			"value": 0.007,
+			"sourceId": "ofas-ahv-contributions",
+			"verifiedOn": "2026-10-10",
+			"effectiveFrom": "2026-01-01",
+			"note": "AI, part du salarié (LAI art. 3) : 0,70 % ; taux total 1,4 %. Mémento 2.01 « Cotisations salariales à l'AVS, à l'AI et aux APG », état au 01.01.2026, ch. 3. Relevé les 10 et 11.10.2026."
+		},
+		"incomeCompensationEmployeeRate": {
+			"value": 0.0025,
+			"sourceId": "ofas-ahv-contributions",
+			"verifiedOn": "2026-10-10",
+			"effectiveFrom": "2026-01-01",
+			"note": "APG, part du salarié (LAPG art. 27) : 0,25 % ; taux total 0,5 %. Part du salarié AVS, AI et APG : 5,3 % au total, sans plafond. Mémento 2.01 « Cotisations salariales à l'AVS, à l'AI et aux APG », état au 01.01.2026, ch. 3. Relevé les 10 et 11.10.2026."
+		},
+		"unemploymentEmployeeRate": {
+			"value": 0.011,
+			"sourceId": "fedlex-laci",
+			"verifiedOn": "2026-10-10",
+			"effectiveFrom": "2026-01-01",
+			"note": "LACI (RS 837.0), état au 01.01.2026, art. 3 al. 2 et 3 : 2,2 % à parts égales, jusqu'au gain maximal assuré de l'assurance-accidents obligatoire ; aucune cotisation au-delà. Relevé les 10 et 11.10.2026."
+		},
+		"accidentMaximumInsuredEarnings": {
+			"value": 148200,
+			"unit": "CHF",
+			"sourceId": "olaa-max-insured-earnings",
+			"verifiedOn": "2026-10-10",
+			"effectiveFrom": "2026-01-01",
+			"note": "OLAA (RS 832.202), état au 01.01.2026, art. 22 al. 1 : gain maximal assuré, par an. Plafonne aussi la cotisation AC (LACI art. 3 al. 2) et la prime LAA non professionnelle. Relevé les 10 et 11.10.2026."
+		},
+		"occupationalPension": {
+			"entryThreshold": {
+				"value": 22680,
+				"unit": "CHF",
+				"sourceId": "fedlex-lpp",
+				"verifiedOn": "2026-10-10",
+				"effectiveFrom": "2025-01-01",
+				"note": "LPP (RS 831.40), art. 2 al. 1 et art. 7 al. 1 : seuil d'entrée, salaire annuel. État au 01.01.2025, version en vigueur le 10.10.2026 ; montants adaptés selon l'art. 5 OPP 2 (modification du 28.08.2024, RO 2024 469)."
+			},
+			"coordinationDeduction": {
+				"value": 26460,
+				"unit": "CHF",
+				"sourceId": "fedlex-lpp",
+				"verifiedOn": "2026-10-10",
+				"effectiveFrom": "2025-01-01",
+				"note": "LPP art. 8 al. 1 : borne inférieure de la partie du salaire annuel à assurer (salaire coordonné). Montant adapté selon l'art. 5 OPP 2 (RO 2024 469)."
+			},
+			"upperSalaryLimit": {
+				"value": 90720,
+				"unit": "CHF",
+				"sourceId": "fedlex-lpp",
+				"verifiedOn": "2026-10-10",
+				"effectiveFrom": "2025-01-01",
+				"note": "LPP art. 8 al. 1 : borne supérieure de la partie du salaire annuel à assurer. Montant adapté selon l'art. 5 OPP 2 (RO 2024 469)."
+			},
+			"minimumCoordinatedSalary": {
+				"value": 3780,
+				"unit": "CHF",
+				"sourceId": "fedlex-lpp",
+				"verifiedOn": "2026-10-10",
+				"effectiveFrom": "2025-01-01",
+				"note": "LPP art. 8 al. 2 : salaire coordonné minimal. Montant adapté selon l'art. 5 OPP 2 (RO 2024 469)."
+			},
+			"ageCredits": {
+				"value": [
+					{
+						"fromAge": 25,
+						"toAge": 34,
+						"rate": 0.07
+					},
+					{
+						"fromAge": 35,
+						"toAge": 44,
+						"rate": 0.1
+					},
+					{
+						"fromAge": 45,
+						"toAge": 54,
+						"rate": 0.15
+					},
+					{
+						"fromAge": 55,
+						"toAge": 65,
+						"rate": 0.18
+					}
+				],
+				"sourceId": "fedlex-lpp",
+				"verifiedOn": "2026-10-10",
+				"effectiveFrom": "2025-01-01",
+				"note": "LPP art. 16 : bonifications de vieillesse en pour-cent du salaire coordonné, par tranche d'âge. État au 01.01.2025, version en vigueur le 10.10.2026."
+			}
+		}
+	},
+	"directFederalTaxDeductions": {
+		"otherProfessionalExpenses": {
+			"value": {
+				"rate": 0.03,
+				"minimum": 2000,
+				"maximum": 4000
+			},
+			"sourceId": "fedlex-ifd-professional-expenses",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Ordonnance du DFF sur les frais professionnels (RS 642.118.1), état au 01.01.2026, art. 7 et appendice ch. 1 : 3 % du salaire net, au minimum 2 000 et au maximum 4 000 francs par an, réduit de manière appropriée en cas d'activité à temps partiel ou sur une partie de l'année. Salaire net après les cotisations AVS/AI/APG, AC, LAA et LPP. Appendice mis à jour par l'O du DFF du 10.09.2025 (RO 2025 578), en vigueur depuis le 01.01.2026."
+		},
+		"insurancePremiumsMarriedMaximum": {
+			"value": 3700,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2025-01-01",
+			"note": "Art. 33 al. 1 let. g ch. 1 : primes d'assurance et intérêts de capitaux d'épargne, montant maximal pour les couples mariés vivant en ménage commun. En vigueur depuis le 01.01.2025 (RO 2024 479). LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"insurancePremiumsOtherMaximum": {
+			"value": 1800,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2023-01-01",
+			"note": "Art. 33 al. 1 let. g ch. 2 : montant maximal pour les autres contribuables. En vigueur depuis le 01.01.2023 (RO 2022 575). LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"insurancePremiumsIncreaseWithoutPensionContributions": {
+			"value": 0.5,
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 33 al. 1bis let. a : les montants de l'al. 1 let. g sont augmentés de moitié (0,5) pour qui ne verse aucune cotisation selon l'al. 1 let. d et e (2e pilier, 3a). LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"insurancePremiumsSupplementPerDependant": {
+			"value": 700,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 33 al. 1bis let. b : 700 francs pour chaque enfant ou personne nécessiteuse donnant droit à la déduction de l'art. 35 al. 1 let. a ou b. LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"dualIncome": {
+			"value": {
+				"rate": 0.5,
+				"minimum": 8600,
+				"maximum": 14100
+			},
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2025-01-01",
+			"note": "Art. 33 al. 2 : époux vivant en ménage commun exerçant chacun une activité lucrative, 50 % du produit de l'activité la moins rémunérée, au moins 8 600 et au plus 14 100 francs. Produit : revenu imposable de l'activité diminué des charges des art. 26 à 31 et des déductions de l'art. 33 al. 1 let. d à f. En vigueur depuis le 01.01.2025 (RO 2024 479). LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"perChild": {
+			"value": 6800,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2025-01-01",
+			"note": "Art. 35 al. 1 let. a : par enfant mineur, en apprentissage ou aux études, dont le contribuable assure l'entretien. En vigueur depuis le 01.01.2025 (RO 2024 479). LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"perNeedyPerson": {
+			"value": 6800,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2025-01-01",
+			"note": "Art. 35 al. 1 let. b : par personne à charge totalement ou partiellement incapable d'exercer une activité lucrative. En vigueur depuis le 01.01.2025 (RO 2024 479). LIFD (RS 642.11), état au 02.09.2026."
+		},
+		"marriedCouple": {
+			"value": 2800,
+			"unit": "CHF",
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-10-11",
+			"effectiveFrom": "2024-01-01",
+			"note": "Art. 35 al. 1 let. c : couples mariés vivant en ménage commun. En vigueur depuis le 01.01.2024 (RO 2023 493). LIFD (RS 642.11), état au 02.09.2026."
+		}
 	}
 }

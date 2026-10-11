@@ -74,5 +74,13 @@
 			"effectiveFrom": "2026-01-01",
 			"note": "Arrondi de l'impôt final au franc le plus proche : confirmé par les cas de référence 01, 07 et 13 sur 2026 ; aucune base dans la LIFD. Repris de 2026.json."
 		}
+	},
+	"socialInsurance": {
+		"todo": "Cotisations sociales et seuils LPP 2027 : à relever au rituel de janvier, avec les barèmes IFD 2027 (décision du 10.10.2026).",
+		"sourceId": null
+	},
+	"directFederalTaxDeductions": {
+		"todo": "Déductions IFD 2027 (LIFD art. 33 et 35, frais professionnels) : à relever au rituel de janvier, avec les barèmes IFD 2027 (décision du 10.10.2026).",
+		"sourceId": "fedlex-lifd"
 	}
 }

@@ -267,11 +267,70 @@ const directFederalTaxSchema = z
 	})
 	.strict();
 
+/**
+ * Cotisations sociales du salarié et seuils de la prévoyance professionnelle,
+ * lus par l'estimateur du revenu imposable (salaire brut → revenu net). Les taux
+ * sont des parts du salarié, en fraction (0,0435 = 4,35 %).
+ */
+const lppAgeCreditSchema = z
+	.object({
+		fromAge: z.number().int().positive(),
+		toAge: z.number().int().positive(),
+		rate: z.number().positive().max(1),
+	})
+	.strict();
+
+const socialInsuranceSchema = z
+	.object({
+		oldAgeSurvivorsEmployeeRate: valueSchema(z.number().positive().max(1)), // AVS, LAVS art. 5
+		disabilityEmployeeRate: valueSchema(z.number().positive().max(1)), // AI, LAI art. 3
+		incomeCompensationEmployeeRate: valueSchema(z.number().positive().max(1)), // APG, LAPG art. 27
+		unemploymentEmployeeRate: valueSchema(z.number().positive().max(1)), // AC, LACI art. 3 al. 2 et 3
+		accidentMaximumInsuredEarnings: valueSchema(z.number().positive()), // gain maximal assuré LAA, OLAA art. 22 al. 1
+		occupationalPension: z
+			.object({
+				entryThreshold: valueSchema(z.number().positive()), // seuil d'entrée, LPP art. 2 al. 1 et 7 al. 1
+				coordinationDeduction: valueSchema(z.number().positive()), // borne inférieure du salaire coordonné, LPP art. 8 al. 1
+				upperSalaryLimit: valueSchema(z.number().positive()), // borne supérieure du salaire coordonné, LPP art. 8 al. 1
+				minimumCoordinatedSalary: valueSchema(z.number().positive()), // LPP art. 8 al. 2
+				ageCredits: valueSchema(z.array(lppAgeCreditSchema).min(1)), // bonifications de vieillesse, LPP art. 16
+			})
+			.strict(),
+	})
+	.strict();
+
+/** Montant en fraction, minimum et maximum d'une déduction proportionnelle. */
+const boundedRateSchema = z
+	.object({ rate: z.number().positive().max(1), minimum: z.number().nonnegative(), maximum: z.number().positive() })
+	.strict();
+
+/**
+ * Déductions de l'impôt fédéral direct lues par l'estimateur du revenu
+ * imposable (LIFD art. 33 et 35 ; ordonnance du DFF sur les frais
+ * professionnels).
+ */
+const directFederalTaxDeductionsSchema = z
+	.object({
+		otherProfessionalExpenses: valueSchema(boundedRateSchema), // O DFF, art. 7 et appendice ch. 1
+		insurancePremiumsMarriedMaximum: valueSchema(z.number().positive()), // LIFD art. 33 al. 1 let. g ch. 1
+		insurancePremiumsOtherMaximum: valueSchema(z.number().positive()), // LIFD art. 33 al. 1 let. g ch. 2
+		insurancePremiumsIncreaseWithoutPensionContributions: valueSchema(z.number().positive().max(1)), // al. 1bis let. a
+		insurancePremiumsSupplementPerDependant: valueSchema(z.number().positive()), // al. 1bis let. b
+		dualIncome: valueSchema(boundedRateSchema), // LIFD art. 33 al. 2
+		perChild: valueSchema(z.number().positive()), // LIFD art. 35 al. 1 let. a
+		perNeedyPerson: valueSchema(z.number().positive()), // LIFD art. 35 al. 1 let. b
+		marriedCouple: valueSchema(z.number().positive()), // LIFD art. 35 al. 1 let. c
+	})
+	.strict();
+
 export const federalDataSchema = z
 	.object({
 		year: z.number().int(),
 		pillar3a: pillar3aSchema,
 		directFederalTax: directFederalTaxSchema,
+		// Estimateur du revenu imposable : absents tant qu'une année n'est pas relevée, ou en TODO (R3)
+		socialInsurance: z.union([socialInsuranceSchema, todoSchema]).optional(),
+		directFederalTaxDeductions: z.union([directFederalTaxDeductionsSchema, todoSchema]).optional(),
 	})
 	.passthrough();
 export type FederalData = z.infer<typeof federalDataSchema>;

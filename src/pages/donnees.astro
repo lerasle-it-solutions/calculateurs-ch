@@ -144,7 +144,7 @@ const formatDate = (isoDate: string): string =>
 					<ul class="flex flex-col gap-md">
 						{ruleSources.map(({ source }) => (
 							<li class="flex flex-col gap-2xs">
-								<a href={source.url}>{source.name}</a>
+								{source.url ? <a href={source.url}>{source.name}</a> : <span>{source.name}</span>}
 								<span class="text-fine text-ink-muted">
 									{source.authority}
 									{source.legalReference && <> · {source.legalReference}</>}
