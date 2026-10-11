@@ -630,6 +630,7 @@
 				"maximum": 1600
 			}
 		],
+		"note": "Déduction « propres enfants à charge » (3 130 CHF) : s'ajoute à la déduction selon l'âge de l'enfant, comme dans la chaîne du calculateur de l'AFC (décision du 11.10.2026). Article de la vs-lf à vérifier lors du relevé annuel.",
 		"sourceId": "vs-lf",
 		"verifiedOn": "2026-09-26",
 		"effectiveFrom": "2026-01-01",

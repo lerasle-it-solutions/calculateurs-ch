@@ -611,6 +611,12 @@ const LAW_SCALES: Partial<Record<CantonCode, ("incomeTaxScale" | "communalIncome
 	VS: ["incomeTaxScale", "communalIncomeScale"],
 };
 
+/** La note écrite à la main sur une valeur du fichier existant, conservée à la relance (décisions du mainteneur). */
+const keepNote = <T extends { note?: string }>(fromExport: T, existing: unknown): T => {
+	const note = (existing as { note?: unknown } | undefined)?.note;
+	return typeof note === "string" && note.length > 0 ? { ...fromExport, note } : fromExport;
+};
+
 const existingCantonFile = (path: string): Record<string, unknown> =>
 	existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>) : {};
 
@@ -704,7 +710,7 @@ const readCanton = async (
 							communalScale.income,
 						),
 					},
-		deductions: readDeductions(canton, deductions, taxLawSource),
+		deductions: keepNote(readDeductions(canton, deductions, taxLawSource), existing.deductions),
 		...(otherDeductionsSheet ? { otherDeductions: readOtherDeductions(canton, otherDeductionsSheet, taxLawSource) } : {}),
 		...keepManualValues(path, nonExportDefaults(canton)),
 		familyModel: keepFamilyModel(canton, path),

@@ -60,6 +60,10 @@ const pillar3a = getFederalData(pillar3aYear).pillar3a;
 // Économie d'impôt d'un versement 3a : plafonds de l'année de calcul d'A2, lus dans les données
 const taxSavingYear = resolveTaxYear(PILLAR_3A_TAX_SAVING_ID).year;
 const taxSavingPillar3a = getFederalData(taxSavingYear).pillar3a;
+// Estimation depuis le salaire brut : borne supérieure du salaire coordonné LPP de la même année, si elle est relevée
+const estimatorSocial = getFederalData(taxSavingYear).socialInsurance;
+const lppUpperSalaryLimit =
+	estimatorSocial && !("todo" in estimatorSocial) ? estimatorSocial.occupationalPension.upperSalaryLimit.value : null;
 
 // Partie générée : sources des calculateurs de prévoyance, d'après `usedBy`
 const UNOFFICIAL_NATURES = ["self-regulation", "industry", "association"];
@@ -293,6 +297,37 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				les prestations en capital, les gains immobiliers et, en Valais, les
 				situations décrites plus haut. Chaque calculateur annonce son périmètre
 				avant la saisie, avec une alternative pour les cas qu'il ne traite pas.
+			</p>
+			<h3 id="estimation" class="text-subheading">Estimation depuis le salaire brut</h3>
+			<p class="max-w-reading text-body">
+				Quand vous ne connaissez pas votre revenu imposable, il peut être estimé
+				depuis votre salaire brut. Du salaire, on retranche les cotisations AVS,
+				AI et APG, l'assurance-chômage et l'assurance-accidents non
+				professionnelle, jusqu'au gain maximal assuré, puis la cotisation à la
+				prévoyance professionnelle : c'est le revenu net du travail. La
+				Confédération et le canton en retranchent ensuite, chacun selon ses
+				propres règles et plafonds, les frais professionnels forfaitaires, les
+				primes d'assurance, les déductions pour enfants, pour couple et pour
+				double revenu. Le résultat est une estimation, signalée comme telle.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Ce qui relève d'une hypothèse.</strong> La cotisation LPP figure
+				sur votre fiche de salaire : reportez-la. Par défaut, le calcul retient
+				le minimum légal, la moitié de la bonification de vieillesse de
+				l'art.&nbsp;16 LPP sur le salaire coordonné. Ce minimum est souvent
+				dépassé, surtout pour les salaires élevés{lppUpperSalaryLimit !== null && (
+					<> (au-delà de {formatChf(lppUpperSalaryLimit)}&nbsp;CHF)</>
+				)} : le
+				salaire coordonné légal s'arrête là, alors que beaucoup
+				de caisses assurent davantage, et le calculateur de l'AFC compte lui
+				aussi une cotisation plus élevée pour ces salaires. Le taux de
+				l'assurance-accidents non professionnelle et le montant des primes
+				d'assurance maladie et accidents varient d'une personne à l'autre : leurs
+				valeurs par défaut sont identiques à celles du calculateur fédéral de
+				l'AFC, et vous pouvez les remplacer par les vôtres. Aucuns frais de
+				transport, de repas ni de garde ne sont déduits, et les frais
+				professionnels forfaitaires supposent une activité à plein temps sur
+				toute l'année.
 			</p>
 		</Section>
 
