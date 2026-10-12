@@ -4,6 +4,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { browserTraceLabels } from "./src/lib/build/browser-trace-labels.ts";
+import { directDynamicImport } from "./src/lib/build/direct-dynamic-import.ts";
 import { includeInSitemap } from "./src/lib/seo/sitemap.ts";
 
 // https://astro.build/config
@@ -28,7 +29,8 @@ export default defineConfig({
   // Préchargement désactivé : son script comptait dans le budget de 30 ko de JavaScript par page.
   prefetch: false,
   vite: {
-    // Libellés fixes de la trace lus dans le JSON de la page, hors du script (budget JavaScript).
-    plugins: [tailwindcss(), browserTraceLabels()],
+    // Libellés fixes de la trace lus dans le JSON de la page, hors du script, et import() à la
+    // demande sans helper de préchargement (budget JavaScript).
+    plugins: [tailwindcss(), browserTraceLabels(), directDynamicImport()],
   },
 });
