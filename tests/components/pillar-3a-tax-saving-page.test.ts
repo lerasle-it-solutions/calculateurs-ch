@@ -26,7 +26,7 @@ describe("page d'A2", () => {
 		for (const reminder of pillar3aTaxSavingTexts.reminders) expect(html).toContain(reminder);
 		expect(html).toMatch(/imposé à son retrait/);
 		expect(html).toMatch(/retrait en capital LPP\/3a est en préparation/);
-		expect(html).toMatch(/rachat LPP\./);
+		expect(html).not.toMatch(/en préparation[^.]*rachat LPP|rachat LPP[^.]*en préparation/i);
 		// Aucun lien vers un calculateur qui n'existe pas encore
 		expect(html).toContain('href="/prevoyance/rachat-lpp/"');
 		expect(html).not.toMatch(/href="\/prevoyance\/retrait-capital-lpp-3a\/"/);

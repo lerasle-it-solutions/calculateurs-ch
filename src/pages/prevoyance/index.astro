@@ -14,8 +14,8 @@ import { fr } from "../../i18n/fr";
 const published = publishedCalculators("pension");
 const guides = await getCollection("articles", (entry) => entry.data.family === "pension");
 
-// Calculateurs annoncés (CLAUDE.md § 7, A2 et A3) : contenu de page, sans lien.
-const announced = ["Économie d'impôt 3a", "Rachat LPP"];
+// Calculateurs annoncés : contenu de page, sans lien. A2 et A3, publiés, ont leur carte ci-dessus.
+const announced: string[] = [];
 
 const title = `${fr.family.pension} — ${fr.site.name}`;
 const description =

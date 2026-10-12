@@ -279,12 +279,11 @@ export const pillar3aTaxSavingTexts = {
 	/** Avertissement de la règle 7, « {amount} » remplacé par l'excédent. */
 	excessWarning:
 		"Attention : {amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
-	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A3 et A4 sans lien). */
+	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien). */
 	reminders: [
 		"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
 		`Pour être déductible en ${year}, le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1).`,
 		"L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3).",
-		"En préparation aussi : le calculateur du rachat LPP.",
 	],
 	outOfScope: pillar3aBuybackTexts.outOfScope,
 	outOfScopeMunicipality: pillar3aBuybackTexts.outOfScopeMunicipality,
