@@ -34,7 +34,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["tax-engine"],
+		usedBy: ["tax-engine", "pension.lpp-buyback"],
 		note: "Fonde les deux revenus imposables distincts : art. 1 al. 3 (barèmes, taux et montants exonérés restent cantonaux) et art. 9 (déductions générales, montants cantonaux).",
 	},
 	{
@@ -49,7 +49,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["tax-engine", "gross-to-taxable", "pension.capital-withdrawal"],
+		usedBy: ["tax-engine", "gross-to-taxable", "pension.capital-withdrawal", "pension.lpp-buyback"],
 		note: "art. 38 ajouté : c'est l'IFD sur les prestations en capital, nécessaire à A4.",
 	},
 	{
@@ -118,7 +118,7 @@ export const SOURCES = defineSources([
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
-		usedBy: ["gross-to-taxable"],
+		usedBy: ["gross-to-taxable", "pension.lpp-buyback"],
 		note: "Montants adaptés tous les deux ans par l'art. 5 OPP 2.",
 	},
 	{
