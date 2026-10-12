@@ -122,7 +122,7 @@ const fields: FieldDefinition[] = [
 		unit: "CHF",
 		min: 0,
 		step: 1,
-		hint: "Tel qu'il figure sur votre certificat de prévoyance, ou confirmé par écrit par votre caisse.",
+		hint: "Montant confirmé par votre caisse, après déclaration de vos avoirs 3a et de libre passage. Le montant du certificat n'en tient pas toujours compte.",
 		required: true,
 	},
 	{
@@ -201,7 +201,7 @@ export const lppBuyback: CalculatorDefinition = {
 			},
 		],
 		assumptions: [
-			"Le potentiel saisi est le montant confirmé par la caisse. Il tient déjà compte des réductions prévues par l'OPP 2 : l'avoir 3a qui dépasse la somme des petites cotisations déductibles depuis 24 ans, intérêts au taux minimal LPP compris (art. 60a al. 2) ; les avoirs de libre passage qui n'ont pas été transférés à la caisse (art. 60a al. 3) ; les prestations de vieillesse déjà perçues par une personne qui a repris une activité ou augmenté son taux d'activité (art. 60a al. 4) ; pour une personne arrivée de l'étranger et jamais affiliée en Suisse, un rachat annuel plafonné pendant cinq ans, sauf transfert direct d'avoirs d'un système de prévoyance étranger sans déduction fiscale (art. 60b).",
+			"Le potentiel saisi doit tenir compte des réductions prévues par l'OPP 2. Le montant du certificat de prévoyance n'en tient pas toujours compte : faites-le confirmer par votre caisse en lui déclarant ces avoirs. Les réductions sont : l'avoir 3a qui dépasse la somme des petites cotisations déductibles depuis 24 ans, intérêts au taux minimal LPP compris (art. 60a al. 2) ; les avoirs de libre passage qui n'ont pas été transférés à la caisse (art. 60a al. 3) ; les prestations de vieillesse déjà perçues par une personne qui a repris une activité ou augmenté son taux d'activité (art. 60a al. 4) ; pour une personne arrivée de l'étranger et jamais affiliée en Suisse, un rachat annuel plafonné pendant cinq ans, sauf transfert direct d'avoirs d'un système de prévoyance étranger sans déduction fiscale (art. 60b).",
 			"Le rachat est intégralement déductible du revenu imposable cantonal et fédéral de l'année du versement (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID ; art. 81 al. 2 LPP).",
 			"L'économie se calcule par différence de deux impôts totaux, sans rachat puis avec rachat. Chaque ligne (cantonal, communal, fédéral) est arrondie au franc avant l'addition. Le taux marginal n'est jamais utilisé.",
 			"Le revenu imposable ne descend pas sous zéro. La part d'un rachat qui dépasse le revenu de l'année n'apporte aucune économie cette année-là, et le résultat le signale.",
@@ -323,14 +323,14 @@ export const lppBuybackTexts = {
 			text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En droit fiscal, l'interdiction est plus large :`,
 			items: [
 				`en principe, tout versement en capital dans les ${lock} ans est réputé abusif, et le rachat n'est pas déductible, sans autre examen (ATF 142 II 399 consid. 4.1) ;`,
-				"le retrait compte quel que soit son motif (retraite, logement, départ à l'étranger) et quelle que soit l'institution qui verse le capital : c'est la pratique fiscale consolidée (information de l'administration fiscale genevoise ; arrêt 2C_488/2014 cité par la doctrine) ;",
+				"selon la pratique fiscale, le retrait compte quel que soit son motif (retraite, logement, départ à l'étranger) et quelle que soit l'institution qui verse le capital ;",
 				"chaque versement fait courir son propre délai : échelonner ses rachats repousse la date du premier retrait en capital possible ;",
 				"respecter le délai n'exclut pas un contrôle pour évasion fiscale (même arrêt, consid. 4.1).",
 			],
 		},
 		{
 			title: "Imposition à la sortie.",
-			text: "Le capital, rachat compris, sera imposé lors de son retrait, séparément du revenu. L'économie affichée n'est donc pas un gain net. Le calculateur du retrait en capital LPP/3a est en préparation.",
+			text: "Les prestations issues du rachat seront imposées à leur versement : en capital, séparément du reste du revenu (art. 38 LIFD) ; en rente, avec le revenu de chaque année. L'économie affichée n'est donc pas un gain net. Le calculateur du retrait en capital LPP/3a est en préparation.",
 			items: [],
 		},
 		{
