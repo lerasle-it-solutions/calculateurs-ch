@@ -28,7 +28,8 @@ describe("page d'A2", () => {
 		expect(html).toMatch(/retrait en capital LPP\/3a est en préparation/);
 		expect(html).toMatch(/rachat LPP\./);
 		// Aucun lien vers un calculateur qui n'existe pas encore
-		expect(html).not.toMatch(/href="\/prevoyance\/(rachat-lpp|retrait-capital-lpp-3a)\/"/);
+		expect(html).toContain('href="/prevoyance/rachat-lpp/"');
+		expect(html).not.toMatch(/href="\/prevoyance\/retrait-capital-lpp-3a\/"/);
 		// Rappels dans le bloc du résultat, sous la carte
 		const result = html.slice(html.indexOf("data-result-card"), html.indexOf("detail-du-calcul"));
 		expect(result).toContain(pillar3aTaxSavingTexts.reminders[0]!);

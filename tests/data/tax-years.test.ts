@@ -120,3 +120,57 @@ describe("année fiscale de calcul", () => {
 		expect([...read].sort()).toEqual([...TAX_ENGINE_CANTONAL_KEYS].sort());
 	});
 });
+
+describe("année fiscale de calcul d'A3, et A1 et A2 inchangés par la clé fédérale absente", () => {
+	const A2 = "pension.pillar-3a-tax-saving";
+	const A3 = "pension.lpp-buyback";
+	const BEFORE = new Date("2026-10-04T12:00:00+02:00");
+	const AFTER = new Date("2027-01-02T09:00:00+01:00");
+	const real = siteTaxYearData();
+
+	/** 2027 entièrement relevée sauf lppBuyback : fédéral, cantons et coefficients communaux copiés de 2026. */
+	const federal2027 = relabel(real.federal.get(2026)!, 2027);
+	delete (federal2027 as { lppBuyback?: unknown }).lppBuyback;
+	const complete2027: TaxYearData = {
+		federal: new Map([...real.federal, [2027, federal2027]]),
+		cantons: real.cantons.map((canton) => relabel(canton, 2027)),
+		municipalMultipliers: relabel(real.municipalMultipliers!, 2027),
+	};
+	const resolveWith = (id: string, data: TaxYearData, today: Date) => resolveYear(availableTaxYears(CALCULATOR_DATA_REQUIREMENTS[id]!, data), today);
+
+	it("A1 et A2 : la règle de la clé absente ne retire aucune année, sur les données réelles comme sur 2027 complète", () => {
+		for (const id of [A1, A2]) {
+			for (const data of [real, complete2027]) {
+				for (const year of [2026, 2027]) {
+					// Avant le changement, une clé absente n'était pas comptée : les listes sont identiques s'il n'y en a aucune
+					expect(missingDataForYear(year, CALCULATOR_DATA_REQUIREMENTS[id]!, data).filter((item) => item.endsWith(" absent"))).toEqual([]);
+				}
+			}
+		}
+	});
+
+	it("A1 et A2 : mêmes années qu'avant, avant et après la bascule vers 2027", () => {
+		for (const id of [A1, A2]) {
+			expect(resolveTaxYear(id, BEFORE)).toEqual({ year: 2026, isFallback: false, calendarYear: 2026 });
+			expect(resolveTaxYear(id, AFTER)).toEqual({ year: 2026, isFallback: true, calendarYear: 2027 });
+			// 2027 relevée : la bascule a lieu le 1er janvier
+			expect(resolveWith(id, complete2027, AFTER)).toEqual({ year: 2027, isFallback: false, calendarYear: 2027 });
+		}
+	});
+
+	it("A3 reste en 2026 tant que lppBuyback.lockPeriodYears manque dans 2027.json", () => {
+		expect(getFederalData(2027).lppBuyback).toBeUndefined();
+		expect(resolveTaxYear(A3, BEFORE)).toEqual({ year: 2026, isFallback: false, calendarYear: 2026 });
+		expect(resolveTaxYear(A3, AFTER)).toEqual({ year: 2026, isFallback: true, calendarYear: 2027 });
+		expect(missingDataForYear(2027, CALCULATOR_DATA_REQUIREMENTS[A3]!, real)).toContain("federal/2027.lppBuyback absent");
+		// 2027 complète sauf le délai : A3 n'y bascule pas, alors qu'A1 et A2 y basculent
+		expect(missingDataForYear(2027, CALCULATOR_DATA_REQUIREMENTS[A3]!, complete2027)).toEqual(["federal/2027.lppBuyback absent"]);
+		expect(availableTaxYears(CALCULATOR_DATA_REQUIREMENTS[A3]!, complete2027)).not.toContain(2027);
+		// Témoin : le délai relevé pour 2027, A3 bascule comme A1 et A2
+		const withLock: TaxYearData = {
+			...complete2027,
+			federal: new Map([...complete2027.federal, [2027, relabel(real.federal.get(2026)!, 2027)]]),
+		};
+		expect(resolveWith(A3, withLock, AFTER)).toEqual({ year: 2027, isFallback: false, calendarYear: 2027 });
+	});
+});

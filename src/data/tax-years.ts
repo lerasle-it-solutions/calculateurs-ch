@@ -33,6 +33,11 @@ export const CALCULATOR_DATA_REQUIREMENTS: Readonly<Record<string, DataRequireme
 		cantonal: TAX_ENGINE_CANTONAL_KEYS,
 		municipalMultipliers: true,
 	},
+	"pension.lpp-buyback": {
+		federal: ["directFederalTax", "lppBuyback"],
+		cantonal: TAX_ENGINE_CANTONAL_KEYS,
+		municipalMultipliers: true,
+	},
 };
 
 /** Les données parmi lesquelles chercher, en argument pour rester testable. */
@@ -57,7 +62,12 @@ export function missingDataForYear(year: number, requirement: DataRequirement, d
 	const missing: string[] = [];
 	const federal = data.federal.get(year);
 	if (federal === undefined || federal.year !== year) missing.push(`données fédérales ${year} absentes`);
-	else for (const key of requirement.federal) missing.push(...todoPaths(federal[key], `federal/${year}.${key}`));
+	else
+		for (const key of requirement.federal) {
+			// Une clé facultative du schéma (lppBuyback…) peut manquer : l'année n'est pas complète
+			if (federal[key] === undefined) missing.push(`federal/${year}.${key} absent`);
+			else missing.push(...todoPaths(federal[key], `federal/${year}.${key}`));
+		}
 
 	if (requirement.cantonal.length > 0) {
 		if (data.cantons.length === 0) missing.push("aucun fichier cantonal");

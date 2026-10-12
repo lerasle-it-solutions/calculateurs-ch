@@ -18,6 +18,6 @@ export const SCENARIO_DIFFERENCE = "Écart avec le rachat en une fois";
 export const LOCK_PERIOD = "Délai de blocage des prestations en capital après un rachat";
 export const LOCK_PERIOD_ASSUMPTION =
 	"Le délai se compte de date à date : l'année où il s'achève, seule la date exacte du rachat et du retrait permet de conclure.";
-export const LOCK_COMPATIBLE = "retrait après l'échéance du délai";
-export const LOCK_CHECK_EXACT_DATE = "délai échu ou non selon les dates exactes";
-export const LOCK_WITHIN = "retrait dans le délai";
+export const LOCK_COMPATIBLE = "compatible";
+export const LOCK_CHECK_EXACT_DATE = "à vérifier jour pour jour";
+export const LOCK_WITHIN = "dans le délai";

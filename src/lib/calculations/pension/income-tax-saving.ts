@@ -20,6 +20,8 @@ export type IncomeTaxSaving = {
 	cantonalAndMunicipalSaving: number;
 	/** Part de l'impôt fédéral direct. */
 	federalSaving: number;
+	/** Économie par impôt (cantonal, communal, paroissial, taxe personnelle, fédéral), au franc. */
+	componentSavings: Record<(typeof TAX_COMPONENTS)[number], number>;
 	/** Trace : impôts avant et après la déduction, puis l'économie et ses deux parts. */
 	breakdown: BreakdownLine[];
 };
@@ -80,10 +82,15 @@ export function computeIncomeTaxSaving(
 		} else lines.push(line);
 	}
 
+	const componentSavings = Object.fromEntries(
+		TAX_COMPONENTS.map((key) => [key, before.components[key]! - after.components[key]!]),
+	) as IncomeTaxSaving["componentSavings"];
+
 	return {
 		taxSaving,
 		cantonalAndMunicipalSaving,
 		federalSaving,
+		componentSavings,
 		breakdown: [
 			...lines,
 			{

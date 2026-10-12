@@ -15,7 +15,7 @@
 import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
 import { assertTaxCoverage, type TaxInput, type TaxScales } from "../tax";
-import { computeIncomeTaxSaving } from "./income-tax-saving";
+import { computeIncomeTaxSaving, type IncomeTaxSaving } from "./income-tax-saving";
 import * as labels from "./lpp-buyback-labels";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
@@ -60,6 +60,8 @@ export type LppBuybackTranche = {
 	taxSaving: number;
 	cantonalAndMunicipalSaving: number;
 	federalSaving: number;
+	/** Économie par impôt (cantonal, communal, paroissial, taxe personnelle, fédéral), au franc. */
+	componentSavings: IncomeTaxSaving["componentSavings"];
 	notDeducted: NotDeducted;
 	/** `null` sans année de retrait en capital prévue. */
 	lockStatus: LockStatus | null;
@@ -119,7 +121,7 @@ export const lockStatusOf = (buybackYear: number, withdrawalYear: number, lockPe
 	return "withinLockPeriod";
 };
 
-const LOCK_STATUS_LABELS: Record<LockStatus, string> = {
+export const LOCK_STATUS_LABELS: Record<LockStatus, string> = {
 	compatible: labels.LOCK_COMPATIBLE,
 	checkExactDate: labels.LOCK_CHECK_EXACT_DATE,
 	withinLockPeriod: labels.LOCK_WITHIN,
