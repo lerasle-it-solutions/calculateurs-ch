@@ -387,5 +387,15 @@
 			"effectiveFrom": "2026-01-01",
 			"note": "Ordonnance du DFI relative aux primes moyennes de l'assurance obligatoire des soins (RS 831.309.1), annexe (art. 3), en vigueur depuis le 01.01.2026 : prime moyenne annuelle, accident comprise, des adultes et des enfants, canton à région unique. Relevé le 11.10.2026 ; annexe archivée dans sources/pdf/2026/ du dépôt privé."
 		}
+	},
+	"lppBuyback": {
+		"lockPeriodYears": {
+			"value": 3,
+			"unit": "ans",
+			"sourceId": "fedlex-lpp",
+			"verifiedOn": "2026-10-10",
+			"effectiveFrom": "2006-01-01",
+			"note": "LPP (RS 831.40), art. 79b al. 3, 1re phrase : les prestations résultant d'un rachat ne peuvent être versées sous forme de capital avant l'échéance d'un délai de trois ans. Relevé W09 (docs/plan/releve-W09.md) ; PDF archivé dans sources/pdf/2026/ du dépôt privé."
+		}
 	}
 }

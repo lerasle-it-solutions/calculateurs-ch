@@ -344,6 +344,16 @@ const averageHealthInsurancePremiumsSchema = z
 	>)
 	.strict();
 
+/**
+ * Rachat dans la prévoyance professionnelle (LPP, art. 79b) : délai de blocage
+ * des prestations en capital après un rachat, en années (al. 3, 1re phrase).
+ */
+const lppBuybackSchema = z
+	.object({
+		lockPeriodYears: valueSchema(z.number().int().positive()),
+	})
+	.strict();
+
 export const federalDataSchema = z
 	.object({
 		year: z.number().int(),
@@ -353,6 +363,8 @@ export const federalDataSchema = z
 		socialInsurance: z.union([socialInsuranceSchema, todoSchema]).optional(),
 		directFederalTaxDeductions: z.union([directFederalTaxDeductionsSchema, todoSchema]).optional(),
 		averageHealthInsurancePremiums: z.union([averageHealthInsurancePremiumsSchema, todoSchema]).optional(),
+		// Rachat LPP (A3) : absent tant qu'une année n'est pas relevée
+		lppBuyback: lppBuybackSchema.optional(),
 	})
 	.passthrough();
 export type FederalData = z.infer<typeof federalDataSchema>;
