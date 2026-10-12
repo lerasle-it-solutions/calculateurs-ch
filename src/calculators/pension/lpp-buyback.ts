@@ -179,7 +179,7 @@ export const lppBuyback: CalculatorDefinition = {
 				case: "Imposition du capital à la sortie, et donc le point mort entre l'économie d'aujourd'hui et l'impôt au retrait.",
 				alternative: {
 					label: "Le calculateur du retrait en capital LPP/3a est en préparation ; d'ici là, voir la méthodologie.",
-					url: "/methodologie/",
+					url: "/methodologie/#rachat-lpp",
 				},
 			},
 			{

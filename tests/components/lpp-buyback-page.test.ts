@@ -44,7 +44,7 @@ describe("définition d'A3", () => {
 		expect(of("Calcul du potentiel de rachat")).toEqual({ label: "Le certificat de prévoyance annuel, ou une demande écrite à la caisse." });
 		expect(of("Imposition du capital à la sortie")).toEqual({
 			label: "Le calculateur du retrait en capital LPP/3a est en préparation ; d'ici là, voir la méthodologie.",
-			url: "/methodologie/",
+			url: "/methodologie/#rachat-lpp",
 		});
 		expect(of("Rachat consécutif à un divorce")).toBeDefined();
 		expect(of("Personnes imposées à la source")).toEqual({ label: "Renseignez-vous auprès de l'administration fiscale de votre canton." });
