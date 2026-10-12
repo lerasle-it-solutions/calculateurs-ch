@@ -62,7 +62,7 @@ describe("définition d'A3", () => {
 		expect(lppBuybackTexts.calendar.classes.join(" ")).toContain(`au moins ${lock + 1} années`);
 		expect(lppBuyback.scope.assumptions[0]).toMatch(/depuis 24 ans, [^;]*\(art\. 60a al\. 2\)/);
 		expect(lppBuyback.scope.assumptions[0]).toMatch(/pendant cinq ans, [^;]*\(art\. 60b\)/);
-		expect(lppBuyback.faq[5]!.answer).toMatch(/24 ans[^.]*\(art\. 60a OPP 2\)/);
+		expect(lppBuyback.faq[5]!.answer).toMatch(/24 ans[^.]*\(art\. 60a (al\. 2 et 3 )?OPP 2\)/);
 	});
 });
 

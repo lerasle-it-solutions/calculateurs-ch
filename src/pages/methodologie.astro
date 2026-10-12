@@ -474,9 +474,9 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				les deux revenus imposables, cantonal et fédéral, diminués du rachat.
 				Chaque ligne (cantonal, communal, fédéral) est arrondie au franc avant
 				l'addition. Le taux marginal n'est jamais utilisé : il surestime
-				l'économie des gros rachats. Le revenu imposable ne descend pas sous
-				zéro : la part d'un rachat qui dépasse le revenu de l'année n'apporte
-				aucune économie cette année-là, et le résultat le signale.
+				l'économie des gros rachats. Le calculateur ne fait pas descendre le
+				revenu imposable sous zéro et ne compte aucune économie pour la part du
+				rachat qui le dépasse ; le résultat signale cette part.
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>L'échelonnement et ses hypothèses.</strong> Le calculateur
@@ -485,11 +485,11 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				totale et l'écart avec le rachat en une fois. Le revenu imposable et
 				les barèmes de l'année de calcul ({lppBuybackYear}) sont supposés
 				constants sur toute la période, et le potentiel reste disponible
-				jusqu'à la dernière tranche. L'impôt est progressif : répartir un gros
-				rachat garde souvent chaque déduction dans des tranches plus imposées.
-				Mais chaque versement fait courir son propre délai de blocage :
-				échelonner ses rachats repousse la date du premier retrait en capital
-				possible.
+				jusqu'à la dernière tranche. Les barèmes étant progressifs, répartir un
+				gros rachat garde souvent chaque déduction dans des tranches plus
+				imposées. Mais chaque versement fait courir son propre délai de
+				blocage : échelonner ses rachats repousse la date du premier retrait en
+				capital possible (art. 79b al. 3 LPP).
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Le délai de blocage et sa portée fiscale.</strong> Pendant{" "}
@@ -505,26 +505,35 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				au moins {lppLock + 1} années séparent le rachat du retrait ; à vérifier
 				jour pour jour si l'écart est de {lppLock} années ; dans le délai s'il
 				est de {lppLock - 1} années ou moins, et la déduction de cette tranche
-				serait alors refusée. Un rachat consécutif à un divorce ou à la
-				dissolution d'un partenariat enregistré n'est pas soumis au délai
-				(art. 79b al. 4 LPP ; ATF 142 II 399 consid. 3.3.5), mais la déduction
-				reste refusée en cas d'évasion fiscale (même arrêt, consid. 4) ; le
-				calculateur ne traite que le rachat facultatif ordinaire.
+				serait alors refusée (ATF 142 II 399 consid. 4.1). Le calcul raisonne en
+				années civiles ; le délai se compte à partir de la date de chaque
+				versement.
 			</p>
 			<p class="max-w-reading text-body">
-				<strong>Primauté des prestations.</strong> Si la caisse fonctionne en
-				primauté des prestations, l'économie d'impôt reste valable. En revanche,
-				ce que le rachat change à la rente ne se lit qu'auprès de la caisse. Le
-				calculateur l'affiche comme un avertissement, pas comme une exclusion.
+				<strong>Le rachat après un divorce.</strong> Un rachat consécutif à un
+				divorce ou à la dissolution d'un partenariat enregistré reste
+				déductible comme tout rachat (art. 33 al. 1 let. d LIFD ; art. 9 al. 2
+				let. d LHID). Le délai de blocage ne s'applique pas (art. 79b al. 4 LPP),
+				mais la déduction est refusée en cas d'évasion fiscale (ATF 142 II 399
+				consid. 4). Le calculateur ne traite que le rachat facultatif ordinaire.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Primauté des prestations.</strong> Les règles de déduction ne
+				distinguent pas selon le mode de calcul de la caisse (art. 33 al. 1
+				let. d LIFD ; art. 9 al. 2 let. d LHID) : l'économie d'impôt affichée
+				reste valable. En revanche, ce que le rachat change à la rente ne se lit
+				qu'auprès de la caisse. Le calculateur l'affiche comme un avertissement,
+				pas comme une exclusion.
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Le point mort, reporté.</strong> Les prestations issues du
 				rachat seront imposées à leur versement : en capital, séparément du
-				reste du revenu (art. 38 LIFD) ; en rente, avec le revenu de chaque
-				année. L'économie affichée n'est donc pas un gain net. Le point mort entre l'économie
-				d'aujourd'hui et l'impôt au retrait dépend des barèmes de l'impôt sur
-				les prestations en capital ; il sera ajouté avec le calculateur du
-				retrait en capital LPP/3a, en préparation.
+				reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID) ; en rente, avec le
+				revenu de chaque année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID).
+				L'économie affichée n'est donc pas un gain net. Le point mort entre
+				l'économie d'aujourd'hui et l'impôt au retrait dépend des barèmes de
+				l'impôt sur les prestations en capital ; il sera ajouté avec le
+				calculateur du retrait en capital LPP/3a, en préparation.
 			</p>
 			<p class="max-w-reading text-body">
 				Sources rattachées aux calculateurs de prévoyance ; l'ensemble des

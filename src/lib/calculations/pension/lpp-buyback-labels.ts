@@ -16,8 +16,12 @@ export const SCENARIO_ASSUMPTION =
 export const SCENARIO_TOTAL = "Économie totale de l'échelonnement";
 export const SCENARIO_DIFFERENCE = "Écart avec le rachat en une fois";
 export const LOCK_PERIOD = "Délai de blocage des prestations en capital après un rachat";
-export const LOCK_PERIOD_ASSUMPTION =
-	"Le délai se compte de date à date : l'année où il s'achève, seule la date exacte du rachat et du retrait permet de conclure.";
+/** Hypothèse de la ligne du délai, autour du délai des données (en années). */
+export const LOCK_PERIOD_ASSUMPTION_START =
+	"Le calcul raisonne en années civiles. Le délai se compte à partir de la date de chaque versement : si l'écart est de ";
+export const LOCK_PERIOD_ASSUMPTION_END = " ans, vérifiez la date exacte auprès de votre caisse.";
+export const NOT_DEDUCTED_ASSUMPTION =
+	"Le calculateur ne fait pas descendre le revenu imposable sous zéro et ne compte aucune économie pour la part du rachat qui le dépasse ; le résultat signale cette part.";
 export const LOCK_COMPATIBLE = "compatible";
 export const LOCK_CHECK_EXACT_DATE = "à vérifier jour pour jour";
 export const LOCK_WITHIN = "dans le délai";

@@ -112,7 +112,7 @@ describe("rachat en une fois", () => {
 		expect(single.taxSaving).toBe(directSaving(input, 1_000_000));
 		const flagged = result.breakdown.filter((line) => line.label.startsWith(labels.NOT_DEDUCTED));
 		expect(flagged.map((line) => line.value)).toEqual([5_000, 6_000]);
-		for (const line of flagged) expect(line.assumption).toMatch(/ne descend pas sous zéro/);
+		for (const line of flagged) expect(line.assumption).toMatch(/ne fait pas descendre le revenu imposable sous zéro/);
 	});
 });
 

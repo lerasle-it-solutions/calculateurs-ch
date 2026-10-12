@@ -28,7 +28,8 @@ export const SOURCES = defineSources([
 		name: "Loi sur l'harmonisation des impôts directs",
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1991/1256_1256_1256/fr",
-		legalReference: "RS 642.14, art. 1 al. 3 et art. 9, dont art. 9 al. 2 let. d (déduction du rachat LPP)",
+		legalReference:
+			"RS 642.14, art. 1 al. 3 et art. 9, dont art. 9 al. 2 let. d (déduction du rachat LPP) ; art. 7 al. 1 (prestations de prévoyance professionnelle imposables) ; art. 11 al. 3 (prestations en capital de la prévoyance imposées séparément)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-23",
 		dataClass: "public",
@@ -43,7 +44,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1991/1184_1184_1184/fr",
 		legalReference:
-			"RS 642.11 — art. 33 et 35 (déductions), dont art. 33 al. 1 let. d (déduction du rachat LPP), art. 36 (barème IFD), art. 36 al. 3 (montant minimal perçu), art. 38 (prestations en capital)",
+			"RS 642.11 — art. 22 al. 1 (revenus de la prévoyance professionnelle imposables), art. 33 et 35 (déductions), dont art. 33 al. 1 let. d (déduction du rachat LPP), art. 36 (barème IFD), art. 36 al. 3 (montant minimal perçu), art. 38 (prestations en capital)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-23",
 		dataClass: "public",

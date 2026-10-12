@@ -49,7 +49,7 @@ export type LppBuybackRefusal = {
 	message: string;
 };
 
-/** Part d'une tranche qui dépasse le revenu imposable : le revenu ne descend pas sous zéro. */
+/** Part d'une tranche qui dépasse le revenu imposable : le calculateur ne fait pas descendre le revenu sous zéro. */
 export type NotDeducted = { federal: number; cantonal: number };
 
 /** Une tranche, versée une année donnée, et son économie d'impôt. */
@@ -166,7 +166,7 @@ const trancheOf = (params: LppBuybackParams, year: number, amount: number): LppB
 			value: notDeducted[base],
 			unit: "CHF",
 			sourceId: null,
-			assumption: `Le revenu imposable ne descend pas sous zéro : ${fmt(notDeducted[base])} CHF du rachat restent sans effet sur cet impôt.`,
+			assumption: labels.NOT_DEDUCTED_ASSUMPTION,
 		}));
 	return {
 		year,
@@ -305,7 +305,7 @@ export function computeLppBuyback(params: LppBuybackParams): LppBuybackResult {
 				value: lock.value,
 				unit: "ans",
 				sourceId: lock.sourceId,
-				assumption: labels.LOCK_PERIOD_ASSUMPTION,
+				assumption: `${labels.LOCK_PERIOD_ASSUMPTION_START}${lock.value}${labels.LOCK_PERIOD_ASSUMPTION_END}`,
 				...(singleBuyback.lockStatus ? { qualifier: LOCK_STATUS_LABELS[singleBuyback.lockStatus] } : {}),
 			},
 		],
