@@ -455,7 +455,7 @@ calculateurs.ch/
 │   │   │   │                              trace, fraîcheur, variantes, FAQ
 │   │   │   └── RelatedVariants.astro
 │   │   ├── ui/                          ★ primitives, éléments HTML natifs
-│   │   │   ├── NumberField.astro          `<input type="number">`
+│   │   │   ├── NumberField.astro          `<input type="text" inputmode="decimal">`, saisie tolérante
 │   │   │   ├── SelectField.astro          `<select>`
 │   │   │   ├── CantonField.astro          `<select>`
 │   │   │   ├── MunicipalityField.astro    `<input list>` + `<datalist>` — aucun JS

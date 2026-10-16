@@ -331,7 +331,7 @@ Structure (inchangée dans son principe, conserve `NumberField`, `SelectField`, 
   <div class="flex min-h-3xl items-stretch rounded-control border border-rule bg-paper
               focus-within:border-accent focus-within:outline focus-within:outline-2
               focus-within:outline-accent focus-within:outline-offset-0">
-    <input id="revenu" class="w-full min-w-0 bg-transparent px-lg text-body tabular-nums outline-none"
+    <input id="revenu" type="text" class="w-full min-w-0 bg-transparent px-lg text-body tabular-nums outline-none"
            inputmode="decimal" aria-describedby="revenu-hint revenu-error">
     <span class="flex items-center rounded-r-control border-l border-rule bg-tint px-md text-label text-ink-muted">CHF</span>
   </div>
@@ -347,6 +347,17 @@ Structure (inchangée dans son principe, conserve `NumberField`, `SelectField`, 
 | Erreur | `aria-invalid="true"` → `border-error bg-error-tint` ; message `text-error font-bold` **préfixé « Erreur : »** sous le champ |
 | Désactivé | `bg-tint text-ink-muted border-hairline cursor-not-allowed` |
 | Lecture seule | `bg-tint border-transparent` |
+
+Saisie des montants (`NumberField`) :
+
+- `<input type="text" inputmode="decimal">`, jamais `type="number"`, qui ne peut pas afficher
+  l'apostrophe.
+- **Saisie tolérante** : `70'000`, `70’000`, `70 000` et `70000` sont acceptés ; décimales au point
+  ou à la virgule.
+- `min`, `max` et `step` sont **validés par le parseur**, plus par le navigateur ; une saisie hors
+  bornes produit le message d'erreur du champ.
+- **Formatage pendant la frappe** au format suisse (§ 1.2), **sans déplacer le curseur** : le
+  caret reste après le même chiffre saisi.
 
 Mise en page :
 
@@ -582,8 +593,8 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   tant que le visiteur ne les distingue pas, l'égalité est une hypothèse inscrite dans la trace (R4).
 - **Questions oui/non regroupées en profils** (pastilles) ; une pastille « Autre situation » déplie
   le détail des questions.
-- **Montants formatés à la suisse pendant la frappe** (`70'000`), `inputmode="decimal"`, suffixe
-  `CHF` dans le segment d'unité (§ 2.3).
+- **Montants formatés à la suisse pendant la frappe** (`70'000`), `inputmode="decimal"`, saisie
+  tolérante, suffixe `CHF` dans le segment d'unité (§ 2.3).
 - **Bouton « Verser le maximum (<plafond>) »** à côté du champ du montant dès qu'un plafond existe ;
   le plafond est lu dans `src/data/`, jamais écrit dans le libellé (R2). Variante fantôme.
 - **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
