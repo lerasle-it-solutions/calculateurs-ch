@@ -957,3 +957,7 @@ Rappel des règles non négociables (le détail est dans le fichier importé) :
   < 100 ko de CSS, LCP < 1,5 s en 4G simulée ; contraste AA, focus visible, 320 px minimum.
 - Avant de livrer une interface : relire la section concernée de `docs/design-system.md` et
   lancer `npx vitest run tests/design`.
+- Page de calculateur : patrons UX du § 4 de `docs/design-system.md` — ordre de la page, cas
+  exemple, formulaire, résultat, étiquette `SourceTag`, graphiques.
+- La liste de contrôle du § 4.7 est **obligatoire pour tout calculateur**, nouveau ou repris ;
+  `/ux-check <slug>` la vérifie point par point, sans rien corriger.
