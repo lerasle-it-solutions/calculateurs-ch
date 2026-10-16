@@ -389,8 +389,11 @@ Mise en page :
 - Entrées : **Calculateurs · Guides · Méthodologie**, en `text-label font-bold text-ink
   no-underline`, `hover:text-accent`, page courante `aria-current="page"` → `text-accent` +
   soulignement 2 px décalé (`underline decoration-2 underline-offset-8`).
-- Droite : pastille « Barèmes <année> à jour » (§ 2.6), liée à `/donnees/` ; l'année est lue dans
-  les données, jamais tapée.
+- Droite : pastille « Sources vérifiées le JJ.MM.AAAA » (§ 2.6), liée à `/donnees/`, date dans
+  un `<time datetime>`. La date est **la plus ancienne date de vérification** parmi les jeux de
+  données des calculateurs publiés, lue dans les données. Pas d'année, et jamais « à jour »
+  (interdit n° 3 des conditions d'usage de l'AFC). Sur chaque page calculateur, `DataFreshness`
+  garde l'année et la date propres au calculateur (décision n° 16).
 - **Pas de bouton Menu sous cinq entrées** : les entrées restent visibles à toutes les largeurs.
   Pas de recherche ni de sélecteur de langue tant que le site est monolingue.
 - Hauteur 64 px. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au défilement (JS).
