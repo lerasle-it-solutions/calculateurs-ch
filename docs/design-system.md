@@ -390,10 +390,8 @@ Mise en page :
   no-underline`, `hover:text-accent`, page courante `aria-current="page"` → `text-accent` +
   soulignement 2 px décalé (`underline decoration-2 underline-offset-8`).
 - Droite : pastille « Sources vérifiées le JJ.MM.AAAA » (§ 2.6), liée à `/donnees/`, date dans
-  un `<time datetime>`. La date est **la plus ancienne date de vérification** parmi les jeux de
-  données des calculateurs publiés, lue dans les données. Pas d'année, et jamais « à jour »
-  (interdit n° 3 des conditions d'usage de l'AFC). Sur chaque page calculateur, `DataFreshness`
-  garde l'année et la date propres au calculateur (décision n° 16).
+  un `<time datetime>`. La date est la **date de vérification du site** (ci-dessous). Pas
+  d'année, et jamais « à jour » (interdit n° 3 des conditions d'usage de l'AFC).
 - **Pas de bouton Menu sous cinq entrées** : les entrées restent visibles à toutes les largeurs.
   Pas de recherche ni de sélecteur de langue tant que le site est monolingue.
 - Hauteur 64 px. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au défilement (JS).
@@ -423,10 +421,16 @@ autorisée : `bg-tint text-ink`. Il contient :
 
 - l'adresse e-mail **en clair** (lien `mailto:` dont le texte est l'adresse) ;
 - un lien vers le dépôt GitHub ;
-- la date de la dernière vérification des barèmes, **lue dans les données**, dans un
-  `<time datetime>` ;
+- la **date de vérification du site** (ci-dessous), dans un `<time datetime>` ;
 - une ligne d'identité de l'éditeur ;
 - un lien « Signaler une erreur » : `mailto:` pré-rempli avec l'URL de la page, composé au build.
+
+**Date de vérification du site.** Partout sur le site — pastille de l'en-tête, pied de page,
+et toute date de vérification affichée hors des pages calculateurs — la date affichée est **la
+plus ancienne date de vérification parmi les jeux de données des calculateurs publiés**. Elle est
+calculée au build, **au même endroit et par une seule fonction**, que tous ces emplacements
+appellent ; aucun ne la recalcule ni ne la tape. Sur les pages calculateurs, `DataFreshness` garde
+l'année et la date propres au calculateur (décision n° 16).
 
 **Liens dans le texte :** `accent`, soulignés 1 px (2 px au survol), `underline-offset` 0,15 em.
 
