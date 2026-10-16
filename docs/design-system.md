@@ -541,7 +541,7 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | --- | --- | --- | --- |
 | 1 | Titre | `<h1>` | `text-title`, casse phrase |
 | 2 | Promesse | `<p>` | Une seule phrase, `text-lead text-ink-muted` : ce que le visiteur obtient |
-| 3 | Périmètre | `<p>` | Une seule ligne, `text-fine text-ink-muted` : pour qui, cantons, année ; lien vers le bloc 8 |
+| 3 | Ligne de périmètre | `<p>` | Une seule ligne au-dessus du formulaire, `text-fine text-ink-muted` : pour qui, cantons, année ; lien vers le détail « Ce que ce calcul suppose » (P5) |
 | 4 | Formulaire et carte résultat | grille § 2.5 | Carte résultat collante (`lg:sticky`), barre mobile en dessous de `lg` |
 | 5 | Points de vigilance | avertissements renforcés (§ 2.6) | Courts : une phrase chacun, préfixe « Attention : » |
 | 6 | Détail ligne par ligne | `CalculationBreakdown` (`<details>` + `<table>`) | Trace complète (R4) |
@@ -553,6 +553,10 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2).
+
+Le périmètre est annoncé avant la saisie, jamais après (P5) : la ligne de périmètre l'annonce, le
+détail « Ce que ce calcul suppose » le développe, et **toute exclusion qui s'applique à la saisie
+s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3).
 
 ### 4.2 Cas exemple
 
