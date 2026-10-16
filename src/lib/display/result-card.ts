@@ -9,7 +9,7 @@ export type StatusLink = { label: string; url: string };
 
 /**
  * Message qui remplace le montant : texte complet dans la carte, mention courte dans la barre mobile.
- * `kind: "coverage"` : limite de couverture du moteur, répétée sous le champ commune (field-coverage.ts).
+ * `kind: "coverage"` : limite de couverture du moteur, répétée sous le champ commune (`coverageOnly`).
  */
 export type ResultStatus = { text: string; short: string; link?: StatusLink; kind?: "coverage" };
 
@@ -55,3 +55,13 @@ export function applyResult(slots: ResultCardSlots, detail: ResultDetail): void 
 		if (status?.link) messageLink.href = status.link.url;
 	}
 }
+
+/**
+ * Message sous le champ commune (MunicipalityField, docs/design-system.md § 4.3) :
+ * seul un statut de couverture s'y affiche ; tout autre statut, ou un résultat,
+ * l'efface. Appliqué par `applyResult` au bloc du champ, dont le conteneur sert
+ * aussi d'emplacement du montant : la dernière affectation de `hidden` gagne.
+ */
+export const coverageOnly = (detail: ResultDetail): ResultDetail => ({
+	status: detail.status?.kind === "coverage" ? detail.status : null,
+});

@@ -5,8 +5,7 @@ import { getCantonData } from "../../src/data";
 import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import { coverageStatusOf, type CoverageTexts } from "../../src/lib/display/coverage";
-import { applyFieldCoverage } from "../../src/lib/display/field-coverage";
-import { applyResult, type StatusLink } from "../../src/lib/display/result-card";
+import { applyResult, coverageOnly, type ResultDetail, type StatusLink } from "../../src/lib/display/result-card";
 
 /**
  * Limite de couverture au moment du choix (revue UX du 16.10.2026) : dès que la
@@ -44,7 +43,12 @@ const statusFor = (data: PageData, municipality: string) => {
 };
 
 const slot = (textContent = "") => ({ hidden: true, textContent });
-const fieldSlots = () => ({ message: slot(), text: slot(), link: { ...slot(), href: "" } });
+/** Bloc sous le champ : le conteneur sert aussi d'emplacement du montant (ResultCard.astro). */
+const fieldSlots = () => {
+	const message = slot();
+	return { value: message, message, messageText: slot(), messageLink: { ...slot(), href: "" } };
+};
+const applyFieldCoverage = (slots: ReturnType<typeof fieldSlots>, detail: ResultDetail) => applyResult(slots, coverageOnly(detail));
 const cardSlots = () => ({ value: { ...slot("—"), hidden: false }, message: slot(), messageText: slot(), messageLink: { ...slot(), href: "" } });
 
 const official = getCantonData("VS").coverage?.officialCalculator;
@@ -59,14 +63,14 @@ describe.each(PAGES)("$calculator : couverture du Valais au choix de la commune"
 		const field = fieldSlots();
 		applyFieldCoverage(field, { value: "—", status });
 		expect(field.message.hidden).toBe(false);
-		expect(field.text.textContent).toBe(data.texts.outOfScopeMunicipality["Brig-Glis"]);
-		expect(field.link.hidden).toBe(false);
-		expect(field.link.href).toBe(officialUrl);
+		expect(field.messageText.textContent).toBe(data.texts.outOfScopeMunicipality["Brig-Glis"]);
+		expect(field.messageLink.hidden).toBe(false);
+		expect(field.messageLink.href).toBe(officialUrl);
 
 		const card = cardSlots();
 		applyResult(card, { value: "—", status });
 		expect(card.message.hidden).toBe(false);
-		expect(card.messageText.textContent).toBe(field.text.textContent);
+		expect(card.messageText.textContent).toBe(field.messageText.textContent);
 	});
 
 	it("Sion, couverte : aucun message sous le champ, et un message précédent s'efface", async () => {

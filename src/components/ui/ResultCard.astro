@@ -56,7 +56,7 @@ const {
 </output>
 
 <script>
-	import { applyResult, type ResultDetail } from "../../lib/display/result-card";
+	import { applyResult, coverageOnly, type ResultDetail } from "../../lib/display/result-card";
 
 	for (const card of document.querySelectorAll<HTMLElement>("[data-result-card]")) {
 		const eventName = card.dataset.event ?? "calc:update";
@@ -74,5 +74,16 @@ const {
 			const detail = (raw as CustomEvent<ResultDetail>).detail;
 			if (detail) applyResult(slots, detail);
 		});
+	}
+
+	// Limite de couverture sous le champ commune (MunicipalityField) : le conteneur sert d'emplacement du montant
+	for (const message of document.querySelectorAll<HTMLElement>("[data-coverage-message]")) {
+		const slots = {
+			value: message,
+			message,
+			messageText: message.querySelector<HTMLElement>("[data-coverage-text]"),
+			messageLink: message.querySelector<HTMLAnchorElement>("[data-coverage-link]"),
+		};
+		document.addEventListener("calc:update", (raw) => applyResult(slots, coverageOnly((raw as CustomEvent<ResultDetail>).detail ?? {})));
 	}
 </script>

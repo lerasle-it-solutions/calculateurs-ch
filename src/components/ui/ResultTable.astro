@@ -7,7 +7,8 @@
  * tableau par `fillResultTable` (src/lib/display/result-table.ts) dès qu'il a
  * au moins une ligne, et le retire quand il n'en a plus.
  *
- * Le contenu du slot (notes sous le tableau) suit le sort du tableau.
+ * Le contenu du slot (notes sous le tableau) suit le sort du tableau. Le
+ * premier `<div>` du bloc reçoit le tableau : aucun autre `<div>` avant lui.
  */
 interface Column {
 	label: string;
@@ -28,14 +29,15 @@ interface Props {
 
 const { id, heading, caption, columns, rows = [] } = Astro.props;
 
-const tableClass = "w-full border-collapse text-label";
+// Filets et marges des cellules portés par le tableau : le script n'écrit aucune classe de cellule.
+const tableClass =
+	"w-full border-collapse text-label [&_tbody_:is(th,td)]:border-b [&_tbody_:is(th,td)]:border-hairline [&_tbody_:is(th,td)]:px-md [&_tbody_:is(th,td)]:py-sm [&_tbody_th]:text-left [&_tbody_th]:font-medium";
 const captionClass = "px-md py-sm text-left text-fine text-ink-muted";
 const headClass = "bg-tint px-md py-sm text-left font-bold";
-const cellClass = "border-b border-hairline px-md py-sm";
 const headCells = columns.filter((column) => rows.length === 0 || !column.optional);
 ---
 
-<section id={id} data-result-table data-cell-class={cellClass} hidden={rows.length === 0} class="flex flex-col gap-sm">
+<section id={id} data-result-table hidden={rows.length === 0} class="flex flex-col gap-sm">
 	{heading && <h3 class="text-subheading">{heading}</h3>}
 	<div data-result-table-slot class="overflow-x-auto rounded-panel border border-hairline">
 		{
@@ -56,9 +58,9 @@ const headCells = columns.filter((column) => rows.length === 0 || !column.option
 							<tr>
 								{cells.map((text, index) =>
 									index === 0 ? (
-										<th scope="row" class:list={[cellClass, "text-left font-medium"]}>{text}</th>
+										<th scope="row">{text}</th>
 									) : (
-										<td class:list={[cellClass, headCells[index]?.align === "right" && "text-right tabular-nums"]}>{text}</td>
+										<td class:list={[headCells[index]?.align === "right" && "text-right tabular-nums"]}>{text}</td>
 									),
 								)}
 							</tr>
