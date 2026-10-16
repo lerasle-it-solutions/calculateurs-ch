@@ -918,7 +918,7 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 17  | **Transition de 250 ms au plus sur la valeur du résultat**, seule dérogation au § 3.3 du design system | Signaler le recalcul sans animer le chiffre ; coupée sous `prefers-reduced-motion` (16.10.2026) |
 | 18  | **Cas exemple obligatoire** : chaque calculateur s'ouvre pré-rempli, montant calculé au build | Le visiteur voyait « — » au lieu d'un chiffre ; tout montant « type » vient du moteur, jamais de la main (R3) (16.10.2026) |
 | 19  | **Page calculateur inversée** : calcul d'abord ; une ligne de périmètre au-dessus du formulaire, liée au détail « Ce que ce calcul suppose » ; exclusions dans la carte résultat au moment où la saisie les déclenche (P5) | Le chiffre en 10 secondes, la preuve en un clic ; rien n'est supprimé, tout est déplacé (16.10.2026) |
-| 20  | **Thème sombre planifié** (vague 3), par redéfinition des tokens | Aucun composant touché ; chaque paire de contraste vérifiée par test (16.10.2026) |
+| 20  | **Thème sombre écarté** | Les lecteurs impriment et citent ; la feuille d'impression et la cohérence des graphiques priment (16.10.2026) |
 
 ---
 

@@ -34,11 +34,6 @@
 
 ## 1. Tokens de conception
 
-> **Thème sombre prévu (vague 3).** Il redéfinira les **tokens** de `tokens.css`, jamais les
-> composants : aucune classe `dark:` dans un composant, une page ou un gabarit. Chaque paire de
-> contraste du § 1.1 sera vérifiée par test dans les deux thèmes. Jusqu'à sa livraison, le site
-> reste en mode clair uniquement (§ 3.1).
-
 ### 1.1 Palette de couleurs — « marine et sapin »
 
 #### Neutres
