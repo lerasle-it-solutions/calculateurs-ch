@@ -558,7 +558,7 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 9 | Ce que ce calcul suppose | `<details>` fermé par défaut | Contient, dans cet ordre, « Pour qui », « Ce que ça ne couvre pas » (avec l'alternative de chaque cas) et « Hypothèses retenues » |
 | 10 | Variantes | `RelatedVariants` | — |
 | 11 | FAQ | — | — |
-| 12 | Sources | étiquettes `SourceTag` (§ 4.5) | — |
+| 12 | Sources | `DataFreshness` (bloc source, § 2.6) | Année et date propres au calculateur, formule d'attribution de l'AFC intacte ; les `SourceTag` (§ 4.5) citent en ligne dans les blocs précédents |
 
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2).
