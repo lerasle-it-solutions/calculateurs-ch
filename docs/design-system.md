@@ -373,16 +373,17 @@ Mise en page :
   <div class="mx-auto flex max-w-page items-center justify-between gap-xl px-lg md:px-2xl min-h-4xl">
 ```
 
-- Gauche : nom du site, `text-subheading text-ink no-underline` (mot-symbole texte ; pas de
-  logo image tant qu'il n'existe pas en SVG < 2 ko).
-- Centre (≥ `md`) : liens de familles en `text-label font-bold text-ink no-underline`,
-  `hover:text-accent`, page courante `aria-current="page"` → `text-accent` + soulignement
-  2 px décalé (`underline decoration-2 underline-offset-8`).
-- Droite : au plus **un** bouton principal `sm`/`md` (ex. « Tous les calculateurs »).
+- Gauche : symbole de marque + nom du site, dans un seul lien vers l'accueil (§ 1.5).
+- Entrées : **Calculateurs · Guides · Méthodologie**, en `text-label font-bold text-ink
+  no-underline`, `hover:text-accent`, page courante `aria-current="page"` → `text-accent` +
+  soulignement 2 px décalé (`underline decoration-2 underline-offset-8`).
+- Droite : pastille « Barèmes <année> à jour » (§ 2.6), liée à `/donnees/` ; l'année est lue dans
+  les données, jamais tapée.
+- **Pas de bouton Menu sous cinq entrées** : les entrées restent visibles à toutes les largeurs.
   Pas de recherche ni de sélecteur de langue tant que le site est monolingue.
 - Hauteur 64 px. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au défilement (JS).
 
-**Menu mobile (< `md`) — sans JavaScript :**
+**Menu mobile (< `md`), à partir de cinq entrées seulement — sans JavaScript :**
 
 ```html
 <details class="md:hidden">
@@ -403,7 +404,14 @@ non lié avec `aria-current="page"`.
 
 **Pied de page :** fond `ink`, texte `paper` (14,57:1), liens `text-paper underline`,
 colonnes `grid gap-2xl md:grid-cols-3`, `py-4xl`, mentions en `text-fine`. Variante sobre
-autorisée : `bg-tint text-ink`.
+autorisée : `bg-tint text-ink`. Il contient :
+
+- l'adresse e-mail **en clair** (lien `mailto:` dont le texte est l'adresse) ;
+- un lien vers le dépôt GitHub ;
+- la date de la dernière vérification des barèmes, **lue dans les données**, dans un
+  `<time datetime>` ;
+- une ligne d'identité de l'éditeur ;
+- un lien « Signaler une erreur » : `mailto:` pré-rempli avec l'URL de la page, composé au build.
 
 **Liens dans le texte :** `accent`, soulignés 1 px (2 px au survol), `underline-offset` 0,15 em.
 
