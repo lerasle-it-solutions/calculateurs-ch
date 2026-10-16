@@ -17,7 +17,7 @@
  * fetch natif de Node.js.
  */
 const SITE = "https://calculateurs.ch";
-const origin = (process.argv[2] ?? SITE).replace(/\/+$/, "");
+const servedOrigin = (process.argv[2] ?? SITE).replace(/\/+$/, "");
 
 const ENTITIES: Record<string, string> = { "&amp;": "&", "&#39;": "'", "&#x27;": "'", "&apos;": "'", "&quot;": '"', "&nbsp;": " " };
 const decode = (text: string): string => text.replace(/&(?:amp|#39|#x27|apos|quot|nbsp);/g, (entity) => ENTITIES[entity] ?? entity);
@@ -35,7 +35,7 @@ const h1Of = (html: string): string | null => {
 };
 
 /** URL de production → URL chargée (identique sauf si une autre origine est passée). */
-const served = (url: string): string => url.replace(SITE, origin);
+const served = (url: string): string => url.replace(SITE, servedOrigin);
 
 const fetchText = async (url: string): Promise<{ status: number; text: string }> => {
 	const response = await fetch(url, { redirect: "manual" });
@@ -76,3 +76,5 @@ const main = async (): Promise<number> => {
 };
 
 process.exitCode = await main();
+
+export {};
