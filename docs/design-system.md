@@ -436,6 +436,7 @@ autorisée : `bg-tint text-ink`. Il contient :
 | Succès | `rounded-panel bg-success-tint p-lg text-label text-ink`, préfixe « Envoyé : » |
 | Erreur globale | `rounded-panel bg-error-tint p-lg text-label text-ink`, préfixe « Erreur : » en `text-error font-bold`, `role="alert"` |
 | **Bloc source** (remplace le serif) | `border-l-2 border-hairline pl-md text-fine text-ink-muted` : référence légale/barème, `<cite>` non italique, `<time datetime>` |
+| **`SourceTag`** (§ 4.5) | `<a>` vers `/donnees/#<sourceId>` : `inline-flex items-center rounded-button bg-tint px-sm text-fine font-bold text-ink no-underline hover:underline`, `<time datetime>` ; jamais vérifiée : `bg-warning-tint text-warning`. En fin de phrase, interface des calculateurs uniquement |
 | Pastille | `inline-flex items-center rounded-button bg-accent-tint px-sm text-fine font-bold text-accent` (« Données 2026 ») |
 | Pastille neutre | `… bg-tint text-ink` |
 
@@ -620,18 +621,24 @@ Et autour du résultat :
 
 ### 4.5 Étiquette de source
 
-- Un composant unique, **`SourceTag`** (`src/components/ui/SourceTag.astro`), au format
-  **« Émetteur · vérifié le JJ.MM.AAAA »** : émetteur = `authority` du registre, date = `verifiedOn`
-  rendue dans un `<time datetime>`. Une source jamais vérifiée affiche « jamais vérifié » en
-  `text-warning`.
-- L'étiquette est un lien vers **l'ancre de la source sur `/donnees/`** (`/donnees/#<sourceId>`) :
-  chaque source de `/donnees/` porte donc l'`id` de son `sourceId`.
-- C'est **la seule forme autorisée pour citer une source dans l'interface**.
+- **Portée : l'interface des calculateurs.** `SourceTag` (`src/components/ui/SourceTag.astro`) y
+  cite **en ligne** une valeur ou une référence légale. C'est la seule forme autorisée pour cette
+  citation en ligne.
+- **Format** : « Émetteur · vérifié le JJ.MM.AAAA ». L'émetteur est l'`authority` de la source
+  désignée par le `sourceId`, c'est-à-dire **l'acte officiel, jamais l'outil de collecte**
+  (`collectedFrom`). La date est le `verifiedOn` de la source, rendue dans un `<time datetime>`.
+  Une source jamais vérifiée affiche « jamais vérifié » (§ 2.6).
+- **Aucune garantie** : l'étiquette ne dit ni « à jour », ni « exact », ni « garanti » (interdit
+  n° 3 des conditions d'usage de l'AFC, `CLAUDE.md`).
+- **Lien** vers l'ancre de la source sur `/donnees/` (`/donnees/#<sourceId>`) : chaque source de
+  `/donnees/` porte l'`id` de son `sourceId`. Ces ancres sont créées, avec un test, au début de la
+  session qui introduit `SourceTag`.
 - **Les références juridiques sortent des phrases** : « selon l'art. 7a OPP 3, le rachat… » devient
   « Le rachat… » suivi de l'étiquette en fin de phrase.
-- Règles du registre inchangées : une source `self-regulation`, `industry` ou `association` porte
-  la mention « source non officielle, à titre indicatif » ; une source `reference-tool` ne s'affiche
-  jamais ; la formule d'attribution de l'AFC reste due partout où `CLAUDE.md` l'exige.
+- **Ce qui reste** : `DataFreshness` et le bloc source du § 2.6, avec la formule d'attribution de
+  l'AFC intacte ; les articles gardent `SourceLink`. Règles du registre inchangées : une source
+  `self-regulation`, `industry` ou `association` porte la mention « source non officielle, à titre
+  indicatif » ; une source `reference-tool` ne s'affiche jamais.
 
 ### 4.6 Graphiques de résultat
 
@@ -691,9 +698,10 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 
 **Sources (§ 4.5)**
 
-- [ ] Toute citation de source passe par `SourceTag`, lié à `/donnees/#<sourceId>`.
+- [ ] Toute valeur ou référence légale citée en ligne dans l'interface passe par `SourceTag`, lié à `/donnees/#<sourceId>`.
+- [ ] Chaque `SourceTag` nomme l'acte officiel, jamais l'outil de collecte, sans formule de garantie.
 - [ ] Aucune référence juridique dans le corps d'une phrase.
-- [ ] Mentions des sources non officielles et attribution de l'AFC présentes là où elles sont dues.
+- [ ] `DataFreshness` présent, formule d'attribution de l'AFC intacte ; mentions des sources non officielles là où elles sont dues.
 
 **Graphiques (§ 4.6)**
 
