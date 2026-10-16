@@ -15,6 +15,8 @@ export const fr = {
 	site: {
 		name: "calculateurs.ch",
 		baseline: "Calculateurs suisses romands qui affichent leurs sources.",
+		/** Adresse de contact, toujours affichée en clair dans son lien mailto: (pied de page, pages légales). */
+		contactEmail: "contact@calculateurs.ch",
 	},
 
 	common: {
@@ -69,7 +71,6 @@ export const fr = {
 		data: "Données et sources",
 		legal: "Mentions légales",
 		privacy: "Politique de confidentialité",
-		contact: "Contact",
 		/** Titres des colonnes du pied de page. */
 		calculatorsHeading: "Calculateurs",
 		siteHeading: "Le site",
