@@ -52,6 +52,11 @@ vérification** (`verifiedOn`). Une valeur sans source ni date ne peut pas entre
 le dépôt. Les fonctions de `src/lib/calculations/` reçoivent leurs barèmes **en
 argument** et ne les importent jamais elles-mêmes.
 
+**Exception** : les saisies fictives d'un cas exemple (`docs/design-system.md` § 4.2) ne
+sont pas des valeurs au sens de R2 et n'ont pas de `Value<T>`. Elles sont déclarées dans
+la définition du calculateur, sous `example`, et ne reprennent jamais une valeur légale
+(plafond, taux, seuil), qui est toujours lue dans les données.
+
 ### R3 — On n'invente jamais une valeur chiffrée
 
 Si une valeur chiffrée manque, on ne la déduit pas, on ne l'estime pas, on ne la copie

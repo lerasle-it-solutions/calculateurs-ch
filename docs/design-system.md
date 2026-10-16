@@ -569,8 +569,12 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
 
 ### 4.2 Cas exemple
 
-- Chaque calculateur déclare dans sa définition (`src/calculators/`) un **cas exemple** : les
-  saisies d'un profil fictif et une description française d'une ligne.
+- Chaque calculateur déclare dans sa définition (`src/calculators/`), sous `example`, un **cas
+  exemple** : les saisies d'un profil fictif et une description française d'une ligne.
+- **Exception à R2** : ces saisies fictives ne sont pas des valeurs au sens de R2 et n'ont pas de
+  `Value<T>`. Elles ne reprennent jamais une valeur légale (plafond, taux, seuil) : celle-ci est
+  toujours lue dans les données. « Verser le maximum » dans un cas exemple se déclare comme un
+  renvoi au plafond, jamais comme son montant.
 - La page s'ouvre **pré-remplie** sur ce cas, annoncé au-dessus du formulaire par un bandeau
   (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres ».
 - La carte résultat affiche **un vrai montant dès le chargement**, jamais « — ». Le résultat du cas
@@ -679,7 +683,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 
 **Cas exemple (§ 4.2)**
 
-- [ ] Cas exemple déclaré dans la définition du calculateur.
+- [ ] Cas exemple déclaré dans la définition du calculateur, sous `example` ; aucune valeur légale (plafond, taux, seuil) recopiée dans ses saisies.
 - [ ] Page pré-remplie, bandeau « Exemple : … — remplacez par vos chiffres ».
 - [ ] Vrai montant dans la carte au chargement, y compris sans JavaScript ; jamais « — ».
 - [ ] Tout montant « type » affiché hors de la page calculé au build sur ce cas.
