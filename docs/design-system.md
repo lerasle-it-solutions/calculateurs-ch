@@ -554,10 +554,11 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 5 | Points de vigilance | avertissements renforcés (§ 2.6) | Courts : une phrase chacun, préfixe « Attention : » |
 | 6 | Détail ligne par ligne | `CalculationBreakdown` (`<details>` + `<table>`) | Trace complète (R4) |
 | 7 | Graphiques | SVG inline (§ 4.6) | Facultatifs ; jamais vides |
-| 8 | Ce que ce calcul suppose | `<details>` fermé par défaut | Contient, dans cet ordre, « Pour qui », « Ce que ça ne couvre pas » (avec l'alternative de chaque cas) et « Hypothèses retenues » |
-| 9 | Variantes | `RelatedVariants` | — |
-| 10 | FAQ | — | — |
-| 11 | Sources | étiquettes `SourceTag` (§ 4.5) | — |
+| 8 | Mise en relation | `LeadForm` (`<form>`) | Seulement si `monetization.trigger` est satisfait et qu'un partenaire couvre la situation ; résultat complet avant, jamais un mur ni une fenêtre surgissante (architecture § 4, `CLAUDE.md`) |
+| 9 | Ce que ce calcul suppose | `<details>` fermé par défaut | Contient, dans cet ordre, « Pour qui », « Ce que ça ne couvre pas » (avec l'alternative de chaque cas) et « Hypothèses retenues » |
+| 10 | Variantes | `RelatedVariants` | — |
+| 11 | FAQ | — | — |
+| 12 | Sources | étiquettes `SourceTag` (§ 4.5) | — |
 
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2).
@@ -671,6 +672,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
 - [ ] Points de vigilance courts, en avertissements renforcés, sous le formulaire.
 - [ ] Détail ligne par ligne, puis graphiques.
+- [ ] Formulaire de mise en relation, s'il existe, après les graphiques et avant « Ce que ce calcul suppose » ; résultat complet avant, jamais un mur.
 - [ ] `<details>` « Ce que ce calcul suppose » contenant Pour qui, Ce que ça ne couvre pas (avec alternatives) et Hypothèses retenues.
 - [ ] Variantes, FAQ, sources, dans cet ordre.
 - [ ] Aucun contenu de l'ancienne page supprimé.
