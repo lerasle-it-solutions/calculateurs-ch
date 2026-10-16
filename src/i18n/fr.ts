@@ -42,6 +42,9 @@ export const fr = {
 	home: {
 		/** Lien d'action à la fin de chaque carte de famille. */
 		familyCardAction: "Voir les calculateurs",
+		/** Seule ligne des familles sans calculateur publié, libellés de `fr.family`. Aucune date promise. */
+		comingSoon: (families: string[]) =>
+			`Prochainement : ${families.map((family) => family.toLocaleLowerCase("fr-CH")).join(", ")}.`,
 	},
 
 	header: {
