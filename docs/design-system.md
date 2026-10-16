@@ -504,3 +504,187 @@ mode sombre, dégradés, flou d'arrière-plan, emoji, photographies et illustrat
 bandeaux de cookies, fenêtres surgissantes, barres d'appel à l'action flottantes (la barre de
 résultat mobile n'en est pas une), formulaire de mise en relation affiché avant le résultat
 complet.
+
+---
+
+## 4. Patrons UX des calculateurs
+
+> **Statut : normatif.** Principe : **le chiffre en 10 secondes, la preuve en un clic.** Le moteur
+> est juste ; l'interface ne doit pas le cacher. Le visiteur voit un montant avant d'avoir lu le
+> périmètre, et chaque montant mène en un clic à sa trace et à sa source. Tout calculateur, nouveau
+> ou repris, se conforme à ce chapitre ; la liste du § 4.7 le vérifie (commande `/ux-check <slug>`).
+
+### 4.1 Ordre de la page calculateur
+
+Ordre fixe, de haut en bas. **Rien n'est supprimé, tout est déplacé** : chaque bloc de l'ancienne
+page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scope`) ne disparaît.
+
+| # | Bloc | Élément | Règle |
+| --- | --- | --- | --- |
+| 1 | Titre | `<h1>` | `text-title`, casse phrase |
+| 2 | Promesse | `<p>` | Une seule phrase, `text-lead text-ink-muted` : ce que le visiteur obtient |
+| 3 | Périmètre | `<p>` | Une seule ligne, `text-fine text-ink-muted` : pour qui, cantons, année ; lien vers le bloc 8 |
+| 4 | Formulaire et carte résultat | grille § 2.5 | Carte résultat collante (`lg:sticky`), barre mobile en dessous de `lg` |
+| 5 | Points de vigilance | avertissements renforcés (§ 2.6) | Courts : une phrase chacun, préfixe « Attention : » |
+| 6 | Détail ligne par ligne | `CalculationBreakdown` (`<details>` + `<table>`) | Trace complète (R4) |
+| 7 | Graphiques | SVG inline (§ 4.6) | Facultatifs ; jamais vides |
+| 8 | Ce que ce calcul suppose | `<details>` fermé par défaut | Contient, dans cet ordre, « Pour qui », « Ce que ça ne couvre pas » (avec l'alternative de chaque cas) et « Hypothèses retenues » |
+| 9 | Variantes | `RelatedVariants` | — |
+| 10 | FAQ | — | — |
+| 11 | Sources | étiquettes `SourceTag` (§ 4.5) | — |
+
+Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
+du cas exemple (§ 4.2).
+
+### 4.2 Cas exemple
+
+- Chaque calculateur déclare dans sa définition (`src/calculators/`) un **cas exemple** : les
+  saisies d'un profil fictif et une description française d'une ligne.
+- La page s'ouvre **pré-remplie** sur ce cas, annoncé au-dessus du formulaire par un bandeau
+  (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres ».
+- La carte résultat affiche **un vrai montant dès le chargement**, jamais « — ». Le résultat du cas
+  exemple est calculé au build en exécutant le moteur : il s'affiche aussi sans JavaScript.
+- Tout montant « type » affiché ailleurs — cartes de calculateur, accueil, images de partage — est
+  **calculé au build en exécutant le moteur sur ce cas**, jamais tapé à la main (R3).
+- Le cas exemple est fictif : ce n'est jamais un cas de référence issu du calculateur de l'AFC,
+  dont les résultats ne se publient pas (conditions d'usage de l'AFC, `CLAUDE.md`).
+
+### 4.3 Formulaire
+
+- **Deux chemins en tête du formulaire**, en radios stylés en pastilles (§ 2.3) : « Je pars de mon
+  salaire brut » (**par défaut**) et « Je connais mon revenu imposable ». Le script de l'estimateur
+  reste chargé à la demande (décision du 05.10.2026) : le cas exemple étant calculé au build, le
+  script se charge à la première interaction avec le chemin « salaire brut ».
+- **Un seul champ commune** (`MunicipalityField`, `<input list>` + `<datalist>`) : le canton est
+  déduit de la commune, aucun champ canton séparé. Les homonymes portent leur canton entre
+  parenthèses (« <Commune> (VD) »).
+- **Revenu imposable fédéral pré-rempli depuis le cantonal**, suivi d'un lien « différent ? » qui
+  déplie le champ fédéral. Le moteur reçoit toujours deux revenus imposables (décision n° 10) ;
+  tant que le visiteur ne les distingue pas, l'égalité est une hypothèse inscrite dans la trace (R4).
+- **Questions oui/non regroupées en profils** (pastilles) ; une pastille « Autre situation » déplie
+  le détail des questions.
+- **Montants formatés à la suisse pendant la frappe** (`70'000`), `inputmode="decimal"`, suffixe
+  `CHF` dans le segment d'unité (§ 2.3).
+- **Bouton « Verser le maximum (<plafond>) »** à côté du champ du montant dès qu'un plafond existe ;
+  le plafond est lu dans `src/data/`, jamais écrit dans le libellé (R2). Variante fantôme.
+- **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
+- **Conditions d'éligibilité en liste de contrôle** : une ligne par condition, état dit en mots
+  (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule.
+- **Une exclusion qui change le résultat s'affiche au moment où la saisie la déclenche**, dans la
+  carte résultat, en avertissement renforcé avec l'alternative déclarée dans `notCovered` — pas
+  dans une liste lue d'avance.
+
+### 4.4 Résultat
+
+Le résultat se lit dans cet ordre :
+
+1. **Le chiffre** (`text-display text-accent tabular-nums`), avec son libellé.
+2. **Sa traduction** : la part du montant versé qu'il représente ; le coût net de l'année,
+   **toujours suivi du rappel de l'imposition à la sortie** quand elle s'applique.
+3. **La décomposition par impôt** : fédéral, cantonal, communal, paroissial, taxe personnelle le
+   cas échéant.
+4. **« Et si »** : variantes de saisie recalculées par le moteur — une économie d'impôt toujours par
+   `computeTaxSavingOnDeduction`, jamais par un taux marginal (décision n° 11).
+5. **La comparaison avec les autres communes du canton**, calculée par le moteur sur les
+   coefficients publics de `src/data/`. Hors du budget de la page (§ 3.5), elle se charge à la
+   demande.
+
+Et autour du résultat :
+
+- **Lien partageable** : les saisies sont encodées dans le fragment d'URL (`#…`), **jamais en query
+  string, jamais envoyées au serveur**. Le résultat n'est pas encodé : il est recalculé à
+  l'ouverture.
+- **Feuille de style d'impression** (`@media print`) : saisies, résultat, détail et sources
+  s'impriment ; navigation, barre mobile et boutons non.
+- **Barre mobile** (§ 2.5) : le montant **et** le coût net.
+- **Un tableau ne s'affiche jamais vide** : sans donnée, une phrase dit pourquoi, à la place du
+  tableau.
+
+### 4.5 Étiquette de source
+
+- Un composant unique, **`SourceTag`** (`src/components/ui/SourceTag.astro`), au format
+  **« Émetteur · vérifié le JJ.MM.AAAA »** : émetteur = `authority` du registre, date = `verifiedOn`
+  rendue dans un `<time datetime>`. Une source jamais vérifiée affiche « jamais vérifié » en
+  `text-warning`.
+- L'étiquette est un lien vers **l'ancre de la source sur `/donnees/`** (`/donnees/#<sourceId>`) :
+  chaque source de `/donnees/` porte donc l'`id` de son `sourceId`.
+- C'est **la seule forme autorisée pour citer une source dans l'interface**.
+- **Les références juridiques sortent des phrases** : « selon l'art. 7a OPP 3, le rachat… » devient
+  « Le rachat… » suivi de l'étiquette en fin de phrase.
+- Règles du registre inchangées : une source `self-regulation`, `industry` ou `association` porte
+  la mention « source non officielle, à titre indicatif » ; une source `reference-tool` ne s'affiche
+  jamais ; la formule d'attribution de l'AFC reste due partout où `CLAUDE.md` l'exige.
+
+### 4.6 Graphiques de résultat
+
+- **SVG inline produit par le script de la page**, aucune bibliothèque (§ 3.6).
+- **Tokens uniquement** : couleurs lues par `var(--color-…)` (`@theme static`, § 3.4), palette des
+  graphiques du § 1.1.
+- **Titre formulé comme un constat** (« Au-delà du plafond, verser davantage n'économise plus
+  rien »), jamais comme une étiquette (« Économie selon le montant versé »).
+- **`<table>` équivalent dans un `<details>`**, sous le graphique.
+
+### 4.7 Liste de contrôle « nouveau calculateur »
+
+Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vérifie point par point.
+
+**Ordre de la page (§ 4.1)**
+
+- [ ] H1, puis une phrase de promesse, puis une ligne de périmètre avec lien vers « Ce que ce calcul suppose ».
+- [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
+- [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
+- [ ] Points de vigilance courts, en avertissements renforcés, sous le formulaire.
+- [ ] Détail ligne par ligne, puis graphiques.
+- [ ] `<details>` « Ce que ce calcul suppose » contenant Pour qui, Ce que ça ne couvre pas (avec alternatives) et Hypothèses retenues.
+- [ ] Variantes, FAQ, sources, dans cet ordre.
+- [ ] Aucun contenu de l'ancienne page supprimé.
+
+**Cas exemple (§ 4.2)**
+
+- [ ] Cas exemple déclaré dans la définition du calculateur.
+- [ ] Page pré-remplie, bandeau « Exemple : … — remplacez par vos chiffres ».
+- [ ] Vrai montant dans la carte au chargement, y compris sans JavaScript ; jamais « — ».
+- [ ] Tout montant « type » affiché hors de la page calculé au build sur ce cas.
+- [ ] Cas fictif, sans lien avec un cas de référence de l'AFC.
+
+**Formulaire (§ 4.3)**
+
+- [ ] Deux chemins en tête, « Je pars de mon salaire brut » par défaut.
+- [ ] Un seul champ commune, canton déduit, homonymes suivis de leur canton.
+- [ ] Revenu fédéral pré-rempli depuis le cantonal, lien « différent ? », hypothèse dans la trace.
+- [ ] Questions oui/non regroupées en profils, « Autre situation » déplie le détail.
+- [ ] Montants formatés à la suisse pendant la frappe, `inputmode="decimal"`, suffixe CHF.
+- [ ] Bouton « Verser le maximum (<plafond>) » si un plafond existe, plafond lu dans les données.
+- [ ] Un champ par enfant.
+- [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots.
+- [ ] Exclusions affichées dans la carte au moment où la saisie les déclenche, avec alternative.
+
+**Résultat (§ 4.4)**
+
+- [ ] Le chiffre, puis sa traduction (part du montant versé, coût net de l'année).
+- [ ] Rappel de l'imposition à la sortie après le coût net, quand elle s'applique.
+- [ ] Décomposition par impôt.
+- [ ] « Et si » recalculés par le moteur, jamais par taux marginal.
+- [ ] Comparaison avec les autres communes du canton.
+- [ ] Lien partageable dans le fragment `#`, jamais en query string ni envoyé au serveur.
+- [ ] Feuille de style d'impression.
+- [ ] Barre mobile : montant et coût net.
+- [ ] Aucun tableau vide.
+
+**Sources (§ 4.5)**
+
+- [ ] Toute citation de source passe par `SourceTag`, lié à `/donnees/#<sourceId>`.
+- [ ] Aucune référence juridique dans le corps d'une phrase.
+- [ ] Mentions des sources non officielles et attribution de l'AFC présentes là où elles sont dues.
+
+**Graphiques (§ 4.6)**
+
+- [ ] SVG inline produit par le script de la page, tokens uniquement, aucune bibliothèque.
+- [ ] Titre formulé comme un constat.
+- [ ] `<table>` équivalent dans un `<details>`.
+
+**Socle (§ 0 à § 3)**
+
+- [ ] Le résultat reste l'élément le plus grand et le plus contrasté de la page.
+- [ ] Transition du résultat ≤ 250 ms, coupée sous `prefers-reduced-motion` (§ 3.3).
+- [ ] `npx vitest run tests/design` passe.
