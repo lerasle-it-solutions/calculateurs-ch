@@ -914,6 +914,10 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 14  | **Import par exports manuels** de l'AFC, aucun appel programmatique          | Réponse écrite de l'AFC : consultation par l'interface web uniquement                                                |
 | 15  | **Tests avant code** sur le moteur, et tests immuables (R7)                  | Piloter une IA par la spécification plutôt que par la relecture                                                      |
 | 16  | **Année de calcul résolue par calculateur à la date de construction, repli annoncé** | Déposer 2027.json faisait passer A1 en 2027 avec des barèmes cantonaux 2026 (04.10.2026) |
+| 17  | **Transition de 250 ms au plus sur la valeur du résultat**, seule dérogation au § 3.3 du design system | Signaler le recalcul sans animer le chiffre ; coupée sous `prefers-reduced-motion` (16.10.2026) |
+| 18  | **Cas exemple obligatoire** : chaque calculateur s'ouvre pré-rempli, montant calculé au build | Le visiteur voyait « — » au lieu d'un chiffre ; tout montant « type » vient du moteur, jamais de la main (R3) (16.10.2026) |
+| 19  | **Page calculateur inversée** : calcul d'abord, périmètre replié dans « Ce que ce calcul suppose » | Le chiffre en 10 secondes, la preuve en un clic ; rien n'est supprimé, tout est déplacé (16.10.2026) |
+| 20  | **Thème sombre planifié** (vague 3), par redéfinition des tokens | Aucun composant touché ; chaque paire de contraste vérifiée par test (16.10.2026) |
 
 ---
 
