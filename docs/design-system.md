@@ -488,6 +488,8 @@ Alpine.js, fenêtre de consentement — par respect du budget de performance.
 - Texte courant toujours borné par `max-w-reading`, même dans une colonne large.
 - Héros de page : H1 + chapeau (`text-lead text-ink-muted`) + au plus un bouton principal,
   `py-3xl md:py-5xl`, aligné à gauche.
+- **Héros compact des pages calculateurs** : H1, phrase de promesse, ligne de périmètre (§ 4.1),
+  `py-xl md:py-2xl`, aligné à gauche, sans bouton.
 
 ### 3.3 Mouvement
 
@@ -561,7 +563,10 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 12 | Sources | `DataFreshness` (bloc source, § 2.6) | Année et date propres au calculateur, formule d'attribution de l'AFC intacte ; les `SourceTag` (§ 4.5) citent en ligne dans les blocs précédents |
 
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
-du cas exemple (§ 4.2).
+du cas exemple (§ 4.2). Les blocs 1 à 3 forment le héros compact (§ 3.2).
+
+**Critère vérifiable** : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la
+carte résultat l'est aussi.
 
 Le périmètre est annoncé avant la saisie, jamais après (P5) : la ligne de périmètre l'annonce, le
 détail « Ce que ce calcul suppose » le développe, et **toute exclusion qui s'applique à la saisie
@@ -673,6 +678,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 
 - [ ] H1, puis une phrase de promesse, puis une ligne de périmètre avec lien vers « Ce que ce calcul suppose ».
 - [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
+- [ ] Héros compact (`py-xl md:py-2xl`) : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la carte résultat aussi.
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
 - [ ] Points de vigilance courts, en avertissements renforcés, sous le formulaire.
 - [ ] Détail ligne par ligne, puis graphiques.
