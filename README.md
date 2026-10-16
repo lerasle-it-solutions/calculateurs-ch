@@ -55,6 +55,7 @@ npm install
 npm run dev
 npm run test     # calculs et fraîcheur des données
 npm run build
+npm run smoke    # après une mise en ligne : chaque page du sitemap de production sert son propre contenu
 ```
 
 ## Signaler une erreur
