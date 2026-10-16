@@ -474,6 +474,11 @@ Transitions limitées à `transition-colors duration-150` sur boutons, liens et 
 Interdits : animations d'apparition au défilement, parallaxe, transformations au survol des
 cartes, carrousels automatiques, compteurs animés du résultat.
 
+**Une seule dérogation** : quand la valeur du résultat change, une transition de **250 ms au
+plus** sur cette valeur signale le recalcul. Elle est désactivée sous
+`prefers-reduced-motion: reduce`. Le compteur animé reste interdit : la nouvelle valeur remplace
+l'ancienne, les chiffres intermédiaires ne s'affichent jamais.
+
 ### 3.4 Garde-fous automatiques
 
 - `--color-*: initial` dans `tokens.css` : la palette Tailwind par défaut n'existe plus.
