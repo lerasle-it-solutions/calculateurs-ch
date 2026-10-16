@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/layout/PageHero.astro";
 import Section from "../components/layout/Section.astro";
 import { fr } from "../i18n/fr";
+import { publishedCalculators } from "../calculators/catalog";
 import {
   FAMILY_ORDER,
   familyHasPage,
@@ -13,18 +14,17 @@ const title = `${fr.site.name} — calculateurs suisses romands qui affichent le
 const description =
   "Calculateurs de fiscalité et de prévoyance pour la Suisse romande, chaque chiffre sourcé et daté. Aucun compte, aucun cookie de suivi.";
 
-// Aperçu éditorial par famille. Les libellés viennent de l'i18n (cohérence avec
-// le Header) ; les listes ci-dessous sont du contenu de page.
-const previews: Record<(typeof FAMILY_ORDER)[number], string[]> = {
-  pension: ["3e pilier", "Rachats LPP", "Retrait en capital"],
-  property: ["Valeur locative", "Rénovation", "Capacité d’achat"],
-  energy: [
-    "Subventions cantonales et communales",
-    "Pompe à chaleur",
-    "Photovoltaïque",
-  ],
-  business: ["Coût employeur", "Charges sociales"],
-};
+// Généré depuis le catalogue : seuls les calculateurs publiés sont listés, en
+// liens ; les familles sans calculateur publié tiennent en une seule ligne,
+// sans date promise.
+const families = FAMILY_ORDER.map((family) => ({
+  family,
+  calculators: publishedCalculators(family),
+}));
+const withCalculators = families.filter(({ calculators }) => calculators.length > 0);
+const comingSoon = families
+  .filter(({ calculators }) => calculators.length === 0)
+  .map(({ family }) => fr.family[family]);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -34,50 +34,39 @@ const previews: Record<(typeof FAMILY_ORDER)[number], string[]> = {
       fr.site.baseline,
       "Chaque chiffre utilisé provient d'une source officielle, avec sa date de vérification. Aucun compte, aucun cookie de suivi, aucune publicité. Vos données ne quittent pas votre navigateur.",
     ]}
-  >
-    <p class="text-fine text-ink-muted">
-      Premiers calculateurs en ligne dès octobre 2026.
-    </p>
-  </PageHero>
+  />
 
-  <Section tone="tint">
+  <Section tone="tint" id="calculateurs" class="flex flex-col gap-xl">
     <ul class="grid gap-xl md:grid-cols-2">
       {
-        FAMILY_ORDER.map((family) => (
-          <li>
-            {familyHasPage(family) ? (
+        withCalculators.map(({ family, calculators }) => (
+          <li class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
+            <h2 class="text-subheading">{fr.family[family]}</h2>
+            <ul class="flex flex-col gap-sm text-body">
+              {calculators.map((calculator) => (
+                <li>
+                  <a href={calculator.slug}>{calculator.title}</a>
+                </li>
+              ))}
+            </ul>
+            {familyHasPage(family) && (
               <a
                 href={familyUrl(family)}
-                class="group flex h-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline hover:text-ink"
+                class="mt-auto text-label font-bold text-accent"
               >
-                <h2 class="text-subheading group-hover:underline">
-                  {fr.family[family]}
-                </h2>
-                <ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
-                  {previews[family].map((item) => (
-                    <li>{item}</li>
-                  ))}
-                </ul>
-                <span class="mt-auto text-label font-bold text-accent">
-                  {fr.home.familyCardAction}
-                </span>
+                {fr.home.familyCardAction}
               </a>
-            ) : (
-              <div class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
-                <h2 class="text-subheading">{fr.family[family]}</h2>
-                <ul class="flex list-disc flex-col gap-2xs pl-lg text-body text-ink-muted">
-                  {previews[family].map((item) => (
-                    <li>{item}</li>
-                  ))}
-                </ul>
-                <span class="mt-auto inline-flex items-center self-start rounded-button bg-tint px-sm text-fine font-bold text-ink">
-                  {fr.common.comingSoon}
-                </span>
-              </div>
             )}
           </li>
         ))
       }
     </ul>
+    {
+      comingSoon.length > 0 && (
+        <p data-home-coming-soon class="text-fine text-ink-muted">
+          {fr.home.comingSoon(comingSoon)}
+        </p>
+      )
+    }
   </Section>
 </BaseLayout>

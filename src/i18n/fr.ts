@@ -15,6 +15,8 @@ export const fr = {
 	site: {
 		name: "calculateurs.ch",
 		baseline: "Calculateurs suisses romands qui affichent leurs sources.",
+		/** Adresse de contact, toujours affichée en clair dans son lien mailto: (pied de page, pages légales). */
+		contactEmail: "contact@calculateurs.ch",
 	},
 
 	common: {
@@ -42,6 +44,9 @@ export const fr = {
 	home: {
 		/** Lien d'action à la fin de chaque carte de famille. */
 		familyCardAction: "Voir les calculateurs",
+		/** Seule ligne des familles sans calculateur publié, libellés de `fr.family`. Aucune date promise. */
+		comingSoon: (families: string[]) =>
+			`Prochainement : ${families.map((family) => family.toLocaleLowerCase("fr-CH")).join(", ")}.`,
 	},
 
 	header: {
@@ -66,7 +71,6 @@ export const fr = {
 		data: "Données et sources",
 		legal: "Mentions légales",
 		privacy: "Politique de confidentialité",
-		contact: "Contact",
 		/** Titres des colonnes du pied de page. */
 		calculatorsHeading: "Calculateurs",
 		siteHeading: "Le site",
@@ -87,6 +91,8 @@ export const fr = {
 
 	/** Canton déclaré en couverture partielle par la couche de données. */
 	partialCoverage: {
+		/** Préfixe du message de couverture sous le champ commune (avertissement renforcé, § 2.6). */
+		fieldPrefix: "Attention :",
 		notCoveredCase: (canton: string): string =>
 			`${canton} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ce canton.`,
 		useOfficialCalculator: "Utilisez le calculateur fiscal officiel du canton.",

@@ -52,6 +52,11 @@ vérification** (`verifiedOn`). Une valeur sans source ni date ne peut pas entre
 le dépôt. Les fonctions de `src/lib/calculations/` reçoivent leurs barèmes **en
 argument** et ne les importent jamais elles-mêmes.
 
+**Exception** : les saisies fictives d'un cas exemple (`docs/design-system.md` § 4.2) ne
+sont pas des valeurs au sens de R2 et n'ont pas de `Value<T>`. Elles sont déclarées dans
+la définition du calculateur, sous `example`, et ne reprennent jamais une valeur légale
+(plafond, taux, seuil), qui est toujours lue dans les données.
+
 ### R3 — On n'invente jamais une valeur chiffrée
 
 Si une valeur chiffrée manque, on ne la déduit pas, on ne l'estime pas, on ne la copie
@@ -361,8 +366,9 @@ C'est ce qui distingue le site des formulaires à devis déguisés et ce qui le 
 citable.
 
 **P5 — Le périmètre est annoncé avant la saisie, jamais après.**
-Bandeau au-dessus du formulaire : pour qui, ce que ça ne couvre pas, quelles
-hypothèses.
+Une ligne de périmètre au-dessus du formulaire, avec un lien vers le détail « Ce que ce
+calcul suppose » ; toute exclusion qui s'applique à la saisie s'affiche dans la carte
+résultat au moment où elle est déclenchée.
 
 ---
 
@@ -454,7 +460,7 @@ calculateurs.ch/
 │   │   │   │                              trace, fraîcheur, variantes, FAQ
 │   │   │   └── RelatedVariants.astro
 │   │   ├── ui/                          ★ primitives, éléments HTML natifs
-│   │   │   ├── NumberField.astro          `<input type="number">`
+│   │   │   ├── NumberField.astro          `<input type="text" inputmode="decimal">`, saisie tolérante
 │   │   │   ├── SelectField.astro          `<select>`
 │   │   │   ├── CantonField.astro          `<select>`
 │   │   │   ├── MunicipalityField.astro    `<input list>` + `<datalist>` — aucun JS
@@ -808,7 +814,7 @@ daté.
 | Ids de calculateur               | `family.name`, **anglais**                    | `pension.pillar-3a-buyback`                  |
 | Ids de source                    | `kebab-case`, acronymes officiels conservés   | `opp3-art-7a`, `vd-li`                       |
 | Chaînes d'interface              | **français**, dans `src/i18n/fr.ts`           | —                                            |
-| Messages de commit               | **anglais**, préfixés de la semaine           | `W06 - publish pillar-3a buyback calculator` |
+| Messages de commit               | **anglais**, préfixés de la semaine ; hors semaine du plan, préfixe `UX - `, toujours en anglais | `W06 - publish pillar-3a buyback calculator`, `UX - document calculator page patterns` |
 | Variables CSS                    | tokens `@theme` dans `tokens.css`             | `--color-accent`                             |
 
 **Toutes les chaînes d'interface dans `src/i18n/fr.ts` dès le jour 1.** Ça ne coûte
@@ -914,6 +920,10 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 14  | **Import par exports manuels** de l'AFC, aucun appel programmatique          | Réponse écrite de l'AFC : consultation par l'interface web uniquement                                                |
 | 15  | **Tests avant code** sur le moteur, et tests immuables (R7)                  | Piloter une IA par la spécification plutôt que par la relecture                                                      |
 | 16  | **Année de calcul résolue par calculateur à la date de construction, repli annoncé** | Déposer 2027.json faisait passer A1 en 2027 avec des barèmes cantonaux 2026 (04.10.2026) |
+| 17  | **Transition de 250 ms au plus sur la valeur du résultat**, seule dérogation au § 3.3 du design system | Signaler le recalcul sans animer le chiffre ; coupée sous `prefers-reduced-motion` (16.10.2026) |
+| 18  | **Cas exemple obligatoire** : chaque calculateur s'ouvre pré-rempli, montant calculé au build | Le visiteur voyait « — » au lieu d'un chiffre ; tout montant « type » vient du moteur, jamais de la main (R3) (16.10.2026) |
+| 19  | **Page calculateur inversée** : calcul d'abord ; une ligne de périmètre au-dessus du formulaire, liée au détail « Ce que ce calcul suppose » ; exclusions dans la carte résultat au moment où la saisie les déclenche (P5) | Le chiffre en 10 secondes, la preuve en un clic ; rien n'est supprimé, tout est déplacé (16.10.2026) |
+| 20  | **Thème sombre écarté** | Les lecteurs impriment et citent ; la feuille d'impression et la cohérence des graphiques priment (16.10.2026) |
 
 ---
 
@@ -953,3 +963,7 @@ Rappel des règles non négociables (le détail est dans le fichier importé) :
   < 100 ko de CSS, LCP < 1,5 s en 4G simulée ; contraste AA, focus visible, 320 px minimum.
 - Avant de livrer une interface : relire la section concernée de `docs/design-system.md` et
   lancer `npx vitest run tests/design`.
+- Page de calculateur : patrons UX du § 4 de `docs/design-system.md` — ordre de la page, cas
+  exemple, formulaire, résultat, étiquette `SourceTag`, graphiques.
+- La liste de contrôle du § 4.7 est **obligatoire pour tout calculateur**, nouveau ou repris ;
+  `/ux-check <slug>` la vérifie point par point, sans rien corriger.

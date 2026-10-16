@@ -2,7 +2,7 @@
 /**
  * Footer — logo blanc, familles de calculateurs et liens de pilotage :
  * méthodologie, données, mentions légales, politique de confidentialité,
- * contact (docs/design-system.md § 2.4). Fond encre, texte papier (14,57:1).
+ * adresse de contact en clair (docs/design-system.md § 2.4). Fond encre, texte papier (14,57:1).
  * Aucun JavaScript.
  */
 import LogoWhite from "../../assets/brand/logo-blanc.svg";
@@ -20,7 +20,8 @@ const links = [
 	{ label: fr.footer.data, url: "/donnees/" },
 	{ label: fr.footer.legal, url: "/mentions-legales/" },
 	{ label: fr.footer.privacy, url: "/politique-de-confidentialite/" },
-	{ label: fr.footer.contact, url: "mailto:contact@calculateurs.ch" },
+	// Adresse en clair, texte du lien compris : utilisable sans JavaScript.
+	{ label: fr.site.contactEmail, url: `mailto:${fr.site.contactEmail}` },
 ];
 ---
 

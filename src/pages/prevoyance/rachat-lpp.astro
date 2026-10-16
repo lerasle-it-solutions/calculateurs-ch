@@ -13,6 +13,7 @@ import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
 import TraceLabels from "../../components/calculator/TraceLabels.astro";
 import GrossEstimator from "../../components/calculator/GrossEstimator.astro";
+import ResultTable from "../../components/ui/ResultTable.astro";
 import {
 	lppBuyback,
 	lppBuybackIntro,
@@ -84,10 +85,6 @@ const pageData = {
 // Données en JSON dans la page, sans « < » qui fermerait la balise
 const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 
-const tableClass = "w-full border-collapse text-label";
-const captionClass = "px-md py-sm text-left text-fine text-ink-muted";
-const headClass = "bg-tint px-md py-sm text-left font-bold";
-const cellClass = "border-b border-hairline px-md py-sm";
 ---
 
 <CalculatorLayout definition={lppBuyback}>
@@ -120,46 +117,35 @@ const cellClass = "border-b border-hairline px-md py-sm";
 				</dl>
 				<p id="lpp-buyback-not-deducted" class="text-label font-bold" hidden></p>
 
-				<section class="flex flex-col gap-sm">
-					<h3 class="text-subheading">{texts.scenarios.heading}</h3>
-					<div class="overflow-x-auto rounded-panel border border-hairline">
-						<table class={tableClass}>
-							<caption class={captionClass}>{texts.scenarios.caption}</caption>
-							<thead>
-								<tr>
-									<th scope="col" class={headClass}>{texts.scenarios.columns.scenario}</th>
-									<th scope="col" class={headClass}>{texts.scenarios.columns.tranches}</th>
-									<th scope="col" class={`${headClass} text-right`}>{texts.scenarios.columns.total}</th>
-									<th scope="col" class={`${headClass} text-right`}>{texts.scenarios.columns.difference}</th>
-									<th scope="col" class={headClass} data-lock-column hidden>{texts.scenarios.columns.lock}</th>
-								</tr>
-							</thead>
-							<tbody id="lpp-buyback-scenarios" data-cell-class={cellClass}></tbody>
-						</table>
-					</div>
-				</section>
+				<ResultTable
+					id="lpp-buyback-scenarios"
+					heading={texts.scenarios.heading}
+					caption={texts.scenarios.caption}
+					columns={[
+						{ label: texts.scenarios.columns.scenario },
+						{ label: texts.scenarios.columns.tranches },
+						{ label: texts.scenarios.columns.total, align: "right" },
+						{ label: texts.scenarios.columns.difference, align: "right" },
+						{ label: texts.scenarios.columns.lock, optional: true },
+					]}
+				/>
 
-				<section class="flex flex-col gap-sm">
-					<h3 class="text-subheading">{texts.calendar.heading}</h3>
-					<div class="overflow-x-auto rounded-panel border border-hairline">
-						<table class={tableClass}>
-							<caption class={captionClass}>{texts.calendar.caption}</caption>
-							<thead>
-								<tr>
-									<th scope="col" class={headClass}>{texts.calendar.columns.buybackYear}</th>
-									<th scope="col" class={headClass}>{texts.calendar.columns.lockEnds}</th>
-									<th scope="col" class={headClass}>{texts.calendar.columns.compatibleFrom}</th>
-									<th scope="col" class={headClass} data-lock-column hidden>{texts.calendar.columns.status}</th>
-								</tr>
-							</thead>
-							<tbody id="lpp-buyback-calendar" data-cell-class={cellClass}></tbody>
-						</table>
-					</div>
+				<ResultTable
+					id="lpp-buyback-calendar"
+					heading={texts.calendar.heading}
+					caption={texts.calendar.caption}
+					columns={[
+						{ label: texts.calendar.columns.buybackYear },
+						{ label: texts.calendar.columns.lockEnds },
+						{ label: texts.calendar.columns.compatibleFrom },
+						{ label: texts.calendar.columns.status, optional: true },
+					]}
+				>
 					<p class="text-fine text-ink-muted">{texts.calendar.classesIntro}</p>
 					<ul class="flex list-disc flex-col gap-xs pl-lg text-fine text-ink-muted">
 						{texts.calendar.classes.map((entry) => <li>{entry}</li>)}
 					</ul>
-				</section>
+				</ResultTable>
 			</div>
 
 			<aside class="flex max-w-reading flex-col gap-md rounded-panel bg-tint p-lg text-label" aria-labelledby="lpp-buyback-warnings">
@@ -192,6 +178,7 @@ const cellClass = "border-b border-hairline px-md py-sm";
 	import type { BreakdownRow, StatusLink } from "../../lib/display/pillar-3a-buyback";
 	import { displayLppBuyback, type LppBuybackDisplay, type LppBuybackDisplayTexts } from "../../lib/display/lpp-buyback";
 	import { coverageStatusOf } from "../../lib/display/coverage";
+	import { fillResultTable } from "../../lib/display/result-table";
 	import type { ResultStatus } from "../../lib/display/result-card";
 	import type { GrossToTaxableRuleSet } from "../../lib/calculations/gross-to-taxable";
 	import type { EstimatorReading, Household } from "../../lib/display/gross-estimator-ui";
@@ -210,30 +197,11 @@ const cellClass = "border-b border-hairline px-md py-sm";
 	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
 	const resultBlock = document.getElementById("lpp-buyback-result");
 	const notDeducted = document.getElementById("lpp-buyback-not-deducted");
-	const scenarioBody = document.getElementById("lpp-buyback-scenarios");
-	const calendarBody = document.getElementById("lpp-buyback-calendar");
+	const scenarioTable = document.getElementById("lpp-buyback-scenarios");
+	const calendarTable = document.getElementById("lpp-buyback-calendar");
 
-	if (dataElement && form && resultBlock && notDeducted && scenarioBody && calendarBody) {
+	if (dataElement && form && resultBlock && notDeducted && scenarioTable && calendarTable) {
 		const data = JSON.parse(dataElement.textContent ?? "{}") as PageData;
-		const cellClass = scenarioBody.dataset.cellClass ?? "";
-
-		/** Remplit un corps de tableau : une ligne par entrée, une cellule par colonne ; `right` aligne les montants. */
-		const fill = (body: HTMLElement, rows: (string | null)[][], right: number[]) => {
-			body.replaceChildren(
-				...rows.map((cells) => {
-					const tr = document.createElement("tr");
-					cells.forEach((text, index) => {
-						if (text === null) return;
-						const td = document.createElement(index === 0 ? "th" : "td");
-						if (index === 0) td.setAttribute("scope", "row");
-						td.className = `${cellClass}${index === 0 ? " text-left font-medium" : ""}${right.includes(index) ? " text-right tabular-nums" : ""}`;
-						td.textContent = text;
-						tr.append(td);
-					});
-					return tr;
-				}),
-			);
-		};
 
 		const publish = (value: string, breakdown: BreakdownRow[], status: ResultStatus | null, shown: LppBuybackDisplay | null, note: string | null = null) => {
 			resultBlock.hidden = shown === null;
@@ -245,16 +213,16 @@ const cellClass = "border-b border-hairline px-md py-sm";
 			notDeducted.hidden = !shown?.notDeducted;
 			notDeducted.textContent = shown?.notDeducted ?? "";
 			const withLock = Boolean(shown?.calendar.some((entry) => entry.status !== null));
-			for (const column of resultBlock.querySelectorAll<HTMLElement>("[data-lock-column]")) column.hidden = !withLock;
-			fill(
-				scenarioBody,
+			// Sans ligne, aucun tableau : ni en-têtes seuls, ni bloc vide (docs/design-system.md § 4.4)
+			fillResultTable(
+				scenarioTable,
 				(shown?.scenarios ?? []).map((scenario) => [scenario.label, scenario.tranches, scenario.total, scenario.difference, withLock ? scenario.lock : null]),
-				[2, 3],
+				{ right: [2, 3], optionalColumns: withLock },
 			);
-			fill(
-				calendarBody,
+			fillResultTable(
+				calendarTable,
 				(shown?.calendar ?? []).map((entry) => [entry.buybackYear, entry.lockEnds, entry.compatibleFrom, withLock ? entry.status : null]),
-				[],
+				{ optionalColumns: withLock },
 			);
 			document.dispatchEvent(new CustomEvent("calc:update", { detail: { value, breakdown, status, note } }));
 		};
