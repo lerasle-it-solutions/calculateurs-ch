@@ -373,7 +373,8 @@ Mise en page :
   <div class="mx-auto flex max-w-page items-center justify-between gap-xl px-lg md:px-2xl min-h-4xl">
 ```
 
-- Gauche : symbole de marque + nom du site, dans un seul lien vers l'accueil (§ 1.5).
+- Gauche : le logotype `logo.svg`, tel quel, rendu selon le § 1.5 (composant Astro dans un lien
+  vers l'accueil portant `aria-label`). Aucun symbole ajouté, aucun nom en texte vivant.
 - Entrées : **Calculateurs · Guides · Méthodologie**, en `text-label font-bold text-ink
   no-underline`, `hover:text-accent`, page courante `aria-current="page"` → `text-accent` +
   soulignement 2 px décalé (`underline decoration-2 underline-offset-8`).
