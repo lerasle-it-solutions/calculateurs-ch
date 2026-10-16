@@ -7,8 +7,11 @@
  */
 export type StatusLink = { label: string; url: string };
 
-/** Message qui remplace le montant : texte complet dans la carte, mention courte dans la barre mobile. */
-export type ResultStatus = { text: string; short: string; link?: StatusLink };
+/**
+ * Message qui remplace le montant : texte complet dans la carte, mention courte dans la barre mobile.
+ * `kind: "coverage"` : limite de couverture du moteur, répétée sous le champ commune (field-coverage.ts).
+ */
+export type ResultStatus = { text: string; short: string; link?: StatusLink; kind?: "coverage" };
 
 /** `note` : mention courte sous le montant, p. ex. « estimation » ; absente, la note s'efface. */
 export type ResultDetail = { value?: string; status?: ResultStatus | null; note?: string | null };

@@ -90,6 +90,8 @@ export const fr = {
 
 	/** Canton déclaré en couverture partielle par la couche de données. */
 	partialCoverage: {
+		/** Préfixe du message de couverture sous le champ commune (avertissement renforcé, § 2.6). */
+		fieldPrefix: "Attention :",
 		notCoveredCase: (canton: string): string =>
 			`${canton} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ce canton.`,
 		useOfficialCalculator: "Utilisez le calculateur fiscal officiel du canton.",

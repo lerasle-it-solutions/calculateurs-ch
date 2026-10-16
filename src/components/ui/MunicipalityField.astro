@@ -5,6 +5,11 @@
  *
  * L'attribut `list` relie l'input au datalist ; le navigateur fournit
  * l'autocomplétion et le filtrage sans une ligne de script.
+ *
+ * Sous le champ, la limite de couverture du moteur au moment du choix
+ * (docs/design-system.md § 4.3) : masquée au rendu, elle s'affiche quand le
+ * script de la page publie un statut de couverture (`calc:update`), avec le
+ * lien vers la calculette du canton (src/lib/display/field-coverage.ts).
  */
 import { fr } from "../../i18n/fr";
 import { fieldControl, fieldHint, fieldLabel, fieldRequired } from "./field-styles";
@@ -36,6 +41,8 @@ const {
 
 const listId = `${id}-list`;
 const hintId = hint ? `${id}-hint` : undefined;
+const coverageId = `${id}-coverage`;
+const describedBy = [hintId, coverageId].filter(Boolean).join(" ");
 const normalized: Option[] = options.map((option) =>
 	typeof option === "string" ? { value: option } : option,
 );
@@ -62,7 +69,7 @@ const normalized: Option[] = options.map((option) =>
 		value={value}
 		required={required}
 		autocomplete="off"
-		aria-describedby={hintId}
+		aria-describedby={describedBy}
 		class={fieldControl}
 	/>
 	<datalist id={listId}>
@@ -72,4 +79,31 @@ const normalized: Option[] = options.map((option) =>
 			))
 		}
 	</datalist>
+	<div
+		id={coverageId}
+		data-coverage-message
+		hidden
+		aria-live="polite"
+		class="flex flex-col gap-xs rounded-r-panel border-l-4 border-warning-signal bg-warning-tint p-md text-fine text-ink"
+	>
+		<p>
+			<strong class="font-bold text-warning">{fr.partialCoverage.fieldPrefix}</strong>
+			<span data-coverage-text></span>
+		</p>
+		<a data-coverage-link hidden class="self-start font-bold"></a>
+	</div>
 </div>
+
+<script>
+	import { applyFieldCoverage } from "../../lib/display/field-coverage";
+	import type { ResultDetail } from "../../lib/display/result-card";
+
+	for (const message of document.querySelectorAll<HTMLElement>("[data-coverage-message]")) {
+		const text = message.querySelector<HTMLElement>("[data-coverage-text]");
+		const link = message.querySelector<HTMLAnchorElement>("[data-coverage-link]");
+		if (!text || !link) continue;
+		document.addEventListener("calc:update", (raw) => {
+			applyFieldCoverage({ message, text, link }, (raw as CustomEvent<ResultDetail>).detail ?? {});
+		});
+	}
+</script>

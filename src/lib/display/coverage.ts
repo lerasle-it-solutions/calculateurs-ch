@@ -26,6 +26,7 @@ export const coverageStatus = (
 		(error.municipality !== null ? texts.outOfScopeMunicipality[error.municipality] : texts.outOfScope[error.canton]) ?? "",
 	short: texts.outOfScopeShort,
 	link: officialCalculators[error.canton],
+	kind: "coverage",
 });
 
 /** Message de couverture du ménage, établi sans les revenus ; `null` si le ménage est couvert. */
