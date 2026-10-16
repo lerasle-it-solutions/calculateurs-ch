@@ -1,0 +1,87 @@
+---
+/**
+ * ResultTable — tableau de résultat rempli par le script de la page
+ * (docs/design-system.md § 2.7 et § 4.4). Un tableau ne s'affiche jamais vide :
+ * sans ligne, aucun `<table>` n'est rendu et le bloc est masqué ; seul un
+ * gabarit `<template>` (en-têtes, légende) attend le script, qui construit le
+ * tableau par `fillResultTable` (src/lib/display/result-table.ts) dès qu'il a
+ * au moins une ligne, et le retire quand il n'en a plus.
+ *
+ * Le contenu du slot (notes sous le tableau) suit le sort du tableau.
+ */
+interface Column {
+	label: string;
+	/** Montants : alignés à droite. */
+	align?: "right";
+	/** Colonne affichée seulement quand le script la demande (`optionalColumns`). */
+	optional?: boolean;
+}
+
+interface Props {
+	id: string;
+	heading?: string;
+	caption: string;
+	columns: Column[];
+	/** Lignes connues au build, cellules déjà formatées ; la première est l'en-tête de ligne. */
+	rows?: string[][];
+}
+
+const { id, heading, caption, columns, rows = [] } = Astro.props;
+
+const tableClass = "w-full border-collapse text-label";
+const captionClass = "px-md py-sm text-left text-fine text-ink-muted";
+const headClass = "bg-tint px-md py-sm text-left font-bold";
+const cellClass = "border-b border-hairline px-md py-sm";
+const headCells = columns.filter((column) => rows.length === 0 || !column.optional);
+---
+
+<section id={id} data-result-table data-cell-class={cellClass} hidden={rows.length === 0} class="flex flex-col gap-sm">
+	{heading && <h3 class="text-subheading">{heading}</h3>}
+	<div data-result-table-slot class="overflow-x-auto rounded-panel border border-hairline">
+		{
+			rows.length > 0 && (
+				<table class={tableClass}>
+					<caption class={captionClass}>{caption}</caption>
+					<thead>
+						<tr>
+							{headCells.map((column) => (
+								<th scope="col" class:list={[headClass, column.align === "right" && "text-right"]}>
+									{column.label}
+								</th>
+							))}
+						</tr>
+					</thead>
+					<tbody>
+						{rows.map((cells) => (
+							<tr>
+								{cells.map((text, index) =>
+									index === 0 ? (
+										<th scope="row" class:list={[cellClass, "text-left font-medium"]}>{text}</th>
+									) : (
+										<td class:list={[cellClass, headCells[index]?.align === "right" && "text-right tabular-nums"]}>{text}</td>
+									),
+								)}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			)
+		}
+	</div>
+	<template data-result-table-template>
+		<table class={tableClass}>
+			<caption class={captionClass}>{caption}</caption>
+			<thead>
+				<tr>
+					{columns.map((column) => (
+						<th scope="col" class:list={[headClass, column.align === "right" && "text-right"]} data-optional-column={column.optional ? "" : undefined}>
+							{column.label}
+						</th>
+					))}
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</template>
+	<slot />
+</section>
