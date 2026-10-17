@@ -131,6 +131,11 @@ const catalog = [buybackDemo, lppDemo];
 </CalculatorLayout>
 
 <script>
+	import { attachResultViews } from "../lib/display/result-views";
+
+	// Vues du résultat abonnées à calc:update (ResultCard et CalculationBreakdown n'ont pas de script)
+	attachResultViews();
+
 	// Moteur factice, en JavaScript natif, dans la page (aucun framework).
 	// resultat = montant × (taux / 100). Les deux opérandes sont saisis :
 	// aucune valeur fiscale n'est codée. Rien n'est envoyé nulle part.

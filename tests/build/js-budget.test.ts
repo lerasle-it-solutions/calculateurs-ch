@@ -6,21 +6,26 @@ import { describe, expect, it } from "vitest";
 
 /**
  * Après la construction (`postbuild`, donc aussi sur Cloudflare) : budget de
- * JavaScript de chaque page de dist/ (CLAUDE.md § 3, checklist point 17).
+ * JavaScript de chaque page de dist/ (CLAUDE.md § 3, décision n° 21, checklist
+ * point 17). Tailles minifiées, non compressées : celles des fichiers de dist/.
  *
- * - Au démarrage : scripts en ligne, scripts de la page et morceaux partagés
+ * - Démarrage : scripts en ligne, scripts de la page et morceaux partagés
  *   qu'ils importent statiquement, de proche en proche, chacun compté une fois.
- *   Minifiés, non compressés : la taille des fichiers de dist/. Moins de
- *   30 000 octets par page.
- * - À la demande (`import()` déclenché par une action de l'utilisateur) : chaque
- *   script chargé, avec ses propres imports statiques qui ne sont pas déjà
- *   chargés au démarrage, a son propre budget de 30 000 octets. Le code qui le
- *   charge compte dans la page, puisqu'il fait partie de ses scripts.
+ *   Moins de 30 000 octets.
+ * - Cœur à la demande : chaque `import()` d'un script du démarrage, avec ses
+ *   imports statiques qui ne sont pas déjà chargés au démarrage. Au plus
+ *   40 000 octets. Le code qui le charge compte dans le démarrage.
+ * - Module à la demande distinct : chaque `import()` d'un script chargé à la
+ *   demande (estimateur, graphiques, comparateur…), avec ses imports statiques
+ *   qui ne sont chargés ni au démarrage ni par le chargement qui le déclenche.
+ *   Au plus 15 000 octets.
  *
  * Le message d'échec donne la page, le total et le détail par fichier.
  */
 const DIST = fileURLToPath(new URL("../../dist/", import.meta.url));
-const BUDGET_BYTES = 30_000;
+
+export const BUDGETS = { startup: 29_999, core: 40_000, module: 15_000 } as const;
+type Kind = keyof typeof BUDGETS;
 
 const htmlFiles = (dir: string): string[] =>
 	readdirSync(dir).flatMap((entry) => {
@@ -37,32 +42,25 @@ export const dynamicImports = (code: string): string[] =>
 	[...code.matchAll(/\bimport\(\s*["'`](\.{1,2}\/[^"'`]+)["'`]\s*\)/g)].map((match) => match[1]!);
 
 type Part = { name: string; bytes: number };
-type Load = { label: string; parts: Part[]; total: number };
-
-const read = (url: string): string => readFileSync(join(DIST, url), "utf8");
+export type Load = { kind: Kind; label: string; parts: Part[]; total: number };
+/** Accès aux fichiers construits, par URL absolue (« /_astro/x.js ») : réel ou fictif dans les tests. */
+export type Files = { read: (url: string) => string; size: (url: string) => number };
 
 /** Fichiers chargés par `entries` et leurs imports statiques, hors `loaded` ; complète `loaded`. */
-const closure = (entries: string[], loaded: Set<string>): string[] => {
+const closure = (files: Files, entries: string[], loaded: Set<string>): string[] => {
 	const added: string[] = [];
 	const visit = (url: string) => {
 		if (loaded.has(url)) return;
 		loaded.add(url);
 		added.push(url);
-		for (const target of staticImports(read(url))) visit(posix.join(posix.dirname(url), target));
+		for (const target of staticImports(files.read(url))) visit(posix.join(posix.dirname(url), target));
 	};
 	entries.forEach(visit);
 	return added;
 };
 
-const load = (label: string, inline: Part[], files: string[]): Load => {
-	const parts = [...inline, ...files.map((url) => ({ name: url, bytes: statSync(join(DIST, url)).size }))];
-	return { label, parts, total: parts.reduce((sum, part) => sum + part.bytes, 0) };
-};
-
-/** Chargement au démarrage d'une page, puis chaque chargement à la demande qu'elle peut déclencher. */
-const pageLoads = (file: string): Load[] => {
-	const html = readFileSync(file, "utf8");
-	const page = `/${relative(DIST, file)}`;
+/** Chargement au démarrage d'une page, puis chaque chargement à la demande qu'elle peut déclencher, de proche en proche. */
+export const pageLoads = (html: string, page: string, files: Files): Load[] => {
 	const inline: Part[] = [];
 	const sources: string[] = [];
 	for (const [, attributes, body] of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
@@ -71,29 +69,43 @@ const pageLoads = (file: string): Load[] => {
 		if (src) sources.push(src);
 		else inline.push({ name: `script en ligne n° ${inline.length + 1}`, bytes: Buffer.byteLength(body!) });
 	}
-	const loaded = new Set<string>();
-	const startup = closure(sources, loaded);
-	const loads = [load(`${page} (démarrage)`, inline, startup)];
+	const load = (kind: Kind, label: string, own: Part[], urls: string[]): Load => {
+		const parts = [...own, ...urls.map((url) => ({ name: url, bytes: files.size(url) }))];
+		return { kind, label, parts, total: parts.reduce((sum, part) => sum + part.bytes, 0) };
+	};
 
+	const startupLoaded = new Set<string>();
+	const startup = closure(files, sources, startupLoaded);
+	const loads = [load("startup", `${page} (démarrage)`, inline, startup)];
 	const seen = new Set<string>();
-	const pending = [...startup];
-	while (pending.length > 0) {
-		const url = pending.shift()!;
-		for (const target of dynamicImports(read(url))) {
-			const chunk = posix.join(posix.dirname(url), target);
-			if (seen.has(chunk) || loaded.has(chunk)) continue;
-			seen.add(chunk);
-			// Ce qui est déjà chargé au démarrage ne se recharge pas
-			const files = closure([chunk], new Set(loaded));
-			loads.push(load(`${page} (à la demande : ${chunk})`, [], files));
-			pending.push(...files);
+
+	// `available` : ce qui est déjà chargé quand `from` déclenche ses import() — le démarrage, plus la chaîne qui y mène
+	const follow = (from: string[], available: Set<string>, kind: Kind) => {
+		for (const url of from) {
+			for (const target of dynamicImports(files.read(url))) {
+				const chunk = posix.join(posix.dirname(url), target);
+				if (seen.has(chunk) || available.has(chunk)) continue;
+				seen.add(chunk);
+				const after = new Set(available);
+				const added = closure(files, [chunk], after);
+				loads.push(load(kind, `${page} (${kind === "core" ? "cœur à la demande" : "module à la demande"} : ${chunk})`, [], added));
+				follow(added, after, "module");
+			}
 		}
-	}
+	};
+	follow(startup, startupLoaded, "core");
 	return loads;
 };
 
 const describeLoad = ({ label, parts, total }: Load): string =>
 	`${label} : ${total} octets (${parts.map((part) => `${part.name} ${part.bytes}`).join(" + ") || "aucun script"})`;
+
+const overBudget = (loads: Load[]): string[] => loads.filter((entry) => entry.total > BUDGETS[entry.kind]).map(describeLoad);
+
+const distFiles: Files = {
+	read: (url) => readFileSync(join(DIST, url), "utf8"),
+	size: (url) => statSync(join(DIST, url)).size,
+};
 
 describe("budget de JavaScript des pages construites", () => {
 	it("le contrôle suit les imports statiques et dynamiques d'un module minifié", () => {
@@ -102,14 +114,37 @@ describe("budget de JavaScript des pages construites", () => {
 		expect(dynamicImports(code)).toEqual(["./lazy.js"]);
 	});
 
+	it("un module imbriqué ne compte pas ce que le démarrage et le cœur qui le charge ont déjà chargé", () => {
+		const code: Record<string, string> = {
+			"/_astro/page.js": `import"./shared.js";const l=()=>import("./core.js");`,
+			"/_astro/shared.js": ``,
+			"/_astro/core.js": `import"./shared.js";import"./engine.js";const e=()=>import("./estimator.js");`,
+			"/_astro/engine.js": ``,
+			"/_astro/estimator.js": `import"./engine.js";import"./estimator-only.js";`,
+			"/_astro/estimator-only.js": ``,
+		};
+		const files: Files = { read: (url) => code[url]!, size: () => 1000 };
+		const loads = pageLoads(`<script>x</script><script type="module" src="/_astro/page.js"></script>`, "/p", files);
+		expect(loads.map((entry) => [entry.kind, entry.parts.map((part) => part.name)])).toEqual([
+			["startup", ["script en ligne n° 1", "/_astro/page.js", "/_astro/shared.js"]],
+			["core", ["/_astro/core.js", "/_astro/engine.js"]],
+			["module", ["/_astro/estimator.js", "/_astro/estimator-only.js"]],
+		]);
+	});
+
+	it("plafonds : démarrage sous 30 000 octets, cœur au plus 40 000, module au plus 15 000", () => {
+		const load = (kind: Kind, total: number): Load => ({ kind, label: kind, parts: [], total });
+		expect(overBudget([load("startup", 29_999), load("core", 40_000), load("module", 15_000)])).toEqual([]);
+		expect(overBudget([load("startup", 30_000), load("core", 40_001), load("module", 15_001)])).toHaveLength(3);
+	});
+
 	it("dist/ existe : le test tourne après la construction", () => {
 		expect(existsSync(DIST)).toBe(true);
 	});
 
-	it(`chaque chargement, au démarrage ou à la demande, reste sous ${BUDGET_BYTES} octets`, () => {
-		const loads = htmlFiles(DIST).flatMap(pageLoads);
+	it("chaque chargement, au démarrage ou à la demande, reste sous son plafond", () => {
+		const loads = htmlFiles(DIST).flatMap((file) => pageLoads(readFileSync(file, "utf8"), `/${relative(DIST, file)}`, distFiles));
 		expect(loads.length).toBeGreaterThan(0);
-		const overBudget = loads.filter((entry) => entry.total >= BUDGET_BYTES).map(describeLoad);
-		expect(overBudget, `Budget de ${BUDGET_BYTES} octets dépassé`).toEqual([]);
+		expect(overBudget(loads), "Budget de JavaScript dépassé").toEqual([]);
 	});
 });

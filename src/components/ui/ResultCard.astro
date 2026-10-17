@@ -6,9 +6,10 @@
  * en `text-display text-accent`, l'élément le plus grand et le plus contrasté
  * de la page. Le reste de l'interface s'efface devant lui.
  *
- * JavaScript autorisé ici : le composant écoute un évènement émis par le
- * `<script>` de la page (calcul en JavaScript natif) et met à jour la valeur
- * affichée et son état. Il ne contient aucune formule.
+ * Aucun script ici : la valeur rendue à la construction (cas exemple) s'affiche
+ * sans JavaScript. Le script de la page, chargé à la demande, abonne la carte à
+ * l'évènement `calc:update` (`attachResultViews`,
+ * src/lib/display/calculator-runtime.ts). Il ne contient aucune formule.
  *
  * Quand le calcul ne rend pas de résultat (hors périmètre, donnée manquante,
  * saisie à corriger), `detail.status` remplace le montant par son message et
@@ -55,35 +56,3 @@ const {
 	{caption && <span class="text-fine text-ink-muted">{caption}</span>}
 </output>
 
-<script>
-	import { applyResult, coverageOnly, type ResultDetail } from "../../lib/display/result-card";
-
-	for (const card of document.querySelectorAll<HTMLElement>("[data-result-card]")) {
-		const eventName = card.dataset.event ?? "calc:update";
-		const value = card.querySelector<HTMLElement>("[data-result-value]");
-		if (!value) continue;
-		const slots = {
-			value,
-			message: card.querySelector<HTMLElement>("[data-result-status]"),
-			messageText: card.querySelector<HTMLElement>("[data-status-text]"),
-			messageLink: card.querySelector<HTMLAnchorElement>("[data-status-link]"),
-			note: card.querySelector<HTMLElement>("[data-result-note]"),
-		};
-
-		document.addEventListener(eventName, (raw) => {
-			const detail = (raw as CustomEvent<ResultDetail>).detail;
-			if (detail) applyResult(slots, detail);
-		});
-	}
-
-	// Limite de couverture sous le champ commune (MunicipalityField) : le conteneur sert d'emplacement du montant
-	for (const message of document.querySelectorAll<HTMLElement>("[data-coverage-message]")) {
-		const slots = {
-			value: message,
-			message,
-			messageText: message.querySelector<HTMLElement>("[data-coverage-text]"),
-			messageLink: message.querySelector<HTMLAnchorElement>("[data-coverage-link]"),
-		};
-		document.addEventListener("calc:update", (raw) => applyResult(slots, coverageOnly((raw as CustomEvent<ResultDetail>).detail ?? {})));
-	}
-</script>

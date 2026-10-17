@@ -691,9 +691,22 @@ les bibliothèques de composants, et que nous n'avons pas.
 Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée, moins de 30 kb de JS
 par page (minifié, non compressé, préchargement compris), polices auto-hébergées, **aucune requête vers un domaine tiers**.
 
-Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget
-de 30 000 octets et ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans
-la page (décision du 05.10.2026, W08 étape 0).
+Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget et
+ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans la page (décision du
+05.10.2026, W08 étape 0). Trois plafonds, vérifiés par `tests/build/js-budget.test.ts` (décision
+n° 21, 17.10.2026) :
+
+- **Démarrage** : moins de 30 000 octets ; objectif interne de moins de 10 000 sur une page de
+  calculateur, dont le premier résultat (cas exemple) est rendu à la construction.
+- **Cœur à la demande** : tout ce qu'il faut pour recalculer après une saisie — moteur, champs,
+  chemins, profils, affichage du résultat —, chargé par le démarrage dès le premier focus,
+  `pointerdown` ou `touchstart` sur le formulaire : au plus 40 000 octets. Pendant le chargement,
+  la carte garde le résultat de l'exemple : aucun état vide, aucun indicateur de chargement.
+- **Module à la demande distinct** : toute fonctionnalité qui n'est pas nécessaire au premier
+  recalcul (estimateur du salaire brut, graphiques, comparateur communal, copie du lien,
+  impression, plus tard A4), chargée par le cœur quand elle sert — les graphiques après le premier
+  résultat, le comparateur au clic : au plus 15 000 octets, sans compter ce que le démarrage et le
+  cœur ont déjà chargé.
 
 ---
 
@@ -924,6 +937,7 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 18  | **Cas exemple obligatoire** : chaque calculateur s'ouvre pré-rempli, montant calculé au build | Le visiteur voyait « — » au lieu d'un chiffre ; tout montant « type » vient du moteur, jamais de la main (R3) (16.10.2026) |
 | 19  | **Page calculateur inversée** : calcul d'abord ; une ligne de périmètre au-dessus du formulaire, liée au détail « Ce que ce calcul suppose » ; exclusions dans la carte résultat au moment où la saisie les déclenche (P5) | Le chiffre en 10 secondes, la preuve en un clic ; rien n'est supprimé, tout est déplacé (16.10.2026) |
 | 20  | **Thème sombre écarté** | Les lecteurs impriment et citent ; la feuille d'impression et la cohérence des graphiques priment (16.10.2026) |
+| 21  | **Budget JavaScript en trois plafonds** : démarrage < 30 000 octets (objectif < 10 000), cœur à la demande ≤ 40 000, module distinct ≤ 15 000 | Le moteur seul pèse ~16 ko minifiés ; le calcul d'A3 sans nouvelle fonctionnalité dépassait déjà 30 000 octets à la demande. Le premier résultat étant rendu au build, la page ne charge au démarrage qu'un chargeur de moins de 1 ko (17.10.2026) |
 
 ---
 

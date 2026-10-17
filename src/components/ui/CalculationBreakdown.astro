@@ -7,10 +7,10 @@
  * Présentation en registre (docs/design-system.md § 2.5 et § 2.7) : libellé à
  * gauche, montant aligné à droite, lignes séparées d'un filet.
  *
- * JavaScript : le composant écoute l'évènement `calc:update` émis par le
- * `<script>` de la page et reconstruit les lignes depuis `detail.breakdown`.
- * Il ne contient aucune formule. Sans JavaScript, il affiche les `rows`
- * fournies au rendu (ou l'état vide).
+ * Aucun script ici : sans JavaScript, il affiche les `rows` fournies au rendu
+ * (cas exemple) ou l'état vide. Le script de la page, chargé à la demande,
+ * reconstruit les lignes depuis `detail.breakdown` de `calc:update`
+ * (`attachResultViews`, src/lib/display/calculator-runtime.ts).
  */
 import { fr } from "../../i18n/fr";
 
@@ -103,43 +103,3 @@ const {
 	</div>
 </details>
 
-<script>
-	type Row = { label: string; detail?: string; amount: string; qualifier?: string; note?: string };
-
-	const escapeHtml = (value: string) =>
-		value.replace(
-			/[&<>"]/g,
-			(char) =>
-				({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] as string,
-		);
-
-	// Classes répétées, mises en commun pour le budget de JavaScript.
-	const cell = "border-b border-hairline px-md py-sm";
-	const fine = "block text-fine text-ink-muted";
-
-	const rowHtml = (row: Row) =>
-		`<tr class="align-top"><td class="${cell}"><span class="block">${escapeHtml(row.label)}</span>` +
-		(row.detail ? `<span class="${fine} tabular-nums">${escapeHtml(row.detail)}</span>` : "") +
-		(row.note ? `<span class="${fine}">${escapeHtml(row.note)}</span>` : "") +
-		`</td><td class="${cell} text-right tabular-nums">${escapeHtml(row.amount)}` +
-		(row.qualifier ? `<span class="block text-fine">${escapeHtml(row.qualifier)}</span>` : "") +
-		`</td></tr>`;
-
-	const emptyRowHtml = (label: string) =>
-		`<tr><td colspan="2" class="px-md py-sm text-fine text-ink-muted">${escapeHtml(label)}</td></tr>`;
-
-	for (const el of document.querySelectorAll<HTMLElement>("[data-breakdown]")) {
-		const eventName = el.dataset.event ?? "calc:update";
-		const emptyLabel = el.dataset.emptyLabel ?? "";
-		const body = el.querySelector<HTMLElement>("[data-breakdown-body]");
-		if (!body) continue;
-
-		document.addEventListener(eventName, (raw) => {
-			const detail = (raw as CustomEvent<{ breakdown?: Row[] }>).detail;
-			if (!detail || !Array.isArray(detail.breakdown)) return;
-			body.innerHTML = detail.breakdown.length
-				? detail.breakdown.map(rowHtml).join("")
-				: emptyRowHtml(emptyLabel);
-		});
-	}
-</script>

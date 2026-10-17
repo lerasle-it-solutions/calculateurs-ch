@@ -525,7 +525,7 @@ fois, dans `ResultCard`** : tous les calculateurs l'ont, ce n'est pas un choix p
 
 | Budget | Valeur |
 | --- | --- |
-| JavaScript par page | < 30 ko |
+| JavaScript par page | < 30 ko au démarrage (objectif < 10 ko sur un calculateur) ; cœur à la demande ≤ 40 ko, module distinct ≤ 15 ko (`CLAUDE.md` § 3, décision n° 21) |
 | CSS total | < 100 ko (actuel ≈ 15 ko) |
 | Polices | 2 fichiers woff2 latin ≈ 22 ko, `font-display: swap` (Fontsource) |
 | LCP (4G simulée) | < 1,5 s |
