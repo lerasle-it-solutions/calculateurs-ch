@@ -38,8 +38,10 @@ describe("adresse de contact", () => {
 	});
 
 	it("aucun lien mailto: du site ne cache l'adresse derrière un libellé", () => {
+		// Seule exception, « Signaler une erreur » (docs/design-system.md § 2.4) : courriel prérempli,
+		// à côté de l'adresse affichée en clair dans le même pied de page.
 		const hidden = pages.flatMap(({ route, html }) =>
-			mailtoLinks(html)
+			mailtoLinks(html.replace(/<a\b[^>]*\sdata-report-error[^>]*>[\s\S]*?<\/a>/g, ""))
 				.filter((link) => link.text !== link.target)
 				.map((link) => `${route} : « ${link.text} » → ${link.target}`),
 		);

@@ -11,6 +11,8 @@ const chrome = (html: string, tag: "header" | "footer"): string | undefined =>
 	html
 		.match(new RegExp(`<${tag}[\\s>][\\s\\S]*?</${tag}>`))?.[0]
 		.replace(/ aria-current="page"/g, "")
+		// « Signaler une erreur » porte l'URL de sa page (docs/design-system.md § 2.4)
+		.replace(/(<a data-report-error href=")[^"]*"/, "$1\"")
 		.replace(/ data-astro-cid-[a-z0-9]+/g, "");
 
 describe("en-tête et pied de page", () => {

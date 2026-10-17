@@ -93,11 +93,15 @@ export const fr = {
 	},
 
 	header: {
-		familiesNavLabel: "Familles de calculateurs",
+		navLabel: "Navigation principale",
 		/** Nom accessible du lien du logo vers l'accueil. */
 		homeLabel: "calculateurs.ch — accueil",
-		/** Bouton du menu replié, sous `md`. */
-		menu: "Menu",
+		/** Trois entrées (docs/design-system.md § 2.4) : pas de bouton Menu sous cinq. */
+		calculators: "Calculateurs",
+		guides: "Guides",
+		methodology: "Méthodologie",
+		/** Pastille liée à /donnees/ : date de vérification du site, jamais « à jour ». */
+		verified: "Sources vérifiées le",
 	},
 
 	/** Libellés des familles. Les segments d'URL vivent dans calculators/families.ts. */
@@ -110,6 +114,17 @@ export const fr = {
 
 	footer: {
 		navLabel: "Pied de page",
+		repository: "Code source sur GitHub",
+		verified: "Sources vérifiées le",
+		/** Courriel prérempli avec l'URL de la page, composé au build : aucune saisie du calculateur. */
+		reportError: "Signaler une erreur",
+		reportSubject: "Erreur sur calculateurs.ch",
+		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
+		/**
+		 * Ligne d'identité de l'éditeur, À REMPLIR par le mainteneur. Tant qu'elle commence par « [ »,
+		 * le pied de page ne l'affiche pas : le contrôle des notes de rédaction refuserait la page.
+		 */
+		publisher: "[À REMPLIR, ex. Édité par Lerasle IT Solutions, Epalinges. Aucun prestataire ne finance ni n'influence les calculs.]",
 		methodology: "Méthodologie",
 		data: "Données et sources",
 		legal: "Mentions légales",
@@ -305,6 +320,14 @@ export const fr = {
 		loadRetry: "Réessayer",
 		/** Même échec, dans la barre de résultat mobile. */
 		loadFailedShort: "Calcul indisponible",
+	},
+
+	guidesPage: {
+		title: "Guides — calculateurs.ch",
+		heading: "Guides",
+		lead: "Les règles derrière chaque calcul, expliquées et sourcées, avec un exemple chiffré.",
+		/** 155 caractères au plus. */
+		metaDescription: "Guides de prévoyance et de fiscalité pour la Suisse romande : les règles derrière chaque calculateur, expliquées et sourcées.",
 	},
 
 	/** Sous le chiffre de la carte et sous la carte (docs/design-system.md § 4.4). */

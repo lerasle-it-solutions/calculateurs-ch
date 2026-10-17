@@ -1,87 +1,58 @@
 ---
 /**
- * Header — logo et navigation des quatre familles (docs/design-system.md § 2.4).
- * Aucun JavaScript : dès `md`, la navigation tient sur la ligne du logo ; en
- * dessous, elle se replie dans un <details> natif, ouvert au clavier comme à
- * la souris. Collant, jamais masqué au défilement.
+ * Header — logotype, trois entrées et pastille de vérification
+ * (docs/design-system.md § 2.4). Aucun JavaScript, aucun bouton Menu : sous
+ * cinq entrées, elles restent visibles à toutes les largeurs ; sous `md`, la
+ * navigation passe sur une seconde ligne. Collant, jamais masqué au défilement.
+ *
+ * Pastille : « Sources vérifiées le JJ.MM.AAAA », liée à /donnees/ — la date de
+ * vérification du site, calculée par une seule fonction
+ * (src/calculators/site-verification.ts). Jamais « à jour ».
  */
 import Logo from "../../assets/brand/logo.svg";
 import { fr } from "../../i18n/fr";
-import { PUBLISHED_FAMILIES, familyUrl } from "../../calculators/families";
-
-// Seules les familles qui ont leur page sont liées : jamais de lien vers une 404.
-const families = PUBLISHED_FAMILIES.map((family) => ({
-	label: fr.family[family],
-	url: familyUrl(family),
-}));
+import { FAMILY_SEGMENTS } from "../../calculators/families";
+import { formatVerificationDate, siteVerifiedOn } from "../../calculators/site-verification";
 
 const path = Astro.url.pathname;
-const isCurrent = (url: string) => path.startsWith(url);
+const inGuides = path.includes("/guides/");
+const inFamily = Object.values(FAMILY_SEGMENTS).some((segment) => path.startsWith(`/${segment}/`));
+const entries = [
+	{ label: fr.header.calculators, url: "/#calculateurs", current: inFamily && !inGuides },
+	{ label: fr.header.guides, url: "/guides/", current: inGuides || path === "/guides/" },
+	{ label: fr.header.methodology, url: "/methodologie/", current: path.startsWith("/methodologie/") },
+];
+const verifiedOn = siteVerifiedOn();
 ---
 
 <header class="sticky top-0 z-10 border-b border-hairline bg-paper">
-	<div
-		class="mx-auto flex min-h-4xl w-full max-w-page items-center justify-between gap-md px-lg md:gap-xl md:px-2xl"
-	>
+	<div class="mx-auto flex min-h-4xl w-full max-w-page flex-wrap items-center justify-between gap-x-md gap-y-xs px-lg py-sm md:flex-nowrap md:gap-x-xl md:px-2xl md:py-0">
 		<a href="/" aria-label={fr.header.homeLabel} class="inline-flex shrink-0 no-underline">
 			<Logo class="h-xl w-auto md:h-2xl" aria-hidden="true" />
 		</a>
 
-		<nav aria-label={fr.header.familiesNavLabel} class="hidden md:block">
-			<ul class="flex items-center gap-xl">
+		{/* Sous md, sur deux lignes à côté du logo : l'en-tête garde deux rangées */}
+		<a href="/donnees/" class="inline-flex flex-col rounded-control bg-tint px-sm py-2xs text-fine font-bold text-ink no-underline hover:underline md:order-last md:flex-row md:gap-xs md:rounded-button">
+			<span>{fr.header.verified}</span>
+			<time datetime={verifiedOn}>{formatVerificationDate(verifiedOn)}</time>
+		</a>
+
+		<nav aria-label={fr.header.navLabel} class="w-full md:ml-auto md:w-auto">
+			<ul class="flex flex-wrap items-center gap-x-xl gap-y-xs">
 				{
-					families.map((family) => (
+					entries.map((entry) => (
 						<li>
 							<a
-								href={family.url}
-								aria-current={isCurrent(family.url) ? "page" : undefined}
-								class="text-label font-bold text-ink no-underline transition-colors duration-150 hover:text-accent aria-[current=page]:text-accent aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8"
+								href={entry.url}
+								aria-current={entry.current ? "page" : undefined}
+								class="inline-flex min-h-3xl items-center text-label font-bold text-ink no-underline transition-colors duration-150 hover:text-accent aria-[current=page]:text-accent aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8"
 							>
-								{family.label}
+								{entry.label}
 							</a>
 						</li>
 					))
 				}
 			</ul>
 		</nav>
-
-		<details class="md:hidden">
-			<summary
-				class="flex min-h-3xl cursor-pointer list-none items-center gap-sm rounded-button px-md text-label font-bold text-ink hover:bg-tint [&::-webkit-details-marker]:hidden"
-			>
-				<svg
-					aria-hidden="true"
-					viewBox="0 0 20 20"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					class="size-icon"
-				>
-					<path d="M3 5h14M3 10h14M3 15h14"></path>
-				</svg>
-				{fr.header.menu}
-			</summary>
-			<nav
-				aria-label={fr.header.familiesNavLabel}
-				class="absolute inset-x-0 top-full border-b border-hairline bg-paper px-lg py-xl shadow-raised"
-			>
-				<ul class="flex flex-col gap-xs">
-					{
-						families.map((family) => (
-							<li>
-								<a
-									href={family.url}
-									aria-current={isCurrent(family.url) ? "page" : undefined}
-									class="flex min-h-3xl items-center rounded-control px-md text-body font-bold text-ink no-underline hover:bg-tint aria-[current=page]:text-accent aria-[current=page]:underline"
-								>
-									{family.label}
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</nav>
-		</details>
 	</div>
 </header>
