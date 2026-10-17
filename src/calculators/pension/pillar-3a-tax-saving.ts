@@ -213,6 +213,7 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	title: "Économie d'impôt d'un versement 3a",
 	metaDescription:
 		"Calculez l'impôt économisé grâce à votre versement au pilier 3a dans votre commune romande, selon votre affiliation à un 2e pilier.",
+	question: "Combien d'impôt votre versement 3a vous fait-il économiser ?",
 	metaTitle: `Versement 3a ${year} : combien d'impôt économisez-vous ?`,
 	promise: "L'impôt économisé par votre versement au pilier 3a.",
 	exitTaxReminder: {

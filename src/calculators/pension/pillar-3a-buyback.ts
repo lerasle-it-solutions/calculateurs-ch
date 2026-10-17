@@ -169,6 +169,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
 	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
+	question: "Combien d'impôt économisez-vous en rachetant vos années de 3a manquées ?",
 	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : combien d'impôt économisez-vous ?`,
 	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l'impôt économisé.",
 	exitTaxReminder: {

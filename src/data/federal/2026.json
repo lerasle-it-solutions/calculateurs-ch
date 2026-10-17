@@ -397,5 +397,9 @@
 			"effectiveFrom": "2006-01-01",
 			"note": "LPP (RS 831.40), art. 79b al. 3, 1re phrase : les prestations résultant d'un rachat ne peuvent être versées sous forme de capital avant l'échéance d'un délai de trois ans. Relevé W09 (docs/plan/releve-W09.md) ; PDF archivé dans sources/pdf/2026/ du dépôt privé."
 		}
+	},
+	"pillar3aContributionDeadline": {
+		"todo": "Date à laquelle le versement 3a doit être crédité pour être déductible l'année de cotisation (circulaire AFC n° 18a, ch. 5.1) : à relever à la source, au format MM-JJ, avec verifiedOn et effectiveFrom.",
+		"sourceId": "afc-circular-18a"
 	}
 }

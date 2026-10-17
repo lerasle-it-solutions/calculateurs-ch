@@ -169,6 +169,8 @@ export type CalculatorDefinition = {
 	 * question (« Rachat LPP 2026 : combien d'impôt économisez-vous ? »).
 	 */
 	metaTitle: string;
+	/** La question à laquelle le calculateur répond, FRANÇAIS : carte de l'accueil. */
+	question?: string;
 	/** Une phrase, FRANÇAIS, sous le titre : ce que le visiteur obtient (§ 4.1, bloc 2). */
 	promise: string;
 	/** Une phrase, FRANÇAIS, au-dessus du formulaire : pour qui, cantons, année (§ 4.1, bloc 3). */

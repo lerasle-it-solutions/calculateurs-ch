@@ -365,6 +365,9 @@ export const federalDataSchema = z
 		averageHealthInsurancePremiums: z.union([averageHealthInsurancePremiumsSchema, todoSchema]).optional(),
 		// Rachat LPP (A3) : absent tant qu'une année n'est pas relevée
 		lppBuyback: lppBuybackSchema.optional(),
+		// Date limite du versement 3a de l'année (compte à rebours de l'accueil), au format MM-JJ. Hors de
+		// `pillar3a` : un TODO n'y rend pas l'année indisponible pour A1 et A2 (src/data/tax-years.ts).
+		pillar3aContributionDeadline: z.union([valueSchema(z.string().regex(/^\d{2}-\d{2}$/)), todoSchema]).optional(),
 	})
 	.passthrough();
 export type FederalData = z.infer<typeof federalDataSchema>;

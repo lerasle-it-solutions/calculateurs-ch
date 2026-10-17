@@ -1,0 +1,13 @@
+/**
+ * Compte à rebours du versement 3a de l'accueil, calculé dans le navigateur :
+ * jours restants jusqu'à la date limite incluse, dans la fenêtre d'affichage
+ * de l'année ; `null` hors fenêtre. Dates locales, à minuit ; « MM-JJ ». La
+ * date limite vient des données (src/calculators/home.ts). Sans DOM.
+ */
+export function countdownDays(today: Date, deadline: string, startsOn: string): number | null {
+	const year = today.getFullYear();
+	const at = (monthDay: string) => new Date(year, Number(monthDay.slice(0, 2)) - 1, Number(monthDay.slice(3, 5)));
+	const day = new Date(year, today.getMonth(), today.getDate());
+	if (day < at(startsOn) || day > at(deadline)) return null;
+	return Math.round((at(deadline).getTime() - day.getTime()) / 86_400_000) + 1;
+}

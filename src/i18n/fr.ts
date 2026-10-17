@@ -17,6 +17,8 @@ export const fr = {
 		baseline: "Calculateurs suisses romands qui affichent leurs sources.",
 		/** Adresse de contact, toujours affichée en clair dans son lien mailto: (pied de page, pages légales). */
 		contactEmail: "contact@calculateurs.ch",
+		/** Dépôt public du code source (adresse déjà publiée : mentions légales, méthodologie). */
+		repositoryUrl: "https://github.com/lerasle-it-solutions/calculateurs-ch",
 	},
 
 	common: {
@@ -42,6 +44,47 @@ export const fr = {
 	},
 
 	home: {
+		heroTitle: "Combien votre 3e pilier vous fait-il économiser d'impôt ?",
+		heroLead: "Votre commune, votre revenu imposable, votre versement : le calcul se fait dans votre navigateur.",
+		/** Libellés courts des trois champs du héros. */
+		heroMunicipality: "Commune de domicile",
+		heroIncome: "Revenu imposable",
+		heroContribution: (year: number): string => `Montant versé au 3a en ${year}`,
+		refine: "Affiner avec ma situation complète",
+		/**
+		 * Compte à rebours, du 1er octobre à la date limite. `deadline` : la date lue dans les données,
+		 * formatée au build (« 31 décembre ») ; « {days} » est remplacé dans le navigateur.
+		 */
+		countdown: (year: number, deadline: string): string =>
+			`Il reste {days} jours pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}.`,
+		countdownOneDay: (year: number, deadline: string): string =>
+			`Il reste 1 jour pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}.`,
+		proofHeading: "Les données",
+		proofCantons: (count: number): string => `${count} cantons romands`,
+		proofMunicipalities: (count: number): string => `${formatSwissNumber(count)} communes`,
+		proofVerified: "Barèmes vérifiés le",
+		proofSource: "Code source ouvert",
+		calculatorsHeading: "Les calculateurs",
+		/** Résultat type d'une carte, calculé au build sur le cas exemple. */
+		typicalResult: (municipality: string, income: string, saving: string): string => `${municipality}, ${income} : ${saving} d'impôt en moins`,
+		openCalculator: "Calculer",
+		whyHeading: "Pourquoi ces chiffres sont justes",
+		why: [
+			{
+				title: "Calculé deux fois, jamais au taux marginal",
+				text: "Votre impôt est calculé avant et après la déduction ; l'économie est la différence exacte, pas un taux marginal multiplié par votre versement.",
+			},
+			{
+				title: "Chaque montant sourcé et daté",
+				text: "Barèmes, coefficients et plafonds viennent des textes officiels, chacun avec sa date de vérification, publiée sur la page des données.",
+			},
+			{
+				title: "Rien ne quitte votre navigateur",
+				text: "Le calcul se fait sur votre appareil. Aucun compte, aucun cookie de suivi : vos saisies ne sont envoyées nulle part.",
+			},
+		],
+		guideHeading: "Le guide",
+		guideAction: "Lire le guide",
 		/** Lien d'action à la fin de chaque carte de famille. */
 		familyCardAction: "Voir les calculateurs",
 		/** Seule ligne des familles sans calculateur publié, libellés de `fr.family`. Aucune date promise. */
