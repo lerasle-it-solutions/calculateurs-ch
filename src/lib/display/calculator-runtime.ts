@@ -20,6 +20,7 @@ import { familyOf, invalidInputStatus, municipalityKey, type EstimateReading, ty
 import type { EstimatorReading, Household } from "./gross-estimator-ui";
 import { eligibilityState, type EligibilityItem } from "./eligibility";
 import { attachResultViews } from "./result-views";
+import { decodeShareState } from "./share-state";
 import { hydratePageData, type HouseholdPagePart, type TaxDataFile } from "./tax-data";
 
 export type CalculatorRuntime<D extends HouseholdPageData, T> = {
@@ -219,8 +220,32 @@ export function startCalculator<D extends HouseholdPageData & { estimator: Gross
 	// Le bandeau du cas exemple disparaît à la première saisie (§ 4.2)
 	form.addEventListener("input", () => document.querySelector("[data-example-banner]")?.remove(), { once: true });
 
+	/** État partagé du fragment d'URL (share-state.ts) : il remplace le cas exemple. */
+	const restore = (values: FormValues) => {
+		const set = () => {
+			for (const [name, value] of Object.entries(values)) {
+				const element = form.elements.namedItem(name);
+				// Champ, liste ou groupe de boutons radio (RadioNodeList) : tous ont une valeur
+				if (element && "value" in element) (element as { value: string }).value = value;
+			}
+		};
+		set();
+		// Un champ par enfant : créés d'après le nombre restauré, puis remplis
+		syncChildAges();
+		set();
+		for (const details of sameAs) {
+			details.open = values.federalDiffers === "yes";
+			const copy = details.querySelector<Input>("[data-number]");
+			const source = field(details.dataset.sameAs!);
+			if (copy && source && !details.open) copy.value = source.value;
+		}
+		document.querySelector("[data-example-banner]")?.remove();
+	};
+
 	// Saisies faites pendant le chargement du cœur : profil coché, chemin choisi, nombre d'enfants
 	all<Input>("[data-profile-values]:checked").forEach(applyProfile);
+	const shared = decodeShareState(location.hash);
+	if (shared) restore(shared);
 	syncChildAges();
 	if (path() === "gross") void switchPath("gross");
 	else update();

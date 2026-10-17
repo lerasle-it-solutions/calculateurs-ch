@@ -19,6 +19,8 @@
  * message neutre (`data-load-failed`) ; la carte porte un bouton « Réessayer ».
  * Toute nouvelle interaction relance le chargement.
  */
+import { SHARE_PREFIX } from "./share-state";
+
 // Signature de méthode : le cœur type ses données (TaxDataFile), le chargeur ne les lit pas
 export type PageScript = { start(clicked: Element | null, data: unknown): void };
 
@@ -82,5 +84,5 @@ export function onFirstInteraction(load: () => Promise<PageScript>): void {
 		);
 	};
 	for (const type of EVENTS) root.addEventListener(type, handle, { passive: true });
-	if (location.hash.length > 1) handle(new Event("hashchange"));
+	if (location.hash.startsWith(SHARE_PREFIX)) handle(new Event("hashchange"));
 }
