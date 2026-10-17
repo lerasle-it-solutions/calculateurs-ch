@@ -170,7 +170,8 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	title: "Rachat rétroactif du pilier 3a",
 	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
 	question: "Combien d'impôt économisez-vous en rachetant vos années de 3a manquées ?",
-	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : combien d'impôt économisez-vous ?`,
+	// Moins de 60 caractères (checklist, point 16) : l'année et le bénéfice, en question
+	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : quelle économie d'impôt ?`,
 	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l'impôt économisé.",
 	exitTaxReminder: {
 		text: "Le capital 3a sera imposé à son retrait : cette économie n'est pas un gain net.",

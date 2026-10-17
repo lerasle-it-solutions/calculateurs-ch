@@ -166,7 +166,8 @@ export type CalculatorDefinition = {
 	metaDescription: string;
 	/**
 	 * Balise <title>, FRANÇAIS : année de calcul et bénéfice, sous forme de
-	 * question (« Rachat LPP 2026 : combien d'impôt économisez-vous ? »).
+	 * question, en moins de 60 caractères (checklist, point 16) :
+	 * « Rachat LPP 2026 : combien d'impôt économisez-vous ? ».
 	 */
 	metaTitle: string;
 	/** La question à laquelle le calculateur répond, FRANÇAIS : carte de l'accueil. */

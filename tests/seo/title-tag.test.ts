@@ -11,13 +11,14 @@ import { renderAllPages } from "./site-pages";
 const titleOf = (html: string) => html.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/&#39;|&apos;/g, "'");
 
 describe.each(allCalculators.filter(isPublished).map((definition) => ({ id: definition.id, definition })))("$id : balise <title>", ({ definition }) => {
-	it("porte l'année de calcul et une question, en 65 caractères au plus", async () => {
+	// Moins de 60 caractères, comme le point 16 de la checklist (accord du mainteneur, 17.10.2026)
+	it("porte l'année de calcul et une question, en moins de 60 caractères", async () => {
 		const page = (await renderAllPages()).find((entry) => entry.route === definition.slug);
 		const title = titleOf(page!.html);
 		expect(title).toBe(definition.metaTitle);
 		expect(title).toContain(String(definition.scope.referenceYear));
 		expect(title).toMatch(/\?$/);
-		expect(title!.length).toBeLessThanOrEqual(65);
+		expect(title!.length).toBeLessThan(60);
 		expect(page!.html).toContain(`<meta name="description" content="`);
 	});
 });
