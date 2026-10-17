@@ -5,12 +5,12 @@
  * Le calcul se fait dans le navigateur, en JavaScript natif : lacunes et
  * répartition par computePillar3aGaps, économie par computeTaxSavingOnDeduction
  * sur le total rachetable, retranché des deux revenus imposables. Les barèmes
- * arrivent par un paquet JSON construit à la compilation ; l'année du rachat
+ * arrivent par le fichier de données de l'année, chargé à la première
+ * interaction (src/lib/display/tax-data.ts) ; l'année du rachat
  * est l'année fiscale des données, jamais l'horloge du visiteur.
  */
 import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
-import TraceLabels from "../../components/calculator/TraceLabels.astro";
 import GrossEstimator from "../../components/calculator/GrossEstimator.astro";
 import {
 	pillar3aBuyback,
@@ -19,7 +19,7 @@ import {
 	pillar3aBuybackTexts,
 	pillar3aBuybackYear,
 } from "../../calculators/pension/pillar-3a-buyback";
-import { pillar3aBuybackPageData as pageData } from "../../calculators/pension/pillar-3a-buyback-page-data";
+import { pillar3aBuybackPageData as pageData, pillar3aBuybackPagePart as pagePart } from "../../calculators/pension/pillar-3a-buyback-page-data";
 import { pageDataJson } from "../../calculators/page-data";
 import { exampleFormValues } from "../../calculators/field-values";
 import { publishedCalculators } from "../../calculators/catalog";
@@ -49,12 +49,12 @@ const initial = readPillar3aBuybackForm(exampleFormValues(pillar3aBuyback), page
 		catalog={publishedCalculators("pension")}
 		grossPath={{ available: estimator !== null, year: pillar3aBuybackYear }}
 		initial={initial}
+		taxDataUrl={pagePart.taxDataUrl}
 	>
 		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 	</CalculatorShell>
 
-	<script type="application/json" id="pillar3a-data" set:html={pageDataJson(pageData)} />
-	<TraceLabels modules={estimator ? ["pillar-3a-buyback", "gross-to-taxable"] : ["pillar-3a-buyback"]} />
+	<script type="application/json" id="pillar3a-data" set:html={pageDataJson(pagePart)} />
 </CalculatorLayout>
 
 <script>

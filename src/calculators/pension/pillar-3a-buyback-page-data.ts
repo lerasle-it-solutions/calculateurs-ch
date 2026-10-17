@@ -1,8 +1,7 @@
 /** A1 — données de la page (src/calculators/page-data.ts). */
 import { getFederalData } from "../../data";
 import { ROMANDE_CANTONS } from "../cantons";
-import { householdPageData, type EstimatorPageData } from "../page-data";
-import type { Pillar3aBuybackPageData } from "../../lib/display/pillar-3a-buyback-form";
+import { buildPageData, householdPagePart } from "../page-data";
 import { pillar3aBuyback, pillar3aBuybackTexts, pillar3aBuybackYear, pillar3aGapYears } from "./pillar-3a-buyback";
 
 const pillar3a = getFederalData(pillar3aBuybackYear).pillar3a;
@@ -13,9 +12,10 @@ const oldAgeBenefitAlternative = (() => {
 	if (typeof alternative !== "object" || !alternative.url) throw new Error("Alternative de l'exclusion « prestation de vieillesse » absente.");
 	return { label: alternative.label, url: alternative.url };
 })();
-const household = householdPageData(pillar3aBuybackYear, pillar3aBuyback.scope.cantonsCovered, pillar3aBuybackTexts);
+const household = householdPagePart(pillar3aBuybackYear, pillar3aBuyback.scope.cantonsCovered, pillar3aBuybackTexts);
 
-export const pillar3aBuybackPageData: Pillar3aBuybackPageData & EstimatorPageData = {
+/** Partie propre à la page, en JSON dans le HTML. */
+export const pillar3aBuybackPagePart = {
 	...household,
 	buybackYear: pillar3aBuybackYear,
 	gapYears: pillar3aGapYears,
@@ -26,3 +26,6 @@ export const pillar3aBuybackPageData: Pillar3aBuybackPageData & EstimatorPageDat
 	texts: { ...household.texts, blockedShort: pillar3aBuybackTexts.blockedShort },
 	oldAgeBenefitAlternative,
 };
+
+/** Données complètes, à la construction (cas exemple). */
+export const pillar3aBuybackPageData = buildPageData(pillar3aBuybackPagePart);

@@ -5,8 +5,11 @@
  * pour le moteur, un module par calculateur) servent tels quels : le moteur, la
  * construction et les tests lisent les mêmes chaînes. Pour le navigateur, le
  * plugin `browserTraceLabels` remplace chacun par un module virtuel qui lit ses
- * chaînes, par position, dans un JSON que la page embarque (`TraceLabels.astro`).
- * Le script d'un calculateur n'embarque plus ses libellés, la page les porte.
+ * chaînes, par position, dans un `<script type="application/json">` de la page.
+ * Ni le script ni le HTML ne les portent : ils sont dans le fichier de données
+ * de l'année (`traceLabels`, src/calculators/tax-data-file.ts), et le chargeur
+ * de la page (src/lib/display/first-interaction.ts) crée ces éléments avant
+ * d'importer le cœur, dont les modules les lisent dès leur évaluation.
  *
  * Un module par calculateur : les libellés propres à A1 restent dans le paquet
  * d'A1, ceux d'A2 dans celui d'A2, et seuls ceux du moteur passent par le
@@ -58,6 +61,10 @@ const names = (module: TraceLabelModule): string[] => Object.keys(labelsOf(modul
 /** Libellés d'un module dans l'ordre où le module du navigateur les lit. */
 export const traceLabelValues = (module: TraceLabelModule = "engine"): string[] =>
 	names(module).map((name) => labelsOf(module)[name]!);
+
+/** Libellés de tous les modules, par identifiant d'élément : ce que le fichier de données transmet. */
+export const allTraceLabels = (): Record<string, string[]> =>
+	Object.fromEntries((Object.keys(TRACE_LABEL_MODULES) as TraceLabelModule[]).map((module) => [traceLabelsElementId(module), traceLabelValues(module)]));
 
 /**
  * Source du module qui remplace un module de libellés dans le navigateur. Une

@@ -1,6 +1,8 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 
+import { renderedPageData } from "../setup/rendered-page-data";
+
 import { getCantonData, getMunicipalMultipliers } from "../../src/data";
 import type { Pillar3aGapsParams } from "../../src/lib/calculations/pension/pillar-3a-buyback";
 import type { TaxInput } from "../../src/lib/calculations/tax";
@@ -35,9 +37,7 @@ const renderPageData = async (): Promise<PageData> => {
 	const html = await container.renderToString(Page, {
 		request: new Request("https://calculateurs.ch/prevoyance/rachat-3a-retroactif/"),
 	});
-	const json = html.match(/<script type="application\/json" id="pillar3a-data">([\s\S]*?)<\/script>/)?.[1];
-	expect(json, "données de la page absentes").toBeDefined();
-	return JSON.parse(json!) as PageData;
+	return renderedPageData<PageData>(html, "pillar3a-data");
 };
 
 const show = (data: PageData, municipality: string, household: Partial<TaxInput>, gaps: Partial<Pillar3aGapsParams> = {}) => {

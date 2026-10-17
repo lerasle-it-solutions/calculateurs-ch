@@ -6,12 +6,12 @@
  * (art. 79b al. 1 et 3 LPP), puis économie du rachat en une fois et de chaque
  * tranche par computeTaxSavingOnDeduction, retranchée des deux revenus
  * imposables, et classement des tranches face au délai de blocage. Les barèmes
- * et le délai arrivent par un paquet JSON construit à la compilation ; l'année
+ * arrivent par le fichier de données de l'année, chargé à la première
+ * interaction (src/lib/display/tax-data.ts), le délai par le JSON de la page ; l'année
  * est l'année fiscale des données, jamais l'horloge du visiteur.
  */
 import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
-import TraceLabels from "../../components/calculator/TraceLabels.astro";
 import GrossEstimator from "../../components/calculator/GrossEstimator.astro";
 import ResultTable from "../../components/ui/ResultTable.astro";
 import {
@@ -22,7 +22,7 @@ import {
 	lppBuybackVerifiedOn,
 	lppBuybackYear,
 } from "../../calculators/pension/lpp-buyback";
-import { lppBuybackPageData as pageData } from "../../calculators/pension/lpp-buyback-page-data";
+import { lppBuybackPageData as pageData, lppBuybackPagePart as pagePart } from "../../calculators/pension/lpp-buyback-page-data";
 import { pageDataJson } from "../../calculators/page-data";
 import { exampleFormValues } from "../../calculators/field-values";
 import { publishedCalculators } from "../../calculators/catalog";
@@ -57,6 +57,7 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 		catalog={publishedCalculators("pension")}
 		grossPath={{ available: estimator !== null, year: lppBuybackYear }}
 		initial={initial}
+		taxDataUrl={pagePart.taxDataUrl}
 		vigilanceId="lpp-buyback-warnings"
 	>
 		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
@@ -112,8 +113,7 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 		</div>
 	</CalculatorShell>
 
-	<script type="application/json" id="lpp-buyback-data" set:html={pageDataJson(pageData)} />
-	<TraceLabels modules={estimator ? ["lpp-buyback", "gross-to-taxable"] : ["lpp-buyback"]} />
+	<script type="application/json" id="lpp-buyback-data" set:html={pageDataJson(pagePart)} />
 </CalculatorLayout>
 
 <script>

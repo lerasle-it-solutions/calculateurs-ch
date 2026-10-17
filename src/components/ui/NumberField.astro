@@ -9,15 +9,15 @@
  * 70000 sont acceptés, décimales au point ou à la virgule. Un montant (« CHF »)
  * se formate à la suisse pendant la frappe sans que le curseur saute. `min`,
  * `max` et `step` sont validés par le parseur, plus par le navigateur : le
- * message, préfixé « Erreur : », s'affiche sous le champ. Messages et bornes
- * sont rendus ici, au build ; le script de la page, chargé à la demande, les
- * applique. Sans JavaScript, le champ reste une saisie texte ordinaire.
+ * message, préfixé « Erreur : », s'affiche sous le champ. Les bornes sont
+ * rendues ici, au build ; les gabarits des messages, une seule fois sur le
+ * formulaire (`data-error-templates`, CalculatorShell) ; le script de la page,
+ * chargé à la demande, compose le message. Sans JavaScript, le champ reste une saisie texte ordinaire.
  *
  * Emplacement `action` : un bouton à côté du champ (« Verser le maximum »).
  */
 import { fr } from "../../i18n/fr";
 import { formatNumberTyping } from "../../lib/format/amount-input";
-import { formatSwissNumber } from "../../lib/format/chf";
 import { fieldFrame, fieldFramedInput, fieldHint, fieldLabel, fieldRequired, fieldUnit } from "./field-styles";
 
 interface Props {
@@ -38,7 +38,6 @@ const { id, name, label, value, min, max, step, unit, hint, required = false } =
 /** Un montant se groupe par milliers ; une année, un âge, un taux, non. */
 const grouping = unit === "CHF";
 const text = value === undefined || value === "" ? undefined : formatNumberTyping(String(value), String(value).length, grouping).text;
-const bound = (number: number) => formatSwissNumber(number, 4);
 const errors = fr.numberField;
 const hintId = hint ? `${id}-hint` : undefined;
 const errorId = `${id}-error`;
@@ -73,10 +72,6 @@ const errorId = `${id}-error`;
 				data-min={min}
 				data-max={max}
 				data-step={step}
-				data-error-invalid={errors.invalid}
-				data-error-min={min === undefined ? undefined : errors.min(bound(min))}
-				data-error-max={max === undefined ? undefined : errors.max(bound(max))}
-				data-error-step={step === undefined ? undefined : errors.step(bound(Number(step)))}
 				class={fieldFramedInput}
 			/>
 			{

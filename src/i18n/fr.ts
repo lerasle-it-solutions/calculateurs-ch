@@ -199,6 +199,10 @@ export const fr = {
 		min: (min: string): string => `indiquez au moins ${min}.`,
 		max: (max: string): string => `indiquez au plus ${max}.`,
 		step: (step: string): string => (step === "1" ? "indiquez un nombre entier." : `indiquez un multiple de ${step}.`),
+		/** Les mêmes, en gabarits (« {n} » : la borne), rendus une fois sur le formulaire. */
+		get templates() {
+			return { invalid: this.invalid, min: this.min("{n}"), max: this.max("{n}"), step: this.step("{n}"), integer: this.step("1") };
+		},
 		/** Carte et barre mobile quand un champ est à corriger. */
 		cardStatus: "Corrigez la saisie signalée sous le champ.",
 		cardShort: "Saisie à corriger, voir le message",
@@ -253,6 +257,11 @@ export const fr = {
 		exampleReplace: "— remplacez par vos chiffres,",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
 		seeBreakdown: "Voir le détail",
+		/** Échec du chargement du calcul (cœur ou fichier de données) : message neutre dans la carte. */
+		loadFailed: "Le calcul n'a pas pu se charger. Vérifiez votre connexion, puis réessayez.",
+		loadRetry: "Réessayer",
+		/** Même échec, dans la barre de résultat mobile. */
+		loadFailedShort: "Calcul indisponible",
 	},
 
 	dataPage: {

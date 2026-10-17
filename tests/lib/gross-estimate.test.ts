@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { getFederalData } from "../../src/data";
 import { getGrossToTaxableRuleSet } from "../../src/data/gross-to-taxable";
+import { taxDataFileJson, taxDataFileUrl } from "../../src/calculators/tax-data-file";
 import { fr } from "../../src/i18n/fr";
 import { estimateTaxableIncome, legalMinimumPensionContribution, rulesFor } from "../../src/lib/calculations/gross-to-taxable";
 import * as labels from "../../src/lib/calculations/gross-to-taxable-labels";
@@ -147,6 +148,10 @@ describe("pages : bloc « salaire brut » dans le formulaire", () => {
 		expect(form.indexOf('name="federalTaxableIncome"')).toBeLessThan(form.indexOf("data-estimator"));
 		// Adaptation approuvée par le mainteneur le 17.10.2026 : le chemin « salaire brut » est un bouton radio (§ 4.3)
 		expect(form).toMatch(new RegExp(`<label\\b[^>]*>\\s*<input\\b[^>]*name="incomePath"[^>]*value="gross"[^>]*>\\s*${fr.incomePath.gross}\\s*</label>`));
-		expect(html).toContain('id="trace-labels-gross-to-taxable"');
+		// Libellés de l'estimateur : dans le fichier de données que la page déclare (src/lib/build/browser-trace-labels.ts)
+		const url = html.match(/\sdata-tax-data="([^"]+)"/)?.[1];
+		const year = Number(url?.match(/baremes-(\d{4})\./)?.[1]);
+		expect(url).toBe(taxDataFileUrl(year));
+		expect((JSON.parse(taxDataFileJson(year)) as { traceLabels: Record<string, string[]> }).traceLabels).toHaveProperty("trace-labels-gross-to-taxable");
 	});
 });

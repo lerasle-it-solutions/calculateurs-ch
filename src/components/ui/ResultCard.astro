@@ -74,6 +74,15 @@ const tone = status ? statusTone(status.kind) : "neutral";
 	>
 		<strong class="hidden font-bold text-warning group-data-[warning]:inline">{fr.calculator.warningPrefix} </strong><strong class="hidden font-bold text-error group-data-[error]:inline">{fr.numberField.errorPrefix} </strong><span data-status-text>{status?.text}</span>{" "}<a data-status-link hidden={!status?.link} href={status?.link?.url} class="font-bold">{status?.link?.label}</a>
 	</span>
+	{/* Échec du chargement du calcul (first-interaction.ts) : message neutre, la saisie reste */}
+	<span data-load-failed hidden class="flex flex-col items-start gap-sm text-body">
+		{fr.calculator.loadFailed}
+		<button
+			type="button"
+			data-load-retry
+			class="inline-flex min-h-3xl cursor-pointer items-center justify-center rounded-button border border-ink bg-paper px-xl text-label font-bold text-ink transition-colors duration-150 hover:bg-tint"
+		>{fr.calculator.loadRetry}</button>
+	</span>
 	{caption && <span class="text-fine text-ink-muted">{caption}</span>}
 </output>
 

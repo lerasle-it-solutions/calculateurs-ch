@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { formatNumberTyping, numberError, parseNumber } from "../../src/lib/format/amount-input";
+import { formatNumberTyping, numberError, numberErrorText, parseNumber } from "../../src/lib/format/amount-input";
+import { formatSwissNumber } from "../../src/lib/format/chf";
+import { fr } from "../../src/i18n/fr";
 
 /**
  * Saisie tolérante des nombres (docs/design-system.md § 2.3, NumberField en
@@ -79,5 +81,23 @@ describe("formatage pendant la frappe", () => {
 		expect(formatNumberTyping("", 0, true)).toEqual({ text: "", caret: 0 });
 		expect(formatNumberTyping("2030", 4, false)).toEqual({ text: "2030", caret: 4 });
 		expect(formatNumberTyping("0,05", 4, false)).toEqual({ text: "0,05", caret: 4 });
+	});
+});
+
+describe("message d'erreur d'un champ numérique", () => {
+	// Un seul jeu de gabarits sur le formulaire, plus un jeu de messages par champ (poids du HTML) :
+	// le message composé est celui que NumberField rendait pour chaque champ.
+	const bound = (value: number) => formatSwissNumber(value, 4);
+	it.each([
+		{ min: 0, step: 1 },
+		{ min: 2026, max: 2100, step: 1 },
+		{ min: 0, step: 0.01 },
+		{ min: 1000, max: 70000, step: 100 },
+	])("bornes %o : mêmes messages qu'avant", (bounds) => {
+		const templates = fr.numberField.templates;
+		expect(numberErrorText("invalid", bounds, templates)).toBe(fr.numberField.invalid);
+		expect(numberErrorText("min", bounds, templates)).toBe(fr.numberField.min(bound(bounds.min)));
+		if (bounds.max !== undefined) expect(numberErrorText("max", bounds, templates)).toBe(fr.numberField.max(bound(bounds.max)));
+		expect(numberErrorText("step", bounds, templates)).toBe(fr.numberField.step(bound(bounds.step)));
 	});
 });

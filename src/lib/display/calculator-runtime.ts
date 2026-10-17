@@ -14,15 +14,16 @@
  * HTML rendu au build (attributs `data-*`), jamais du script.
  */
 import type { GrossToTaxableRuleSet, Sourced } from "../calculations/gross-to-taxable";
-import { formatNumberTyping, numberError } from "../format/amount-input";
+import { formatNumberTyping, numberError, numberErrorText, type NumberErrorTemplates } from "../format/amount-input";
 import { formatChf } from "../format/chf";
 import { familyOf, invalidInputStatus, municipalityKey, type EstimateReading, type FormOutcome, type FormValues, type HouseholdPageData } from "./calculator-form";
 import type { EstimatorReading, Household } from "./gross-estimator-ui";
 import { eligibilityState, type EligibilityItem } from "./eligibility";
 import { attachResultViews } from "./result-views";
+import { hydratePageData, type HouseholdPagePart, type TaxDataFile } from "./tax-data";
 
 export type CalculatorRuntime<D extends HouseholdPageData, T> = {
-	/** Identifiant du `<script type="application/json">` des données de la page. */
+	/** Identifiant du `<script type="application/json">` de la partie propre à la page (tax-data.ts). */
 	dataId: string;
 	read: (values: FormValues, data: D, estimate: EstimateReading) => FormOutcome<T>;
 	/** Cotisation 3a ordinaire retranchée des revenus estimés (A1) ; absente, revenus non diminués. */
@@ -33,27 +34,38 @@ export type CalculatorRuntime<D extends HouseholdPageData, T> = {
 
 type Input = HTMLInputElement;
 
-/** Valide un champ numérique affiché : message « Erreur : … » sous le champ (NumberField). */
-const validate = (input: Input): void => {
+/** Liste des communes (MunicipalityField, `deferred`), remplie depuis le fichier de données. */
+export const fillMunicipalityOptions = (labels: string[]): void => {
+	for (const list of document.querySelectorAll("[data-municipality-options]")) list.replaceChildren(...labels.map((label) => new Option("", label)));
+};
+
+/** Valide un champ numérique affiché : message « Erreur : … » sous le champ (NumberField), composé sur les gabarits du formulaire. */
+export const validate = (input: Input): void => {
 	const { min, max, step } = input.dataset;
 	const bounds = { min: min ? +min : undefined, max: max ? +max : undefined, step: step ? +step : undefined };
 	const error = input.closest("[hidden]") ? null : numberError(input.value, bounds);
-	input.toggleAttribute("aria-invalid", error !== null);
+	// « true » explicite : un aria-invalid vide vaut « faux » pour les lecteurs d'écran, et le style d'erreur l'ignore
+	if (error === null) input.removeAttribute("aria-invalid");
+	else input.setAttribute("aria-invalid", "true");
 	const message = document.getElementById(`${input.id}-error`);
 	if (!message) return;
 	message.hidden = error === null;
-	message.querySelector("[data-field-error-text]")!.textContent = error ? (input.dataset[`error${error[0]!.toUpperCase()}${error.slice(1)}`] ?? "") : "";
+	const templates = JSON.parse(input.form?.dataset.errorTemplates ?? "{}") as NumberErrorTemplates;
+	message.querySelector("[data-field-error-text]")!.textContent = error ? numberErrorText(error, bounds, templates) : "";
 };
 
-export function startCalculator<D extends HouseholdPageData & { estimator: GrossToTaxableRuleSet | null }, T>(
+export function startCalculator<D extends HouseholdPageData & { estimator: GrossToTaxableRuleSet | null; municipalityOptions: string[] }, T>(
 	runtime: CalculatorRuntime<D, T>,
-	clicked: Element | null = null,
+	clicked: Element | null,
+	file: TaxDataFile,
 ): void {
 	const form = document.querySelector<HTMLFormElement>("[data-calculator]");
 	const dataElement = document.getElementById(runtime.dataId);
 	if (!form || !dataElement) return;
-	const data = JSON.parse(dataElement.textContent ?? "{}") as D;
+	// Partie propre à la page et fichier de données de l'année, réunis comme à la construction
+	const data = hydratePageData(JSON.parse(dataElement.textContent ?? "{}") as HouseholdPagePart, file) as unknown as D;
 	attachResultViews();
+	fillMunicipalityOptions(data.municipalityOptions);
 
 	const field = (name: string) => form.elements.namedItem(name) as Input | null;
 	const all = <E extends Element>(selector: string) => [...form.querySelectorAll<E>(selector)];

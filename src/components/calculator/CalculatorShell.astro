@@ -85,6 +85,12 @@ interface Props {
 	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note" | "maxima">;
 	/** Identifiant du bloc des points de vigilance (titre). */
 	vigilanceId?: string;
+	/**
+	 * Adresse du fichier de données de l'année (src/lib/display/tax-data.ts),
+	 * chargé avec le cœur à la première interaction ; la liste des communes en
+	 * est remplie à ce moment-là.
+	 */
+	taxDataUrl?: string;
 }
 
 const {
@@ -99,7 +105,9 @@ const {
 	grossPath,
 	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
 	vigilanceId: vigilanceIdProp,
+	taxDataUrl,
 } = Astro.props;
+const deferred = taxDataUrl !== undefined;
 
 /** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
 const filled = exampleFormValues(definition);
@@ -149,8 +157,8 @@ const differs = (field: FieldDefinition) =>
 /** Pastille d'un bouton radio (§ 2.3) : cible de 48 px, état coché en `accent-tint`. */
 const pillBase =
 	"flex min-h-3xl cursor-pointer gap-sm border border-rule bg-paper px-lg text-label transition-colors duration-150 hover:border-ink " +
-	"has-[:checked]:border-accent has-[:checked]:bg-accent-tint has-[:checked]:text-ink " +
-	"has-[:disabled]:cursor-not-allowed has-[:disabled]:border-hairline has-[:disabled]:bg-tint has-[:disabled]:text-ink-muted";
+	"has-checked:border-accent has-checked:bg-accent-tint has-checked:text-ink " +
+	"has-disabled:cursor-not-allowed has-disabled:border-hairline has-disabled:bg-tint has-disabled:text-ink-muted";
 const pill = `${pillBase} items-center rounded-button`;
 /** Profil dont le libellé est suivi de la liste de ce qu'il affirme : rayon de contrôle, contenu en haut. */
 const pillWithDetails = `${pillBase} items-start rounded-control py-md`;
@@ -204,7 +212,7 @@ const resultFor = definition.fields
 		</p>
 	</header>
 
-	<div data-calculator-root class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+	<div data-calculator-root data-tax-data={taxDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
 		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
 		<p data-example-banner class="rounded-panel bg-tint p-lg text-label">
 			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label} {fr.calculator.exampleReplace}
@@ -228,6 +236,7 @@ const resultFor = definition.fields
 			novalidate
 			data-invalid-text={fr.numberField.cardStatus}
 			data-invalid-short={fr.numberField.cardShort}
+			data-error-templates={JSON.stringify(fr.numberField.templates)}
 		>
 			{hasIncomePaths && (
 				<fieldset data-income-paths class="flex flex-col gap-sm">
@@ -295,10 +304,10 @@ const resultFor = definition.fields
 												<span class="font-bold text-accent underline group-open:hidden">{fr.incomePath.federalDifferent}</span>
 												<span class="hidden font-bold text-accent underline group-open:inline">{fr.incomePath.federalSameLink}</span>
 											</summary>
-											<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} />
+											<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} deferredOptions={deferred} />
 										</details>
 									) : (
-										<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} />
+										<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} deferredOptions={deferred} />
 									),
 								)}
 							</div>
@@ -319,6 +328,7 @@ const resultFor = definition.fields
 								id={fieldId(segment.field.name)}
 								values={filled}
 								cantonsCovered={definition.scope.cantonsCovered}
+								deferredOptions={deferred}
 								maximum={initial.maxima?.[segment.field.name] ?? null}
 							/>
 						</div>
@@ -441,6 +451,7 @@ const resultFor = definition.fields
 			</div>
 			<span data-result-value hidden={initial.status !== null} class="text-heading text-accent tabular-nums" aria-hidden="true">{initial.value}</span>
 			<a data-result-status hidden={initial.status === null} href={`#${formId}-result`} class="text-label font-bold">{initial.status?.short}</a>
+			<a data-load-failed hidden href={`#${formId}-result`} class="text-label font-bold">{fr.calculator.loadFailedShort}</a>
 		</div>
 	</div>
 </article>

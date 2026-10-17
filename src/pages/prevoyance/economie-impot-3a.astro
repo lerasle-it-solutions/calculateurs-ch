@@ -5,13 +5,12 @@
  * Le calcul se fait dans le navigateur, en JavaScript natif : plafond et
  * montant déductible de chaque personne, puis économie par
  * computeTaxSavingOnDeduction sur la somme des déductions, retranchée des deux
- * revenus imposables. Les barèmes arrivent par un paquet JSON construit à la
- * compilation ; l'année est l'année fiscale des données, jamais l'horloge du
- * visiteur.
+ * revenus imposables. Les barèmes arrivent par le fichier de données de l'année,
+ * chargé à la première interaction (src/lib/display/tax-data.ts) ; l'année est
+ * l'année fiscale des données, jamais l'horloge du visiteur.
  */
 import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
 import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
-import TraceLabels from "../../components/calculator/TraceLabels.astro";
 import GrossEstimator from "../../components/calculator/GrossEstimator.astro";
 import {
 	pillar3aTaxSaving,
@@ -20,7 +19,7 @@ import {
 	pillar3aTaxSavingTexts,
 	pillar3aTaxSavingYear,
 } from "../../calculators/pension/pillar-3a-tax-saving";
-import { pillar3aTaxSavingPageData as pageData } from "../../calculators/pension/pillar-3a-tax-saving-page-data";
+import { pillar3aTaxSavingPageData as pageData, pillar3aTaxSavingPagePart as pagePart } from "../../calculators/pension/pillar-3a-tax-saving-page-data";
 import { pageDataJson } from "../../calculators/page-data";
 import { exampleFormValues } from "../../calculators/field-values";
 import { publishedCalculators } from "../../calculators/catalog";
@@ -52,6 +51,7 @@ const summary = initial.shown;
 		catalog={publishedCalculators("pension")}
 		grossPath={{ available: estimator !== null, year: pillar3aTaxSavingYear }}
 		initial={initial}
+		taxDataUrl={pagePart.taxDataUrl}
 	>
 		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex max-w-reading flex-col gap-md">
@@ -76,8 +76,7 @@ const summary = initial.shown;
 		</div>
 	</CalculatorShell>
 
-	<script type="application/json" id="pillar3a-saving-data" set:html={pageDataJson(pageData)} />
-	<TraceLabels modules={estimator ? ["pillar-3a-tax-saving", "gross-to-taxable"] : ["pillar-3a-tax-saving"]} />
+	<script type="application/json" id="pillar3a-saving-data" set:html={pageDataJson(pagePart)} />
 </CalculatorLayout>
 
 <script>

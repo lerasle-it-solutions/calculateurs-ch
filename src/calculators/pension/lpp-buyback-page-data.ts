@@ -1,13 +1,12 @@
 /** A3 — données de la page (src/calculators/page-data.ts). */
-import { householdPageData, type EstimatorPageData } from "../page-data";
-import type { LppBuybackPageData } from "../../lib/display/lpp-buyback-form";
+import { buildPageData, householdPagePart } from "../page-data";
 import { lppBuyback, lppBuybackLockPeriod, lppBuybackTexts as texts, lppBuybackYear } from "./lpp-buyback";
 
-const household = householdPageData(lppBuybackYear, lppBuyback.scope.cantonsCovered, texts);
+const household = householdPagePart(lppBuybackYear, lppBuyback.scope.cantonsCovered, texts);
 
-export const lppBuybackPageData: LppBuybackPageData & EstimatorPageData = {
+/** Partie propre à la page, en JSON dans le HTML. */
+export const lppBuybackPagePart = {
 	...household,
-	taxYear: lppBuybackYear,
 	lockPeriodYears: { value: lppBuybackLockPeriod.value, sourceId: lppBuybackLockPeriod.sourceId },
 	texts: {
 		...household.texts,
@@ -17,3 +16,6 @@ export const lppBuybackPageData: LppBuybackPageData & EstimatorPageData = {
 		spread: texts.scenarios.spread,
 	},
 };
+
+/** Données complètes, à la construction (cas exemple). */
+export const lppBuybackPageData = buildPageData(lppBuybackPagePart);

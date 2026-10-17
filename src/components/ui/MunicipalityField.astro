@@ -6,6 +6,11 @@
  * L'attribut `list` relie l'input au datalist ; le navigateur fournit
  * l'autocomplétion et le filtrage sans une ligne de script.
  *
+ * `deferred` : la liste est rendue vide, marquée `data-municipality-options` ;
+ * le script de la page la remplit à la première interaction, depuis le fichier
+ * de données (src/lib/display/tax-data.ts). Elle compterait sinon ~24 000
+ * octets dans le HTML de chaque page de calculateur.
+ *
  * Sous le champ, la limite de couverture du moteur au moment du choix
  * (docs/design-system.md § 4.3) : masquée au rendu, elle s'affiche quand le
  * script de la page publie un statut de couverture (`calc:update`), avec le
@@ -28,6 +33,8 @@ interface Props {
 	value?: string;
 	hint?: string;
 	required?: boolean;
+	/** Options remplies par le script de la page, à la première interaction. */
+	deferred?: boolean;
 }
 
 const {
@@ -38,6 +45,7 @@ const {
 	value,
 	hint,
 	required = false,
+	deferred = false,
 } = Astro.props;
 
 const listId = `${id}-list`;
@@ -73,9 +81,9 @@ const normalized: Option[] = options.map((option) =>
 		aria-describedby={describedBy}
 		class={fieldControl}
 	/>
-	<datalist id={listId}>
+	<datalist id={listId} data-municipality-options={deferred ? "" : undefined}>
 		{
-			normalized.map((option) => (
+			!deferred && normalized.map((option) => (
 				<option value={option.value}>{option.label}</option>
 			))
 		}

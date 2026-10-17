@@ -1,16 +1,15 @@
 /** A2 — données de la page (src/calculators/page-data.ts). */
 import { getFederalData } from "../../data";
-import { householdPageData, type EstimatorPageData } from "../page-data";
-import type { Pillar3aTaxSavingPageData } from "../../lib/display/pillar-3a-tax-saving-form";
+import { buildPageData, householdPagePart } from "../page-data";
 import { pillar3aTaxSaving, pillar3aTaxSavingTexts as texts, pillar3aTaxSavingYear } from "./pillar-3a-tax-saving";
 
 const pillar3a = getFederalData(pillar3aTaxSavingYear).pillar3a;
 const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
-const household = householdPageData(pillar3aTaxSavingYear, pillar3aTaxSaving.scope.cantonsCovered, texts);
+const household = householdPagePart(pillar3aTaxSavingYear, pillar3aTaxSaving.scope.cantonsCovered, texts);
 
-export const pillar3aTaxSavingPageData: Pillar3aTaxSavingPageData & EstimatorPageData = {
+/** Partie propre à la page, en JSON dans le HTML. */
+export const pillar3aTaxSavingPagePart = {
 	...household,
-	taxYear: pillar3aTaxSavingYear,
 	smallContributionCap: sourced(pillar3a.smallContributionCap),
 	largeContributionCap: sourced(pillar3a.largeContributionCap),
 	largeContributionIncomeRate: sourced(pillar3a.largeContributionIncomeRate),
@@ -23,3 +22,6 @@ export const pillar3aTaxSavingPageData: Pillar3aTaxSavingPageData & EstimatorPag
 		excessWarning: texts.excessWarning,
 	},
 };
+
+/** Données complètes, à la construction (cas exemple). */
+export const pillar3aTaxSavingPageData = buildPageData(pillar3aTaxSavingPagePart);

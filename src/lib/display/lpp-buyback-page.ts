@@ -1,16 +1,17 @@
 /** A3 — script de la page, chargé à la première interaction (first-interaction.ts). */
 import type { GrossToTaxableRuleSet } from "../calculations/gross-to-taxable";
 import { startCalculator } from "./calculator-runtime";
+import type { TaxDataFile } from "./tax-data";
 import { readLppBuybackForm, type LppBuybackPageData } from "./lpp-buyback-form";
 import type { LppBuybackDisplay } from "./lpp-buyback";
 import { fillResultTable } from "./result-table";
 
-export const start = (clicked: Element | null): void => {
+export const start = (clicked: Element | null, file: TaxDataFile): void => {
 	const resultBlock = document.getElementById("lpp-buyback-result")!;
 	const notDeducted = document.getElementById("lpp-buyback-not-deducted")!;
 	const scenarioTable = document.getElementById("lpp-buyback-scenarios")!;
 	const calendarTable = document.getElementById("lpp-buyback-calendar")!;
-	startCalculator<LppBuybackPageData & { estimator: GrossToTaxableRuleSet | null }, LppBuybackDisplay>({
+	startCalculator<LppBuybackPageData & { estimator: GrossToTaxableRuleSet | null; municipalityOptions: string[] }, LppBuybackDisplay>({
 		dataId: "lpp-buyback-data",
 		read: readLppBuybackForm,
 		show: (shown) => {
@@ -35,5 +36,5 @@ export const start = (clicked: Element | null): void => {
 				{ optionalColumns: withLock },
 			);
 		},
-	}, clicked);
+	}, clicked, file);
 };

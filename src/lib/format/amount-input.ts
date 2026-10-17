@@ -8,7 +8,7 @@
  * Sans DOM : la construction lit les saisies du cas exemple, le navigateur
  * celles du visiteur, avec le même code.
  */
-import { THOUSANDS_SEPARATOR } from "./chf";
+import { formatSwissNumber, THOUSANDS_SEPARATOR } from "./chf";
 
 /** Séparateurs de milliers acceptés : apostrophes droite et typographique, espaces ordinaire, insécable et fine insécable. */
 const GROUPING = /['’   ]/g;
@@ -42,6 +42,20 @@ export function numberError(text: string, { min, max, step }: NumberConstraints)
 		if (Math.abs(steps - Math.round(steps)) > 1e-9) return "step";
 	}
 	return null;
+}
+
+/**
+ * Gabarits des messages d'erreur d'un champ numérique, « {n} » à la place de
+ * la borne : rendus une fois sur le formulaire (`data-error-templates`), plutôt
+ * qu'un jeu de messages par champ dans le HTML.
+ */
+export type NumberErrorTemplates = Record<NumberError | "integer", string>;
+
+/** Message d'une erreur de saisie, la borne formatée à la suisse ; un pas de 1 demande un nombre entier. */
+export function numberErrorText(error: NumberError, { min, max, step }: NumberConstraints, templates: NumberErrorTemplates): string {
+	const bound = error === "min" ? min : error === "max" ? max : error === "step" ? step : undefined;
+	const template = error === "step" && step === 1 ? templates.integer : templates[error];
+	return bound === undefined ? template : template.replace("{n}", formatSwissNumber(bound, 4));
 }
 
 /** Signe, chiffre ou séparateur décimal : ce qui compte pour placer le curseur. */

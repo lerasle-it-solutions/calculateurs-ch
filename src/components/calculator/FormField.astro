@@ -29,9 +29,11 @@ interface Props {
 	cantonsCovered: string[];
 	/** Plafond du bouton « maximum », calculé par le moteur sur le cas exemple. */
 	maximum?: number | null;
+	/** Liste des communes remplie par le script de la page (MunicipalityField). */
+	deferredOptions?: boolean;
 }
 
-const { field, id, values, cantonsCovered, maximum = null } = Astro.props;
+const { field, id, values, cantonsCovered, maximum = null, deferredOptions = false } = Astro.props;
 const value = values[field.name];
 const childCount = field.kind === "childAges" ? Math.max(0, Math.trunc(Number(values[field.countField] ?? 0)) || 0) : 0;
 const childLabel = (n: number | string) => (field.kind === "childAges" ? field.itemLabel.replace("{n}", String(n)) : "");
@@ -67,7 +69,16 @@ const childLabel = (n: number | string) => (field.kind === "childAges" ? field.i
 	) : field.kind === "select" ? (
 		<SelectField id={id} name={field.name} label={field.label} options={field.options} value={value} hint={field.hint} required={field.required} />
 	) : field.kind === "municipality" ? (
-		<MunicipalityField id={id} name={field.name} label={field.label} options={field.options} value={value} hint={field.hint} required={field.required} />
+		<MunicipalityField
+			id={id}
+			name={field.name}
+			label={field.label}
+			options={field.options}
+			value={value}
+			hint={field.hint}
+			required={field.required}
+			deferred={deferredOptions}
+		/>
 	) : field.kind === "text" ? (
 		<TextField
 			id={id}

@@ -6,6 +6,7 @@ import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import { coverageStatusOf, type CoverageTexts } from "../../src/lib/display/coverage";
 import type { StatusLink } from "../../src/lib/display/result-card";
+import { renderedPageData } from "../setup/rendered-page-data";
 
 /**
  * Message hors périmètre affiché tôt, dans A1 et A2 : dès le canton, la commune
@@ -29,9 +30,7 @@ const renderPageData = async (page: string, dataId: string): Promise<PageData> =
 	const { default: Page } = await import(`../../src/pages/prevoyance/${page}.astro`);
 	const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
 	const html = await container.renderToString(Page, { request: new Request(`https://calculateurs.ch/prevoyance/${page}/`) });
-	const json = html.match(new RegExp(`<script type="application/json" id="${dataId}">([\\s\\S]*?)</script>`))?.[1];
-	expect(json, `${page} : données absentes`).toBeDefined();
-	return JSON.parse(json!) as PageData;
+	return renderedPageData<PageData>(html, dataId);
 };
 
 /** Ce que le script de la page établit avec canton, commune et état civil seulement. */

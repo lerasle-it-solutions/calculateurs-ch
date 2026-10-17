@@ -4,9 +4,9 @@
  *
  * Côté Node (construction, tests), ce module sert tel quel. Dans le navigateur,
  * le plugin `browserTraceLabels` (src/lib/build/browser-trace-labels.ts) le
- * remplace par un module qui lit les mêmes chaînes dans le JSON de la page
- * (`TraceLabels.astro`) : le script ne les embarque pas, ce qui allège le
- * JavaScript de chaque calculateur. Les libellés qui insèrent une valeur
+ * remplace par un module qui lit les mêmes chaînes dans un JSON que le chargeur
+ * de la page tire du fichier de données de l'année : le script ne les embarque
+ * pas, ce qui allège le JavaScript de chaque calculateur. Les libellés qui insèrent une valeur
  * restent dans le code qui les compose.
  *
  * Une constante par libellé, exportée seule : le paquet du navigateur en
