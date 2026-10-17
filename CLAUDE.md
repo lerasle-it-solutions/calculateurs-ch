@@ -456,7 +456,7 @@ calculateurs.ch/
 │   ├── components/
 │   │   ├── layout/                      Header, Footer, Breadcrumb, FamilyNav
 │   │   ├── calculator/
-│   │   │   ├── Shell.astro              ← assemble : titre, périmètre, champs, résultat,
+│   │   │   ├── CalculatorShell.astro    ← assemble : titre, périmètre, champs, résultat,
 │   │   │   │                              trace, fraîcheur, variantes, FAQ
 │   │   │   └── RelatedVariants.astro
 │   │   ├── ui/                          ★ primitives, éléments HTML natifs
@@ -499,7 +499,9 @@ calculateurs.ch/
 │   │   ├── fixtures/                    ← jeux FICTIFS, publics
 │   │   └── *.test.ts
 │   ├── data/                            ← schéma, sources, fraîcheur, couverture
-│   ├── leads/                           ← routage, exclusivité, no-leak
+│   ├── build/                           ← après la construction, sur dist/ (postbuild) :
+│   │                                      budgets, canonicals, montants ; no-leak à venir
+│   ├── leads/                           ← routage, exclusivité (à venir)
 │   └── regression/
 │
 └── astro.config.mjs · tsconfig.json · vitest.config.ts · package.json
@@ -735,7 +737,7 @@ moment :
   correspondance et rejette une demande dont le partenaire ne correspond pas.
 - Prix, durée d'essai et conditions de résiliation ne sont **jamais déployés** : ils
   restent dans `PARTNERS.md` et les contrats.
-- Un test `no-leak`, exécuté après la construction, échoue si une adresse de partenaire,
+- Un test `no-leak`, dans `tests/build/`, exécuté après la construction, échoue si une adresse de partenaire,
   un identifiant ou le nom du fichier de routage apparaît dans `dist/`.
 
 ---
@@ -870,7 +872,7 @@ export default defineConfig({
   "prebuild": "tsx scripts/fetch-private-data.ts",
   "pretest": "tsx scripts/fetch-private-data.ts",
   "test": "vitest run",
-  "postbuild": "vitest run tests/leads/no-leak.test.ts",
+  "postbuild": "VITEST_DIST=1 vitest run", // tests/build/ sur dist/ (vitest.config.ts) ; no-leak y viendra
   "verify-data": "tsx scripts/verify-data.ts",
   "new-year": "tsx scripts/new-year.ts",
   "predeploy": "npm run test && astro check",
