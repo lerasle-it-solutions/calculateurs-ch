@@ -7,9 +7,10 @@
  * lacune sont toutes supposées avec 2e pilier, donc plafonnées à la « petite »
  * cotisation.
  */
-import { getFederalData, getMunicipalMultipliers, sourceRegistry } from "../../data";
+import { getFederalData, sourceRegistry } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf, formatPercent } from "../../lib/format/chf";
+import { municipalityOptions } from "../municipalities";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
@@ -63,9 +64,6 @@ const yesNo = [
 
 const coverage = taxEngineCoverage();
 
-const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
-	.filter((entry) => coverage.cantonsCovered.includes(entry.canton))
-	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
 const taxableIncomeHint = "Il figure sur votre dernière décision de taxation, ligne revenu imposable.";
 
@@ -73,13 +71,13 @@ const taxableIncomeHint = "Il figure sur votre dernière décision de taxation, 
 const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000, paidContribution: 2_500 };
 
 const fields: FieldDefinition[] = [
-	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
 	{
 		kind: "municipality",
 		name: "municipality",
 		label: "Commune de domicile",
-		options: municipalityOptions,
-		hint: "Commencez à saisir le nom de la commune.",
+		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
+		options: municipalityOptions(coverage.cantonsCovered),
+		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
 		required: true,
 	},
 	{
@@ -94,23 +92,17 @@ const fields: FieldDefinition[] = [
 		required: true,
 	},
 	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{
-		kind: "text",
-		name: "childrenAges",
-		label: "Âge des enfants",
-		inputMode: "numeric",
-		placeholder: "4, 9",
-		hint: "Séparés par une virgule.",
-	},
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
 		label: "Revenu imposable cantonal",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
 	},
 	{
 		kind: "number",
@@ -118,9 +110,11 @@ const fields: FieldDefinition[] = [
 		label: "Revenu imposable fédéral",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
+		sameAs: "cantonalTaxableIncome",
 	},
 	...pillar3aGapYears.flatMap((year): FieldDefinition[] => [
 		{
@@ -180,8 +174,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	example: {
 		label: `personne seule à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}`,
 		values: {
-			canton: "VD",
-			municipality: "Lausanne (VD)",
+			municipality: "Lausanne",
 			maritalStatus: "single",
 			children: "0",
 			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
@@ -283,6 +276,12 @@ export const pillar3aBuyback: CalculatorDefinition = {
 		},
 	],
 
+	eligibility: [
+		{ field: "currentYearContributionPaidInFull", value: "yes", label: `Cotisation 3a ${pillar3aBuybackYear} versée intégralement` },
+		{ field: "avsIncomeInBuybackYear", value: "yes", label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}` },
+		{ field: "oldAgeBenefit", value: "no", label: "Aucune prestation de vieillesse du pilier 3a déjà perçue" },
+	],
+
 	vigilance: [
 		{
 			level: "warning",
@@ -305,10 +304,11 @@ export const pillar3aBuybackTexts = {
 	outOfScopeMunicipality: (municipality: string): string =>
 		`Ce calculateur ne couvre pas encore la commune de ${municipality} : une donnée communale nécessaire au calcul n'y est pas relevée. Utilisez la calculette du canton :`,
 	missingData: "Une donnée nécessaire au calcul pour cette commune n'est pas encore relevée : aucun résultat n'est affiché.",
-	municipalityMismatch: "La commune saisie ne correspond pas au canton choisi.",
 	unknownMunicipality: "Choisissez une commune dans la liste proposée.",
 	/** Mentions courtes de la barre de résultat mobile, à la place du montant, liées au message de la carte. */
 	outOfScopeShort: "Hors périmètre, voir le message",
 	missingDataShort: "Donnée manquante, voir le message",
 	inputShort: "Commune à préciser, voir le message",
+	/** Mention courte de la barre mobile quand une condition bloque tout rachat. */
+	blockedShort: "Rachat impossible, voir le message",
 };

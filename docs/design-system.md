@@ -509,7 +509,9 @@ plus** sur cette valeur signale le recalcul. Elle est désactivée sous
 `prefers-reduced-motion: reduce`. Le compteur animé reste interdit : la nouvelle valeur remplace
 l'ancienne, les chiffres intermédiaires ne s'affichent jamais. Elle est implémentée **une seule
 fois, dans `ResultCard`** : tous les calculateurs l'ont, ce n'est pas un choix par calculateur
-(arbitrage du 17.10.2026).
+(arbitrage du 17.10.2026). Token : `--animate-result-refresh` dans `tokens.css` (opacité de 0,4 à
+1 en 200 ms), classe `motion-safe:animate-result-refresh`, relancée par le script à chaque nouvelle
+valeur.
 
 ### 3.4 Garde-fous automatiques
 

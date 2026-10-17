@@ -102,7 +102,7 @@ const expiresEarlier = (a: number[], b: number[]): boolean => {
 };
 
 /** Conditions qui bloquent tout rachat l'année R, dans l'ordre où elles sont examinées. */
-const blockingConditionOf = (params: Pillar3aGapsParams): string | null => {
+export const blockingConditionOf = (params: Pillar3aGapsParams): string | null => {
 	if (params.receivedOldAgeBenefit) {
 		return labels.OLD_AGE_BENEFIT_RECEIVED;
 	}

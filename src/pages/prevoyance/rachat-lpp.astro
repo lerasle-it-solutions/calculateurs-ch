@@ -20,6 +20,7 @@ import {
 	lppBuybackTaxYear,
 	lppBuybackTexts,
 	lppBuybackVerifiedOn,
+	lppBuybackYear,
 } from "../../calculators/pension/lpp-buyback";
 import { lppBuybackPageData as pageData } from "../../calculators/pension/lpp-buyback-page-data";
 import { pageDataJson } from "../../calculators/page-data";
@@ -54,11 +55,11 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 		}
 		verifiedOn={lppBuybackVerifiedOn}
 		catalog={publishedCalculators("pension")}
-		formExtraAfter="federalTaxableIncome"
+		grossPath={{ available: estimator !== null, year: lppBuybackYear }}
 		initial={initial}
 		vigilanceId="lpp-buyback-warnings"
 	>
-		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
+		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex flex-col gap-xl">
 			<div id="lpp-buyback-result" class="flex max-w-reading flex-col gap-md" hidden={shown === null}>
 				<dl class="flex flex-col text-label">

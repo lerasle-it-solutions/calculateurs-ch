@@ -47,10 +47,10 @@ const initial = readPillar3aBuybackForm(exampleFormValues(pillar3aBuyback), page
 		}
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 		catalog={publishedCalculators("pension")}
-		formExtraAfter="federalTaxableIncome"
+		grossPath={{ available: estimator !== null, year: pillar3aBuybackYear }}
 		initial={initial}
 	>
-		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
+		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 	</CalculatorShell>
 
 	<script type="application/json" id="pillar3a-data" set:html={pageDataJson(pageData)} />

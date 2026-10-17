@@ -36,7 +36,15 @@ export function attachResultViews(): void {
 			messageLink: card.querySelector<HTMLAnchorElement>("[data-status-link]"),
 			note: card.querySelector<HTMLElement>("[data-result-note]"),
 		};
-		on((detail) => applyResult(slots, detail));
+		// Transition du recalcul (§ 3.3) : relancée à chaque nouvelle valeur, jamais de chiffres intermédiaires
+		on((detail) => {
+			const changed = typeof detail.value === "string" && detail.value !== slots.value.textContent;
+			applyResult(slots, detail);
+			if (!changed || !card.matches("output")) return;
+			slots.value.classList.remove("motion-safe:animate-result-refresh");
+			void slots.value.offsetWidth;
+			slots.value.classList.add("motion-safe:animate-result-refresh");
+		});
 	}
 
 	// Limite de couverture sous le champ commune (MunicipalityField) : le conteneur sert d'emplacement du montant

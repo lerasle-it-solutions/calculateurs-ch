@@ -170,11 +170,53 @@ export const fr = {
 			`Cet article décrit le droit en vigueur au ${date}. Il ne constitue pas un conseil fiscal ou financier personnalisé.`,
 	},
 
+	/** Deux chemins en tête du formulaire (docs/design-system.md § 4.3). */
+	incomePath: {
+		legend: "Votre point de départ",
+		gross: "Je pars de mon salaire brut",
+		taxable: "Je connais mon revenu imposable",
+		/** Estimateur sans données pour l'année de calcul : chemin brut désactivé (arbitrage du 17.10.2026). */
+		grossUnavailable: (year: number): string =>
+			`L'estimation depuis le salaire brut n'est pas encore disponible pour ${year} : partez de votre revenu imposable.`,
+		/** Bandeau du cas exemple : lien vers le chemin brut. */
+		exampleGrossLink: "ou partez de votre salaire brut",
+		/** Revenu fédéral pré-rempli depuis le cantonal, lien qui le déplie. */
+		federalSame: "Revenu imposable fédéral : identique au cantonal.",
+		federalDifferent: "Différent ?",
+		/** Déplié : le lien replie le champ, le fédéral reprend le cantonal. */
+		federalSameLink: "Identique au cantonal ?",
+		federalAssumedLabel: "Revenu imposable fédéral",
+		federalAssumed: "Supposé égal au revenu imposable cantonal ; dépliez « Différent ? » pour le saisir.",
+		grossSalaryMissing: "Saisissez votre salaire brut.",
+		ageMissing: "Saisissez votre âge.",
+		grossMissingShort: "Salaire brut à saisir, voir le message",
+	},
+
+	/** Saisie des nombres (NumberField, docs/design-system.md § 2.3) : messages sous le champ, préfixés « Erreur : ». */
+	numberField: {
+		errorPrefix: "Erreur :",
+		invalid: "saisissez un nombre, par exemple 70'000.",
+		min: (min: string): string => `indiquez au moins ${min}.`,
+		max: (max: string): string => `indiquez au plus ${max}.`,
+		step: (step: string): string => (step === "1" ? "indiquez un nombre entier." : `indiquez un multiple de ${step}.`),
+		/** Carte et barre mobile quand un champ est à corriger. */
+		cardStatus: "Corrigez la saisie signalée sous le champ.",
+		cardShort: "Saisie à corriger, voir le message",
+	},
+
+	/** Profils de questions oui/non, conditions d'éligibilité, enfants, bouton du maximum (§ 4.3). */
+	form: {
+		conditionMet: "remplie",
+		conditionNotMet: "non remplie",
+		eligibilityHeading: "Conditions d'éligibilité",
+		/** « {amount} » : plafond retenu par le moteur, formaté. */
+		depositMaximum: (amount: string): string => `Verser le maximum (${amount} CHF)`,
+	},
+
 	/** Mode « salaire brut » des calculateurs (estimateur du revenu imposable, W08 B2). */
 	grossEstimator: {
-		toggle: "Je ne connais pas mon revenu imposable — l'estimer depuis mon salaire brut",
 		intro:
-			"Les revenus imposables ci-dessus seront estimés depuis votre salaire brut, avec les hypothèses détaillées dans le calcul. Le résultat devient une estimation.",
+			"Vos revenus imposables seront estimés depuis votre salaire brut, avec les hypothèses détaillées dans le calcul. Le résultat devient une estimation.",
 		grossSalary: "Salaire brut annuel",
 		grossSalaryHint: "Avant toute déduction.",
 		age: "Âge",
@@ -206,7 +248,7 @@ export const fr = {
 		vigilanceHeading: "Points de vigilance",
 		/** Préfixe d'un avertissement renforcé (§ 2.6). */
 		warningPrefix: "Attention :",
-		exampleReplace: "— remplacez par vos chiffres.",
+		exampleReplace: "— remplacez par vos chiffres,",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
 		seeBreakdown: "Voir le détail",
 	},

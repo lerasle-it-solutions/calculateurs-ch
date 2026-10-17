@@ -50,10 +50,10 @@ const summary = initial.shown;
 		}
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 		catalog={publishedCalculators("pension")}
-		formExtraAfter="federalTaxableIncome"
+		grossPath={{ available: estimator !== null, year: pillar3aTaxSavingYear }}
 		initial={initial}
 	>
-		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
+		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex max-w-reading flex-col gap-md">
 			<dl id="pillar3a-saving-summary" class="flex flex-col text-label" hidden={summary === null}>
 				{

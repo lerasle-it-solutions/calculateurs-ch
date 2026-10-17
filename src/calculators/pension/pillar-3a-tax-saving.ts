@@ -7,9 +7,10 @@
  * « grande » cotisation, part du revenu des personnes non affiliées. Une seule
  * année de calcul pour l'instant (décision du 05.10.2026).
  */
-import { getFederalData, getMunicipalMultipliers } from "../../data";
+import { getFederalData } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf, formatPercent } from "../../lib/format/chf";
+import { municipalityOptions } from "../municipalities";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
@@ -58,9 +59,6 @@ const yesNo = [
 
 const coverage = taxEngineCoverage();
 
-const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
-	.filter((entry) => coverage.cantonsCovered.includes(entry.canton))
-	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
 /** Cas exemple : saisies de scénario, fictives (§ 4.2) ; le versement est le plafond de l'année, lu dans les données. */
 const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000 };
@@ -95,6 +93,22 @@ const CONTRIBUTOR_LABELS = {
 	},
 };
 
+/** Légende et pastilles des profils de chaque personne (§ 4.3) ; celles du conjoint ou partenaire le nomment. */
+const PROFILE_LABELS = {
+	you: {
+		legend: "Votre situation",
+		employeeWithPension: "Salarié avec caisse de pension, avant l'âge de référence",
+		selfEmployedWithoutPension: "Indépendant sans caisse de pension",
+		other: "Autre situation",
+	},
+	spouse: {
+		legend: "Situation de votre conjoint ou partenaire",
+		employeeWithPension: "Conjoint ou partenaire salarié avec caisse de pension, avant l'âge de référence",
+		selfEmployedWithoutPension: "Conjoint ou partenaire indépendant sans caisse de pension",
+		other: "Autre situation du conjoint ou partenaire",
+	},
+};
+
 /** Nom d'un champ de personne : « affiliated » pour vous, « spouseAffiliated » pour le conjoint ou partenaire. */
 export const contributorFieldName = (person: "you" | "spouse", field: string): string =>
 	person === "you" ? field : `spouse${field[0]!.toUpperCase()}${field.slice(1)}`;
@@ -123,22 +137,22 @@ const contributorFields = (person: "you" | "spouse"): FieldDefinition[] => {
 			name: name("earnedIncome"),
 			label: label.earnedIncome,
 			unit: "CHF",
-			step: 100,
+			step: 1,
 			hint: earnedIncomeHint,
 			shownWhen: [...couple, { field: name("affiliated"), value: "no" }],
 		},
-		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true, shownWhen: couple },
+		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true, shownWhen: couple, maximumButton: true },
 	];
 };
 
 const fields: FieldDefinition[] = [
-	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
 	{
 		kind: "municipality",
 		name: "municipality",
 		label: "Commune de domicile",
-		options: municipalityOptions,
-		hint: "Commencez à saisir le nom de la commune.",
+		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
+		options: municipalityOptions(coverage.cantonsCovered),
+		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
 		required: true,
 	},
 	{
@@ -153,23 +167,17 @@ const fields: FieldDefinition[] = [
 		required: true,
 	},
 	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{
-		kind: "text",
-		name: "childrenAges",
-		label: "Âge des enfants",
-		inputMode: "numeric",
-		placeholder: "4, 9",
-		hint: "Séparés par une virgule.",
-	},
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
 		label: "Revenu imposable cantonal",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
 	},
 	{
 		kind: "number",
@@ -177,9 +185,11 @@ const fields: FieldDefinition[] = [
 		label: "Revenu imposable fédéral",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
+		sameAs: "cantonalTaxableIncome",
 	},
 	...contributorFields("you"),
 	...contributorFields("spouse"),
@@ -208,15 +218,11 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	example: {
 		label: `personne seule à Lausanne, avec caisse de pension, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, versement maximal`,
 		values: {
-			canton: "VD",
-			municipality: "Lausanne (VD)",
+			municipality: "Lausanne",
 			maritalStatus: "single",
 			children: "0",
 			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
 			federalTaxableIncome: String(EXAMPLE.federalTaxableIncome),
-			hasAvsIncome: "yes",
-			reachedReferenceAge: "no",
-			affiliated: "yes",
 			// Plafond de l'année, lu dans les données : jamais un montant tapé (§ 4.2)
 			contribution: String(smallCap),
 		},
@@ -304,6 +310,29 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 		},
 	],
 
+	profiles: (["you", "spouse"] as const).map((person) => {
+		const name = (field: string) => contributorFieldName(person, field);
+		return {
+			name: name("profile"),
+			legend: PROFILE_LABELS[person].legend,
+			fields: ["hasAvsIncome", "reachedReferenceAge", "workingAfterReferenceAge", "affiliated"].map(name),
+			profiles: [
+				{
+					value: "employeeWithPension",
+					label: PROFILE_LABELS[person].employeeWithPension,
+					values: { [name("hasAvsIncome")]: "yes", [name("reachedReferenceAge")]: "no", [name("affiliated")]: "yes" },
+				},
+				{
+					value: "selfEmployedWithoutPension",
+					label: PROFILE_LABELS[person].selfEmployedWithoutPension,
+					values: { [name("hasAvsIncome")]: "yes", [name("reachedReferenceAge")]: "no", [name("affiliated")]: "no" },
+				},
+			],
+			otherLabel: PROFILE_LABELS[person].other,
+			...(person === "spouse" ? { shownWhen: { field: "maritalStatus", value: "married" } } : {}),
+		};
+	}),
+
 	vigilance: reminders.map((text) => ({ level: "warning", text })),
 
 	monetization: { type: "none" },
@@ -330,7 +359,6 @@ export const pillar3aTaxSavingTexts = {
 	outOfScope: pillar3aBuybackTexts.outOfScope,
 	outOfScopeMunicipality: pillar3aBuybackTexts.outOfScopeMunicipality,
 	missingData: pillar3aBuybackTexts.missingData,
-	municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
 	unknownMunicipality: pillar3aBuybackTexts.unknownMunicipality,
 	outOfScopeShort: pillar3aBuybackTexts.outOfScopeShort,
 	missingDataShort: pillar3aBuybackTexts.missingDataShort,

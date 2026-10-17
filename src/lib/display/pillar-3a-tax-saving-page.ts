@@ -4,7 +4,7 @@ import { startCalculator } from "./calculator-runtime";
 import { readPillar3aTaxSavingForm, type Pillar3aTaxSavingPageData } from "./pillar-3a-tax-saving-form";
 import type { Pillar3aTaxSavingSummary } from "./pillar-3a-tax-saving";
 
-export const start = (): void => {
+export const start = (clicked: Element | null): void => {
 	const summary = document.getElementById("pillar3a-saving-summary")!;
 	const excess = document.getElementById("pillar3a-saving-excess")!;
 	startCalculator<Pillar3aTaxSavingPageData & { estimator: GrossToTaxableRuleSet | null }, Pillar3aTaxSavingSummary>({
@@ -18,5 +18,5 @@ export const start = (): void => {
 			excess.hidden = !shown?.excess;
 			excess.textContent = shown?.excess ? data.texts.excessWarning.replace("{amount}", shown.excess) : "";
 		},
-	});
+	}, clicked);
 };

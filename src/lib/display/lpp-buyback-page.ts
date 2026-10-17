@@ -5,7 +5,7 @@ import { readLppBuybackForm, type LppBuybackPageData } from "./lpp-buyback-form"
 import type { LppBuybackDisplay } from "./lpp-buyback";
 import { fillResultTable } from "./result-table";
 
-export const start = (): void => {
+export const start = (clicked: Element | null): void => {
 	const resultBlock = document.getElementById("lpp-buyback-result")!;
 	const notDeducted = document.getElementById("lpp-buyback-not-deducted")!;
 	const scenarioTable = document.getElementById("lpp-buyback-scenarios")!;
@@ -35,5 +35,5 @@ export const start = (): void => {
 				{ optionalColumns: withLock },
 			);
 		},
-	});
+	}, clicked);
 };

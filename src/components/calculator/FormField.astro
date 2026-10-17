@@ -1,0 +1,106 @@
+---
+/**
+ * FormField — rend un champ déclaré par une CalculatorDefinition avec le
+ * primitif du design system qui lui correspond (docs/design-system.md § 2.3 et
+ * § 4.3). Aucune formule, aucun script : le script de la page, chargé à la
+ * demande, relie les comportements par leurs attributs `data-*`.
+ *
+ * - `number` : NumberField ; `maximumButton` ajoute à côté le bouton « Verser le
+ *   maximum (<plafond>) », dont le plafond vient du moteur (`maximum`), jamais
+ *   d'un libellé tapé (R2) ; masqué sans plafond.
+ * - `childAges` : un champ par enfant, généré depuis le nombre d'enfants ; le
+ *   `<template>` sert au script pour en ajouter.
+ */
+import NumberField from "../ui/NumberField.astro";
+import SelectField from "../ui/SelectField.astro";
+import MunicipalityField from "../ui/MunicipalityField.astro";
+import TextField from "../ui/TextField.astro";
+import Button from "../ui/Button.astro";
+import CantonField from "./fields/CantonField.astro";
+import { fr } from "../../i18n/fr";
+import { formatChf } from "../../lib/format/chf";
+import type { FieldDefinition } from "../../calculators/types";
+
+interface Props {
+	field: FieldDefinition;
+	id: string;
+	/** Saisies au chargement (cas exemple), par nom de champ. */
+	values: Record<string, string | undefined>;
+	cantonsCovered: string[];
+	/** Plafond du bouton « maximum », calculé par le moteur sur le cas exemple. */
+	maximum?: number | null;
+}
+
+const { field, id, values, cantonsCovered, maximum = null } = Astro.props;
+const value = values[field.name];
+const childCount = field.kind === "childAges" ? Math.max(0, Math.trunc(Number(values[field.countField] ?? 0)) || 0) : 0;
+const childLabel = (n: number | string) => (field.kind === "childAges" ? field.itemLabel.replace("{n}", String(n)) : "");
+---
+
+{
+	field.kind === "number" ? (
+		<NumberField
+			id={id}
+			name={field.name}
+			label={field.label}
+			value={value}
+			min={field.min}
+			max={field.max}
+			step={field.step}
+			unit={field.unit}
+			hint={field.hint}
+			required={field.required}
+		>
+			{field.maximumButton && (
+				<Button
+					slot="action"
+					variant="ghost"
+					data-maximum-for={field.name}
+					data-value={maximum ?? undefined}
+					data-label={fr.form.depositMaximum("{amount}")}
+					hidden={!maximum}
+				>
+					{maximum ? fr.form.depositMaximum(formatChf(maximum)) : ""}
+				</Button>
+			)}
+		</NumberField>
+	) : field.kind === "select" ? (
+		<SelectField id={id} name={field.name} label={field.label} options={field.options} value={value} hint={field.hint} required={field.required} />
+	) : field.kind === "municipality" ? (
+		<MunicipalityField id={id} name={field.name} label={field.label} options={field.options} value={value} hint={field.hint} required={field.required} />
+	) : field.kind === "text" ? (
+		<TextField
+			id={id}
+			name={field.name}
+			label={field.label}
+			value={value}
+			inputMode={field.inputMode}
+			placeholder={field.placeholder}
+			hint={field.hint}
+			required={field.required}
+		/>
+	) : field.kind === "childAges" ? (
+		<fieldset data-child-ages data-count-field={field.countField} hidden={childCount === 0} class="flex flex-col gap-md">
+			<legend class="text-label font-bold">{field.label}</legend>
+			<div data-child-ages-list class="flex flex-col gap-md">
+				{Array.from({ length: childCount }, (_, index) => (
+					<NumberField
+						id={`${id}-${index + 1}`}
+						name={`childAge${index + 1}`}
+						label={childLabel(index + 1)}
+						value={values[`childAge${index + 1}`]}
+						unit="ans"
+						min={0}
+						step={1}
+						required
+					/>
+				))}
+			</div>
+			<template data-child-age-template>
+				<NumberField id={`${id}-__N__`} name="childAge__N__" label={childLabel("__N__")} unit="ans" min={0} step={1} required />
+			</template>
+		</fieldset>
+	) : (
+		<CantonField field={{ ...field, defaultValue: value }} id={id} only={cantonsCovered} />
+	)
+}

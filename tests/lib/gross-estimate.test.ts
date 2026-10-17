@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { getFederalData } from "../../src/data";
 import { getGrossToTaxableRuleSet } from "../../src/data/gross-to-taxable";
+import { fr } from "../../src/i18n/fr";
 import { estimateTaxableIncome, legalMinimumPensionContribution, rulesFor } from "../../src/lib/calculations/gross-to-taxable";
 import * as labels from "../../src/lib/calculations/gross-to-taxable-labels";
 import { computeEstimate, estimateDefaults, type EstimateInput } from "../../src/lib/display/gross-estimate";
@@ -144,7 +145,8 @@ describe("pages : bloc « salaire brut » dans le formulaire", () => {
 		const form = html.slice(html.indexOf("<form"), html.indexOf("</form>"));
 		expect(form).toContain("data-estimator");
 		expect(form.indexOf('name="federalTaxableIncome"')).toBeLessThan(form.indexOf("data-estimator"));
-		expect(html.replace(/&#39;/g, "'")).toContain("Je ne connais pas mon revenu imposable — l'estimer depuis mon salaire brut");
+		// Adaptation approuvée par le mainteneur le 17.10.2026 : le chemin « salaire brut » est un bouton radio (§ 4.3)
+		expect(form).toMatch(new RegExp(`<label\\b[^>]*>\\s*<input\\b[^>]*name="incomePath"[^>]*value="gross"[^>]*>\\s*${fr.incomePath.gross}\\s*</label>`));
 		expect(html).toContain('id="trace-labels-gross-to-taxable"');
 	});
 });

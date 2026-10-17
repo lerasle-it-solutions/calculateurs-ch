@@ -10,8 +10,10 @@ export type StatusLink = { label: string; url: string };
 /**
  * Message qui remplace le montant : texte complet dans la carte, mention courte dans la barre mobile.
  * `kind: "coverage"` : limite de couverture du moteur, répétée sous le champ commune (`coverageOnly`).
+ * `kind: "exclusion"` : cas exclu du périmètre (`notCovered`) déclenché par la saisie, avec son alternative.
+ * Les deux s'affichent dans la carte en avertissement renforcé (§ 4.3).
  */
-export type ResultStatus = { text: string; short: string; link?: StatusLink; kind?: "coverage" };
+export type ResultStatus = { text: string; short: string; link?: StatusLink; kind?: "coverage" | "exclusion" };
 
 /** `note` : mention courte sous le montant, p. ex. « estimation » ; absente, la note s'efface. */
 export type ResultDetail = { value?: string; status?: ResultStatus | null; note?: string | null };
@@ -44,6 +46,8 @@ export function applyResult(slots: ResultCardSlots, detail: ResultDetail): void 
 	const status = detail.status ?? null;
 	slots.value.hidden = status !== null;
 	message.hidden = status === null;
+	// Exclusion ou limite de couverture : avertissement renforcé (ResultCard.astro), sur un élément du DOM seulement
+	if ("toggleAttribute" in message) (message as HTMLElement).toggleAttribute("data-warning", Boolean(status?.kind));
 	if (!messageText) {
 		message.textContent = status?.short ?? "";
 		return;

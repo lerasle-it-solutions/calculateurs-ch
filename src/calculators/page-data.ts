@@ -20,7 +20,6 @@ export type HouseholdTexts = {
 	outOfScope: (canton: string) => string;
 	outOfScopeMunicipality: (municipality: string) => string;
 	missingData: string;
-	municipalityMismatch: string;
 	unknownMunicipality: string;
 	outOfScopeShort: string;
 	missingDataShort: string;
@@ -46,6 +45,7 @@ export function householdPageData(
 				return null;
 			}
 		})(),
+		// Clés « Commune (CT) » ; le champ affiche le libellé (src/calculators/municipalities.ts)
 		municipalities: Object.fromEntries(
 			(getMunicipalMultipliers()?.multipliers ?? [])
 				.filter((entry) => cantons.includes(entry.canton))
@@ -67,12 +67,16 @@ export function householdPageData(
 				),
 			),
 			missingData: texts.missingData,
-			municipalityMismatch: texts.municipalityMismatch,
 			unknownMunicipality: texts.unknownMunicipality,
 			outOfScopeShort: texts.outOfScopeShort,
 			missingDataShort: texts.missingDataShort,
 			inputShort: texts.inputShort,
 			estimateNote: fr.grossEstimator.resultNote,
+			federalAssumedLabel: fr.incomePath.federalAssumedLabel,
+			federalAssumed: fr.incomePath.federalAssumed,
+			grossSalaryMissing: fr.incomePath.grossSalaryMissing,
+			ageMissing: fr.incomePath.ageMissing,
+			grossMissingShort: fr.incomePath.grossMissingShort,
 		},
 	};
 }

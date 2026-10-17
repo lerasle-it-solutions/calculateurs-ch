@@ -6,10 +6,11 @@
  * blocage vient des données partout où la fiche l'écrit (R2), « 24 ans » et
  * « cinq ans » restent du texte, dans la phrase de leur article.
  */
-import { eachValue, getFederalData, getMunicipalMultipliers } from "../../data";
+import { eachValue, getFederalData } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf } from "../../lib/format/chf";
 import { SCENARIO_TRANCHE_COUNTS } from "../../lib/calculations/pension/lpp-buyback";
+import { municipalityOptions } from "../municipalities";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition, VigilancePoint } from "../types";
@@ -60,9 +61,6 @@ const sourceIds = [
 
 const coverage = taxEngineCoverage();
 
-const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
-	.filter((entry) => coverage.cantonsCovered.includes(entry.canton))
-	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
 const taxableIncomeHint = "Revenu imposable sans la déduction du rachat, par exemple celui de votre dernière décision de taxation.";
 
@@ -70,13 +68,13 @@ const taxableIncomeHint = "Revenu imposable sans la déduction du rachat, par ex
 const EXAMPLE = { cantonalTaxableIncome: 110_000, federalTaxableIncome: 112_000, buybackPotential: 50_000, buybackAmount: 30_000 };
 
 const fields: FieldDefinition[] = [
-	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
 	{
 		kind: "municipality",
 		name: "municipality",
 		label: "Commune de domicile",
-		options: municipalityOptions,
-		hint: "Commencez à saisir le nom de la commune.",
+		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
+		options: municipalityOptions(coverage.cantonsCovered),
+		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
 		required: true,
 	},
 	{
@@ -91,23 +89,17 @@ const fields: FieldDefinition[] = [
 		required: true,
 	},
 	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{
-		kind: "text",
-		name: "childrenAges",
-		label: "Âge des enfants",
-		inputMode: "numeric",
-		placeholder: "4, 9",
-		hint: "Séparés par une virgule.",
-	},
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
 		label: "Revenu imposable cantonal avant rachat",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
 	},
 	{
 		kind: "number",
@@ -115,9 +107,11 @@ const fields: FieldDefinition[] = [
 		label: "Revenu imposable fédéral avant rachat",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
+		sameAs: "cantonalTaxableIncome",
 	},
 	{
 		kind: "number",
@@ -216,8 +210,7 @@ export const lppBuyback: CalculatorDefinition = {
 	example: {
 		label: `personne seule à Lausanne, revenu imposable de ${formatChf(EXAMPLE.cantonalTaxableIncome)} CHF, rachat de ${formatChf(EXAMPLE.buybackAmount)} CHF`,
 		values: {
-			canton: "VD",
-			municipality: "Lausanne (VD)",
+			municipality: "Lausanne",
 			maritalStatus: "single",
 			children: "0",
 			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
@@ -389,7 +382,6 @@ export const lppBuybackTexts = {
 	outOfScope: pillar3aBuybackTexts.outOfScope,
 	outOfScopeMunicipality: pillar3aBuybackTexts.outOfScopeMunicipality,
 	missingData: pillar3aBuybackTexts.missingData,
-	municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
 	unknownMunicipality: pillar3aBuybackTexts.unknownMunicipality,
 	outOfScopeShort: pillar3aBuybackTexts.outOfScopeShort,
 	missingDataShort: pillar3aBuybackTexts.missingDataShort,

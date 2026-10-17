@@ -36,18 +36,12 @@ import ScopeNotice from "../ui/ScopeNotice.astro";
 import ResultCard from "../ui/ResultCard.astro";
 import CalculationBreakdown from "../ui/CalculationBreakdown.astro";
 import DataFreshness from "../ui/DataFreshness.astro";
-// Champs : les primitifs génériques viennent du design system (un seul de chaque
-// pour tout le projet) ; seul le champ métier « canton » vit dans cette couche.
-import NumberField from "../ui/NumberField.astro";
-import SelectField from "../ui/SelectField.astro";
-import CantonField from "./fields/CantonField.astro";
-import MunicipalityField from "../ui/MunicipalityField.astro";
-import TextField from "../ui/TextField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
 import VigilancePoints from "./VigilancePoints.astro";
 import Section from "../layout/Section.astro";
 import { fr } from "../../i18n/fr";
-import type { CalculatorDefinition, FieldDefinition } from "../../calculators/types";
+import type { CalculatorDefinition, FieldDefinition, ProfileGroup } from "../../calculators/types";
+import FormField from "./FormField.astro";
 import type { FormOutcome } from "../../lib/display/calculator-form";
 import { exampleFormValues } from "../../calculators/field-values";
 
@@ -75,16 +69,19 @@ interface Props {
 	 */
 	catalog?: CalculatorDefinition[];
 	/**
-	 * Nom du champ après lequel rendre le contenu de l'emplacement `form-extra`
-	 * (p. ex. le mode « salaire brut » de l'estimateur), dans le formulaire.
+	 * Chemin « Je pars de mon salaire brut » (§ 4.3) : son contenu est
+	 * l'emplacement `gross-path` (GrossEstimator), rendu après les champs du
+	 * revenu imposable. `available: false` : l'estimateur n'a pas de données pour
+	 * l'année de calcul, le chemin et le lien du bandeau sont désactivés, avec une
+	 * phrase (arbitrage du 17.10.2026).
 	 */
-	formExtraAfter?: string;
+	grossPath?: { available: boolean; year: number };
 	/**
 	 * Résultat du cas exemple, calculé au build en exécutant le moteur sur
 	 * `definition.example` (docs/design-system.md § 4.2) : affiché au
 	 * chargement, sans JavaScript.
 	 */
-	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note">;
+	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note" | "maxima">;
 	/** Identifiant du bloc des points de vigilance (titre). */
 	vigilanceId?: string;
 }
@@ -98,19 +95,59 @@ const {
 	guide,
 	verifiedOn,
 	catalog = [],
-	formExtraAfter,
+	grossPath,
 	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
 	vigilanceId: vigilanceIdProp,
 } = Astro.props;
 
 /** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
 const filled = exampleFormValues(definition);
-const valueOf = (field: FieldDefinition): string | undefined => filled[field.name];
-/** Champ conditionnel : affiché si ses conditions sont remplies par les saisies du chargement. */
-const shownAtLoad = (field: FieldDefinition): boolean =>
-	(field.shownWhen ?? []).every((condition) => filled[condition.field] === condition.value);
 
-const formExtra = Astro.slots.has("form-extra") ? await Astro.slots.render("form-extra") : "";
+// Profils (§ 4.3) : les questions d'un groupe ne s'affichent que pour « Autre situation »
+const profileGroups = definition.profiles ?? [];
+const groupOf = (field: FieldDefinition) => profileGroups.find((group) => group.fields.includes(field.name));
+
+/** Conditions d'affichage d'un champ : les siennes, et « Autre situation » pour une question de profil. */
+const conditionsOf = (field: FieldDefinition): [string, string][] => {
+	const group = groupOf(field);
+	return [
+		...(field.shownWhen ?? []).map((condition): [string, string] => [condition.field, condition.value]),
+		...(group ? [[group.name, "other"] as [string, string]] : []),
+	];
+};
+const shown = (conditions: [string, string][]) => conditions.every(([name, value]) => filled[name] === value);
+const conditionsAttribute = (conditions: [string, string][]) => (conditions.length > 0 ? JSON.stringify(conditions) : undefined);
+
+/**
+ * Formulaire en segments : un champ ; les champs du revenu imposable, regroupés
+ * dans le bloc de leur chemin ; ou un groupe de profils, rendu avant sa première
+ * question.
+ */
+type Segment =
+	| { kind: "field"; field: FieldDefinition }
+	| { kind: "income"; fields: FieldDefinition[] }
+	| { kind: "profiles"; group: ProfileGroup };
+const segments: Segment[] = [];
+for (const field of definition.fields) {
+	const group = groupOf(field);
+	if (group && group.fields[0] === field.name) segments.push({ kind: "profiles", group });
+	const last = segments.at(-1);
+	if (field.kind === "number" && field.incomePath) {
+		if (last?.kind === "income") last.fields.push(field);
+		else segments.push({ kind: "income", fields: [field] });
+	} else segments.push({ kind: "field", field });
+}
+const hasIncomePaths = segments.some((segment) => segment.kind === "income") && grossPath !== undefined;
+const grossContent = Astro.slots.has("gross-path") ? await Astro.slots.render("gross-path") : "";
+/** Revenu repris d'un autre champ (« différent ? ») : déplié au chargement si l'exemple le distingue. */
+const differs = (field: FieldDefinition) =>
+	field.kind === "number" && field.sameAs !== undefined && (filled[field.name] ?? "") !== "" && filled[field.name] !== filled[field.sameAs];
+
+/** Pastille d'un bouton radio (§ 2.3) : cible de 48 px, état coché en `accent-tint`. */
+const pill =
+	"flex min-h-3xl cursor-pointer items-center gap-sm rounded-button border border-rule bg-paper px-lg text-label transition-colors duration-150 hover:border-ink " +
+	"has-[:checked]:border-accent has-[:checked]:bg-accent-tint has-[:checked]:text-ink " +
+	"has-[:disabled]:cursor-not-allowed has-[:disabled]:border-hairline has-[:disabled]:bg-tint has-[:disabled]:text-ink-muted";
 
 const byId = new Map(catalog.map((entry) => [entry.id, entry]));
 
@@ -165,76 +202,113 @@ const resultFor = definition.fields
 		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
 		<p data-example-banner class="rounded-panel bg-tint p-lg text-label">
 			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label} {fr.calculator.exampleReplace}
+			{hasIncomePaths ? (
+				<>
+					{" "}<button
+						type="button"
+						data-switch-gross
+						disabled={!grossPath!.available}
+						class="cursor-pointer font-bold text-accent underline disabled:cursor-not-allowed disabled:text-ink-muted disabled:no-underline"
+					>{fr.incomePath.exampleGrossLink}</button>.
+				</>
+			) : (
+				<>.</>
+			)}
 		</p>
 		<form
 			data-calculator
 			id={formId}
 			class="flex min-w-0 flex-col gap-xl"
 			novalidate
+			data-invalid-text={fr.numberField.cardStatus}
+			data-invalid-short={fr.numberField.cardShort}
 		>
-			{
-				definition.fields.map((field) => (
-					<>
-					<div
-						class="contents"
-						data-shown-when={field.shownWhen ? JSON.stringify(field.shownWhen.map((condition) => [condition.field, condition.value])) : undefined}
-						hidden={!shownAtLoad(field)}
-					>
-					{field.kind === "number" ? (
-						<NumberField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							value={valueOf(field)}
-							min={field.min}
-							max={field.max}
-							step={field.step}
-							unit={field.unit}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : field.kind === "select" ? (
-						<SelectField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							options={field.options}
-							value={valueOf(field)}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : field.kind === "municipality" ? (
-						<MunicipalityField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							options={field.options}
-							value={valueOf(field)}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : field.kind === "text" ? (
-						<TextField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							value={valueOf(field)}
-							inputMode={field.inputMode}
-							placeholder={field.placeholder}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : (
-						<CantonField
-							field={{ ...field, defaultValue: valueOf(field) }}
-							id={fieldId(field.name)}
-							only={definition.scope.cantonsCovered}
-						/>
-					)}
+			{hasIncomePaths && (
+				<fieldset data-income-paths class="flex flex-col gap-sm">
+					<legend class="sr-only">{fr.incomePath.legend}</legend>
+					<div class="flex flex-wrap gap-sm">
+						<label class={pill}>
+							<input type="radio" name="incomePath" value="gross" disabled={!grossPath!.available} class="size-icon" />
+							{fr.incomePath.gross}
+						</label>
+						<label class={pill}>
+							<input type="radio" name="incomePath" value="taxable" checked class="size-icon" />
+							{fr.incomePath.taxable}
+						</label>
 					</div>
-					{field.name === formExtraAfter && formExtra && <Fragment set:html={formExtra} />}
-					</>
-				))
+					{!grossPath!.available && <p class="text-fine text-ink-muted">{fr.incomePath.grossUnavailable(grossPath!.year)}</p>}
+				</fieldset>
+			)}
+			{
+				segments.map((segment) =>
+					segment.kind === "profiles" ? (
+						<fieldset
+							data-profile-group={segment.group.name}
+							data-shown-when={segment.group.shownWhen ? conditionsAttribute([[segment.group.shownWhen.field, segment.group.shownWhen.value]]) : undefined}
+							hidden={segment.group.shownWhen ? filled[segment.group.shownWhen.field] !== segment.group.shownWhen.value : false}
+							class="flex flex-col gap-sm"
+						>
+							<legend class="mb-xs text-label font-bold">{segment.group.legend}</legend>
+							<div class="flex flex-wrap gap-sm">
+								{segment.group.profiles.map((profile) => (
+									<label class={pill}>
+										<input
+											type="radio"
+											name={segment.group.name}
+											value={profile.value}
+											checked={filled[segment.group.name] === profile.value}
+											data-profile-values={JSON.stringify(profile.values)}
+											class="size-icon"
+										/>
+										{profile.label}
+									</label>
+								))}
+								<label class={pill}>
+									<input type="radio" name={segment.group.name} value="other" checked={filled[segment.group.name] === "other"} class="size-icon" />
+									{segment.group.otherLabel}
+								</label>
+							</div>
+						</fieldset>
+					) : segment.kind === "income" ? (
+						<>
+							<div data-path-block="taxable" class="flex flex-col gap-xl">
+								{segment.fields.map((field) =>
+									field.kind === "number" && field.sameAs ? (
+										<details data-same-as={field.sameAs} open={differs(field)} class="group flex flex-col gap-sm">
+											<summary class="flex min-h-3xl cursor-pointer list-none flex-wrap items-center gap-x-sm text-label">
+												<span class="group-open:hidden">{fr.incomePath.federalSame}</span>
+												<span class="font-bold text-accent underline group-open:hidden">{fr.incomePath.federalDifferent}</span>
+												<span class="hidden font-bold text-accent underline group-open:inline">{fr.incomePath.federalSameLink}</span>
+											</summary>
+											<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} />
+										</details>
+									) : (
+										<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} />
+									),
+								)}
+							</div>
+							{hasIncomePaths && grossContent && (
+								<div data-path-block="gross" hidden>
+									<Fragment set:html={grossContent} />
+								</div>
+							)}
+						</>
+					) : (
+						<div
+							class="contents"
+							data-shown-when={conditionsAttribute(conditionsOf(segment.field))}
+							hidden={!shown(conditionsOf(segment.field))}
+						>
+							<FormField
+								field={segment.field}
+								id={fieldId(segment.field.name)}
+								values={filled}
+								cantonsCovered={definition.scope.cantonsCovered}
+								maximum={initial.maxima?.[segment.field.name] ?? null}
+							/>
+						</div>
+					),
+				)
 			}
 		</form>
 		</div>
@@ -249,6 +323,26 @@ const resultFor = definition.fields
 					status={initial.status}
 					note={initial.note}
 				/>
+				{definition.eligibility && definition.eligibility.length > 0 && (
+					<section
+						data-eligibility
+						data-met={fr.form.conditionMet}
+						data-not-met={fr.form.conditionNotMet}
+						class="mt-md flex max-w-reading flex-col gap-xs rounded-panel border border-hairline bg-paper p-lg text-label"
+					>
+						<h3 class="font-bold">{fr.form.eligibilityHeading}</h3>
+						<ul class="flex flex-col gap-xs">
+							{definition.eligibility.map((condition) => (
+								<li data-condition={condition.field} data-condition-value={condition.value} class="flex flex-wrap justify-between gap-x-md">
+									<span>{condition.label}</span>
+									<strong data-condition-state class="font-bold">
+										{filled[condition.field] === condition.value ? fr.form.conditionMet : fr.form.conditionNotMet}
+									</strong>
+								</li>
+							))}
+						</ul>
+					</section>
+				)}
 				{/* Compléments du résultat propres à un calculateur (parts, rappels), rendus par la page */}
 				<slot name="result" />
 				{resultNote && <p class="mt-md max-w-reading text-fine text-ink-muted">{resultNote}</p>}

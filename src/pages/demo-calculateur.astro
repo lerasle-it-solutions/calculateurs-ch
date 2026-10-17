@@ -139,6 +139,7 @@ const catalog = [buybackDemo, lppDemo];
 
 <script>
 	import { attachResultViews } from "../lib/display/result-views";
+	import { parseNumber } from "../lib/format/amount-input";
 
 	// Vues du résultat abonnées à calc:update (ResultCard et CalculationBreakdown n'ont pas de script)
 	attachResultViews();
@@ -188,8 +189,9 @@ const catalog = [buybackDemo, lppDemo];
 
 		const update = () => {
 			const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
-			const amount = Number(data.buybackAmount);
-			const rate = Number(data.marginalRate);
+			// Saisie tolérante : « 12’000 » comme « 12000 » (NumberField, § 2.3)
+			const amount = parseNumber(data.buybackAmount ?? "") ?? Number.NaN;
+			const rate = parseNumber(data.marginalRate ?? "") ?? Number.NaN;
 			const valid =
 				Number.isFinite(amount) &&
 				Number.isFinite(rate) &&

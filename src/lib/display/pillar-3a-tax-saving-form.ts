@@ -6,6 +6,7 @@
  */
 import type { Pillar3aContributor } from "../calculations/pension/pillar-3a-tax-saving";
 import {
+	amountOf,
 	emptyOutcome,
 	readHousehold,
 	withEstimate,
@@ -50,15 +51,16 @@ export function readPillar3aTaxSavingForm(
 		const hasAvsIncome = values[key("hasAvsIncome")] !== "no";
 		const reachedReferenceAge = values[key("reachedReferenceAge")] === "yes";
 		const workingWithinFiveYearsOfReferenceAge = values[key("workingAfterReferenceAge")] === "yes";
-		const income = values[key("earnedIncome")] ?? "";
+		const income = amountOf(values[key("earnedIncome")]);
 		// Le revenu n'est requis que si la personne peut déduire : sans caisse de pension et conditions remplies
 		const eligible = hasAvsIncome && (!reachedReferenceAge || workingWithinFiveYearsOfReferenceAge);
-		const incomeGiven = income !== "" && Number.isFinite(Number(income));
+		const incomeGiven = Number.isFinite(income);
 		if (!affiliated && eligible && !incomeGiven) return null;
+		const contribution = amountOf(values[key("contribution")]);
 		return {
 			affiliated,
-			earnedIncome: affiliated || !incomeGiven ? null : Number(income),
-			contribution: Math.max(0, Number(values[key("contribution")] || 0)),
+			earnedIncome: affiliated || !incomeGiven ? null : income,
+			contribution: Number.isFinite(contribution) ? Math.max(0, contribution) : 0,
 			hasAvsIncome,
 			reachedReferenceAge,
 			workingWithinFiveYearsOfReferenceAge,
@@ -83,5 +85,12 @@ export function readPillar3aTaxSavingForm(
 		data.texts,
 		data.officialCalculators,
 	);
-	return withEstimate(household, data, shown, shown.summary);
+	// Bouton « Verser le maximum » de chaque personne : le plafond retenu par le moteur, masqué s'il est nul
+	const maxima = Object.fromEntries(
+		(married ? (["", "spouse"] as const) : ([""] as const)).map((prefix, index) => {
+			const cap = shown.caps?.[index] ?? null;
+			return [personField(prefix, "contribution"), cap ? cap : null];
+		}),
+	);
+	return { ...withEstimate(household, data, shown, shown.summary), maxima };
 }

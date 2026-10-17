@@ -25,12 +25,22 @@ type FieldBase = {
 
 export type NumberFieldDefinition = FieldBase & {
 	kind: "number";
-	/** Unité affichée en suffixe : « CHF », « % », « ans »… FRANÇAIS/symbole. */
+	/** Unité affichée en suffixe : « CHF », « % », « ans »… FRANÇAIS/symbole. Un montant « CHF » se formate à la suisse pendant la frappe. */
 	unit?: string;
 	min?: number;
 	max?: number;
 	step?: number;
 	defaultValue?: number;
+	/** Revenu imposable : champ du chemin « Je connais mon revenu imposable » (§ 4.3). */
+	incomePath?: true;
+	/**
+	 * Pré-rempli depuis ce champ, et masqué derrière un lien « différent ? » qui
+	 * le déplie (revenu fédéral repris du cantonal, § 4.3). Replié, il vaut l'autre
+	 * champ, hypothèse inscrite dans la trace (R4).
+	 */
+	sameAs?: string;
+	/** Bouton « Verser le maximum (<plafond>) » à côté du champ ; le plafond vient du moteur (§ 4.3). */
+	maximumButton?: true;
 };
 
 export type SelectFieldDefinition = FieldBase & {
@@ -62,8 +72,18 @@ export type TextFieldDefinition = FieldBase & {
 	defaultValue?: string;
 };
 
+/** Âges des enfants : un champ par enfant, généré depuis le champ du nombre d'enfants (§ 4.3). */
+export type ChildAgesFieldDefinition = FieldBase & {
+	kind: "childAges";
+	/** Champ du nombre d'enfants. */
+	countField: string;
+	/** Libellé de chaque champ, « {n} » remplacé par le rang de l'enfant. FRANÇAIS. */
+	itemLabel: string;
+};
+
 export type FieldDefinition =
 	| NumberFieldDefinition
+	| ChildAgesFieldDefinition
 	| SelectFieldDefinition
 	| CantonFieldDefinition
 	| MunicipalityFieldDefinition
@@ -146,6 +166,11 @@ export type CalculatorDefinition = {
 	profiles?: ProfileGroup[];
 	/** Points de vigilance, toujours affichés sous la carte résultat (§ 4.1). */
 	vigilance?: VigilancePoint[];
+	/**
+	 * Conditions d'éligibilité, en liste de contrôle « remplie / non remplie »
+	 * sous la carte (§ 4.3) : remplie quand `field` vaut `value`.
+	 */
+	eligibility?: { field: string; value: string; label: string }[];
 
 	scope: {
 		/** FRANÇAIS → bandeau, bloc « Pour qui ». */

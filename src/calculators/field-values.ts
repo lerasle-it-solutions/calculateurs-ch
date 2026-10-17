@@ -20,6 +20,7 @@ export function fieldValueError(field: FieldDefinition, raw: string): string | n
 		case "canton":
 			return ROMANDE_CANTONS.some((canton) => canton.code === raw) ? null : "canton inconnu";
 		case "text":
+		case "childAges":
 			return null;
 	}
 }
@@ -30,8 +31,17 @@ export function fieldValueError(field: FieldDefinition, raw: string): string | n
  * donc ce que la construction lit pour calculer le résultat de l'exemple.
  */
 export function exampleFormValues(definition: CalculatorDefinition): Record<string, string> {
-	const defaults = definition.fields.flatMap((field) => (field.defaultValue === undefined ? [] : [[field.name, String(field.defaultValue)]]));
-	return { ...Object.fromEntries(defaults), ...definition.example.values };
+	const defaults = definition.fields.flatMap((field) =>
+		"defaultValue" in field && field.defaultValue !== undefined ? [[field.name, String(field.defaultValue)]] : [],
+	);
+	const values: Record<string, string> = { ...Object.fromEntries(defaults), ...definition.example.values };
+	// Profil choisi (le premier par défaut) : il donne la réponse de ses questions oui/non
+	for (const group of definition.profiles ?? []) {
+		const chosen = values[group.name] ?? group.profiles[0]!.value;
+		values[group.name] = chosen;
+		Object.assign(values, group.profiles.find((profile) => profile.value === chosen)?.values);
+	}
+	return values;
 }
 
 /** Problèmes du cas exemple d'une définition, en messages « champ : problème » ; liste vide s'il est valide. */
@@ -41,7 +51,9 @@ export function exampleProblems(definition: CalculatorDefinition): string[] {
 	const groups = new Map((definition.profiles ?? []).map((group) => [group.name, group]));
 	const problems: string[] = [];
 	for (const [name, raw] of Object.entries(values)) {
-		const field = fields.get(name);
+		// Âge d'un enfant : un champ généré par enfant (childAge1, childAge2…)
+		const childAges = definition.fields.find((candidate) => candidate.kind === "childAges");
+		const field = fields.get(name) ?? (childAges && /^childAge\d+$/.test(name) ? ({ kind: "number", name, label: "", min: 0, step: 1 } as const) : undefined);
 		const group = groups.get(name);
 		const error = field
 			? fieldValueError(field, raw)
@@ -52,7 +64,8 @@ export function exampleProblems(definition: CalculatorDefinition): string[] {
 				: "champ inconnu";
 		if (error) problems.push(`${name} : ${error}`);
 	}
-	const valueOf = (name: string) => values[name] ?? fields.get(name)?.defaultValue?.toString() ?? "";
+	const filled = exampleFormValues(definition);
+	const valueOf = (name: string) => filled[name] ?? "";
 	for (const field of definition.fields) {
 		const shown = (field.shownWhen ?? []).every((condition) => valueOf(condition.field) === condition.value);
 		if (field.required && shown && valueOf(field.name) === "") problems.push(`${field.name} : obligatoire`);
