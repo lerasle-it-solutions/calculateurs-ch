@@ -779,6 +779,9 @@ Contraintes de schéma, donc vérifiées au build : au moins un calculateur lié
 deux sources. Un article qui ne mène nulle part ne peut pas être publié.
 Route : `/{famille}/guides/{slug}/`.
 
+Un article daté cite les valeurs en vigueur à sa date ; seules les pages calculateurs et les
+pages de référence lisent les données.
+
 ---
 
 ## 7. Périmètre année 1

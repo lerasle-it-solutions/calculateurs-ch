@@ -4,7 +4,7 @@
  * exemple d'A2, compte à rebours du versement 3a, bande de preuves, résultat
  * type de chaque calculateur publié. Aucun montant tapé.
  */
-import { getFederalData, getMunicipalMultipliers } from "../data";
+import { getMunicipalMultipliers } from "../data";
 import type { FormOutcome } from "../lib/display/calculator-form";
 import { readPillar3aTaxSavingForm } from "../lib/display/pillar-3a-tax-saving-form";
 import { countdownDays as countdown } from "../lib/display/countdown";
@@ -17,6 +17,7 @@ import { exampleFormValues } from "./field-values";
 import { pillar3aTaxSaving, pillar3aTaxSavingYear } from "./pension/pillar-3a-tax-saving";
 import { pillar3aTaxSavingPageData } from "./pension/pillar-3a-tax-saving-page-data";
 import { siteVerifiedOn } from "./site-verification";
+import { pillar3aContributionDeadline, type ContributionDeadline } from "./contribution-deadline";
 import type { CalculatorDefinition } from "./types";
 
 /** Champs du héros, ceux d'A2 : commune, revenu imposable, montant versé. */
@@ -47,15 +48,8 @@ export const refineUrl = (): string => `${pillar3aTaxSaving.slug}${encodeShareSt
 /** Fenêtre d'affichage du compte à rebours : du 1er octobre à la date limite (choix éditorial, pas une valeur légale). */
 export const COUNTDOWN_STARTS_ON = "10-01";
 
-/**
- * Date limite du versement 3a de l'année de calcul, lue dans les données (circulaire AFC n° 18a,
- * ch. 5.1) ; `null` tant qu'elle n'est pas relevée (R3) : le compte à rebours ne s'affiche pas.
- */
-export function contributionDeadline(): { monthDay: string; sourceId: string; year: number } | null {
-	const entry = getFederalData(pillar3aTaxSavingYear).pillar3aContributionDeadline;
-	if (entry === undefined || "todo" in entry) return null;
-	return { monthDay: entry.value, sourceId: entry.sourceId, year: pillar3aTaxSavingYear };
-}
+/** Date limite du versement 3a de l'année de calcul d'A2 (src/calculators/contribution-deadline.ts) ; `null` tant qu'elle n'est pas relevée (R3) : le compte à rebours ne s'affiche pas. */
+export const contributionDeadline = (): ContributionDeadline | null => pillar3aContributionDeadline(pillar3aTaxSavingYear);
 
 /** Jours restants (src/lib/display/countdown.ts), fenêtre de l'accueil par défaut. */
 export const countdownDays = (today: Date, deadline: string, startsOn: string = COUNTDOWN_STARTS_ON): number | null =>

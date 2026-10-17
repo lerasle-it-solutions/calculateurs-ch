@@ -8,6 +8,7 @@
  * année de calcul pour l'instant (décision du 05.10.2026).
  */
 import { getFederalData } from "../../data";
+import { pillar3aContributionDeadline } from "../contribution-deadline";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf, formatPercent } from "../../lib/format/chf";
 import { municipalityOptions } from "../municipalities";
@@ -200,9 +201,15 @@ const fields: FieldDefinition[] = [
  * A4 sans lien) : points de vigilance de la page, en avertissement renforcé,
  * chacun pouvant coûter la déduction ou de l'argent (arbitrage du 17.10.2026).
  */
+/** Date limite du versement, lue dans les données (R2) ; sans elle, les phrases qui la citent ne s'affichent pas (R3). */
+const deadline = pillar3aContributionDeadline(year);
+const deadlineSentence = deadline
+	? `le versement doit être crédité sur votre compte ou votre police 3a au plus tard le ${deadline.label} (circulaire AFC n° 18a, ch. 5.1).`
+	: null;
+
 const reminders = [
 	"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
-	`Pour être déductible en ${year}, le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1).`,
+	...(deadlineSentence ? [`Pour être déductible en ${year}, ${deadlineSentence}`] : []),
 	"L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3).",
 ];
 
@@ -299,11 +306,14 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			answer:
 				"L'excédent n'est pas déductible : le calculateur ramène le montant au plafond, et votre fondation doit vous rembourser la différence (circulaire AFC n° 18a, ch. 9.1).",
 		},
-		{
-			question: "Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ?",
-			answer:
-				"Le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).",
-		},
+		...(deadlineSentence
+			? [
+					{
+						question: "Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ?",
+						answer: `${deadlineSentence[0]!.toUpperCase()}${deadlineSentence.slice(1)} L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).`,
+					},
+				]
+			: []),
 		{
 			question: "Puis-je encore cotiser au pilier 3a après l'âge de référence AVS ?",
 			answer:
