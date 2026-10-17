@@ -25,7 +25,7 @@ const source = sourceLink(deadline.sourceId);
 	data-deadline={deadline.monthDay}
 	data-starts={startsOn}
 	data-template={fr.home.countdown(deadline.year, deadlineText)}
-	data-template-one={fr.home.countdownOneDay(deadline.year, deadlineText)}
+	data-template-last={fr.home.countdownLastDay(deadline.year)}
 	hidden
 	class="mt-lg max-w-reading rounded-panel bg-tint p-lg text-label"
 >
@@ -34,13 +34,13 @@ const source = sourceLink(deadline.sourceId);
 </p>
 
 <script>
-	import { countdownDays } from "../../lib/display/countdown";
+	import { countdownMessage } from "../../lib/display/countdown";
 	const element = document.querySelector<HTMLElement>("[data-countdown]");
 	if (element) {
-		const days = countdownDays(new Date(), element.dataset.deadline!, element.dataset.starts!);
-		if (days !== null) {
-			const template = days === 1 ? element.dataset.templateOne! : element.dataset.template!;
-			element.querySelector("[data-countdown-text]")!.textContent = template.replace("{days}", String(days));
+		const { deadline, starts, template, templateLast } = element.dataset;
+		const message = countdownMessage(new Date(), deadline!, starts!, { days: template!, lastDay: templateLast! });
+		if (message !== null) {
+			element.querySelector("[data-countdown-text]")!.textContent = message;
 			element.hidden = false;
 		}
 	}

@@ -56,9 +56,9 @@ export const fr = {
 		 * formatée au build (« 31 décembre ») ; « {days} » est remplacé dans le navigateur.
 		 */
 		countdown: (year: number, deadline: string): string =>
-			`Il reste {days} jours pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}.`,
-		countdownOneDay: (year: number, deadline: string): string =>
-			`Il reste 1 jour pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}.`,
+			`Il reste {days} jours pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}. Comptez quelques jours ouvrables pour que le virement soit crédité.`,
+		/** Le jour de la date limite. */
+		countdownLastDay: (year: number): string => `Dernier jour pour que votre versement 3a ${year} soit crédité.`,
 		proofHeading: "Les données",
 		proofCantons: (count: number): string => `${count} cantons romands`,
 		proofMunicipalities: (count: number): string => `${formatSwissNumber(count)} communes`,

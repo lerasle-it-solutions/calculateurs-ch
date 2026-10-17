@@ -11,3 +11,12 @@ export function countdownDays(today: Date, deadline: string, startsOn: string): 
 	if (day < at(startsOn) || day > at(deadline)) return null;
 	return Math.round((at(deadline).getTime() - day.getTime()) / 86_400_000) + 1;
 }
+
+/**
+ * Phrase du compte à rebours : jours restants (« {days} » remplacé), ou, le jour
+ * de la date limite, celle du dernier jour ; `null` hors fenêtre (masqué).
+ */
+export function countdownMessage(today: Date, deadline: string, startsOn: string, templates: { days: string; lastDay: string }): string | null {
+	const days = countdownDays(today, deadline, startsOn);
+	return days === null ? null : days === 1 ? templates.lastDay : templates.days.replace("{days}", String(days));
+}

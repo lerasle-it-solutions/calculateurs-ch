@@ -4,10 +4,11 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { allCalculators, isPublished } from "../../src/calculators/catalog";
 import { exampleOutcome } from "../../src/calculators/example-outcomes";
 import { exampleFormValues } from "../../src/calculators/field-values";
-import { contributionDeadline, countdownDays, heroOutcome, proofFigures, refineUrl } from "../../src/calculators/home";
+import { COUNTDOWN_STARTS_ON, contributionDeadline, countdownDays, heroOutcome, proofFigures, refineUrl } from "../../src/calculators/home";
 import { PILLAR_3A_TAX_SAVING_ID, pillar3aTaxSaving } from "../../src/calculators/pension/pillar-3a-tax-saving";
 import { formatVerificationDate, siteVerifiedOn } from "../../src/calculators/site-verification";
 import { fr } from "../../src/i18n/fr";
+import { countdownMessage } from "../../src/lib/display/countdown";
 import { decodeShareState } from "../../src/lib/display/share-state";
 import { formatNumberTyping } from "../../src/lib/format/amount-input";
 import { decodeEntities, renderAllPages } from "./site-pages";
@@ -67,6 +68,17 @@ describe("compte à rebours", () => {
 		expect(html).toMatch(/<p\b[^>]*data-countdown[^>]*hidden/);
 		expect(decodeEntities(html)).toContain(fr.home.countdown(2030, "20 décembre"));
 		expect(html).toContain('data-deadline="12-20"');
+	});
+
+	it("30 décembre, 31 décembre, 1er janvier : jours restants avec le conseil, dernier jour, puis masqué", () => {
+		const deadline = contributionDeadline() ?? { monthDay: "12-31", year: 2026 };
+		const templates = { days: fr.home.countdown(deadline.year, "31 décembre"), lastDay: fr.home.countdownLastDay(deadline.year) };
+		const message = (date: Date) => countdownMessage(date, deadline.monthDay, COUNTDOWN_STARTS_ON, templates);
+		const december30 = message(new Date(deadline.year, 11, 30, 9));
+		expect(december30).toBe(templates.days.replace("{days}", "2"));
+		expect(december30).toMatch(/Comptez quelques jours ouvrables pour que le virement soit crédité\.$/);
+		expect(message(new Date(deadline.year, 11, 31, 9))).toBe(`Dernier jour pour que votre versement 3a ${deadline.year} soit crédité.`);
+		expect(message(new Date(deadline.year + 1, 0, 1, 9))).toBeNull();
 	});
 
 	it("du 1er octobre à la date limite incluse, jours comptés dans le navigateur", () => {
