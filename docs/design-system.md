@@ -507,7 +507,9 @@ cartes, carrousels automatiques, compteurs animés du résultat.
 **Une seule dérogation** : quand la valeur du résultat change, une transition de **250 ms au
 plus** sur cette valeur signale le recalcul. Elle est désactivée sous
 `prefers-reduced-motion: reduce`. Le compteur animé reste interdit : la nouvelle valeur remplace
-l'ancienne, les chiffres intermédiaires ne s'affichent jamais.
+l'ancienne, les chiffres intermédiaires ne s'affichent jamais. Elle est implémentée **une seule
+fois, dans `ResultCard`** : tous les calculateurs l'ont, ce n'est pas un choix par calculateur
+(arbitrage du 17.10.2026).
 
 ### 3.4 Garde-fous automatiques
 
@@ -560,7 +562,7 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 2 | Promesse | `<p>` | Une seule phrase, `text-lead text-ink-muted` : ce que le visiteur obtient |
 | 3 | Ligne de périmètre | `<p>` | Une seule ligne au-dessus du formulaire, `text-fine text-ink-muted` : pour qui, cantons, année ; lien vers le détail « Ce que ce calcul suppose » (P5) |
 | 4 | Formulaire et carte résultat | grille § 2.5 | Carte résultat collante (`lg:sticky`), barre mobile en dessous de `lg` |
-| 5 | Points de vigilance | avertissements renforcés (§ 2.6) | Courts : une phrase chacun, préfixe « Attention : » |
+| 5 | Points de vigilance | avertissement renforcé ou avis informatif (§ 2.6) | Courts : une phrase chacun. Avertissement renforcé, préfixe « Attention : », pour ce qui peut faire perdre la déduction ou de l'argent ; avis informatif pour le reste (ci-dessous) |
 | 6 | Détail ligne par ligne | `CalculationBreakdown` (`<details>` + `<table>`) | Trace complète (R4) |
 | 7 | Graphiques | SVG inline (§ 4.6) | Facultatifs ; jamais vides |
 | 8 | Mise en relation | `LeadForm` (`<form>`) | Seulement si `monetization.trigger` est satisfait et qu'un partenaire couvre la situation ; résultat complet avant, jamais un mur ni une fenêtre surgissante (architecture § 4, `CLAUDE.md`) |
@@ -568,6 +570,11 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 10 | Variantes | `RelatedVariants` | — |
 | 11 | FAQ | — | — |
 | 12 | Sources | `DataFreshness` (bloc source, § 2.6) | Année et date propres au calculateur, formule d'attribution de l'AFC intacte ; les `SourceTag` (§ 4.5) citent en ligne dans les blocs précédents |
+
+**Points de vigilance** (arbitrage du 17.10.2026, conforme au § 1.1) : le style avertissement
+renforcé (`warning`) est réservé à ce qui peut faire perdre la déduction ou de l'argent — délai de
+blocage d'un rachat LPP, retrait en capital, solde d'une lacune 3a perdu. Les autres points
+(découvert de la caisse, primauté des prestations…) prennent le style avis informatif.
 
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2). Les blocs 1 à 3 forment le héros compact (§ 3.2).
@@ -588,7 +595,15 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   toujours lue dans les données. « Verser le maximum » dans un cas exemple se déclare comme un
   renvoi au plafond, jamais comme son montant.
 - La page s'ouvre **pré-remplie** sur ce cas, annoncé au-dessus du formulaire par un bandeau
-  (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres ».
+  (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres, ou partez de
+  votre salaire brut. » Le bandeau disparaît à la première saisie.
+- **Le cas exemple est exprimé en revenus imposables** : la page s'ouvre sur le chemin « Je connais
+  mon revenu imposable » (§ 4.3). Le lien « partez de votre salaire brut » du bandeau bascule sur le
+  chemin brut. Basculer sur le chemin brut **vide les champs de revenu** et remplace le montant de
+  la carte par le statut « Saisissez votre salaire brut » : **jamais un chiffre d'exemple à côté de
+  champs vides** (arbitrage du 17.10.2026).
+- Si l'estimateur n'a pas de données pour l'année de calcul, le lien du bandeau et le chemin brut
+  sont **désactivés**, avec une phrase qui l'explique. Le choix est fait au build, par calculateur.
 - La carte résultat affiche **un vrai montant dès le chargement**, jamais « — ». Le résultat du cas
   exemple est calculé au build en exécutant le moteur : il s'affiche aussi sans JavaScript.
 - Tout montant « type » affiché ailleurs — cartes de calculateur, accueil, images de partage — est
@@ -598,10 +613,14 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
 
 ### 4.3 Formulaire
 
-- **Deux chemins en tête du formulaire**, en radios stylés en pastilles (§ 2.3) : « Je pars de mon
-  salaire brut » (**par défaut**) et « Je connais mon revenu imposable ». Le script de l'estimateur
-  reste chargé à la demande (décision du 05.10.2026) : le cas exemple étant calculé au build, le
-  script se charge à la première interaction avec le chemin « salaire brut ».
+- **Deux chemins en tête du formulaire**, en radios natifs stylés en pastilles (§ 2.3) : « Je pars
+  de mon salaire brut » **en premier**, puis « Je connais mon revenu imposable ». La page s'ouvre
+  cochée sur le second, celui du cas exemple (§ 4.2) ; passer au premier vide les champs de revenu
+  et affiche le statut « Saisissez votre salaire brut » dans la carte. Si l'estimateur n'a pas de
+  données pour l'année de calcul, le chemin brut est désactivé, avec une phrase qui l'explique
+  (choix fait au build, par calculateur). Le script de l'estimateur reste chargé à la demande
+  (décision du 05.10.2026) : le cas exemple étant calculé au build, le script se charge à la
+  première interaction avec le chemin « salaire brut ».
 - **Un seul champ commune** (`MunicipalityField`, `<input list>` + `<datalist>`) : le canton est
   déduit de la commune, aucun champ canton séparé. Les homonymes portent leur canton entre
   parenthèses (« <Commune> (VD) »).
@@ -614,6 +633,9 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   tolérante, suffixe `CHF` dans le segment d'unité (§ 2.3).
 - **Bouton « Verser le maximum (<plafond>) »** à côté du champ du montant dès qu'un plafond existe ;
   le plafond est lu dans `src/data/`, jamais écrit dans le libellé (R2). Variante fantôme.
+  Sur le rachat 3a rétroactif, il devient **« Racheter le maximum possible (X CHF) »** : X est le
+  montant que le moteur retient selon sa règle de répartition (années entières, plafond de l'année),
+  jamais un plafond recopié (arbitrage du 17.10.2026).
 - **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
 - **Conditions d'éligibilité en liste de contrôle** : une ligne par condition, état dit en mots
   (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule.
@@ -687,7 +709,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
 - [ ] Héros compact (`py-xl md:py-2xl`) : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la carte résultat aussi.
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
-- [ ] Points de vigilance courts, en avertissements renforcés, sous le formulaire.
+- [ ] Points de vigilance courts, sous le formulaire : avertissement renforcé pour ce qui peut faire perdre la déduction ou de l'argent, avis informatif pour le reste.
 - [ ] Détail ligne par ligne, puis graphiques.
 - [ ] Formulaire de mise en relation, s'il existe, après les graphiques et avant « Ce que ce calcul suppose » ; résultat complet avant, jamais un mur.
 - [ ] `<details>` « Ce que ce calcul suppose » contenant Pour qui, Ce que ça ne couvre pas (avec alternatives) et Hypothèses retenues.
@@ -697,19 +719,20 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 **Cas exemple (§ 4.2)**
 
 - [ ] Cas exemple déclaré dans la définition du calculateur, sous `example` ; aucune valeur légale (plafond, taux, seuil) recopiée dans ses saisies.
-- [ ] Page pré-remplie, bandeau « Exemple : … — remplacez par vos chiffres ».
+- [ ] Page pré-remplie sur le chemin « revenu imposable », bandeau « Exemple : … — remplacez par vos chiffres, ou partez de votre salaire brut. », qui disparaît à la première saisie.
+- [ ] Basculer sur le chemin brut vide les champs de revenu et affiche « Saisissez votre salaire brut » : jamais un chiffre d'exemple à côté de champs vides.
 - [ ] Vrai montant dans la carte au chargement, y compris sans JavaScript ; jamais « — ».
 - [ ] Tout montant « type » affiché hors de la page calculé au build sur ce cas.
 - [ ] Cas fictif, sans lien avec un cas de référence de l'AFC.
 
 **Formulaire (§ 4.3)**
 
-- [ ] Deux chemins en tête, « Je pars de mon salaire brut » par défaut.
+- [ ] Deux chemins en tête, « Je pars de mon salaire brut » en premier ; chemin brut et lien du bandeau désactivés, avec une phrase, si l'estimateur n'a pas de données pour l'année.
 - [ ] Un seul champ commune, canton déduit, homonymes suivis de leur canton.
 - [ ] Revenu fédéral pré-rempli depuis le cantonal, lien « différent ? », hypothèse dans la trace.
 - [ ] Questions oui/non regroupées en profils, « Autre situation » déplie le détail.
 - [ ] Montants formatés à la suisse pendant la frappe, `inputmode="decimal"`, suffixe CHF.
-- [ ] Bouton « Verser le maximum (<plafond>) » si un plafond existe, plafond lu dans les données.
+- [ ] Bouton « Verser le maximum (<plafond>) » si un plafond existe, plafond lu dans les données ; « Racheter le maximum possible (X CHF) » sur le rachat 3a rétroactif, X calculé par le moteur.
 - [ ] Un champ par enfant.
 - [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots.
 - [ ] Exclusions affichées dans la carte au moment où la saisie les déclenche, avec alternative.
@@ -742,5 +765,5 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 **Socle (§ 0 à § 3)**
 
 - [ ] Le résultat reste l'élément le plus grand et le plus contrasté de la page.
-- [ ] Transition du résultat ≤ 250 ms, coupée sous `prefers-reduced-motion` (§ 3.3).
+- [ ] Transition du résultat ≤ 250 ms, coupée sous `prefers-reduced-motion`, implémentée dans `ResultCard` (§ 3.3).
 - [ ] `npx vitest run tests/design` passe.

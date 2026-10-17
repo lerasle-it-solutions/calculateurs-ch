@@ -337,7 +337,7 @@ revenu imposable.
 >    backlog.
 > 6. **Capture de lead et suivi de fraîcheur** intégrés à l'architecture.
 >
-> Version : 2.1 — Cible : Astro 5.x — Déploiement : Cloudflare Pages.
+> Version : 2.1 — Cible : Astro 7.x, Tailwind CSS v4 par `@tailwindcss/vite` — Déploiement : Cloudflare Pages.
 > Domaine canonique : **apex `calculateurs.ch`**, `www` redirigé en 301.
 
 ---
@@ -828,18 +828,18 @@ construire le routage multilingue tant que la décision n'est pas prise.
 ```js
 // astro.config.mjs
 import { defineConfig } from "astro/config";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://calculateurs.ch", // apex, sans www
   output: "static",
-  integrations: [
-    sitemap({ changefreq: "monthly", lastmod: new Date() }),
-    tailwind(),
-  ],
+  integrations: [mdx(), sitemap({ changefreq: "monthly", lastmod: new Date() })],
   build: { format: "directory" },
   prefetch: false,
+  // Tailwind CSS v4 par son plugin Vite ; plugins du budget JavaScript (voir le fichier réel)
+  vite: { plugins: [tailwindcss()] },
 });
 ```
 
@@ -856,7 +856,7 @@ export default defineConfig({
 }
 ```
 
-Dépendances : `astro@5`, `@astrojs/sitemap`, `@astrojs/tailwind`, `tailwindcss@4`,
+Dépendances : `astro@7`, `@astrojs/sitemap`, `@tailwindcss/vite`, `tailwindcss@4`,
 `@fontsource/figtree`, `zod`, `vitest`, `tsx`,
 `@astrojs/check`, `typescript`, `@astrojs/mdx` (composants Astro dans les articles
 (figures, tableaux générés depuis src/data/)). **Ni `@astrojs/preact`, ni `preact`, ni aucune
