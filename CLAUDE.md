@@ -873,8 +873,8 @@ export default defineConfig({
   "pretest": "tsx scripts/fetch-private-data.ts",
   "test": "vitest run",
   "postbuild": "VITEST_DIST=1 vitest run", // tests/build/ sur dist/ (vitest.config.ts) ; no-leak y viendra
-  "verify-data": "tsx scripts/verify-data.ts",
-  "new-year": "tsx scripts/new-year.ts",
+  "verify-data": "tsx scripts/verify-data.ts", // à venir : rapport de fraîcheur, rituel du 1er janvier (§ 1.5)
+  "new-year": "tsx scripts/new-year.ts", // à venir : rituel du 1er janvier (§ 1.5)
   "predeploy": "npm run test && astro check",
 }
 ```
