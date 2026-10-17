@@ -100,9 +100,13 @@ export function attachResultViews(): void {
 
 	for (const breakdown of document.querySelectorAll<HTMLElement>("[data-breakdown]")) {
 		const body = breakdown.querySelector<HTMLElement>("[data-breakdown-body]")!;
-		const empty = `<tr><td colspan="2" class="px-md py-sm text-fine text-ink-muted">${escapeHtml(breakdown.dataset.emptyLabel ?? "")}</td></tr>`;
-		on((detail) => {
-			if (Array.isArray(detail.breakdown)) body.innerHTML = detail.breakdown.length ? detail.breakdown.map(rowHtml).join("") : empty;
+		const table = breakdown.querySelector<HTMLElement>("[data-breakdown-table]")!;
+		const empty = breakdown.querySelector<HTMLElement>("[data-breakdown-empty]")!;
+		// Sans ligne, la phrase remplace le tableau : jamais un tableau vide (§ 4.4)
+		on(({ breakdown: rows }) => {
+			if (!Array.isArray(rows)) return;
+			body.innerHTML = rows.map(rowHtml).join("");
+			empty.hidden = !(table.hidden = rows.length === 0);
 		});
 	}
 }

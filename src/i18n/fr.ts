@@ -179,7 +179,7 @@ export const fr = {
 		summary: "Voir le calcul ligne par ligne",
 		stepColumn: "Étape",
 		amountColumn: "Montant",
-		empty: "Renseignez les champs pour voir le détail du calcul.",
+		empty: "Le détail du calcul s'affiche dès que la carte résultat donne un montant.",
 	},
 
 	dataFreshness: {
