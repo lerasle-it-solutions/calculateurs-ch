@@ -1,6 +1,7 @@
 /**
  * Ce que la carte résultat dit sous le chiffre (docs/design-system.md § 4.4) :
- * la part du montant versé que représente l'économie, le coût net de l'année,
+ * la part du montant retenu par le moteur (montant déductible, jamais la somme
+ * saisie, arbitrage du 17.10.2026) que représente l'économie, le coût net de l'année,
  * et la décomposition par impôt — une ligne par impôt que le moteur calcule
  * séparément, jamais de ligne à zéro. Mise en forme seulement : économie et
  * composantes viennent du moteur (`computeTaxSavingOnDeduction`, décision
@@ -14,11 +15,17 @@ import type { BreakdownRow } from "./pillar-3a-buyback";
 export const TAX_COMPONENTS = ["cantonalTax", "municipalTax", "churchTax", "personalTax", "federalTax"] as const;
 export type TaxComponent = (typeof TAX_COMPONENTS)[number];
 
-/** Chiffres du moteur : montant versé (déduit), économie, économie par impôt au franc. */
-export type ResultFigures = { paid: number; saving: number; components: Record<TaxComponent, number> };
+/**
+ * Chiffres du moteur : montant retenu (déduit), économie, économie par impôt au franc ;
+ * `entered`, la somme saisie quand elle peut différer du montant retenu (plafond 3a).
+ */
+export type ResultFigures = { paid: number; saving: number; components: Record<TaxComponent, number>; entered?: number };
 
 export type ResultSummary = {
+	/** Montant retenu par le moteur : la base de la part et du coût net. */
 	paid: string;
+	/** Vrai si la somme saisie dépasse le montant retenu : la phrase nomme alors sa base. */
+	capped: boolean;
 	/** « 26 % ». */
 	share: string;
 	netCost: string;
@@ -34,6 +41,7 @@ export function resultSummary(figures: ResultFigures): ResultSummary | null {
 	if (!(figures.paid > 0)) return null;
 	return {
 		paid: formatChfAmount(figures.paid),
+		capped: figures.entered !== undefined && figures.entered !== figures.paid,
 		share: percent(figures),
 		netCost: formatChfAmount(figures.paid - figures.saving),
 		components: TAX_COMPONENTS.filter((key) => figures.components[key] !== 0).map((key) => ({ key, amount: formatChfAmount(figures.components[key]) })),

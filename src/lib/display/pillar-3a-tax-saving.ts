@@ -84,7 +84,12 @@ export function displayPillar3aTaxSaving(
 			},
 			status: null,
 			caps,
-			figures: { paid: result.deduction, saving: result.taxSaving, components: result.componentSavings },
+			figures: {
+				paid: result.deduction,
+				saving: result.taxSaving,
+				components: result.componentSavings,
+				entered: result.contributors.reduce((sum, contributor) => sum + contributor.contribution, 0),
+			},
 		};
 	} catch (error) {
 		if (error instanceof PartialCoverageError) {

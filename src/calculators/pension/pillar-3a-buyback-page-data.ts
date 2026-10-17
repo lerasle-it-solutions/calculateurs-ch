@@ -1,6 +1,5 @@
 /** A1 — données de la page (src/calculators/page-data.ts). */
 import { getFederalData } from "../../data";
-import { ROMANDE_CANTONS } from "../cantons";
 import { buildPageData, householdPagePart } from "../page-data";
 import { pillar3aBuyback, pillar3aBuybackTexts, pillar3aBuybackYear, pillar3aGapYears } from "./pillar-3a-buyback";
 
@@ -22,7 +21,6 @@ export const pillar3aBuybackPagePart = {
 	firstGapYear: sourced(pillar3a.buyback.firstGapYear),
 	lookbackYears: sourced(pillar3a.buyback.lookbackYears),
 	smallContributionCap: sourced(pillar3a.smallContributionCap),
-	cantonNames: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, canton.name])),
 	texts: { ...household.texts, blockedShort: pillar3aBuybackTexts.blockedShort },
 	oldAgeBenefitAlternative,
 };

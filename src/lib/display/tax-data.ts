@@ -39,6 +39,8 @@ export type TaxDataFile = {
 
 /** Marque remplacée par le nom de la commune dans le message des communes hors périmètre. */
 export const MUNICIPALITY_PLACEHOLDER = "{municipality}";
+/** Marque remplacée par le nom du canton dans le message d'un ménage hors périmètre. */
+export const CANTON_PLACEHOLDER = "{canton}";
 
 type HouseholdTexts = HouseholdPageData["texts"];
 
@@ -50,9 +52,13 @@ export type HouseholdPagePart = {
 	/** Adresse du fichier de données de l'année. */
 	taxDataUrl: string;
 	officialCalculators: HouseholdPageData["officialCalculators"];
-	texts: Omit<HouseholdTexts, "outOfScopeMunicipality"> & {
+	/** Noms des cantons romands, par code : message d'un ménage hors périmètre. */
+	cantonNames: Record<string, string>;
+	texts: Omit<HouseholdTexts, "outOfScopeMunicipality" | "outOfScope"> & {
 		/** Message d'une commune hors périmètre, `MUNICIPALITY_PLACEHOLDER` à la place du nom. */
 		outOfScopeMunicipalityTemplate: string;
+		/** Message d'un ménage hors périmètre, `CANTON_PLACEHOLDER` à la place du nom du canton. */
+		outOfScopeTemplate: string;
 	};
 };
 
@@ -65,24 +71,13 @@ export type HydratedPageData<P extends HouseholdPagePart> = Omit<P, "texts"> &
 		municipalityOptions: string[];
 	};
 
-const pick = <T>(record: Partial<Record<string, T>>, keys: string[]): Partial<Record<string, T>> =>
-	Object.fromEntries(keys.flatMap((key) => (record[key] === undefined ? [] : [[key, record[key]]])));
-
 export function hydratePageData<P extends HouseholdPagePart>(page: P, file: TaxDataFile): HydratedPageData<P> {
 	if (file.taxYear !== page.taxYear) throw new Error(`Fichier de données ${file.taxYear}, page de calcul ${page.taxYear}.`);
-	const covered = page.cantonsCovered;
-	const municipalities = file.bundle.municipalities.filter((entry) => covered.includes(entry.canton));
-	const bundle: TaxScalesBundle = {
-		taxYear: file.bundle.taxYear,
-		cantons: pick(file.bundle.cantons, covered) as TaxScalesBundle["cantons"],
-		municipalities,
-	};
-	const estimator =
-		file.estimator && {
-			...file.estimator,
-			cantonal: pick(file.estimator.cantonal, covered),
-			averagePremiums: pick(file.estimator.averagePremiums, covered),
-		};
+	// Seules les communes des cantons couverts : c'est par elles que le moteur trouve un canton.
+	// Barèmes cantonaux et règles de l'estimateur d'un canton non couvert restent sans usage.
+	const municipalities = file.bundle.municipalities.filter((entry) => page.cantonsCovered.includes(entry.canton));
+	const bundle: TaxScalesBundle = { ...file.bundle, municipalities };
+	const estimator = file.estimator;
 	const template = page.texts.outOfScopeMunicipalityTemplate;
 	const labels = municipalityLabels(municipalities.map((entry) => ({ municipality: entry.name, canton: entry.canton })));
 	return {
@@ -96,6 +91,9 @@ export function hydratePageData<P extends HouseholdPagePart>(page: P, file: TaxD
 		municipalityOptions: [...labels.values()],
 		texts: {
 			...page.texts,
+			outOfScope: Object.fromEntries(
+				Object.entries(page.cantonNames).map(([code, name]) => [code, page.texts.outOfScopeTemplate.split(CANTON_PLACEHOLDER).join(name)]),
+			),
 			// Seules les communes non couvertes en entier en ont besoin : le moteur ne lève leur
 			// erreur de couverture qu'avec ce nom (PartialCoverageError.municipality).
 			outOfScopeMunicipality: Object.fromEntries(

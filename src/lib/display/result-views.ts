@@ -50,7 +50,8 @@ export function attachResultViews(): void {
 			const block = card.querySelector<HTMLElement>("[data-result-summary]");
 			if (block) block.hidden = !summary;
 			for (const line of card.querySelectorAll<HTMLElement>("[data-summary-line], [data-bar-net-cost]")) {
-				line.textContent = summary ? fillSummary(line.dataset.summaryLine ?? line.dataset.barNetCost!, summary) : "";
+				// Base nommée quand la somme saisie dépasse le montant retenu (data-capped)
+				line.textContent = summary ? fillSummary((summary.capped && line.dataset.capped) || line.dataset.summaryLine || line.dataset.barNetCost!, summary) : "";
 				if (line.matches("[data-bar-net-cost]")) line.hidden = !summary;
 			}
 			const reminder = card.querySelector<HTMLElement>("[data-exit-reminder]");

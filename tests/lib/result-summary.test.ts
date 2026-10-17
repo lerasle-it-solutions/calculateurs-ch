@@ -6,7 +6,11 @@ import { PILLAR_3A_BUYBACK_ID } from "../../src/calculators/pension/pillar-3a-bu
 import { PILLAR_3A_TAX_SAVING_ID } from "../../src/calculators/pension/pillar-3a-tax-saving";
 import { fr } from "../../src/i18n/fr";
 import { formatChfAmount } from "../../src/lib/display/amounts";
-import { resultSummary, summaryRows, type ResultFigures } from "../../src/lib/display/result-summary";
+import { fillSummary, resultSummary, summaryRows, type ResultFigures } from "../../src/lib/display/result-summary";
+import { exampleFormValues } from "../../src/calculators/field-values";
+import { pillar3aTaxSaving } from "../../src/calculators/pension/pillar-3a-tax-saving";
+import { pillar3aTaxSavingPageData } from "../../src/calculators/pension/pillar-3a-tax-saving-page-data";
+import { readPillar3aTaxSavingForm } from "../../src/lib/display/pillar-3a-tax-saving-form";
 import { parseNumber } from "../../src/lib/format/amount-input";
 
 /**
@@ -69,5 +73,30 @@ describe.each([
 
 	it("la trace se termine par la part du versement et le coût net", () => {
 		expect(outcome.breakdown.slice(-2).map((row) => row.label)).toEqual([fr.resultSummary.shareLabel, fr.resultSummary.netCostLabel]);
+	});
+});
+
+describe("base de la part et du coût net : le montant retenu par le moteur (arbitrage du 17.10.2026)", () => {
+	const cap = pillar3aTaxSavingPageData.smallContributionCap.value;
+	const sentences = (summary: NonNullable<ReturnType<typeof resultSummary>>) =>
+		[summary.capped ? fr.resultSummary.shareCapped : fr.resultSummary.share, summary.capped ? fr.resultSummary.netCostCapped : fr.resultSummary.netCost].map((template) => fillSummary(template, summary));
+
+	it("versement égal au montant déductible : phrases simples", () => {
+		const summary = readPillar3aTaxSavingForm(exampleFormValues(pillar3aTaxSaving), pillar3aTaxSavingPageData).summary!;
+		expect(summary.capped).toBe(false);
+		expect(sentences(summary)[0]).toBe(`soit ${summary.share} de votre versement`);
+	});
+
+	it("versement au-delà du plafond : la base est le montant déductible, et la phrase la nomme", () => {
+		const values = { ...exampleFormValues(pillar3aTaxSaving), contribution: String(cap + 3_000) };
+		const outcome = readPillar3aTaxSavingForm(values, pillar3aTaxSavingPageData);
+		const summary = outcome.summary!;
+		expect(summary.capped).toBe(true);
+		expect(summary.paid).toBe(formatChfAmount(cap));
+		const amount = (text: string) => parseNumber(text.replace(/\s*CHF$/, ""))!;
+		expect(amount(summary.netCost)).toBe(cap - amount(outcome.value));
+		const [share, netCost] = sentences(summary);
+		expect(share).toBe(`soit ${summary.share} du montant déductible (${formatChfAmount(cap)})`);
+		expect(netCost).toBe(`la part déductible de votre versement ne vous coûte que ${summary.netCost} cette année`);
 	});
 });

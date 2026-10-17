@@ -14,7 +14,7 @@
 import { getCantonData } from "../data";
 import { fr } from "../i18n/fr";
 import type { GrossToTaxableRuleSet } from "../lib/calculations/gross-to-taxable";
-import { MUNICIPALITY_PLACEHOLDER, hydratePageData, type HouseholdPagePart, type HydratedPageData } from "../lib/display/tax-data";
+import { CANTON_PLACEHOLDER, MUNICIPALITY_PLACEHOLDER, hydratePageData, type HouseholdPagePart, type HydratedPageData } from "../lib/display/tax-data";
 import { ROMANDE_CANTONS } from "./cantons";
 import { taxDataFile, taxDataFileUrl } from "./tax-data-file";
 
@@ -43,8 +43,9 @@ export function householdPagePart(taxYear: number, cantonsCovered: readonly stri
 				return official && "url" in official ? [[code, official]] : [];
 			}),
 		),
+		cantonNames: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, canton.name])),
 		texts: {
-			outOfScope: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, texts.outOfScope(canton.name)])),
+			outOfScopeTemplate: texts.outOfScope(CANTON_PLACEHOLDER),
 			outOfScopeMunicipalityTemplate: texts.outOfScopeMunicipality(MUNICIPALITY_PLACEHOLDER),
 			missingData: texts.missingData,
 			unknownMunicipality: texts.unknownMunicipality,

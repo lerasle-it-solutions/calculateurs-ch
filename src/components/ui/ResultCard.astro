@@ -19,7 +19,7 @@
  * une saisie invalide, avertissement renforcé préfixé « Attention : » pour un
  * cas hors périmètre ou une condition légale non remplie.
  *
- * Sous le montant (§ 4.4) : la part du montant versé et le coût net de l'année
+ * Sous le montant (§ 4.4) : la part du montant retenu par le moteur et le coût net de l'année
  * (`summary`, src/lib/display/result-summary.ts), puis, quand une imposition à
  * la sortie s'applique, son rappel en une phrase avec son lien.
  *
@@ -83,8 +83,8 @@ const tone = status ? statusTone(status.kind) : "neutral";
 	<span data-result-value hidden={status !== null} class="text-display text-accent tabular-nums">{value}</span>
 	<span data-result-note hidden={!note} class="text-label font-bold">{note}</span>
 	<span data-result-summary hidden={!summary} class="flex flex-col gap-xs text-body">
-		<span data-summary-line={t.share} class="font-bold">{summary && fillSummary(t.share, summary)}</span>
-		<span data-summary-line={t.netCost}>{summary && fillSummary(t.netCost, summary)}</span>
+		<span data-summary-line={t.share} data-capped={t.shareCapped} class="font-bold">{summary && fillSummary(summary.capped ? t.shareCapped : t.share, summary)}</span>
+		<span data-summary-line={t.netCost} data-capped={t.netCostCapped}>{summary && fillSummary(summary.capped ? t.netCostCapped : t.netCost, summary)}</span>
 	</span>
 	{
 		exitReminder && (
