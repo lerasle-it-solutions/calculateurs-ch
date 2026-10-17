@@ -16,7 +16,7 @@ export const start = (clicked: Element | null): void => {
 				slot.textContent = shown?.[slot.dataset.summary as keyof Pillar3aTaxSavingSummary] ?? "";
 			}
 			excess.hidden = !shown?.excess;
-			excess.textContent = shown?.excess ? data.texts.excessWarning.replace("{amount}", shown.excess) : "";
+			excess.querySelector("[data-excess-text]")!.textContent = shown?.excess ? data.texts.excessWarning.replace("{amount}", shown.excess) : "";
 		},
 	}, clicked);
 };

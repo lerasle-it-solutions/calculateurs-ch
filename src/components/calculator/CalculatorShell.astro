@@ -42,6 +42,7 @@ import Section from "../layout/Section.astro";
 import { fr } from "../../i18n/fr";
 import type { CalculatorDefinition, FieldDefinition, ProfileGroup } from "../../calculators/types";
 import FormField from "./FormField.astro";
+import { eligibilityState } from "../../lib/display/eligibility";
 import type { FormOutcome } from "../../lib/display/calculator-form";
 import { exampleFormValues } from "../../calculators/field-values";
 
@@ -137,6 +138,8 @@ for (const field of definition.fields) {
 		else segments.push({ kind: "income", fields: [field] });
 	} else segments.push({ kind: "field", field });
 }
+/** Liste « remplie / non remplie » au chargement (règle unique, src/lib/display/eligibility.ts). */
+const eligibility = definition.eligibility && definition.eligibility.length > 0 ? eligibilityState(definition.eligibility, filled) : null;
 const hasIncomePaths = segments.some((segment) => segment.kind === "income") && grossPath !== undefined;
 const grossContent = Astro.slots.has("gross-path") ? await Astro.slots.render("gross-path") : "";
 /** Revenu repris d'un autre champ (« différent ? ») : déplié au chargement si l'exemple le distingue. */
@@ -335,20 +338,21 @@ const resultFor = definition.fields
 					status={initial.status}
 					note={initial.note}
 				/>
-				{definition.eligibility && definition.eligibility.length > 0 && (
+				{eligibility && (
 					<section
 						data-eligibility
 						data-met={fr.form.conditionMet}
 						data-not-met={fr.form.conditionNotMet}
+						hidden={!eligibility.visible}
 						class="mt-md flex max-w-reading flex-col gap-xs rounded-panel border border-hairline bg-paper p-lg text-label"
 					>
 						<h3 class="font-bold">{fr.form.eligibilityHeading}</h3>
 						<ul class="flex flex-col gap-xs">
-							{definition.eligibility.map((condition) => (
-								<li data-condition={condition.field} data-condition-value={condition.value} class="flex flex-wrap justify-between gap-x-md">
-									<span>{condition.label}</span>
+							{definition.eligibility!.map((item, index) => (
+								<li data-eligibility-item={JSON.stringify(item)} hidden={!eligibility.items[index]!.shown} class="flex flex-wrap justify-between gap-x-md">
+									<span>{item.label}</span>
 									<strong data-condition-state class="font-bold">
-										{filled[condition.field] === condition.value ? fr.form.conditionMet : fr.form.conditionNotMet}
+										{eligibility.items[index]!.met ? fr.form.conditionMet : fr.form.conditionNotMet}
 									</strong>
 								</li>
 							))}

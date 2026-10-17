@@ -18,6 +18,7 @@ import { formatNumberTyping, numberError } from "../format/amount-input";
 import { formatChf } from "../format/chf";
 import { familyOf, municipalityKey, type EstimateReading, type FormOutcome, type FormValues, type HouseholdPageData } from "./calculator-form";
 import type { EstimatorReading, Household } from "./gross-estimator-ui";
+import { eligibilityState, type EligibilityItem } from "./eligibility";
 import { attachResultViews } from "./result-views";
 
 export type CalculatorRuntime<D extends HouseholdPageData, T> = {
@@ -79,11 +80,19 @@ export function startCalculator<D extends HouseholdPageData & { estimator: Gross
 			block.hidden = !(JSON.parse(block.dataset.shownWhen!) as [string, string][]).every(([name, value]) => values[name] === value);
 		}
 		for (const block of all<HTMLElement>("[data-path-block]")) block.hidden = block.dataset.pathBlock !== path();
-		// Conditions d'éligibilité, dites en mots
-		for (const item of document.querySelectorAll<HTMLElement>("[data-condition]")) {
-			const list = item.closest<HTMLElement>("[data-eligibility]")!;
-			item.querySelector("[data-condition-state]")!.textContent =
-				values[item.dataset.condition!] === item.dataset.conditionValue ? list.dataset.met! : list.dataset.notMet!;
+		// Conditions d'éligibilité, dites en mots ; liste affichée selon la règle unique (§ 4.3)
+		const list = document.querySelector<HTMLElement>("[data-eligibility]");
+		if (list) {
+			const rows = [...list.querySelectorAll<HTMLElement>("[data-eligibility-item]")];
+			const state = eligibilityState(
+				rows.map((row) => JSON.parse(row.dataset.eligibilityItem!) as EligibilityItem),
+				values,
+			);
+			list.hidden = !state.visible;
+			rows.forEach((row, index) => {
+				row.hidden = !state.items[index]!.shown;
+				row.querySelector("[data-condition-state]")!.textContent = state.items[index]!.met ? list.dataset.met! : list.dataset.notMet!;
+			});
 		}
 
 		const family = familyOf(values);

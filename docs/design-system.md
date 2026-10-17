@@ -644,7 +644,10 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   le montant optimal (A1), ce montant est le résultat ; aucun bouton.
 - **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
 - **Conditions d'éligibilité en liste de contrôle** : une ligne par condition, état dit en mots
-  (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule.
+  (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule. Règle unique
+  (arbitrage du 17.10.2026) : **en profil courant, le libellé du profil tient lieu de liste : aucune
+  liste ne s'affiche. La liste s'affiche quand le visiteur choisit « Autre situation », ou dès qu'une
+  condition n'est pas remplie, et elle nomme alors la condition qui bloque.**
 - **Une exclusion qui change le résultat s'affiche au moment où la saisie la déclenche**, dans la
   carte résultat, en avertissement renforcé avec l'alternative déclarée dans `notCovered` — pas
   dans une liste lue d'avance.
@@ -740,7 +743,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Montants formatés à la suisse pendant la frappe, `inputmode="decimal"`, suffixe CHF.
 - [ ] Bouton « Verser le maximum (<plafond>) » si le calculateur a un champ de montant et qu'un plafond existe, plafond lu dans les données ou retenu par le moteur ; sans objet quand le moteur calcule lui-même le montant optimal (A1), qui est alors le résultat.
 - [ ] Un champ par enfant.
-- [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots.
+- [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots ; masquée en profil courant, affichée en « Autre situation » ou dès qu'une condition n'est pas remplie.
 - [ ] Exclusions affichées dans la carte au moment où la saisie les déclenche, avec alternative.
 
 **Résultat (§ 4.4)**

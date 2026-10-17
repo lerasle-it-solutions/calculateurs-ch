@@ -333,6 +333,25 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 		};
 	}),
 
+	// Conditions de l'année, pour vous et pour le conjoint ou partenaire (règles 3 et 4)
+	eligibility: (["you", "spouse"] as const).flatMap((person) => {
+		const name = (field: string) => contributorFieldName(person, field);
+		const couple = person === "spouse" ? { shownWhen: [{ field: "maritalStatus", value: "married" }] } : {};
+		const who = person === "spouse" ? " (conjoint ou partenaire)" : "";
+		return [
+			{ label: `Revenu soumis à l'AVS en ${year}${who}`, anyOf: [{ field: name("hasAvsIncome"), value: "yes" }], profile: name("profile"), ...couple },
+			{
+				label: `Âge de référence AVS non atteint, ou activité lucrative poursuivie depuis moins de cinq ans${who}`,
+				anyOf: [
+					{ field: name("reachedReferenceAge"), value: "no" },
+					{ field: name("workingAfterReferenceAge"), value: "yes" },
+				],
+				profile: name("profile"),
+				...couple,
+			},
+		];
+	}),
+
 	vigilance: reminders.map((text) => ({ level: "warning", text })),
 
 	monetization: { type: "none" },
@@ -353,7 +372,7 @@ export const pillar3aTaxSavingTexts = {
 	},
 	/** Avertissement de la règle 7, « {amount} » remplacé par l'excédent. */
 	excessWarning:
-		"Attention : {amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
+		"{amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
 	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien), points de vigilance de la page. */
 	reminders,
 	outOfScope: pillar3aBuybackTexts.outOfScope,

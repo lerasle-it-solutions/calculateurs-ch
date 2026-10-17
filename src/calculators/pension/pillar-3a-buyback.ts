@@ -310,9 +310,13 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	],
 
 	eligibility: [
-		{ field: "currentYearContributionPaidInFull", value: "yes", label: `Cotisation 3a ${pillar3aBuybackYear} versée intégralement` },
-		{ field: "avsIncomeInBuybackYear", value: "yes", label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}` },
-		{ field: "oldAgeBenefit", value: "no", label: "Aucune prestation de vieillesse du pilier 3a déjà perçue" },
+		{
+			label: `Cotisation 3a ${pillar3aBuybackYear} versée intégralement`,
+			anyOf: [{ field: "currentYearContributionPaidInFull", value: "yes" }],
+			profile: "profile",
+		},
+		{ label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}`, anyOf: [{ field: "avsIncomeInBuybackYear", value: "yes" }], profile: "profile" },
+		{ label: "Aucune prestation de vieillesse du pilier 3a déjà perçue", anyOf: [{ field: "oldAgeBenefit", value: "no" }], profile: "profile" },
 	],
 
 	vigilance: [

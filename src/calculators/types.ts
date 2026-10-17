@@ -1,3 +1,5 @@
+import type { EligibilityItem } from "../lib/display/eligibility";
+
 /**
  * Définition déclarative d'un calculateur (voir CLAUDE.md § 2).
  *
@@ -172,9 +174,10 @@ export type CalculatorDefinition = {
 	vigilance?: VigilancePoint[];
 	/**
 	 * Conditions d'éligibilité, en liste de contrôle « remplie / non remplie »
-	 * sous la carte (§ 4.3) : remplie quand `field` vaut `value`.
+	 * sous la carte (§ 4.3), affichée selon la règle unique de
+	 * src/lib/display/eligibility.ts.
 	 */
-	eligibility?: { field: string; value: string; label: string }[];
+	eligibility?: EligibilityItem[];
 
 	scope: {
 		/** FRANÇAIS → bandeau, bloc « Pour qui ». */

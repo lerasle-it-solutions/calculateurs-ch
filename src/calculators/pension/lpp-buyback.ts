@@ -325,6 +325,11 @@ export const lppBuyback: CalculatorDefinition = {
 		},
 	],
 
+	// Une seule question oui/non : aucun profil ; la liste ne s'affiche que si la condition n'est pas remplie (§ 4.3)
+	eligibility: [
+		{ label: "Aucun versement anticipé pour le logement non remboursé", anyOf: [{ field: "unrepaidHomeOwnershipWithdrawal", value: "no" }] },
+	],
+
 	vigilance: lppBuybackWarnings,
 
 	monetization: { type: "none" },

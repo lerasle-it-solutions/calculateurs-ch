@@ -65,7 +65,14 @@ const summary = initial.shown;
 					))
 				}
 			</dl>
-			<p id="pillar3a-saving-excess" class="text-label font-bold" hidden={!summary?.excess}>{summary?.excess ? texts.excessWarning.replace("{amount}", summary.excess) : ""}</p>
+			{/* Excédent non déductible, à rembourser : avertissement renforcé (§ 2.6, arbitrage du 17.10.2026) */}
+			<p
+				id="pillar3a-saving-excess"
+				hidden={!summary?.excess}
+				class="rounded-r-panel border-l-4 border-warning-signal bg-warning-tint p-lg text-label text-ink"
+			>
+				<strong class="font-bold text-warning">{fr.calculator.warningPrefix}</strong>{" "}<span data-excess-text>{summary?.excess ? texts.excessWarning.replace("{amount}", summary.excess) : ""}</span>
+			</p>
 		</div>
 	</CalculatorShell>
 

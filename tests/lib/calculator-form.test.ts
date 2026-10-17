@@ -9,6 +9,7 @@ import { pillar3aBuybackPageData } from "../../src/calculators/pension/pillar-3a
 import { pillar3aTaxSaving } from "../../src/calculators/pension/pillar-3a-tax-saving";
 import { pillar3aTaxSavingPageData } from "../../src/calculators/pension/pillar-3a-tax-saving-page-data";
 import { familyOf, municipalityKey, readHousehold } from "../../src/lib/display/calculator-form";
+import { eligibilityState } from "../../src/lib/display/eligibility";
 import { readLppBuybackForm } from "../../src/lib/display/lpp-buyback-form";
 import { readPillar3aBuybackForm } from "../../src/lib/display/pillar-3a-buyback-form";
 import { readPillar3aTaxSavingForm } from "../../src/lib/display/pillar-3a-tax-saving-form";
@@ -158,5 +159,39 @@ describe("A1 : profil « Je remplis les conditions »", () => {
 		for (const name of group!.fields) expect(values[name], name).toBe(group!.profiles[0]!.values[name]);
 		expect(Object.keys(group!.profiles[0]!.values).sort()).toEqual([...group!.fields].sort());
 		expect(readPillar3aBuybackForm(values, pillar3aBuybackPageData).status).toBeNull();
+	});
+});
+
+describe("liste « remplie / non remplie » : règle unique (§ 4.3)", () => {
+	const state = (definition: typeof pillar3aBuyback, overrides: Record<string, string>) =>
+		eligibilityState(definition.eligibility ?? [], { ...exampleFormValues(definition), ...overrides });
+
+	it("A1, profil courant : le libellé du profil tient lieu de liste, aucune liste", () => {
+		expect(state(pillar3aBuyback, {}).visible).toBe(false);
+	});
+
+	it("A1, « Autre situation » : la liste s'affiche, et nomme la condition qui bloque", () => {
+		expect(state(pillar3aBuyback, { profile: "other" }).visible).toBe(true);
+		const blocked = state(pillar3aBuyback, { profile: "other", oldAgeBenefit: "yes" });
+		const labels = (pillar3aBuyback.eligibility ?? []).filter((_, index) => !blocked.items[index]!.met).map((item) => item.label);
+		expect(labels).toEqual(["Aucune prestation de vieillesse du pilier 3a déjà perçue"]);
+	});
+
+	it("A2 : liste de la personne en « Autre situation » ; celle du conjoint seulement pour un couple", () => {
+		expect(state(pillar3aTaxSaving, {}).visible).toBe(false);
+		const you = state(pillar3aTaxSaving, { profile: "other" });
+		expect(you.visible).toBe(true);
+		expect(you.items.filter((item) => item.shown)).toHaveLength(2);
+		const couple = state(pillar3aTaxSaving, { maritalStatus: "married", spouseProfile: "other" });
+		expect(couple.visible).toBe(true);
+		expect(couple.items.filter((item) => item.shown)).toHaveLength(4);
+		// Âge de référence atteint sans activité : condition non remplie, liste affichée
+		const retired = state(pillar3aTaxSaving, { profile: "other", reachedReferenceAge: "yes", workingAfterReferenceAge: "no" });
+		expect(retired.items.some((item) => item.shown && !item.met)).toBe(true);
+	});
+
+	it("A3, sans profil : la liste ne s'affiche que si une condition n'est pas remplie", () => {
+		expect(state(lppBuyback, {}).visible).toBe(false);
+		expect(state(lppBuyback, { unrepaidHomeOwnershipWithdrawal: "yes" }).visible).toBe(true);
 	});
 });
