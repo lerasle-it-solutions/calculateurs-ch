@@ -63,6 +63,10 @@ export type HouseholdPageData = {
 		grossSalaryMissing: string;
 		ageMissing: string;
 		grossMissingShort: string;
+		/** Commune ou revenu imposable vide : texte neutre à la place du montant (§ 4.4). */
+		municipalityMissing: string;
+		taxableIncomeMissing: string;
+		inputMissingShort: string;
 		/** Lignes de la trace qui suivent l'économie : part du versement, coût net de l'année. */
 		shareLabel: string;
 		netCostLabel: string;
@@ -71,6 +75,13 @@ export type HouseholdPageData = {
 
 /** Saisie invalide : style erreur dans la carte (§ 4.4). */
 export const invalidInputStatus = (text: string, short: string): ResultStatus => ({ text, short, kind: "invalid" });
+
+/** Donnée manquante : texte neutre dans la carte (§ 4.4), jamais un tiret seul. */
+export const missingInputStatus = (text: string, data: Pick<HouseholdPageData, "texts">): ResultStatus => ({
+	text,
+	short: data.texts.inputMissingShort,
+	kind: "missing",
+});
 
 /**
  * Type d'un message rendu par l'affichage d'un calculateur (`display…`), qui ne
@@ -133,9 +144,10 @@ export type Household = {
 };
 
 /**
- * Ménage et revenus imposables, ou le message qui remplace le montant. Les
- * revenus absents ou invalides rendent un tiret sans message : le visiteur n'a
- * pas fini de saisir. Tant que « différent ? » est replié (`federalDiffers`
+ * Ménage et revenus imposables, ou le message qui remplace le montant. Une
+ * commune ou un revenu imposable vide rend un texte neutre qui le demande
+ * (§ 4.4) ; une saisie illisible est signalée sous son champ et dans la carte
+ * par le script de la page. Tant que « différent ? » est replié (`federalDiffers`
  * vaut « no ») ou que le revenu fédéral est vide, il vaut le cantonal, et la
  * trace le dit (R4).
  */
@@ -150,7 +162,13 @@ export function readHousehold(
 	const { children, childrenAges, maritalStatus } = familyOf(values);
 
 	if (!municipality) {
-		return { outcome: emptyOutcome(values.municipality ? invalidInputStatus(data.texts.unknownMunicipality, data.texts.inputShort) : null) };
+		return {
+			outcome: emptyOutcome(
+				values.municipality
+					? invalidInputStatus(data.texts.unknownMunicipality, data.texts.inputShort)
+					: missingInputStatus(data.texts.municipalityMissing, data),
+			),
+		};
 	}
 
 	// Couverture établie dès la commune, l'état civil et les enfants : le message
@@ -181,9 +199,10 @@ export function readHousehold(
 			rows.push({ label: data.texts.federalAssumedLabel, amount: formatChfAmount(federalTaxableIncome), note: data.texts.federalAssumed });
 		}
 	}
-	if (![cantonalTaxableIncome, federalTaxableIncome, children].every((value) => Number.isFinite(value) && value >= 0)) {
-		return { outcome: emptyOutcome() };
+	if (![cantonalTaxableIncome, federalTaxableIncome].every(Number.isFinite)) {
+		return { outcome: emptyOutcome(missingInputStatus(data.texts.taxableIncomeMissing, data)) };
 	}
+	if (![cantonalTaxableIncome, federalTaxableIncome, children].every((value) => value >= 0)) return { outcome: emptyOutcome() };
 
 	return {
 		taxInput: {

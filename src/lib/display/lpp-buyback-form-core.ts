@@ -8,13 +8,14 @@
  * displayLppBuyback. Sans DOM : la construction l'exécute sur le cas exemple,
  * le script de la page à chaque saisie.
  */
-import { amountOf, emptyOutcome, readHousehold, withEstimate, type EstimateReading, type FormOutcome, type FormValues, type HouseholdPageData } from "./calculator-form";
+import { amountOf, emptyOutcome, missingInputStatus, readHousehold, withEstimate, type EstimateReading, type FormOutcome, type FormValues, type HouseholdPageData } from "./calculator-form";
 import type { displayLppBuybackCore, LppBuybackCoreDisplay, LppBuybackDisplayTexts } from "./lpp-buyback-core";
 
 export type LppBuybackPageData = HouseholdPageData & {
 	taxYear: number;
 	lockPeriodYears: { value: number; sourceId: string };
-	texts: LppBuybackDisplayTexts;
+	/** `amountsMissing` : potentiel ou montant du rachat vide, texte neutre à la place du montant (§ 4.4). */
+	texts: LppBuybackDisplayTexts & { amountsMissing: string };
 };
 
 export function readLppBuybackFormWith<D extends LppBuybackCoreDisplay>(
@@ -30,7 +31,8 @@ export function readLppBuybackFormWith<D extends LppBuybackCoreDisplay>(
 	const amount = amountOf(values.buybackAmount);
 	const withdrawalText = (values.plannedCapitalWithdrawalYear ?? "").trim();
 	const withdrawalYear = withdrawalText === "" ? null : amountOf(withdrawalText);
-	if ([potential, amount].some((value) => !Number.isFinite(value) || value < 0)) return emptyOutcome();
+	if (![potential, amount].every(Number.isFinite)) return emptyOutcome(missingInputStatus(data.texts.amountsMissing, data));
+	if (potential < 0 || amount < 0) return emptyOutcome();
 	if (withdrawalYear !== null && !Number.isInteger(withdrawalYear)) return emptyOutcome();
 
 	const shown = display(

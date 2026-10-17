@@ -245,6 +245,10 @@ export const fr = {
 		federalAssumedLabel: "Revenu imposable fédéral",
 		federalAssumed: "Supposé égal au revenu imposable cantonal ; dépliez « Différent ? » pour le saisir.",
 		grossSalaryMissing: "Saisissez votre salaire brut.",
+		/** Carte résultat, donnée manquante (§ 4.4) : commune ou revenu imposable vide. */
+		municipalityMissing: "Indiquez votre commune de domicile.",
+		taxableIncomeMissing: "Indiquez votre revenu imposable.",
+		inputMissingShort: "Saisie à compléter, voir le message",
 		ageMissing: "Saisissez votre âge.",
 		grossMissingShort: "Salaire brut à saisir, voir le message",
 	},

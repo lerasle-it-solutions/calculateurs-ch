@@ -401,4 +401,6 @@ export const lppBuybackTexts = {
 	inputShort: pillar3aBuybackTexts.inputShort,
 	/** Mention courte de la barre mobile quand le rachat est refusé. */
 	refusedShort: "Rachat impossible, voir le message",
+	/** Carte résultat, donnée manquante (§ 4.4). */
+	amountsMissing: "Indiquez votre potentiel de rachat et le montant envisagé.",
 };

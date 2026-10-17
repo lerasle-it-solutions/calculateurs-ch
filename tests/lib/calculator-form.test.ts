@@ -195,3 +195,35 @@ describe("liste « remplie / non remplie » : règle unique (§ 4.3)", () => {
 		expect(state(lppBuyback, { unrepaidHomeOwnershipWithdrawal: "yes" }).visible).toBe(true);
 	});
 });
+
+describe("donnée manquante : un texte neutre à la place du montant (§ 4.4)", () => {
+	const a1 = exampleFormValues(pillar3aBuyback);
+	const a2 = exampleFormValues(pillar3aTaxSaving);
+
+	it("commune vide : la carte demande la commune, jamais un tiret seul", () => {
+		for (const outcome of [
+			readPillar3aBuybackForm({ ...a1, municipality: "" }, pillar3aBuybackPageData),
+			readPillar3aTaxSavingForm({ ...a2, municipality: "" }, pillar3aTaxSavingPageData),
+			readLppBuybackForm({ ...lppValues, municipality: "" }, lppBuybackPageData),
+		]) {
+			expect(outcome.status).toEqual({ text: "Indiquez votre commune de domicile.", short: "Saisie à compléter, voir le message", kind: "missing" });
+		}
+	});
+
+	it("revenu imposable vide : la carte le demande", () => {
+		const outcome = readPillar3aTaxSavingForm({ ...a2, cantonalTaxableIncome: "", federalTaxableIncome: "" }, pillar3aTaxSavingPageData);
+		expect(outcome.status).toMatchObject({ text: "Indiquez votre revenu imposable.", kind: "missing" });
+		expect(outcome.breakdown).toEqual([]);
+	});
+
+	it("A3, potentiel ou montant vide : la carte les demande", () => {
+		for (const name of ["buybackPotential", "buybackAmount"]) {
+			const outcome = readLppBuybackForm({ ...lppValues, [name]: "" }, lppBuybackPageData);
+			expect(outcome.status).toMatchObject({ text: "Indiquez votre potentiel de rachat et le montant envisagé.", kind: "missing" });
+		}
+	});
+
+	it("une commune inconnue reste une saisie à corriger", () => {
+		expect(readPillar3aBuybackForm({ ...a1, municipality: "Atlantis" }, pillar3aBuybackPageData).status?.kind).toBe("invalid");
+	});
+});

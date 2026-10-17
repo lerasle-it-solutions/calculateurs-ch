@@ -11,6 +11,7 @@ export const lppBuybackPagePart = {
 	texts: {
 		...household.texts,
 		refusedShort: texts.refusedShort,
+		amountsMissing: texts.amountsMissing,
 		notDeducted: texts.notDeducted,
 		single: texts.scenarios.single,
 		spread: texts.scenarios.spread,
