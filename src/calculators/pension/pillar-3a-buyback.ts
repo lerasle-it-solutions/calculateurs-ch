@@ -322,7 +322,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	vigilance: [
 		{
 			level: "warning",
-			text: "Chaque année de lacune ne se rachète qu'une fois : une lacune comblée en partie ne peut plus être complétée, et le solde est perdu.",
+			summary: "Chaque année de lacune ne se rachète qu'une fois : une lacune comblée en partie ne peut plus être complétée, et le solde est perdu.",
 		},
 	],
 

@@ -8,6 +8,7 @@ import { formatChfAmount } from "../../src/lib/display/amounts";
 import { pillar3aTaxSaving, pillar3aTaxSavingYear } from "../../src/calculators/pension/pillar-3a-tax-saving";
 import type { CalculatorDefinition } from "../../src/calculators/types";
 import { getFederalData } from "../../src/data";
+import { lppBuyback, lppBuybackLockPeriod, lppBuybackTexts } from "../../src/calculators/pension/lpp-buyback";
 
 /**
  * Cas exemple (docs/design-system.md § 4.2, décision n° 18) : chaque
@@ -82,5 +83,32 @@ describe("validation des saisies d'un exemple", () => {
 	it("signale un champ obligatoire sans valeur ni valeur par défaut", () => {
 		const { buybackPotential: _, ...values } = definition.example.values;
 		expect(exampleProblems({ ...definition, example: { ...definition.example, values } })).toEqual(["buybackPotential : obligatoire"]);
+	});
+});
+
+describe("points de vigilance (§ 4.1)", () => {
+	/** Une phrase : se termine par un point, sans fin de phrase suivie d'une majuscule à l'intérieur. */
+	const oneSentence = (text: string) => /[.?!]$/.test(text) && !/[.?!]\s+[A-ZÀ-Ý«]/.test(text.slice(0, -1));
+
+	it("chaque point a une phrase visible ; un texte plus long reste entier dans « En savoir plus »", () => {
+		for (const definition of definitions) {
+			for (const point of definition.vigilance ?? []) {
+				expect(oneSentence(point.summary), `${definition.id} : « ${point.summary} »`).toBe(true);
+				const full = [point.title, point.text, ...(point.items ?? [])].filter(Boolean).join(" ");
+				if (full !== "") expect(full, definition.id).not.toBe(point.summary);
+			}
+		}
+	});
+
+	it("A3 : les phrases visibles du mainteneur, délai de blocage lu dans les données, textes de la fiche intacts", () => {
+		const lock = lppBuybackLockPeriod.value;
+		expect((lppBuyback.vigilance ?? []).map((point) => [point.level, point.summary])).toEqual([
+			["warning", `Aucun retrait en capital du 2e pilier, quel qu'en soit le motif, dans les ${lock} ans qui suivent chaque rachat : sinon la déduction est refusée.`],
+			["warning", "Le capital issu du rachat sera imposé à son retrait : l'économie affichée n'est pas un gain net."],
+			["info", "L'économie d'impôt reste valable ; l'effet du rachat sur votre rente ne se lit qu'auprès de votre caisse."],
+			["info", "Une caisse en découvert peut appliquer des mesures d'assainissement à l'avoir racheté : vérifiez son degré de couverture."],
+			["warning", "Ne versez que le montant que votre caisse vous confirme : le potentiel du certificat peut être réduit."],
+		]);
+		expect((lppBuyback.vigilance ?? []).map((point) => point.text)).toEqual(lppBuybackTexts.warnings.map((warning) => warning.text));
 	});
 });

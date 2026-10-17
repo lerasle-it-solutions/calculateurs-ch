@@ -14,16 +14,17 @@
  * Quand le calcul ne rend pas de résultat (hors périmètre, donnée manquante,
  * saisie à corriger), `detail.status` remplace le montant par son message et
  * son lien, dans la carte même : le visiteur le lit là où il attend le chiffre
- * (src/lib/display/result-card.ts). Une exclusion ou une limite de couverture
- * (`status.kind`) s'y affiche en avertissement renforcé, préfixé « Attention : »
- * (§ 4.3).
+ * (src/lib/display/result-card.ts). Son type (`status.kind`) fixe son rendu
+ * (§ 4.4) : neutre pour une donnée manquante, erreur préfixée « Erreur : » pour
+ * une saisie invalide, avertissement renforcé préfixé « Attention : » pour un
+ * cas hors périmètre ou une condition légale non remplie.
  *
  * Recalcul : une transition de 200 ms sur la valeur (`animate-result-refresh`,
  * tokens.css), coupée sous `prefers-reduced-motion`, implémentée ici et dans
  * result-views.ts pour tous les calculateurs (§ 3.3, arbitrage du 17.10.2026).
  */
 import { fr } from "../../i18n/fr";
-import type { ResultStatus } from "../../lib/display/result-card";
+import { statusTone, type ResultStatus } from "../../lib/display/result-card";
 
 interface Props {
 	id: string;
@@ -51,6 +52,7 @@ const {
 	status = null,
 	note = null,
 } = Astro.props;
+const tone = status ? statusTone(status.kind) : "neutral";
 ---
 
 <output
@@ -65,11 +67,12 @@ const {
 	<span data-result-note hidden={!note} class="text-label font-bold">{note}</span>
 	<span
 		data-result-status
-		data-warning={status?.kind ? "" : undefined}
+		data-warning={tone === "warning" ? "" : undefined}
+		data-error={tone === "error" ? "" : undefined}
 		hidden={status === null}
-		class="group max-w-reading text-body data-warning:rounded-r-panel data-warning:border-l-4 data-warning:border-warning-signal data-warning:bg-warning-tint data-warning:p-md"
+		class="group max-w-reading text-body data-warning:rounded-r-panel data-warning:border-l-4 data-warning:border-warning-signal data-warning:bg-warning-tint data-warning:p-md data-error:rounded-panel data-error:bg-error-tint data-error:p-md"
 	>
-		<strong data-status-prefix class="hidden font-bold text-warning group-data-[warning]:inline">{fr.calculator.warningPrefix} </strong><span data-status-text>{status?.text}</span>{" "}<a data-status-link hidden={!status?.link} href={status?.link?.url} class="font-bold">{status?.link?.label}</a>
+		<strong class="hidden font-bold text-warning group-data-[warning]:inline">{fr.calculator.warningPrefix} </strong><strong class="hidden font-bold text-error group-data-[error]:inline">{fr.numberField.errorPrefix} </strong><span data-status-text>{status?.text}</span>{" "}<a data-status-link hidden={!status?.link} href={status?.link?.url} class="font-bold">{status?.link?.label}</a>
 	</span>
 	{caption && <span class="text-fine text-ink-muted">{caption}</span>}
 </output>

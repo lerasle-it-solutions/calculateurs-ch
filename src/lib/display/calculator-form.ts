@@ -63,6 +63,24 @@ export type HouseholdPageData = {
 	};
 };
 
+/** Saisie invalide : style erreur dans la carte (§ 4.4). */
+export const invalidInputStatus = (text: string, short: string): ResultStatus => ({ text, short, kind: "invalid" });
+
+/**
+ * Type d'un message rendu par l'affichage d'un calculateur (`display…`), qui ne
+ * le donne pas toujours : donnée communale non relevée, hors périmètre, avec la
+ * calculette officielle du canton quand elle est relevée ; tout autre message
+ * sans type est un refus du moteur, condition légale non remplie (§ 4.4).
+ */
+export function classifyDisplayStatus(status: ResultStatus, data: Pick<HouseholdPageData, "texts" | "officialCalculators">, canton: string): ResultStatus {
+	if (status.kind) return status;
+	if (status.text === data.texts.missingData) {
+		const link = data.officialCalculators[canton];
+		return { ...status, kind: "coverage", ...(link ? { link } : {}) };
+	}
+	return { ...status, kind: "refusal" };
+}
+
 export const emptyOutcome = <T>(status: ResultStatus | null = null): FormOutcome<T> => ({
 	value: "—",
 	breakdown: [],
@@ -125,7 +143,7 @@ export function readHousehold(
 	const { children, childrenAges, maritalStatus } = familyOf(values);
 
 	if (!municipality) {
-		return { outcome: emptyOutcome(values.municipality ? { text: data.texts.unknownMunicipality, short: data.texts.inputShort } : null) };
+		return { outcome: emptyOutcome(values.municipality ? invalidInputStatus(data.texts.unknownMunicipality, data.texts.inputShort) : null) };
 	}
 
 	// Couverture établie dès la commune, l'état civil et les enfants : le message
@@ -137,9 +155,10 @@ export function readHousehold(
 	}
 	if (estimate && "missing" in estimate) {
 		const text = estimate.missing === "age" ? data.texts.ageMissing : data.texts.grossSalaryMissing;
-		return { outcome: emptyOutcome({ text, short: data.texts.grossMissingShort }) };
+		return { outcome: emptyOutcome({ text, short: data.texts.grossMissingShort, kind: "missing" }) };
 	}
-	if (estimate && "status" in estimate) return { outcome: emptyOutcome({ text: estimate.status, short: data.texts.inputShort }) };
+	// Seul message de l'estimateur : l'âge d'un enfant manque
+	if (estimate && "status" in estimate) return { outcome: emptyOutcome({ text: estimate.status, short: data.texts.inputShort, kind: "missing" }) };
 
 	const rows: BreakdownRow[] = [];
 	let cantonalTaxableIncome: number;
@@ -189,7 +208,7 @@ export function withEstimate<T>(
 	return {
 		value: shown.value,
 		breakdown: computed ? [...household.rows, ...shown.breakdown] : shown.breakdown,
-		status: shown.status,
+		status: shown.status && classifyDisplayStatus(shown.status, data, household.taxInput.canton),
 		note: computed && household.estimate !== null ? data.texts.estimateNote : null,
 		shown: computed ? extras : null,
 	};

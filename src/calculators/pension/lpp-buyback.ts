@@ -156,13 +156,15 @@ const fields: FieldDefinition[] = [
 
 /**
  * Les cinq avertissements obligatoires de la fiche, points de vigilance de la
- * page (§ 4.1). Avertissement renforcé pour ce qui peut faire perdre la
+ * page (§ 4.1) : une phrase visible chacun, rédigée par le mainteneur le
+ * 17.10.2026, et le texte de la fiche, entier, dans « En savoir plus ». Avertissement renforcé pour ce qui peut faire perdre la
  * déduction ou de l'argent (délai de blocage, imposition à la sortie, montant
  * non admis) ; avis informatif pour le reste (arbitrage du 17.10.2026).
  */
 const lppBuybackWarnings = [
 	{
 		level: "warning",
+		summary: `Aucun retrait en capital du 2e pilier, quel qu'en soit le motif, dans les ${lock} ans qui suivent chaque rachat : sinon la déduction est refusée.`,
 		title: `Délai de blocage de ${lock} ans.`,
 		text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En droit fiscal, l'interdiction est plus large :`,
 		items: [
@@ -174,24 +176,28 @@ const lppBuybackWarnings = [
 	},
 	{
 		level: "warning",
+		summary: "Le capital issu du rachat sera imposé à son retrait : l'économie affichée n'est pas un gain net.",
 		title: "Imposition à la sortie.",
 		text: "Les prestations issues du rachat seront imposées à leur versement : en capital, séparément du reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID) ; en rente, avec le revenu de chaque année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID). L'économie affichée n'est donc pas un gain net. Le calculateur du retrait en capital LPP/3a est en préparation.",
 		items: [],
 	},
 	{
 		level: "info",
+		summary: "L'économie d'impôt reste valable ; l'effet du rachat sur votre rente ne se lit qu'auprès de votre caisse.",
 		title: "Primauté des prestations.",
 		text: "Les règles de déduction ne distinguent pas selon le mode de calcul de la caisse (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID) : l'économie d'impôt affichée reste valable. En revanche, ce que le rachat change à votre rente ne se lit qu'auprès de la caisse.",
 		items: [],
 	},
 	{
 		level: "info",
+		summary: "Une caisse en découvert peut appliquer des mesures d'assainissement à l'avoir racheté : vérifiez son degré de couverture.",
 		title: "Découvert de la caisse.",
 		text: "Une caisse en découvert peut prélever des cotisations d'assainissement et, si cela ne suffit pas, rémunérer l'avoir de vieillesse en dessous du taux minimal légal (art. 65d LPP). L'avoir racheté fait partie de votre avoir de vieillesse : les mesures d'assainissement s'y appliquent comme au reste (art. 65d LPP). Consultez son degré de couverture dans son rapport annuel avant de racheter.",
 		items: [],
 	},
 	{
 		level: "warning",
+		summary: "Ne versez que le montant que votre caisse vous confirme : le potentiel du certificat peut être réduit.",
 		title: "Montant admis par la caisse.",
 		text: "Le potentiel affiché sur le certificat peut être réduit après examen de votre situation : avoirs 3a ou de libre passage, arrivée de l'étranger, retrait anticipé pour le logement (art. 60a et 60b OPP 2 ; art. 79b al. 3 LPP). Ne versez que le montant que la caisse vous confirme.",
 		items: [],

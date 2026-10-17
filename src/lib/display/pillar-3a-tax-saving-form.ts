@@ -69,7 +69,7 @@ export function readPillar3aTaxSavingForm(
 	const married = household.taxInput.maritalStatus === "married";
 	const contributors = (married ? (["", "spouse"] as const) : ([""] as const)).map(contributor);
 	if (contributors.some((entry) => entry === null)) {
-		return emptyOutcome({ text: data.texts.earnedIncomeMissing, short: data.texts.earnedIncomeMissingShort });
+		return emptyOutcome({ text: data.texts.earnedIncomeMissing, short: data.texts.earnedIncomeMissingShort, kind: "missing" });
 	}
 
 	const shown = displayPillar3aTaxSaving(

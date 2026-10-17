@@ -246,6 +246,8 @@ export const fr = {
 		introHeading: "Le calcul en bref",
 		/** Points de vigilance sous la carte (§ 4.1, bloc 5). */
 		vigilanceHeading: "Points de vigilance",
+		/** Texte complet d'un point de vigilance, replié. */
+		vigilanceMore: "En savoir plus",
 		/** Préfixe d'un avertissement renforcé (§ 2.6). */
 		warningPrefix: "Attention :",
 		exampleReplace: "— remplacez par vos chiffres,",

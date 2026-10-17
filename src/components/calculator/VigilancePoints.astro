@@ -4,6 +4,8 @@
  * toujours affichés sous la carte résultat, même sans résultat. Éléments
  * natifs, aucun JavaScript.
  *
+ * Une phrase visible chacun ; le texte complet, s'il est plus long, dans un
+ * `<details>` « En savoir plus » à l'intérieur du point : rien n'est supprimé.
  * Deux styles, une couleur un rôle (arbitrage du 17.10.2026, § 1.1) :
  * avertissement renforcé (`warning`, préfixe « Attention : ») pour ce qui peut
  * faire perdre la déduction ou de l'argent ; avis informatif (`info`) pour le
@@ -31,14 +33,24 @@ const { id, points } = Astro.props;
 				]}
 			>
 				<p>
-					{point.level === "warning" && <strong class="font-bold text-warning">{fr.calculator.warningPrefix} </strong>}
-					{point.title && <strong class="font-bold">{point.title} </strong>}
-					{point.text}
+					{point.level === "warning" && <strong class="font-bold text-warning">{fr.calculator.warningPrefix}</strong>}{" "}
+					{point.summary}
 				</p>
-				{point.items && point.items.length > 0 && (
-					<ul class="flex list-disc flex-col gap-xs pl-lg">
-						{point.items.map((item) => <li>{item}</li>)}
-					</ul>
+				{(point.title || point.text || (point.items && point.items.length > 0)) && (
+					<details>
+						<summary class="flex min-h-3xl cursor-pointer items-center font-bold text-accent underline">{fr.calculator.vigilanceMore}</summary>
+						<div class="flex flex-col gap-xs pb-xs">
+							<p>
+								{point.title && <strong class="font-bold">{point.title} </strong>}
+								{point.text}
+							</p>
+							{point.items && point.items.length > 0 && (
+								<ul class="flex list-disc flex-col gap-xs pl-lg">
+									{point.items.map((item) => <li>{item}</li>)}
+								</ul>
+							)}
+						</div>
+					</details>
 				)}
 			</aside>
 		))

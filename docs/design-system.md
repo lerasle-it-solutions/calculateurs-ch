@@ -564,7 +564,7 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 2 | Promesse | `<p>` | Une seule phrase, `text-lead text-ink-muted` : ce que le visiteur obtient |
 | 3 | Ligne de périmètre | `<p>` | Une seule ligne au-dessus du formulaire, `text-fine text-ink-muted` : pour qui, cantons, année ; lien vers le détail « Ce que ce calcul suppose » (P5) |
 | 4 | Formulaire et carte résultat | grille § 2.5 | Carte résultat collante (`lg:sticky`), barre mobile en dessous de `lg` |
-| 5 | Points de vigilance | avertissement renforcé ou avis informatif (§ 2.6) | Courts : une phrase chacun. Avertissement renforcé, préfixe « Attention : », pour ce qui peut faire perdre la déduction ou de l'argent ; avis informatif pour le reste (ci-dessous) |
+| 5 | Points de vigilance | avertissement renforcé ou avis informatif (§ 2.6) | Courts : une phrase visible chacun ; le texte complet, s'il est plus long, va dans un `<details>` « En savoir plus » à l'intérieur du point, rien n'est supprimé. Avertissement renforcé, préfixe « Attention : », pour ce qui peut faire perdre la déduction ou de l'argent ; avis informatif pour le reste (ci-dessous) |
 | 6 | Détail ligne par ligne | `CalculationBreakdown` (`<details>` + `<table>`) | Trace complète (R4) |
 | 7 | Graphiques | SVG inline (§ 4.6) | Facultatifs ; jamais vides |
 | 8 | Mise en relation | `LeadForm` (`<form>`) | Seulement si `monetization.trigger` est satisfait et qu'un partenaire couvre la situation ; résultat complet avant, jamais un mur ni une fenêtre surgissante (architecture § 4, `CLAUDE.md`) |
@@ -641,7 +641,9 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   montant que le moteur retient selon sa règle de répartition (années entières, plafond de l'année),
   jamais un plafond recopié (arbitrage du 17.10.2026). Précision du même jour : **le bouton du
   maximum n'existe que si le calculateur a un champ de montant.** Quand le moteur calcule lui-même
-  le montant optimal (A1), ce montant est le résultat ; aucun bouton.
+  le montant optimal (A1), ce montant est le résultat ; aucun bouton. **Le plafond du bouton vient
+  des données ou du moteur, jamais d'une autre saisie du visiteur** (rachat LPP : aucun bouton, le
+  potentiel est une saisie).
 - **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
 - **Conditions d'éligibilité en liste de contrôle** : une ligne par condition, état dit en mots
   (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule. Règle unique
@@ -666,6 +668,16 @@ Le résultat se lit dans cet ordre :
 5. **La comparaison avec les autres communes du canton**, calculée par le moteur sur les
    coefficients publics de `src/data/`. Hors du budget de la page (§ 3.5), elle se charge à la
    demande.
+
+**Messages qui remplacent le montant dans la carte** (arbitrage du 17.10.2026), même typologie sur
+tous les calculateurs (`ResultStatus.kind`, `src/lib/display/result-card.ts`) :
+
+| Cas | `kind` | Rendu |
+| --- | --- | --- |
+| Donnée manquante (le visiteur n'a pas tout saisi) | `missing` | Texte neutre (« Saisissez… », « Indiquez… ») |
+| Saisie invalide | `invalid` | Style erreur (§ 2.6), préfixe « Erreur : » |
+| Hors périmètre (canton, commune, ménage, donnée non relevée, cas `notCovered`) | `coverage`, `exclusion` | Avertissement renforcé, préfixe « Attention : », avec l'alternative |
+| Condition légale non remplie (refus du moteur, ex. art. 79b al. 3 LPP) | `refusal` | Avertissement renforcé, préfixe « Attention : », condition nommée |
 
 Et autour du résultat :
 
@@ -718,7 +730,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
 - [ ] Héros compact (`py-xl md:py-2xl`) : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la carte résultat aussi.
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
-- [ ] Points de vigilance courts, sous le formulaire : avertissement renforcé pour ce qui peut faire perdre la déduction ou de l'argent, avis informatif pour le reste.
+- [ ] Points de vigilance courts, sous le formulaire : une phrase visible chacun, texte complet dans « En savoir plus » ; avertissement renforcé pour ce qui peut faire perdre la déduction ou de l'argent, avis informatif pour le reste.
 - [ ] Détail ligne par ligne, puis graphiques.
 - [ ] Formulaire de mise en relation, s'il existe, après les graphiques et avant « Ce que ce calcul suppose » ; résultat complet avant, jamais un mur.
 - [ ] `<details>` « Ce que ce calcul suppose » contenant Pour qui, Ce que ça ne couvre pas (avec alternatives) et Hypothèses retenues.
@@ -741,7 +753,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Revenu fédéral pré-rempli depuis le cantonal, lien « différent ? », hypothèse dans la trace.
 - [ ] Questions oui/non regroupées en profils dès que trois questions ou plus ont une réponse courante ; chaque profil énumère ce qu'il affirme ; « Autre situation » déplie le détail.
 - [ ] Montants formatés à la suisse pendant la frappe, `inputmode="decimal"`, suffixe CHF.
-- [ ] Bouton « Verser le maximum (<plafond>) » si le calculateur a un champ de montant et qu'un plafond existe, plafond lu dans les données ou retenu par le moteur ; sans objet quand le moteur calcule lui-même le montant optimal (A1), qui est alors le résultat.
+- [ ] Bouton « Verser le maximum (<plafond>) » si le calculateur a un champ de montant et qu'un plafond existe, plafond lu dans les données ou retenu par le moteur, jamais d'une autre saisie ; sans objet quand le moteur calcule lui-même le montant optimal (A1), qui est alors le résultat.
 - [ ] Un champ par enfant.
 - [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots ; masquée en profil courant, affichée en « Autre situation » ou dès qu'une condition n'est pas remplie.
 - [ ] Exclusions affichées dans la carte au moment où la saisie les déclenche, avec alternative.
@@ -757,6 +769,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Feuille de style d'impression.
 - [ ] Barre mobile : montant et coût net.
 - [ ] Aucun tableau vide.
+- [ ] Messages de la carte selon leur type : neutre (donnée manquante), erreur (saisie invalide), avertissement renforcé (hors périmètre, condition légale non remplie).
 
 **Sources (§ 4.5)**
 

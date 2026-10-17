@@ -16,7 +16,7 @@
 import type { GrossToTaxableRuleSet, Sourced } from "../calculations/gross-to-taxable";
 import { formatNumberTyping, numberError } from "../format/amount-input";
 import { formatChf } from "../format/chf";
-import { familyOf, municipalityKey, type EstimateReading, type FormOutcome, type FormValues, type HouseholdPageData } from "./calculator-form";
+import { familyOf, invalidInputStatus, municipalityKey, type EstimateReading, type FormOutcome, type FormValues, type HouseholdPageData } from "./calculator-form";
 import type { EstimatorReading, Household } from "./gross-estimator-ui";
 import { eligibilityState, type EligibilityItem } from "./eligibility";
 import { attachResultViews } from "./result-views";
@@ -107,7 +107,7 @@ export function startCalculator<D extends HouseholdPageData & { estimator: Gross
 		// Un champ à corriger : son message sous le champ, et la carte le dit (jamais seulement sous le champ)
 		const invalid = all<Input>("[data-number][aria-invalid]").some((input) => !input.closest("[hidden]"));
 		const outcome: FormOutcome<T> = invalid
-			? { value: "—", breakdown: [], status: { text: form.dataset.invalidText!, short: form.dataset.invalidShort! }, note: null, shown: null }
+			? { value: "—", breakdown: [], status: invalidInputStatus(form.dataset.invalidText!, form.dataset.invalidShort!), note: null, shown: null }
 			: runtime.read(values, data, estimate);
 		runtime.show?.(outcome.shown, data);
 		for (const button of all<HTMLButtonElement>("[data-maximum-for]")) {

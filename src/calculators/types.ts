@@ -143,9 +143,11 @@ export type ProfileGroup = {
  */
 export type VigilancePoint = {
 	level: "warning" | "info";
-	/** Titre en gras, une phrase courte. FRANÇAIS. */
+	/** Une phrase visible. FRANÇAIS. */
+	summary: string;
+	/** Texte complet, s'il est plus long, dans « En savoir plus » : titre en gras, texte, liste. FRANÇAIS. */
 	title?: string;
-	text: string;
+	text?: string;
 	items?: string[];
 };
 

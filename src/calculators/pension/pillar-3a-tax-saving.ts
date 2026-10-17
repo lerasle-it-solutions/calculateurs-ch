@@ -352,7 +352,15 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 		];
 	}),
 
-	vigilance: reminders.map((text) => ({ level: "warning", text })),
+	// Une phrase visible chacun ; le premier rappel, plus long, garde son texte entier dans « En savoir plus »
+	vigilance: [
+		{
+			level: "warning",
+			summary: "Le capital 3a sera imposé à son retrait : l'économie affichée n'est pas un gain net.",
+			text: reminders[0],
+		},
+		...reminders.slice(1).map((summary) => ({ level: "warning" as const, summary })),
+	],
 
 	monetization: { type: "none" },
 };

@@ -67,7 +67,7 @@ export function readPillar3aBuybackForm(values: FormValues, data: Pillar3aBuybac
 			status: {
 				text: blocked,
 				short: data.texts.blockedShort,
-				...(gaps.receivedOldAgeBenefit ? { kind: "exclusion" as const, link: data.oldAgeBenefitAlternative } : {}),
+				...(gaps.receivedOldAgeBenefit ? { kind: "exclusion" as const, link: data.oldAgeBenefitAlternative } : { kind: "refusal" as const }),
 			},
 			note: null,
 			shown: null,
