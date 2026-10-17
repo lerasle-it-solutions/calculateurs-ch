@@ -13,6 +13,10 @@ const buybackDemo: CalculatorDefinition = {
 	slug: "/demo-calculateur/",
 	title: "Calculateur factice — économie d'impôt d'un rachat",
 	metaDescription: "Page interne de démonstration du CalculatorShell.",
+	promise: "Page interne de démonstration du CalculatorShell.",
+	scopeLine: "Calculateur factice, sans valeur fiscale.",
+	// Saisies fictives de démonstration, sans valeur légale (§ 4.2)
+	example: { label: "rachat de 12’000 CHF, taux marginal saisi de 26 %", values: { buybackAmount: "12000", marginalRate: "26" } },
 	scope: {
 		forWhom: [
 			"Personne salariée assujettie à l'impôt en Suisse romande",
@@ -95,6 +99,9 @@ const lppDemo: CalculatorDefinition = {
 	slug: "/demo-calculateur/",
 	title: "Calculateur factice — rachat LPP",
 	metaDescription: "Entrée de catalogue de démonstration.",
+	promise: "Entrée de catalogue de démonstration.",
+	scopeLine: "Démonstration.",
+	example: { label: "démonstration", values: {} },
 	scope: {
 		forWhom: [],
 		notCovered: [],

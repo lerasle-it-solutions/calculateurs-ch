@@ -17,74 +17,28 @@ import ResultTable from "../../components/ui/ResultTable.astro";
 import {
 	lppBuyback,
 	lppBuybackIntro,
-	lppBuybackLockPeriod,
 	lppBuybackTaxYear,
 	lppBuybackTexts,
 	lppBuybackVerifiedOn,
-	lppBuybackYear,
 } from "../../calculators/pension/lpp-buyback";
+import { lppBuybackPageData as pageData } from "../../calculators/pension/lpp-buyback-page-data";
+import { pageDataJson } from "../../calculators/page-data";
+import { exampleFormValues } from "../../calculators/field-values";
 import { publishedCalculators } from "../../calculators/catalog";
-import { ROMANDE_CANTONS } from "../../calculators/cantons";
-import { getCantonData, getMunicipalMultipliers } from "../../data";
-import { getTaxScalesBundle } from "../../data/tax-scales";
-import { getGrossToTaxableRuleSet } from "../../data/gross-to-taxable";
+import { readLppBuybackForm } from "../../lib/display/lpp-buyback-form";
 import { fr } from "../../i18n/fr";
 
 const texts = lppBuybackTexts;
-const cantons = lppBuyback.scope.cantonsCovered as (typeof ROMANDE_CANTONS)[number]["code"][];
-
-const bundle = getTaxScalesBundle(lppBuybackYear, cantons);
-
-// Mode « salaire brut » : seulement si l'estimateur a ses données pour l'année de calcul
-const estimator = (() => {
-	try {
-		return getGrossToTaxableRuleSet(lppBuybackYear, cantons);
-	} catch {
-		return null;
-	}
-})();
-
-const pageData = {
-	taxYear: lppBuybackYear,
-	lockPeriodYears: { value: lppBuybackLockPeriod.value, sourceId: lppBuybackLockPeriod.sourceId },
-	bundle,
-	estimator,
-	municipalities: Object.fromEntries(
-		(getMunicipalMultipliers()?.multipliers ?? [])
-			.filter((entry) => cantons.includes(entry.canton))
-			.map((entry) => [`${entry.municipality} (${entry.canton})`, { ofsId: entry.bfsId, canton: entry.canton }]),
-	),
-	// Calculette officielle du canton, lue dans coverage.officialCalculator des données
-	officialCalculators: Object.fromEntries(
-		cantons.flatMap((code) => {
-			const official = getCantonData(code).coverage?.officialCalculator;
-			return official && "url" in official ? [[code, official]] : [];
-		}),
-	),
-	texts: {
-		outOfScope: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, texts.outOfScope(canton.name)])),
-		// Seules les communes non couvertes en entier en ont besoin (PartialCoverageError.municipality)
-		outOfScopeMunicipality: Object.fromEntries(
-			bundle.municipalities.flatMap(({ coverage }) =>
-				coverage?.municipality === undefined ? [] : [[coverage.municipality, texts.outOfScopeMunicipality(coverage.municipality)]],
-			),
-		),
-		missingData: texts.missingData,
-		municipalityMismatch: texts.municipalityMismatch,
-		unknownMunicipality: texts.unknownMunicipality,
-		outOfScopeShort: texts.outOfScopeShort,
-		missingDataShort: texts.missingDataShort,
-		inputShort: texts.inputShort,
-		refusedShort: texts.refusedShort,
-		notDeducted: texts.notDeducted,
-		single: texts.scenarios.single,
-		spread: texts.scenarios.spread,
-		estimateNote: fr.grossEstimator.resultNote,
-	},
-};
-// Données en JSON dans la page, sans « < » qui fermerait la balise
-const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
-
+const estimator = pageData.estimator;
+// Cas exemple calculé au build par le moteur (docs/design-system.md § 4.2)
+const initial = readLppBuybackForm(exampleFormValues(lppBuyback), pageData);
+const shown = initial.shown;
+// Colonnes « retrait prévu » : seulement si une année de retrait classe les tranches
+const withLock = Boolean(shown?.calendar.some((entry) => entry.status !== null));
+const scenarioRows = (shown?.scenarios ?? []).map((scenario) =>
+	[scenario.label, scenario.tranches, scenario.total, scenario.difference, ...(withLock ? [scenario.lock ?? ""] : [])],
+);
+const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, entry.lockEnds, entry.compatibleFrom, ...(withLock ? [entry.status ?? ""] : [])]);
 ---
 
 <CalculatorLayout definition={lppBuyback}>
@@ -101,26 +55,29 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		verifiedOn={lppBuybackVerifiedOn}
 		catalog={publishedCalculators("pension")}
 		formExtraAfter="federalTaxableIncome"
+		initial={initial}
 	>
 		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex flex-col gap-xl">
-			<div id="lpp-buyback-result" class="flex max-w-reading flex-col gap-md" hidden>
+			<div id="lpp-buyback-result" class="flex max-w-reading flex-col gap-md" hidden={shown === null}>
 				<dl class="flex flex-col text-label">
 					{
 						Object.entries(texts.summary).map(([key, label]) => (
 							<div class="flex justify-between gap-md border-b border-hairline py-sm">
 								<dt>{label}</dt>
-								<dd data-summary={key} class="text-right font-bold tabular-nums" />
+								<dd data-summary={key} class="text-right font-bold tabular-nums">{shown?.summary?.[key as keyof typeof texts.summary]}</dd>
 							</div>
 						))
 					}
 				</dl>
-				<p id="lpp-buyback-not-deducted" class="text-label font-bold" hidden></p>
+				<p id="lpp-buyback-not-deducted" class="text-label font-bold" hidden={!shown?.notDeducted}>{shown?.notDeducted}</p>
 
 				<ResultTable
 					id="lpp-buyback-scenarios"
 					heading={texts.scenarios.heading}
 					caption={texts.scenarios.caption}
+					rows={scenarioRows}
+					withOptional={withLock}
 					columns={[
 						{ label: texts.scenarios.columns.scenario },
 						{ label: texts.scenarios.columns.tranches },
@@ -134,6 +91,8 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 					id="lpp-buyback-calendar"
 					heading={texts.calendar.heading}
 					caption={texts.calendar.caption}
+					rows={calendarRows}
+					withOptional={withLock}
 					columns={[
 						{ label: texts.calendar.columns.buybackYear },
 						{ label: texts.calendar.columns.lockEnds },
@@ -168,7 +127,7 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		</div>
 	</CalculatorShell>
 
-	<script type="application/json" id="lpp-buyback-data" set:html={pageDataJson} />
+	<script type="application/json" id="lpp-buyback-data" set:html={pageDataJson(pageData)} />
 	<TraceLabels modules={estimator ? ["lpp-buyback", "gross-to-taxable"] : ["lpp-buyback"]} />
 </CalculatorLayout>
 

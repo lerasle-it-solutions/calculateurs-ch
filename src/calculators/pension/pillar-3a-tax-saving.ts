@@ -62,6 +62,9 @@ const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
 	.filter((entry) => coverage.cantonsCovered.includes(entry.canton))
 	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
+/** Cas exemple : saisies de scénario, fictives (§ 4.2) ; le versement est le plafond de l'année, lu dans les données. */
+const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000 };
+
 const taxableIncomeHint =
 	"Partez du revenu imposable de votre dernière décision de taxation et ajoutez-y la déduction 3a qui y figure, s'il y en a une : le calcul porte sur le revenu avant cette déduction.";
 const avsIncomeHint = "Salaire, revenu d'indépendant ou revenu de remplacement, comme les indemnités de chômage.";
@@ -100,9 +103,11 @@ export const contributorFieldName = (person: "you" | "spouse", field: string): s
 const contributorFields = (person: "you" | "spouse"): FieldDefinition[] => {
 	const label = CONTRIBUTOR_LABELS[person];
 	const name = (field: keyof typeof label) => contributorFieldName(person, field);
+	// Champs du conjoint ou partenaire : seulement pour un couple
+	const couple = person === "spouse" ? [{ field: "maritalStatus", value: "married" }] : [];
 	return [
-		{ kind: "select", name: name("hasAvsIncome"), label: label.hasAvsIncome, options: yesNo, defaultValue: "yes", hint: avsIncomeHint, required: true },
-		{ kind: "select", name: name("reachedReferenceAge"), label: label.reachedReferenceAge, options: yesNo, defaultValue: "no", required: true },
+		{ kind: "select", name: name("hasAvsIncome"), label: label.hasAvsIncome, options: yesNo, defaultValue: "yes", hint: avsIncomeHint, required: true, shownWhen: couple },
+		{ kind: "select", name: name("reachedReferenceAge"), label: label.reachedReferenceAge, options: yesNo, defaultValue: "no", required: true, shownWhen: couple },
 		{
 			kind: "select",
 			name: name("workingAfterReferenceAge"),
@@ -110,10 +115,19 @@ const contributorFields = (person: "you" | "spouse"): FieldDefinition[] => {
 			options: yesNo,
 			defaultValue: "yes",
 			required: true,
+			shownWhen: [...couple, { field: name("reachedReferenceAge"), value: "yes" }],
 		},
-		{ kind: "select", name: name("affiliated"), label: label.affiliated, options: yesNo, defaultValue: "yes", hint: affiliationHint, required: true },
-		{ kind: "number", name: name("earnedIncome"), label: label.earnedIncome, unit: "CHF", step: 100, hint: earnedIncomeHint },
-		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true },
+		{ kind: "select", name: name("affiliated"), label: label.affiliated, options: yesNo, defaultValue: "yes", hint: affiliationHint, required: true, shownWhen: couple },
+		{
+			kind: "number",
+			name: name("earnedIncome"),
+			label: label.earnedIncome,
+			unit: "CHF",
+			step: 100,
+			hint: earnedIncomeHint,
+			shownWhen: [...couple, { field: name("affiliated"), value: "no" }],
+		},
+		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true, shownWhen: couple },
 	];
 };
 
@@ -178,6 +192,24 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	title: "Économie d'impôt d'un versement 3a",
 	metaDescription:
 		"Calculez l'impôt économisé grâce à votre versement au pilier 3a dans votre commune romande, selon votre affiliation à un 2e pilier.",
+	promise: "L'impôt que votre versement au pilier 3a vous fait économiser, au canton, à la commune et à la Confédération.",
+	scopeLine: `Pour les personnes qui réalisent un revenu soumis à l'AVS et sont imposées au régime ordinaire dans un canton romand, pour un versement effectué en ${year}.`,
+	example: {
+		label: `personne seule sans enfant à Lausanne, affiliée à une caisse de pension, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF au cantonal et ${chf(EXAMPLE.federalTaxableIncome)} CHF au fédéral, versement du maximum (${chf(smallCap)} CHF)`,
+		values: {
+			canton: "VD",
+			municipality: "Lausanne (VD)",
+			maritalStatus: "single",
+			children: "0",
+			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
+			federalTaxableIncome: String(EXAMPLE.federalTaxableIncome),
+			hasAvsIncome: "yes",
+			reachedReferenceAge: "no",
+			affiliated: "yes",
+			// Plafond de l'année, lu dans les données : jamais un montant tapé (§ 4.2)
+			contribution: String(smallCap),
+		},
+	},
 
 	scope: {
 		forWhom: [

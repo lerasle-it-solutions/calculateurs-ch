@@ -20,72 +20,20 @@ import {
 	pillar3aTaxSavingTexts,
 	pillar3aTaxSavingYear,
 } from "../../calculators/pension/pillar-3a-tax-saving";
+import { pillar3aTaxSavingPageData as pageData } from "../../calculators/pension/pillar-3a-tax-saving-page-data";
+import { pageDataJson } from "../../calculators/page-data";
+import { exampleFormValues } from "../../calculators/field-values";
 import { publishedCalculators } from "../../calculators/catalog";
-import { ROMANDE_CANTONS } from "../../calculators/cantons";
-import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
-import { getTaxScalesBundle } from "../../data/tax-scales";
-import { getGrossToTaxableRuleSet } from "../../data/gross-to-taxable";
+import { getFederalData } from "../../data";
+import { readPillar3aTaxSavingForm } from "../../lib/display/pillar-3a-tax-saving-form";
 import { fr } from "../../i18n/fr";
 
 const texts = pillar3aTaxSavingTexts;
 const pillar3a = getFederalData(pillar3aTaxSavingYear).pillar3a;
-const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
-const cantons = pillar3aTaxSaving.scope.cantonsCovered as (typeof ROMANDE_CANTONS)[number]["code"][];
-
-const bundle = getTaxScalesBundle(pillar3aTaxSavingYear, cantons);
-
-// Mode « salaire brut » : seulement si l'estimateur a ses données pour l'année de calcul (2026 seulement, décision du 10.10.2026)
-const estimator = (() => {
-	try {
-		return getGrossToTaxableRuleSet(pillar3aTaxSavingYear, cantons);
-	} catch {
-		return null;
-	}
-})();
-
-const pageData = {
-	taxYear: pillar3aTaxSavingYear,
-	smallContributionCap: sourced(pillar3a.smallContributionCap),
-	largeContributionCap: sourced(pillar3a.largeContributionCap),
-	largeContributionIncomeRate: sourced(pillar3a.largeContributionIncomeRate),
-	ruleSources: { ordinance: "opp3-art-7a", circular: "afc-circular-18a" },
-	bundle,
-	estimator,
-	municipalities: Object.fromEntries(
-		(getMunicipalMultipliers()?.multipliers ?? [])
-			.filter((entry) => cantons.includes(entry.canton))
-			.map((entry) => [`${entry.municipality} (${entry.canton})`, { ofsId: entry.bfsId, canton: entry.canton }]),
-	),
-	// Calculette officielle du canton, lue dans coverage.officialCalculator des données
-	officialCalculators: Object.fromEntries(
-		cantons.flatMap((code) => {
-			const official = getCantonData(code).coverage?.officialCalculator;
-			return official && "url" in official ? [[code, official]] : [];
-		}),
-	),
-	texts: {
-		outOfScope: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, texts.outOfScope(canton.name)])),
-		// Seules les communes non couvertes en entier en ont besoin (PartialCoverageError.municipality)
-		outOfScopeMunicipality: Object.fromEntries(
-			bundle.municipalities.flatMap(({ coverage }) =>
-				coverage?.municipality === undefined ? [] : [[coverage.municipality, texts.outOfScopeMunicipality(coverage.municipality)]],
-			),
-		),
-		missingData: texts.missingData,
-		municipalityMismatch: texts.municipalityMismatch,
-		unknownMunicipality: texts.unknownMunicipality,
-		earnedIncomeMissing: texts.earnedIncomeMissing,
-		outOfScopeShort: texts.outOfScopeShort,
-		missingDataShort: texts.missingDataShort,
-		inputShort: texts.inputShort,
-		blockedShort: texts.blockedShort,
-		earnedIncomeMissingShort: texts.earnedIncomeMissingShort,
-		excessWarning: texts.excessWarning,
-		estimateNote: fr.grossEstimator.resultNote,
-	},
-};
-// Données en JSON dans la page, sans « < » qui fermerait la balise
-const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
+const estimator = pageData.estimator;
+// Cas exemple calculé au build par le moteur (docs/design-system.md § 4.2)
+const initial = readPillar3aTaxSavingForm(exampleFormValues(pillar3aTaxSaving), pageData);
+const summary = initial.shown;
 ---
 
 <CalculatorLayout definition={pillar3aTaxSaving}>
@@ -103,27 +51,28 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 		catalog={publishedCalculators("pension")}
 		formExtraAfter="federalTaxableIncome"
+		initial={initial}
 	>
 		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex max-w-reading flex-col gap-md">
-			<dl id="pillar3a-saving-summary" class="flex flex-col text-label" hidden>
+			<dl id="pillar3a-saving-summary" class="flex flex-col text-label" hidden={summary === null}>
 				{
 					Object.entries(texts.summary).map(([key, label]) => (
 						<div class="flex justify-between gap-md border-b border-hairline py-sm">
 							<dt>{label}</dt>
-							<dd data-summary={key} class="text-right font-bold tabular-nums" />
+							<dd data-summary={key} class="text-right font-bold tabular-nums">{summary?.[key as keyof typeof texts.summary]}</dd>
 						</div>
 					))
 				}
 			</dl>
-			<p id="pillar3a-saving-excess" class="text-label font-bold" hidden></p>
+			<p id="pillar3a-saving-excess" class="text-label font-bold" hidden={!summary?.excess}>{summary?.excess ? texts.excessWarning.replace("{amount}", summary.excess) : ""}</p>
 			<ul class="flex flex-col gap-xs text-fine text-ink-muted">
 				{texts.reminders.map((reminder) => <li>{reminder}</li>)}
 			</ul>
 		</div>
 	</CalculatorShell>
 
-	<script type="application/json" id="pillar3a-saving-data" set:html={pageDataJson} />
+	<script type="application/json" id="pillar3a-saving-data" set:html={pageDataJson(pageData)} />
 	<TraceLabels modules={estimator ? ["pillar-3a-tax-saving", "gross-to-taxable"] : ["pillar-3a-tax-saving"]} />
 </CalculatorLayout>
 

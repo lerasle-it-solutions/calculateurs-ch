@@ -18,75 +18,19 @@ import {
 	pillar3aBuybackTaxYear,
 	pillar3aBuybackTexts,
 	pillar3aBuybackYear,
-	pillar3aGapYears,
 } from "../../calculators/pension/pillar-3a-buyback";
+import { pillar3aBuybackPageData as pageData } from "../../calculators/pension/pillar-3a-buyback-page-data";
+import { pageDataJson } from "../../calculators/page-data";
+import { exampleFormValues } from "../../calculators/field-values";
 import { publishedCalculators } from "../../calculators/catalog";
-import { ROMANDE_CANTONS } from "../../calculators/cantons";
-import { getCantonData, getFederalData, getMunicipalMultipliers } from "../../data";
-import { getTaxScalesBundle } from "../../data/tax-scales";
-import { getGrossToTaxableRuleSet } from "../../data/gross-to-taxable";
+import { getFederalData } from "../../data";
+import { readPillar3aBuybackForm } from "../../lib/display/pillar-3a-buyback-form";
 import { fr } from "../../i18n/fr";
 
 const pillar3a = getFederalData(pillar3aBuybackYear).pillar3a;
-const sourced = (value: { value: number; sourceId: string }) => ({ value: value.value, sourceId: value.sourceId });
-const cantons = pillar3aBuyback.scope.cantonsCovered as (typeof ROMANDE_CANTONS)[number]["code"][];
-
-const bundle = getTaxScalesBundle(pillar3aBuybackYear, cantons);
-
-// Mode « salaire brut » : seulement si l'estimateur a ses données pour l'année de calcul (2026 seulement, décision du 10.10.2026)
-const estimator = (() => {
-	try {
-		return getGrossToTaxableRuleSet(pillar3aBuybackYear, cantons);
-	} catch {
-		return null;
-	}
-})();
-
-const pageData = {
-	buybackYear: pillar3aBuybackYear,
-	gapYears: pillar3aGapYears,
-	firstGapYear: sourced(pillar3a.buyback.firstGapYear),
-	lookbackYears: sourced(pillar3a.buyback.lookbackYears),
-	smallContributionCap: sourced(pillar3a.smallContributionCap),
-	bundle,
-	estimator,
-	municipalities: Object.fromEntries(
-		(getMunicipalMultipliers()?.multipliers ?? [])
-			.filter((entry) => cantons.includes(entry.canton))
-			.map((entry) => [`${entry.municipality} (${entry.canton})`, { ofsId: entry.bfsId, canton: entry.canton }]),
-	),
-	cantonNames: Object.fromEntries(ROMANDE_CANTONS.map((canton) => [canton.code, canton.name])),
-	// Calculette officielle du canton, lue dans coverage.officialCalculator des données
-	officialCalculators: Object.fromEntries(
-		cantons.flatMap((code) => {
-			const official = getCantonData(code).coverage?.officialCalculator;
-			return official && "url" in official ? [[code, official]] : [];
-		}),
-	),
-	texts: {
-		outOfScope: Object.fromEntries(
-			ROMANDE_CANTONS.map((canton) => [canton.code, pillar3aBuybackTexts.outOfScope(canton.name)]),
-		),
-		// Seules les communes non couvertes en entier en ont besoin : le moteur ne lève leur
-		// erreur de couverture qu'avec ce nom (PartialCoverageError.municipality).
-		outOfScopeMunicipality: Object.fromEntries(
-			bundle.municipalities.flatMap(({ coverage }) =>
-				coverage?.municipality === undefined
-					? []
-					: [[coverage.municipality, pillar3aBuybackTexts.outOfScopeMunicipality(coverage.municipality)]],
-			),
-		),
-		missingData: pillar3aBuybackTexts.missingData,
-		municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
-		unknownMunicipality: pillar3aBuybackTexts.unknownMunicipality,
-		outOfScopeShort: pillar3aBuybackTexts.outOfScopeShort,
-		missingDataShort: pillar3aBuybackTexts.missingDataShort,
-		inputShort: pillar3aBuybackTexts.inputShort,
-		estimateNote: fr.grossEstimator.resultNote,
-	},
-};
-// Données en JSON dans la page, sans « < » qui fermerait la balise
-const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
+const estimator = pageData.estimator;
+// Cas exemple calculé au build par le moteur (docs/design-system.md § 4.2)
+const initial = readPillar3aBuybackForm(exampleFormValues(pillar3aBuyback), pageData);
 ---
 
 <CalculatorLayout definition={pillar3aBuyback}>
@@ -104,11 +48,12 @@ const pageDataJson = JSON.stringify(pageData).replace(/</g, "\\u003c");
 		verifiedOn={pillar3a.smallContributionCap.verifiedOn}
 		catalog={publishedCalculators("pension")}
 		formExtraAfter="federalTaxableIncome"
+		initial={initial}
 	>
 		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 	</CalculatorShell>
 
-	<script type="application/json" id="pillar3a-data" set:html={pageDataJson} />
+	<script type="application/json" id="pillar3a-data" set:html={pageDataJson(pageData)} />
 	<TraceLabels modules={estimator ? ["pillar-3a-buyback", "gross-to-taxable"] : ["pillar-3a-buyback"]} />
 </CalculatorLayout>
 

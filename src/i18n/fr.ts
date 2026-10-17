@@ -193,6 +193,9 @@ export const fr = {
 
 	calculator: {
 		faqTitle: "Questions fréquentes",
+		/** Bandeau du cas exemple (docs/design-system.md § 4.2) : « Exemple : <label> — remplacez par vos chiffres. » */
+		examplePrefix: "Exemple :",
+		exampleReplace: "— remplacez par vos chiffres.",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
 		seeBreakdown: "Voir le détail",
 	},

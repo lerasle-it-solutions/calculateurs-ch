@@ -69,6 +69,9 @@ const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
 
 const taxableIncomeHint = "Il figure sur votre dernière décision de taxation, ligne revenu imposable.";
 
+/** Cas exemple, celui du guide (src/lib/articles/rachat-3a-retroactif.ts) : saisies de scénario, fictives (§ 4.2). */
+const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000, paidContribution: 2_500 };
+
 const fields: FieldDefinition[] = [
 	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
 	{
@@ -172,6 +175,23 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
 	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
+	promise: "Ce que vous pouvez encore racheter dans votre pilier 3a, année par année, jusqu'à quand, et l'impôt que vous économiseriez.",
+	scopeLine: `Pour les personnes affiliées à un 2e pilier et imposées au régime ordinaire dans un canton romand, pour un rachat effectué en ${pillar3aBuybackYear}.`,
+	example: {
+		label: `personne seule sans enfant à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF au cantonal et ${chf(EXAMPLE.federalTaxableIncome)} CHF au fédéral, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}, cotisation ${pillar3aBuybackYear} complète`,
+		values: {
+			canton: "VD",
+			municipality: "Lausanne (VD)",
+			maritalStatus: "single",
+			children: "0",
+			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
+			federalTaxableIncome: String(EXAMPLE.federalTaxableIncome),
+			[`paidContribution${firstGapYear}`]: String(EXAMPLE.paidContribution),
+			currentYearContributionPaidInFull: "yes",
+			avsIncomeInBuybackYear: "yes",
+			oldAgeBenefit: "no",
+		},
+	},
 
 	scope: {
 		forWhom: [

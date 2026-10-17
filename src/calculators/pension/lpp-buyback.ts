@@ -8,6 +8,7 @@
  */
 import { eachValue, getFederalData, getMunicipalMultipliers } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
+import { formatChf } from "../../lib/format/chf";
 import { SCENARIO_TRANCHE_COUNTS } from "../../lib/calculations/pension/lpp-buyback";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
@@ -64,6 +65,9 @@ const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
 	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
 const taxableIncomeHint = "Revenu imposable sans la déduction du rachat, par exemple celui de votre dernière décision de taxation.";
+
+/** Cas exemple : saisies de scénario, fictives (§ 4.2). */
+const EXAMPLE = { cantonalTaxableIncome: 110_000, federalTaxableIncome: 112_000, buybackPotential: 50_000, buybackAmount: 30_000 };
 
 const fields: FieldDefinition[] = [
 	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
@@ -163,6 +167,22 @@ export const lppBuyback: CalculatorDefinition = {
 	title: "Rachat LPP : économie d'impôt et échelonnement",
 	metaDescription:
 		"Rachat LPP : estimez l'économie d'impôt d'un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+	promise: lppBuybackIntro[0]!,
+	scopeLine: `Pour les personnes affiliées à une caisse de pension et imposées au régime ordinaire dans un canton romand, pour un rachat effectué en ${lppBuybackYear}.`,
+	example: {
+		label: `personne seule sans enfant à Lausanne, revenu imposable de ${formatChf(EXAMPLE.cantonalTaxableIncome)} CHF au cantonal et ${formatChf(EXAMPLE.federalTaxableIncome)} CHF au fédéral, potentiel de rachat de ${formatChf(EXAMPLE.buybackPotential)} CHF, rachat de ${formatChf(EXAMPLE.buybackAmount)} CHF, aucun versement anticipé`,
+		values: {
+			canton: "VD",
+			municipality: "Lausanne (VD)",
+			maritalStatus: "single",
+			children: "0",
+			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
+			federalTaxableIncome: String(EXAMPLE.federalTaxableIncome),
+			buybackPotential: String(EXAMPLE.buybackPotential),
+			buybackAmount: String(EXAMPLE.buybackAmount),
+			unrepaidHomeOwnershipWithdrawal: "no",
+		},
+	},
 
 	scope: {
 		forWhom: [

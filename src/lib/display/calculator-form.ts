@@ -45,6 +45,8 @@ export type HouseholdPageData = {
 		municipalityMismatch: string;
 		unknownMunicipality: string;
 		inputShort: string;
+		missingData: string;
+		missingDataShort: string;
 		/** Mention sous le montant quand les revenus imposables sont estimés. */
 		estimateNote: string;
 	};

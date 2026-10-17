@@ -17,6 +17,7 @@
  * (src/lib/display/result-card.ts).
  */
 import { fr } from "../../i18n/fr";
+import type { ResultStatus } from "../../lib/display/result-card";
 
 interface Props {
 	id: string;
@@ -28,6 +29,10 @@ interface Props {
 	caption?: string;
 	/** Nom de l'évènement écouté ; son `detail.value` (chaîne déjà formatée) remplace le contenu. */
 	event?: string;
+	/** Message rendu à la place du montant au chargement (cas exemple calculé au build). */
+	status?: ResultStatus | null;
+	/** Mention sous le montant au chargement. */
+	note?: string | null;
 }
 
 const {
@@ -37,6 +42,8 @@ const {
 	value = fr.common.emptyValue,
 	caption,
 	event = "calc:update",
+	status = null,
+	note = null,
 } = Astro.props;
 ---
 
@@ -48,10 +55,10 @@ const {
 	class="flex scroll-mt-5xl flex-col gap-sm rounded-panel bg-accent-tint p-xl md:p-2xl"
 >
 	<span class="text-label font-bold">{label}</span>
-	<span data-result-value class="text-display text-accent tabular-nums">{value}</span>
-	<span data-result-note hidden class="text-label font-bold"></span>
-	<span data-result-status hidden class="max-w-reading text-body">
-		<span data-status-text></span>{" "}<a data-status-link hidden class="font-bold"></a>
+	<span data-result-value hidden={status !== null} class="text-display text-accent tabular-nums">{value}</span>
+	<span data-result-note hidden={!note} class="text-label font-bold">{note}</span>
+	<span data-result-status hidden={status === null} class="max-w-reading text-body">
+		<span data-status-text>{status?.text}</span>{" "}<a data-status-link hidden={!status?.link} href={status?.link?.url} class="font-bold">{status?.link?.label}</a>
 	</span>
 	{caption && <span class="text-fine text-ink-muted">{caption}</span>}
 </output>

@@ -42,7 +42,9 @@ import TextField from "../ui/TextField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
 import Section from "../layout/Section.astro";
 import { fr } from "../../i18n/fr";
-import type { CalculatorDefinition } from "../../calculators/types";
+import type { CalculatorDefinition, FieldDefinition } from "../../calculators/types";
+import type { FormOutcome } from "../../lib/display/calculator-form";
+import { exampleFormValues } from "../../calculators/field-values";
 
 interface Props {
 	definition: CalculatorDefinition;
@@ -69,6 +71,12 @@ interface Props {
 	 * (p. ex. le mode « salaire brut » de l'estimateur), dans le formulaire.
 	 */
 	formExtraAfter?: string;
+	/**
+	 * Résultat du cas exemple, calculé au build en exécutant le moteur sur
+	 * `definition.example` (docs/design-system.md § 4.2) : affiché au
+	 * chargement, sans JavaScript.
+	 */
+	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note">;
 }
 
 const {
@@ -81,7 +89,15 @@ const {
 	verifiedOn,
 	catalog = [],
 	formExtraAfter,
+	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
 } = Astro.props;
+
+/** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
+const filled = exampleFormValues(definition);
+const valueOf = (field: FieldDefinition): string | undefined => filled[field.name];
+/** Champ conditionnel : affiché si ses conditions sont remplies par les saisies du chargement. */
+const shownAtLoad = (field: FieldDefinition): boolean =>
+	(field.shownWhen ?? []).every((condition) => filled[condition.field] === condition.value);
 
 const formExtra = Astro.slots.has("form-extra") ? await Astro.slots.render("form-extra") : "";
 
@@ -134,21 +150,30 @@ const resultFor = definition.fields
 	{notice && <p class="max-w-reading rounded-panel bg-tint p-lg text-label font-bold">{notice}</p>}
 
 	<div data-calculator-root class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
+		<p data-example-banner class="rounded-panel bg-tint p-lg text-label">
+			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label} {fr.calculator.exampleReplace}
+		</p>
 		<form
 			data-calculator
 			id={formId}
-			class="flex min-w-0 flex-col gap-xl lg:self-start"
+			class="flex min-w-0 flex-col gap-xl"
 			novalidate
 		>
 			{
 				definition.fields.map((field) => (
 					<>
+					<div
+						class="contents"
+						data-shown-when={field.shownWhen ? JSON.stringify(field.shownWhen.map((condition) => [condition.field, condition.value])) : undefined}
+						hidden={!shownAtLoad(field)}
+					>
 					{field.kind === "number" ? (
 						<NumberField
 							id={fieldId(field.name)}
 							name={field.name}
 							label={field.label}
-							value={field.defaultValue}
+							value={valueOf(field)}
 							min={field.min}
 							max={field.max}
 							step={field.step}
@@ -162,7 +187,7 @@ const resultFor = definition.fields
 							name={field.name}
 							label={field.label}
 							options={field.options}
-							value={field.defaultValue}
+							value={valueOf(field)}
 							hint={field.hint}
 							required={field.required}
 						/>
@@ -172,7 +197,7 @@ const resultFor = definition.fields
 							name={field.name}
 							label={field.label}
 							options={field.options}
-							value={field.defaultValue}
+							value={valueOf(field)}
 							hint={field.hint}
 							required={field.required}
 						/>
@@ -181,7 +206,7 @@ const resultFor = definition.fields
 							id={fieldId(field.name)}
 							name={field.name}
 							label={field.label}
-							value={field.defaultValue}
+							value={valueOf(field)}
 							inputMode={field.inputMode}
 							placeholder={field.placeholder}
 							hint={field.hint}
@@ -189,16 +214,18 @@ const resultFor = definition.fields
 						/>
 					) : (
 						<CantonField
-							field={field}
+							field={{ ...field, defaultValue: valueOf(field) }}
 							id={fieldId(field.name)}
 							only={definition.scope.cantonsCovered}
 						/>
 					)}
+					</div>
 					{field.name === formExtraAfter && formExtra && <Fragment set:html={formExtra} />}
 					</>
 				))
 			}
 		</form>
+		</div>
 
 		<div class="min-w-0">
 			<div class="lg:sticky lg:top-5xl">
@@ -206,7 +233,9 @@ const resultFor = definition.fields
 					id={`${formId}-result`}
 					for={resultFor}
 					label={resultLabel}
-					value="—"
+					value={initial.value}
+					status={initial.status}
+					note={initial.note}
 				/>
 				{/* Compléments du résultat propres à un calculateur (parts, rappels), rendus par la page */}
 				<slot name="result" />
@@ -215,7 +244,7 @@ const resultFor = definition.fields
 		</div>
 
 		<div id="detail-du-calcul" class="min-w-0 scroll-mt-5xl lg:col-span-2">
-			<CalculationBreakdown open={true} />
+			<CalculationBreakdown open={true} rows={initial.breakdown} />
 		</div>
 	</div>
 
@@ -259,8 +288,8 @@ const resultFor = definition.fields
 				<span class="text-fine font-bold">{resultLabel}</span>
 				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
 			</div>
-			<span data-result-value class="text-heading text-accent tabular-nums" aria-hidden="true">—</span>
-			<a data-result-status hidden href={`#${formId}-result`} class="text-label font-bold"></a>
+			<span data-result-value hidden={initial.status !== null} class="text-heading text-accent tabular-nums" aria-hidden="true">{initial.value}</span>
+			<a data-result-status hidden={initial.status === null} href={`#${formId}-result`} class="text-label font-bold">{initial.status?.short}</a>
 		</div>
 	</div>
 </article>

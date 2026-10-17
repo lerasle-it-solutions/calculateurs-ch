@@ -21,8 +21,6 @@ export type CalculatorRuntime<D extends HouseholdPageData, T> = {
 	read: (values: FormValues, data: D, estimate: EstimateReading) => FormOutcome<T>;
 	/** Cotisation 3a ordinaire retranchée des revenus estimés (A1) ; absente, revenus non diminués. */
 	ordinaryContribution?: (data: D) => Sourced<number>;
-	/** Avant chaque lecture : champs affichés selon les réponses. */
-	beforeRead?: (values: FormValues, form: HTMLFormElement) => void;
 	/** Compléments du résultat propres au calculateur (ventilation, tableaux). */
 	show?: (shown: T | null, data: D) => void;
 };
@@ -42,7 +40,10 @@ export function startCalculator<D extends HouseholdPageData & { estimator: Gross
 
 	const update = () => {
 		const values = Object.fromEntries(new FormData(form)) as FormValues;
-		runtime.beforeRead?.(values, form);
+		// Champs conditionnels (shownWhen de la définition) : affichés selon les réponses
+		for (const block of form.querySelectorAll<HTMLElement>("[data-shown-when]")) {
+			block.hidden = !(JSON.parse(block.dataset.shownWhen!) as [string, string][]).every(([field, value]) => values[field] === value);
+		}
 		const family = familyOf(values);
 		const canton = data.municipalities[values.municipality ?? ""]?.canton;
 		const estimate: EstimateReading = estimatorBox?.open
@@ -68,5 +69,7 @@ export function startCalculator<D extends HouseholdPageData & { estimator: Gross
 	});
 	form.addEventListener("input", update);
 	form.addEventListener("change", update);
+	// Le bandeau du cas exemple disparaît à la première saisie (docs/design-system.md § 4.2)
+	form.addEventListener("input", () => document.querySelector("[data-example-banner]")?.remove(), { once: true });
 	update();
 }

@@ -16,6 +16,11 @@ type FieldBase = {
 	/** Aide affichée sous le champ. FRANÇAIS. */
 	hint?: string;
 	required?: boolean;
+	/**
+	 * Champ affiché seulement si toutes ces conditions sont remplies (réponses
+	 * d'autres champs) ; masqué, il n'est ni exigé ni lu.
+	 */
+	shownWhen?: { field: string; value: string }[];
 };
 
 export type NumberFieldDefinition = FieldBase & {
@@ -70,6 +75,41 @@ export type FieldDefinition =
  */
 export type ExternalAlternative = { label: string; url?: string };
 
+/**
+ * Cas exemple (docs/design-system.md § 4.2) : la page s'ouvre pré-remplie sur
+ * ce profil fictif, et son résultat est calculé à la construction.
+ *
+ * Exception à R2 : ces saisies de scénario ne sont pas des valeurs au sens de
+ * R2 et n'ont pas de `Value<T>`. Elles ne reprennent jamais une valeur légale
+ * (plafond, taux, seuil) : celle-ci est lue dans les données au moment de
+ * déclarer l'exemple, jamais tapée.
+ */
+export type CalculatorExample = {
+	/** Description d'une ligne, FRANÇAIS, après « Exemple : » dans le bandeau. */
+	label: string;
+	/** Saisies, par nom de champ, telles qu'un visiteur les taperait. */
+	values: Record<string, string>;
+};
+
+/**
+ * Profils qui pré-remplissent un groupe de questions oui/non (§ 4.3) : des
+ * pastilles, plus « Autre situation », qui déplie les questions détaillées.
+ */
+export type ProfileGroup = {
+	/** Nom du groupe de boutons radio. Anglais, camelCase. */
+	name: string;
+	/** Légende du groupe. FRANÇAIS. */
+	legend: string;
+	/** Questions oui/non que les profils remplissent, par nom de champ. */
+	fields: string[];
+	/** Profils, le premier par défaut ; `values` donne la réponse de chaque question. */
+	profiles: { value: string; label: string; values: Record<string, string> }[];
+	/** Libellé de la pastille qui déplie les questions détaillées. FRANÇAIS. */
+	otherLabel: string;
+	/** Groupe affiché seulement si ce champ a cette valeur (conjoint : état civil). */
+	shownWhen?: { field: string; value: string };
+};
+
 export type CalculatorDefinition = {
 	/** « family.name » — ex. « pension.pillar-3a-buyback ». */
 	id: string;
@@ -83,6 +123,14 @@ export type CalculatorDefinition = {
 	title: string;
 	/** FRANÇAIS — affiché. */
 	metaDescription: string;
+	/** Une phrase, FRANÇAIS, sous le titre : ce que le visiteur obtient (§ 4.1, bloc 2). */
+	promise: string;
+	/** Une phrase, FRANÇAIS, au-dessus du formulaire : pour qui, cantons, année (§ 4.1, bloc 3). */
+	scopeLine: string;
+	/** Cas exemple, obligatoire (§ 4.2, décision n° 18). */
+	example: CalculatorExample;
+	/** Groupes de questions oui/non pré-remplis par profil (§ 4.3). */
+	profiles?: ProfileGroup[];
 
 	scope: {
 		/** FRANÇAIS → bandeau, bloc « Pour qui ». */
