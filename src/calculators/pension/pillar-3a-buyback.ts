@@ -175,10 +175,10 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
 	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
-	promise: "Ce que vous pouvez encore racheter dans votre pilier 3a, année par année, jusqu'à quand, et l'impôt que vous économiseriez.",
-	scopeLine: `Pour les personnes affiliées à un 2e pilier et imposées au régime ordinaire dans un canton romand, pour un rachat effectué en ${pillar3aBuybackYear}.`,
+	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l'impôt économisé.",
+	scopeLine: `Personnes affiliées à un 2e pilier, imposées au régime ordinaire en Suisse romande, rachat en ${pillar3aBuybackYear}.`,
 	example: {
-		label: `personne seule sans enfant à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF au cantonal et ${chf(EXAMPLE.federalTaxableIncome)} CHF au fédéral, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}, cotisation ${pillar3aBuybackYear} complète`,
+		label: `personne seule à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}`,
 		values: {
 			canton: "VD",
 			municipality: "Lausanne (VD)",
@@ -230,6 +230,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 			"Le rachat réduit les deux revenus imposables exactement de son montant. Les déductions dont le montant dépend du revenu ne sont pas recalculées.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
+		partialCantons: coverage.partialCantons,
 		referenceYear: pillar3aBuybackYear,
 	},
 
@@ -279,6 +280,13 @@ export const pillar3aBuyback: CalculatorDefinition = {
 			question: "Pourquoi ne pas multiplier le rachat par mon taux marginal ?",
 			answer:
 				"Parce que le rachat peut faire changer de tranche de barème. Le calculateur calcule votre impôt deux fois, avant et après le rachat, et affiche la différence exacte.",
+		},
+	],
+
+	vigilance: [
+		{
+			level: "warning",
+			text: "Chaque année de lacune ne se rachète qu'une fois : une lacune comblée en partie ne peut plus être complétée, et le solde est perdu.",
 		},
 	],
 

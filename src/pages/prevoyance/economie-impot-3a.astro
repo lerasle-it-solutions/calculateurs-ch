@@ -66,9 +66,6 @@ const summary = initial.shown;
 				}
 			</dl>
 			<p id="pillar3a-saving-excess" class="text-label font-bold" hidden={!summary?.excess}>{summary?.excess ? texts.excessWarning.replace("{amount}", summary.excess) : ""}</p>
-			<ul class="flex flex-col gap-xs text-fine text-ink-muted">
-				{texts.reminders.map((reminder) => <li>{reminder}</li>)}
-			</ul>
 		</div>
 	</CalculatorShell>
 

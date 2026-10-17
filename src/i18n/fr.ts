@@ -91,6 +91,8 @@ export const fr = {
 
 	/** Canton déclaré en couverture partielle par la couche de données. */
 	partialCoverage: {
+		/** Ligne de périmètre : cantons déclarés en couverture partielle, liés au détail (§ 4.1). */
+		scopeLine: (cantons: string[]): string => `${cantons.join(", ")} : couverture partielle.`,
 		/** Préfixe du message de couverture sous le champ commune (avertissement renforcé, § 2.6). */
 		fieldPrefix: "Attention :",
 		notCoveredCase: (canton: string): string =>
@@ -195,6 +197,15 @@ export const fr = {
 		faqTitle: "Questions fréquentes",
 		/** Bandeau du cas exemple (docs/design-system.md § 4.2) : « Exemple : <label> — remplacez par vos chiffres. » */
 		examplePrefix: "Exemple :",
+		/** Ligne de périmètre → détail replié (§ 4.1, P5). */
+		assumptionsLink: "Ce que ce calcul suppose",
+		assumptionsSummary: "Ce que ce calcul suppose",
+		/** Introduction du calculateur, dans « Ce que ce calcul suppose ». */
+		introHeading: "Le calcul en bref",
+		/** Points de vigilance sous la carte (§ 4.1, bloc 5). */
+		vigilanceHeading: "Points de vigilance",
+		/** Préfixe d'un avertissement renforcé (§ 2.6). */
+		warningPrefix: "Attention :",
 		exampleReplace: "— remplacez par vos chiffres.",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
 		seeBreakdown: "Voir le détail",

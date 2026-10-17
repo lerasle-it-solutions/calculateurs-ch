@@ -110,6 +110,19 @@ export type ProfileGroup = {
 	shownWhen?: { field: string; value: string };
 };
 
+/**
+ * Point de vigilance (§ 4.1, bloc 5), sous la carte résultat. `warning` :
+ * avertissement renforcé, réservé à ce qui peut faire perdre la déduction ou
+ * de l'argent ; `info` : avis informatif pour le reste (arbitrage du 17.10.2026).
+ */
+export type VigilancePoint = {
+	level: "warning" | "info";
+	/** Titre en gras, une phrase courte. FRANÇAIS. */
+	title?: string;
+	text: string;
+	items?: string[];
+};
+
 export type CalculatorDefinition = {
 	/** « family.name » — ex. « pension.pillar-3a-buyback ». */
 	id: string;
@@ -131,6 +144,8 @@ export type CalculatorDefinition = {
 	example: CalculatorExample;
 	/** Groupes de questions oui/non pré-remplis par profil (§ 4.3). */
 	profiles?: ProfileGroup[];
+	/** Points de vigilance, toujours affichés sous la carte résultat (§ 4.1). */
+	vigilance?: VigilancePoint[];
 
 	scope: {
 		/** FRANÇAIS → bandeau, bloc « Pour qui ». */
@@ -148,6 +163,11 @@ export type CalculatorDefinition = {
 		assumptions: string[];
 		/** Codes officiels : VD, GE, VS, FR, NE, JU. */
 		cantonsCovered: string[];
+		/**
+		 * Noms des cantons en couverture partielle (src/calculators/tax-coverage.ts),
+		 * annoncés dans la ligne de périmètre, avant le formulaire (P5).
+		 */
+		partialCantons?: string[];
 		referenceYear: number;
 	};
 

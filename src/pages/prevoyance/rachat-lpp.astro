@@ -56,6 +56,7 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 		catalog={publishedCalculators("pension")}
 		formExtraAfter="federalTaxableIncome"
 		initial={initial}
+		vigilanceId="lpp-buyback-warnings"
 	>
 		{estimator && <GrossEstimator slot="form-extra" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex flex-col gap-xl">
@@ -107,23 +108,6 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 				</ResultTable>
 			</div>
 
-			<aside class="flex max-w-reading flex-col gap-md rounded-panel bg-tint p-lg text-label" aria-labelledby="lpp-buyback-warnings">
-				<h3 id="lpp-buyback-warnings" class="text-subheading">{texts.warningsHeading}</h3>
-				{
-					texts.warnings.map((warning) => (
-						<div class="flex flex-col gap-xs">
-							<p>
-								<strong class="font-bold">{warning.title}</strong> {warning.text}
-							</p>
-							{warning.items.length > 0 && (
-								<ul class="flex list-disc flex-col gap-xs pl-lg">
-									{warning.items.map((item) => <li>{item}</li>)}
-								</ul>
-							)}
-						</div>
-					))
-				}
-			</aside>
 		</div>
 	</CalculatorShell>
 

@@ -185,6 +185,17 @@ const fields: FieldDefinition[] = [
 	...contributorFields("spouse"),
 ];
 
+/**
+ * Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait,
+ * A4 sans lien) : points de vigilance de la page, en avertissement renforcé,
+ * chacun pouvant coûter la déduction ou de l'argent (arbitrage du 17.10.2026).
+ */
+const reminders = [
+	"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
+	`Pour être déductible en ${year}, le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1).`,
+	"L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3).",
+];
+
 export const pillar3aTaxSaving: CalculatorDefinition = {
 	id: PILLAR_3A_TAX_SAVING_ID,
 	family: "pension",
@@ -192,10 +203,10 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	title: "Économie d'impôt d'un versement 3a",
 	metaDescription:
 		"Calculez l'impôt économisé grâce à votre versement au pilier 3a dans votre commune romande, selon votre affiliation à un 2e pilier.",
-	promise: "L'impôt que votre versement au pilier 3a vous fait économiser, au canton, à la commune et à la Confédération.",
-	scopeLine: `Pour les personnes qui réalisent un revenu soumis à l'AVS et sont imposées au régime ordinaire dans un canton romand, pour un versement effectué en ${year}.`,
+	promise: "L'impôt économisé par votre versement au pilier 3a.",
+	scopeLine: `Personnes avec un revenu soumis à l'AVS, imposées au régime ordinaire en Suisse romande, versement en ${year}.`,
 	example: {
-		label: `personne seule sans enfant à Lausanne, affiliée à une caisse de pension, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF au cantonal et ${chf(EXAMPLE.federalTaxableIncome)} CHF au fédéral, versement du maximum (${chf(smallCap)} CHF)`,
+		label: `personne seule à Lausanne, avec caisse de pension, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, versement maximal`,
 		values: {
 			canton: "VD",
 			municipality: "Lausanne (VD)",
@@ -253,6 +264,7 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			"Pour un couple marié ou lié par un partenariat enregistré, chacun a sa propre déduction, selon sa propre affiliation (art. 7 al. 2 OPP 3) et ses propres conditions : revenu soumis à l'AVS (circulaire AFC n° 18a, ch. 3), âge de référence (art. 7 al. 3 OPP 3). Celui qui ne les remplit pas n'a pas de déduction ; l'autre garde la sienne. L'économie porte sur leur somme.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
+		partialCantons: coverage.partialCantons,
 		referenceYear: pillar3aTaxSavingYear,
 	},
 
@@ -292,6 +304,8 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 		},
 	],
 
+	vigilance: reminders.map((text) => ({ level: "warning", text })),
+
 	monetization: { type: "none" },
 };
 
@@ -311,12 +325,8 @@ export const pillar3aTaxSavingTexts = {
 	/** Avertissement de la règle 7, « {amount} » remplacé par l'excédent. */
 	excessWarning:
 		"Attention : {amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
-	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien). */
-	reminders: [
-		"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
-		`Pour être déductible en ${year}, le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1).`,
-		"L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3).",
-	],
+	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien), points de vigilance de la page. */
+	reminders,
 	outOfScope: pillar3aBuybackTexts.outOfScope,
 	outOfScopeMunicipality: pillar3aBuybackTexts.outOfScopeMunicipality,
 	missingData: pillar3aBuybackTexts.missingData,

@@ -3,13 +3,17 @@
  * CalculatorShell — assemble une page de calculateur à partir de sa
  * CalculatorDefinition (voir CLAUDE.md § 2).
  *
- * Rend, dans cet ordre : titre, intro, bandeau ScopeNotice, formulaire généré
- * depuis les champs, ResultCard, CalculationBreakdown, DataFreshness,
- * RelatedVariants, FAQ.
+ * Rend, dans l'ordre du § 4.1 de docs/design-system.md : titre, promesse et
+ * ligne de périmètre (héros compact) ; bandeau du cas exemple, formulaire
+ * généré depuis les champs et carte résultat ; points de vigilance ; trace
+ * (CalculationBreakdown) ; « Ce que ce calcul suppose » (ScopeNotice, fermé) ;
+ * variantes ; FAQ ; sources (DataFreshness). Rien n'est supprimé de l'ancienne
+ * page : l'introduction et le guide passent dans « Ce que ce calcul suppose ».
  *
  * Le Shell ne fait AUCUN calcul : il pose le squelette et le contrat DOM.
- * Le calcul est écrit en JavaScript natif dans le `<script>` de la page, qui
- * lit le formulaire à chaque frappe et émet un évènement `calc:update` :
+ * Le résultat du cas exemple est rendu au build (`initial`) ; le script de la
+ * page, chargé à la première interaction, lit le formulaire à chaque saisie et
+ * émet un évènement `calc:update` :
  *
  *   document.dispatchEvent(new CustomEvent("calc:update", {
  *     detail: { value: "<chaîne formatée>", breakdown: [ { label, detail?, amount, note? } ],
@@ -25,8 +29,8 @@
  * Mise en page (docs/design-system.md § 2.5) : dès `lg`, deux colonnes, saisie
  * à gauche et carte résultat collante à droite ; en dessous, une barre fixée
  * en bas de l'écran répète le libellé et le montant, avec un lien vers le
- * détail. Elle porte `data-result-card` : le script de ResultCard la met à jour,
- * sans une ligne de JavaScript de plus. Jamais d'appel commercial dans la barre.
+ * détail. Elle porte `data-result-card` : les vues du résultat la mettent à
+ * jour comme la carte (src/lib/display/result-views.ts). Jamais d'appel commercial dans la barre.
  */
 import ScopeNotice from "../ui/ScopeNotice.astro";
 import ResultCard from "../ui/ResultCard.astro";
@@ -40,6 +44,7 @@ import CantonField from "./fields/CantonField.astro";
 import MunicipalityField from "../ui/MunicipalityField.astro";
 import TextField from "../ui/TextField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
+import VigilancePoints from "./VigilancePoints.astro";
 import Section from "../layout/Section.astro";
 import { fr } from "../../i18n/fr";
 import type { CalculatorDefinition, FieldDefinition } from "../../calculators/types";
@@ -48,15 +53,18 @@ import { exampleFormValues } from "../../calculators/field-values";
 
 interface Props {
 	definition: CalculatorDefinition;
-	/** Introduction, un ou plusieurs paragraphes. FRANÇAIS. */
+	/**
+	 * Introduction, un ou plusieurs paragraphes. FRANÇAIS. Rendue dans « Ce que
+	 * ce calcul suppose » ; un paragraphe identique à la promesse n'est pas répété.
+	 */
 	intro: string | string[];
 	/** Libellé de la ResultCard. FRANÇAIS. */
 	resultLabel: string;
 	/** Réserve affichée sous le résultat (estimation indicative…). FRANÇAIS. */
 	resultNote?: string;
-	/** Annonce rendue au build au-dessus du formulaire (année de calcul antérieure…). FRANÇAIS. */
+	/** Annonce rendue au build dans la ligne de périmètre, au-dessus du formulaire (année de calcul antérieure). FRANÇAIS. */
 	notice?: string;
-	/** Lien vers le guide qui explique le calculateur, sous l'introduction. HTML statique. */
+	/** Lien vers le guide qui explique le calculateur, sous l'introduction (« Ce que ce calcul suppose »). */
 	guide?: { label: string; url: string };
 	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
 	verifiedOn: string;
@@ -77,6 +85,8 @@ interface Props {
 	 * chargement, sans JavaScript.
 	 */
 	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note">;
+	/** Identifiant du bloc des points de vigilance (titre). */
+	vigilanceId?: string;
 }
 
 const {
@@ -90,6 +100,7 @@ const {
 	catalog = [],
 	formExtraAfter,
 	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
+	vigilanceId: vigilanceIdProp,
 } = Astro.props;
 
 /** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
@@ -124,30 +135,31 @@ const variants = definition.variants
 	.filter((entry): entry is CalculatorDefinition => Boolean(entry))
 	.map((entry) => ({ slug: entry.slug, title: entry.title }));
 
+const introParagraphs = (Array.isArray(intro) ? intro : [intro]).filter((paragraph) => paragraph !== "" && paragraph !== definition.promise);
+const assumptionsId = "ce-que-ce-calcul-suppose";
+/** Identifiant des points de vigilance : celui que la page donne, sinon un identifiant dérivé du formulaire. */
+const vigilanceId = vigilanceIdProp ?? `${formId}-vigilance`;
+
 const resultFor = definition.fields
 	.map((field) => fieldId(field.name))
 	.join(" ");
 ---
 
 <article class="pb-5xl lg:pb-0">
-	<Section class="flex flex-col gap-2xl">
-	<header class="flex max-w-reading flex-col gap-sm">
+	<Section compact class="flex flex-col gap-2xl">
+	<div class="flex min-w-0 flex-col gap-lg">
+	<header class="flex max-w-reading flex-col gap-xs">
 		<h1 class="text-title">{definition.title}</h1>
-		{(Array.isArray(intro) ? intro : [intro]).map((paragraph) => <p class="text-lead text-ink-muted">{paragraph}</p>)}
-		{guide && (
-			<p class="text-label font-bold">
-				<a href={guide.url}>{guide.label}</a>
-			</p>
-		)}
+		<p class="text-lead text-ink-muted">{definition.promise}</p>
+		<p class="text-fine text-ink-muted">
+			{definition.scopeLine}
+			{notice && <> {notice}</>}
+			{definition.scope.partialCantons && definition.scope.partialCantons.length > 0 && (
+				<> {fr.partialCoverage.scopeLine(definition.scope.partialCantons)}</>
+			)}
+			{" "}<a href={`#${assumptionsId}`} class="font-bold">{fr.calculator.assumptionsLink}</a>
+		</p>
 	</header>
-
-	<ScopeNotice
-		forWhom={definition.scope.forWhom}
-		notCovered={notCovered}
-		assumptions={definition.scope.assumptions}
-	/>
-
-	{notice && <p class="max-w-reading rounded-panel bg-tint p-lg text-label font-bold">{notice}</p>}
 
 	<div data-calculator-root class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
 		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
@@ -243,41 +255,70 @@ const resultFor = definition.fields
 			</div>
 		</div>
 
+		{definition.vigilance && definition.vigilance.length > 0 && (
+			<div class="min-w-0 lg:col-span-2">
+				<VigilancePoints id={vigilanceId} points={definition.vigilance} />
+			</div>
+		)}
+
 		<div id="detail-du-calcul" class="min-w-0 scroll-mt-5xl lg:col-span-2">
 			<CalculationBreakdown open={true} rows={initial.breakdown} />
 		</div>
 	</div>
 
-	<DataFreshness
-		referenceYear={definition.scope.referenceYear}
-		verifiedOn={verifiedOn}
-		sourceIds={definition.sourceIds}
-	/>
+	</div>
+
+	<details id={assumptionsId} class="scroll-mt-5xl rounded-panel border border-hairline bg-paper">
+		<summary class="flex min-h-3xl cursor-pointer items-center rounded-panel px-xl py-md text-label font-bold hover:bg-tint">
+			{fr.calculator.assumptionsSummary}
+		</summary>
+		<div class="flex flex-col gap-xl border-t border-hairline p-lg md:p-xl">
+			<ScopeNotice
+				forWhom={definition.scope.forWhom}
+				notCovered={notCovered}
+				assumptions={definition.scope.assumptions}
+				headingLevel={3}
+			/>
+			{(introParagraphs.length > 0 || guide) && (
+				<section class="flex max-w-reading flex-col gap-sm">
+					<h3 class="text-label font-bold">{fr.calculator.introHeading}</h3>
+					{introParagraphs.map((paragraph) => <p class="text-body">{paragraph}</p>)}
+					{guide && (
+						<p class="text-label font-bold">
+							<a href={guide.url}>{guide.label}</a>
+						</p>
+					)}
+				</section>
+			)}
+		</div>
+	</details>
 	</Section>
 
-	{
-		(variants.length > 0 || definition.faq.length > 0) && (
-			<Section tone="tint" class="flex flex-col gap-3xl">
-				<RelatedVariants variants={variants} />
+	<Section tone="tint" class="flex flex-col gap-3xl">
+		{variants.length > 0 && <RelatedVariants variants={variants} />}
 
-				{definition.faq.length > 0 && (
-					<section class="flex max-w-reading flex-col gap-lg">
-						<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
-						<div class="border-b border-hairline">
-							{definition.faq.map((item) => (
-								<details class="border-t border-hairline">
-									<summary class="flex min-h-3xl cursor-pointer items-center py-md text-body font-bold">
-										{item.question}
-									</summary>
-									<p class="max-w-reading pb-lg text-body">{item.answer}</p>
-								</details>
-							))}
-						</div>
-					</section>
-				)}
-			</Section>
-		)
-	}
+		{definition.faq.length > 0 && (
+			<section class="flex max-w-reading flex-col gap-lg">
+				<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
+				<div class="border-b border-hairline">
+					{definition.faq.map((item) => (
+						<details class="border-t border-hairline">
+							<summary class="flex min-h-3xl cursor-pointer items-center py-md text-body font-bold">
+								{item.question}
+							</summary>
+							<p class="max-w-reading pb-lg text-body">{item.answer}</p>
+						</details>
+					))}
+				</div>
+			</section>
+		)}
+
+		<DataFreshness
+			referenceYear={definition.scope.referenceYear}
+			verifiedOn={verifiedOn}
+			sourceIds={definition.sourceIds}
+		/>
+	</Section>
 
 	<div
 		data-result-card
