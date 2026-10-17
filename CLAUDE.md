@@ -688,8 +688,11 @@ JavaScript : les éléments HTML natifs fournissent gratuitement l'accessibilit�
 et la compatibilité avec les lecteurs d'écran — précisément le problème que résolvent
 les bibliothèques de composants, et que nous n'avons pas.
 
-Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée, moins de 30 kb de JS
+Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée — le critère final —, HTML
+d'au plus 30 000 octets transférés (gzip) par page (décision n° 22), moins de 30 kb de JS
 par page (minifié, non compressé, préchargement compris), polices auto-hébergées, **aucune requête vers un domaine tiers**.
+Les données des calculateurs fiscaux ne sont pas dans le HTML : un fichier par année de calcul,
+identique pour tous les visiteurs et tous les cantons, au nom haché, chargé avec le cœur.
 
 Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget et
 ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans la page (décision du
@@ -706,7 +709,9 @@ n° 21, 17.10.2026) :
   recalcul (estimateur du salaire brut, graphiques, comparateur communal, copie du lien,
   impression, plus tard A4), chargée par le cœur quand elle sert — les graphiques après le premier
   résultat, le comparateur au clic : au plus 15 000 octets, sans compter ce que le démarrage et le
-  cœur ont déjà chargé.
+  cœur ont déjà chargé. Les tableaux « Et si » et les graphiques d'un calculateur vont dans son
+  module « visualisations », chargé quand leur section approche de l'écran ou après le premier
+  recalcul ; sans JavaScript, ce qui est rendu au build reste visible (décision n° 22).
 
 ---
 
@@ -938,6 +943,7 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 19  | **Page calculateur inversée** : calcul d'abord ; une ligne de périmètre au-dessus du formulaire, liée au détail « Ce que ce calcul suppose » ; exclusions dans la carte résultat au moment où la saisie les déclenche (P5) | Le chiffre en 10 secondes, la preuve en un clic ; rien n'est supprimé, tout est déplacé (16.10.2026) |
 | 20  | **Thème sombre écarté** | Les lecteurs impriment et citent ; la feuille d'impression et la cohérence des graphiques priment (16.10.2026) |
 | 21  | **Budget JavaScript en trois plafonds** : démarrage < 30 000 octets (objectif < 10 000), cœur à la demande ≤ 40 000, module distinct ≤ 15 000 | Le moteur seul pèse ~16 ko minifiés ; le calcul d'A3 sans nouvelle fonctionnalité dépassait déjà 30 000 octets à la demande. Le premier résultat étant rendu au build, la page ne charge au démarrage qu'un chargeur de moins de 1 ko (17.10.2026) |
+| 22  | **Module « visualisations » par calculateur et budget HTML en transféré** : tableaux « Et si » et graphiques hors du cœur, ≤ 15 000 octets, chargés à l'approche de leur section ou après le premier recalcul ; HTML ≤ 30 000 octets transférés (gzip) par page, au lieu de 100 000 bruts ; LCP < 1,5 s reste le critère final | Le cœur d'A3 était à 59 octets de son plafond et le HTML d'A2 à 1 ko du sien avant le prompt 5 ; un plafond brut pénalisait le balisage répétitif, que la compression absorbe (17.10.2026) |
 
 ---
 

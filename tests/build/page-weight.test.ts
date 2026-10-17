@@ -7,18 +7,20 @@ import { describe, expect, it } from "vitest";
 import { DIST, htmlFiles } from "./dist-pages";
 
 /**
- * Après la construction (`postbuild`) : poids des pages de calculateur et du
- * fichier de données qu'elles chargent à la première interaction (étape 0 de
- * l'accueil calculant, 17.10.2026).
+ * Après la construction (`postbuild`) : poids des pages et du fichier de données
+ * que chargent les pages qui calculent (étape 0 de l'accueil calculant, décision
+ * n° 22 du 17.10.2026).
  *
- * - HTML d'une page qui calcule : moins de 100 000 octets. Les barèmes de
- *   toutes les communes (~555 000 octets) n'y sont plus.
+ * - HTML de chaque page : au plus 30 000 octets transférés, mesurés en gzip
+ *   (niveau par défaut, comme un serveur ; Cloudflare sert du brotli, plus
+ *   petit). Le LCP sous 1,5 s en 4G simulée reste le critère final.
+ * - Aucune page n'embarque les barèmes des communes (~555 000 octets avant).
  * - Fichier de données : un seul par année, pour tous les cantons — le nom ne
  *   dit rien de la saisie —, sous 600 000 octets bruts et 25 000 octets en
  *   gzip (niveau 9). Mesure du 17.10.2026 : 500 791 octets bruts, 20 917 en
- *   gzip, 14 760 en brotli, ce que sert Cloudflare.
+ *   gzip, 14 760 en brotli.
  */
-export const PAGE_BUDGETS = { html: 99_999, dataRaw: 600_000, dataGzip: 25_000 } as const;
+export const PAGE_BUDGETS = { htmlGzip: 30_000, dataRaw: 600_000, dataGzip: 25_000 } as const;
 
 const DATA_DIR = join(DIST, "donnees/calcul");
 
@@ -42,11 +44,11 @@ describe("poids des pages de calculateur et du fichier de données", () => {
 		}
 	});
 
-	it("le HTML d'une page qui calcule reste sous 100 000 octets", () => {
-		const over = calculatingPages()
-			.map(({ page, html }) => ({ page, bytes: Buffer.byteLength(html) }))
-			.filter(({ bytes }) => bytes > PAGE_BUDGETS.html)
-			.map(({ page, bytes }) => `${page} : ${bytes} octets`);
+	it("le HTML de chaque page reste sous 30 000 octets transférés (gzip)", () => {
+		const over = htmlFiles(DIST)
+			.map((file) => ({ page: `/${relative(DIST, file)}`, bytes: gzipSync(readFileSync(file)).length }))
+			.filter(({ bytes }) => bytes > PAGE_BUDGETS.htmlGzip)
+			.map(({ page, bytes }) => `${page} : ${bytes} octets en gzip`);
 		expect(over, "HTML trop lourd").toEqual([]);
 	});
 
