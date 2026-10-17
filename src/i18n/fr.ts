@@ -96,7 +96,9 @@ export const fr = {
 		navLabel: "Navigation principale",
 		/** Nom accessible du lien du logo vers l'accueil. */
 		homeLabel: "calculateurs.ch — accueil",
-		/** Trois entrées (docs/design-system.md § 2.4) : pas de bouton Menu sous cinq. */
+		/** Sous `md`, bouton du menu replié (<details>), qui contient les entrées et la pastille. */
+		menu: "Menu",
+		/** Trois entrées (docs/design-system.md § 2.4, révisé le 17.10.2026). */
 		calculators: "Calculateurs",
 		guides: "Guides",
 		methodology: "Méthodologie",
@@ -335,11 +337,14 @@ export const fr = {
 		/** « {share} » : « 26 % ». Suit le montant. */
 		share: "soit {share} de votre versement",
 		netCost: "votre versement de {paid} ne vous coûte que {netCost} cette année",
+		/** Somme saisie au-delà du montant retenu (plafond 3a) : la phrase nomme sa base. */
+		shareCapped: "soit {share} du montant déductible ({paid})",
+		netCostCapped: "la part déductible de votre versement ne vous coûte que {netCost} cette année",
 		/** Barre de résultat mobile. */
 		barNetCost: "coût net {netCost}",
 		/** Lignes de la trace. */
-		shareLabel: "Part du versement économisée",
-		netCostLabel: "Coût net du versement cette année",
+		shareLabel: "Économie rapportée au montant déductible",
+		netCostLabel: "Coût net du montant déductible cette année",
 		componentsHeading: "Économie par impôt",
 		components: {
 			cantonalTax: "Impôt cantonal",

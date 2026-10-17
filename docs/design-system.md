@@ -381,7 +381,7 @@ Mise en page :
 
 ```
 <header class="sticky top-0 z-10 border-b border-hairline bg-paper">
-  <div class="mx-auto flex max-w-page items-center justify-between gap-xl px-lg md:px-2xl min-h-4xl">
+  <div class="relative mx-auto flex max-w-page items-center justify-between gap-md px-lg md:gap-xl md:px-2xl min-h-4xl">
 ```
 
 - Gauche : le logotype `logo.svg`, tel quel, rendu selon le § 1.5 (composant Astro dans un lien
@@ -389,26 +389,33 @@ Mise en page :
 - Entrées : **Calculateurs · Guides · Méthodologie**, en `text-label font-bold text-ink
   no-underline`, `hover:text-accent`, page courante `aria-current="page"` → `text-accent` +
   soulignement 2 px décalé (`underline decoration-2 underline-offset-8`).
-- Droite : pastille « Sources vérifiées le JJ.MM.AAAA » (§ 2.6), liée à `/donnees/`, date dans
+- Dès `md`, à droite : pastille « Sources vérifiées le JJ.MM.AAAA » (§ 2.6), liée à `/donnees/`, date dans
   un `<time datetime>`. La date est la **date de vérification du site** (ci-dessous). Pas
   d'année, et jamais « à jour » (interdit n° 3 des conditions d'usage de l'AFC).
-- **Pas de bouton Menu sous cinq entrées** : les entrées restent visibles à toutes les largeurs.
-  Pas de recherche ni de sélecteur de langue tant que le site est monolingue.
-- Hauteur 64 px. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au défilement (JS).
+- **Sous `md`, une seule rangée** : le logotype et un bouton « Menu » (`<details>`/`<summary>`
+  natif) qui contient les trois entrées et la pastille. **Dès `md`**, les trois entrées et la
+  pastille toujours visibles, sans bouton Menu (arbitrage du 17.10.2026 : il remplace la règle
+  « pas de bouton Menu sous cinq entrées », qui faisait passer l'en-tête sur deux ou trois rangées
+  à 375 px et repoussait le premier champ sous le critère du § 4.1). Pas de recherche ni de
+  sélecteur de langue tant que le site est monolingue.
+- Hauteur 64 px à toutes les largeurs. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au
+  défilement (JS).
 
-**Menu mobile (< `md`), à partir de cinq entrées seulement — sans JavaScript :**
+**Menu mobile (< `md`) — sans JavaScript :**
 
 ```html
 <details class="md:hidden">
   <summary class="flex min-h-3xl list-none items-center gap-sm rounded-button px-lg text-label font-bold">
     <svg aria-hidden="true" …>…</svg> Menu
   </summary>
-  <nav aria-label="Familles de calculateurs"
-       class="absolute inset-x-0 top-full border-b border-hairline bg-paper px-lg py-xl shadow-raised">
-    <ul class="flex flex-col gap-xs">
-      <li><a class="flex min-h-3xl items-center rounded-control px-md text-body font-bold text-ink no-underline hover:bg-tint">…</a></li>
-    </ul>
-  </nav>
+  <div class="absolute inset-x-0 top-full flex flex-col gap-md border-b border-hairline bg-paper px-lg py-xl shadow-raised">
+    <nav aria-label="Navigation principale">
+      <ul class="flex flex-col gap-xs">
+        <li><a class="flex min-h-3xl items-center rounded-control px-md text-body font-bold text-ink no-underline hover:bg-tint">…</a></li>
+      </ul>
+    </nav>
+    <a href="/donnees/" class="…pastille…">Sources vérifiées le <time datetime="…">JJ.MM.AAAA</time></a>
+  </div>
 </details>
 ```
 
@@ -659,8 +666,12 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
 Le résultat se lit dans cet ordre :
 
 1. **Le chiffre** (`text-display text-accent tabular-nums`), avec son libellé.
-2. **Sa traduction** : la part du montant versé qu'il représente ; le coût net de l'année,
-   **toujours suivi du rappel de l'imposition à la sortie** quand elle s'applique.
+2. **Sa traduction** : la part du montant retenu par le moteur qu'il représente ; le coût net de
+   l'année, **toujours suivi du rappel de l'imposition à la sortie** quand elle s'applique. La base
+   est **toujours le montant retenu par le moteur** (montant déductible), jamais la somme saisie
+   (arbitrage du 17.10.2026). Quand les deux diffèrent, la phrase nomme la base : « soit 26 % du
+   montant déductible (7’258 CHF) », « la part déductible de votre versement ne vous coûte que X
+   CHF cette année » ; égaux, elle reste simple (« soit 26 % de votre versement »).
 3. **La décomposition par impôt** : fédéral, cantonal, communal, paroissial, taxe personnelle le
    cas échéant.
 4. **« Et si »** : variantes de saisie recalculées par le moteur — une économie d'impôt toujours par
@@ -760,7 +771,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 
 **Résultat (§ 4.4)**
 
-- [ ] Le chiffre, puis sa traduction (part du montant versé, coût net de l'année).
+- [ ] Le chiffre, puis sa traduction (part du montant retenu par le moteur, coût net de l'année), base nommée quand elle diffère de la somme saisie.
 - [ ] Rappel de l'imposition à la sortie après le coût net, quand elle s'applique.
 - [ ] Décomposition par impôt.
 - [ ] « Et si » recalculés par le moteur, jamais par taux marginal.

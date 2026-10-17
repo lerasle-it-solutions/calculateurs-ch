@@ -159,9 +159,10 @@ const differs = (field: FieldDefinition) =>
 /** Pastille d'un bouton radio (§ 2.3) : cible de 48 px, état coché en `accent-tint`. */
 const pillBase =
 	"flex min-h-3xl cursor-pointer gap-sm border border-rule bg-paper px-lg text-label transition-colors duration-150 hover:border-ink " +
-	"has-checked:border-accent has-checked:bg-accent-tint has-checked:text-ink " +
-	"has-disabled:cursor-not-allowed has-disabled:border-hairline has-disabled:bg-tint has-disabled:text-ink-muted";
+	"has-checked:border-accent has-checked:bg-accent-tint has-checked:text-ink";
 const pill = `${pillBase} items-center rounded-button`;
+/** Pastille d'un chemin : seul « salaire brut » peut être désactivé (estimateur sans données), d'où l'état désactivé ici seulement. */
+const pathPill = `${pill} has-disabled:cursor-not-allowed has-disabled:border-hairline has-disabled:bg-tint has-disabled:text-ink-muted`;
 /** Profil dont le libellé est suivi de la liste de ce qu'il affirme : rayon de contrôle, contenu en haut. */
 const pillWithDetails = `${pillBase} items-start rounded-control py-md`;
 
@@ -244,11 +245,11 @@ const resultFor = definition.fields
 				<fieldset data-income-paths class="flex flex-col gap-sm">
 					<legend class="sr-only">{fr.incomePath.legend}</legend>
 					<div class="flex flex-wrap gap-sm">
-						<label class={pill}>
+						<label class={pathPill}>
 							<input type="radio" name="incomePath" value="gross" disabled={!grossPath!.available} class="size-icon" />
 							{fr.incomePath.gross}
 						</label>
-						<label class={pill}>
+						<label class={pathPill}>
 							<input type="radio" name="incomePath" value="taxable" checked class="size-icon" />
 							{fr.incomePath.taxable}
 						</label>

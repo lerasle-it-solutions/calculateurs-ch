@@ -19,29 +19,38 @@ const text = (html: string) => decodeEntities(html.replace(/<[^>]+>/g, " ")).rep
 const date = () => formatVerificationDate(siteVerifiedOn());
 
 describe("en-tête", () => {
-	it("trois entrées, liées à des pages existantes", () => {
+	it("trois entrées, liées à des pages existantes, dans chacune des deux navigations", () => {
 		const header = part(pages.find((page) => page.route === "/")!.html, "header");
-		const nav = header.match(/<nav\b[\s\S]*?<\/nav>/g) ?? [];
-		expect(nav).toHaveLength(1);
-		const links = [...nav[0]!.matchAll(/<a\b[^>]*\shref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)].map(([, href, label]) => [href, text(label!)]);
-		expect(links.map(([, label]) => label)).toEqual([fr.header.calculators, fr.header.guides, fr.header.methodology]);
+		const navs = header.match(/<nav\b[\s\S]*?<\/nav>/g) ?? [];
+		// Dès md, la navigation visible ; sous md, celle du menu replié
+		expect(navs).toHaveLength(2);
 		const routes = new Set(pages.map((page) => page.route));
-		for (const [href] of links) expect(routes.has(href!.replace(/#.*$/, "")), href).toBe(true);
+		for (const nav of navs) {
+			const links = [...nav.matchAll(/<a\b[^>]*\shref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)].map(([, href, label]) => [href, text(label!)]);
+			expect(links.map(([, label]) => label)).toEqual([fr.header.calculators, fr.header.guides, fr.header.methodology]);
+			for (const [href] of links) expect(routes.has(href!.replace(/#.*$/, "")), href).toBe(true);
+		}
 	});
 
 	it("pastille « Sources vérifiées le » datée, liée à /donnees/, sans formule de garantie", () => {
 		const header = part(pages[0]!.html, "header");
-		const pill = header.match(/<a\b[^>]*\shref="\/donnees\/"[^>]*>[\s\S]*?<\/a>/)?.[0];
-		expect(pill).toBeDefined();
-		expect(text(pill!)).toBe(`${fr.header.verified} ${date()}`);
-		expect(pill).toContain(`<time datetime="${siteVerifiedOn()}"`);
+		const pills = header.match(/<a\b[^>]*\shref="\/donnees\/"[^>]*>[\s\S]*?<\/a>/g) ?? [];
+		expect(pills).toHaveLength(2);
+		for (const pill of pills) {
+			expect(text(pill)).toBe(`${fr.header.verified} ${date()}`);
+			expect(pill).toContain(`<time datetime="${siteVerifiedOn()}"`);
+		}
 		expect(text(header)).not.toMatch(/à jour|garanti/i);
 	});
 
-	it("aucun bouton Menu sous cinq entrées", () => {
+	it("sous md, un bouton « Menu » natif qui contient les trois entrées et la pastille ; dès md, pas de Menu", () => {
 		const header = part(pages[0]!.html, "header");
-		expect(header).not.toContain("<details");
-		expect(text(header)).not.toContain("Menu");
+		const menu = header.match(/<details\b[^>]*>[\s\S]*?<\/details>/)?.[0];
+		expect(menu).toMatch(/^<details\b[^>]*class="[^"]*\bmd:hidden\b/);
+		expect(text(menu!.match(/<summary\b[\s\S]*?<\/summary>/)![0])).toBe(fr.header.menu);
+		expect(menu).toContain("<nav");
+		expect(menu).toContain('href="/donnees/"');
+		expect(header).not.toContain("<script");
 	});
 
 	it("page courante : Guides sur un guide, Calculateurs sur un calculateur", () => {
