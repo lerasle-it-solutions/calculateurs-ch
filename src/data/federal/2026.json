@@ -399,7 +399,10 @@
 		}
 	},
 	"pillar3aContributionDeadline": {
-		"todo": "Date à laquelle le versement 3a doit être crédité pour être déductible l'année de cotisation (circulaire AFC n° 18a, ch. 5.1) : à relever à la source, au format MM-JJ, avec verifiedOn et effectiveFrom.",
-		"sourceId": "afc-circular-18a"
+		"value": "12-31",
+		"sourceId": "afc-circular-18a",
+		"verifiedOn": "2026-10-17",
+		"effectiveFrom": "2026-01-01",
+		"note": "Circulaire AFC n° 18a du 22.12.2025, ch. 5.1 : date (MM-JJ) à laquelle le versement doit être crédité sur le compte ou la police 3a pour être déductible l'année de cotisation. C'est le crédit sur le compte ou la police 3a qui compte, pas le débit du compte bancaire."
 	}
 }

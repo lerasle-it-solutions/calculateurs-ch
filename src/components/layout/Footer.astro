@@ -34,8 +34,6 @@ const links = [
 	{ label: fr.site.contactEmail, url: `mailto:${fr.site.contactEmail}` },
 ];
 const verifiedOn = siteVerifiedOn();
-// Ligne d'identité : affichée dès que le mainteneur l'a remplie (fr.footer.publisher)
-const publisher = fr.footer.publisher.startsWith("[") ? null : fr.footer.publisher;
 ---
 
 <footer class="bg-ink text-paper">
@@ -45,7 +43,7 @@ const publisher = fr.footer.publisher.startsWith("[") ? null : fr.footer.publish
 				<LogoWhite class="h-xl w-auto max-w-full lg:h-2xl" aria-hidden="true" />
 			</a>
 			<p class="max-w-reading text-fine">{fr.site.baseline}</p>
-			{publisher && <p class="max-w-reading text-fine">{publisher}</p>}
+			<p class="max-w-reading text-fine">{fr.footer.publisher}</p>
 			<p class="text-fine">
 				{fr.footer.verified} <time datetime={verifiedOn}>{formatVerificationDate(verifiedOn)}</time>
 			</p>

@@ -122,11 +122,8 @@ export const fr = {
 		reportError: "Signaler une erreur",
 		reportSubject: "Erreur sur calculateurs.ch",
 		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
-		/**
-		 * Ligne d'identité de l'éditeur, À REMPLIR par le mainteneur. Tant qu'elle commence par « [ »,
-		 * le pied de page ne l'affiche pas : le contrôle des notes de rédaction refuserait la page.
-		 */
-		publisher: "[À REMPLIR, ex. Édité par Lerasle IT Solutions, Epalinges. Aucun prestataire ne finance ni n'influence les calculs.]",
+		/** Ligne d'identité de l'éditeur (texte du mainteneur, 17.10.2026). */
+		publisher: "Édité par Lerasle IT Solutions, Epalinges (VD). Les calculs ne dépendent d'aucune banque, assurance ni autre prestataire.",
 		methodology: "Méthodologie",
 		data: "Données et sources",
 		legal: "Mentions légales",
