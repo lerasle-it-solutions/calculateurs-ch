@@ -122,8 +122,12 @@ export type ProfileGroup = {
 	legend: string;
 	/** Questions oui/non que les profils remplissent, par nom de champ. */
 	fields: string[];
-	/** Profils, le premier par défaut ; `values` donne la réponse de chaque question. */
-	profiles: { value: string; label: string; values: Record<string, string> }[];
+	/**
+	 * Profils, le premier par défaut ; `values` donne la réponse de chaque
+	 * question. `details` : ce que le profil affirme, en liste sous le libellé
+	 * quand il ne tient pas dans celui-ci (§ 4.3). FRANÇAIS.
+	 */
+	profiles: { value: string; label: string; details?: string[]; values: Record<string, string> }[];
 	/** Libellé de la pastille qui déplie les questions détaillées. FRANÇAIS. */
 	otherLabel: string;
 	/** Groupe affiché seulement si ce champ a cette valeur (conjoint : état civil). */

@@ -630,14 +630,18 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   déplie le champ fédéral. Le moteur reçoit toujours deux revenus imposables (décision n° 10) ;
   tant que le visiteur ne les distingue pas, l'égalité est une hypothèse inscrite dans la trace (R4).
 - **Questions oui/non regroupées en profils** (pastilles) ; une pastille « Autre situation » déplie
-  le détail des questions.
+  le détail des questions. **Un profil se justifie dès que trois questions oui/non ou plus ont une
+  réponse courante ; son libellé énumère ce qu'il affirme** (arbitrage du 17.10.2026), par une liste
+  en clair sous le libellé quand elle ne tient pas dans celui-ci.
 - **Montants formatés à la suisse pendant la frappe** (`70'000`), `inputmode="decimal"`, saisie
   tolérante, suffixe `CHF` dans le segment d'unité (§ 2.3).
 - **Bouton « Verser le maximum (<plafond>) »** à côté du champ du montant dès qu'un plafond existe ;
   le plafond est lu dans `src/data/`, jamais écrit dans le libellé (R2). Variante fantôme.
   Sur le rachat 3a rétroactif, il devient **« Racheter le maximum possible (X CHF) »** : X est le
   montant que le moteur retient selon sa règle de répartition (années entières, plafond de l'année),
-  jamais un plafond recopié (arbitrage du 17.10.2026).
+  jamais un plafond recopié (arbitrage du 17.10.2026). Précision du même jour : **le bouton du
+  maximum n'existe que si le calculateur a un champ de montant.** Quand le moteur calcule lui-même
+  le montant optimal (A1), ce montant est le résultat ; aucun bouton.
 - **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
 - **Conditions d'éligibilité en liste de contrôle** : une ligne par condition, état dit en mots
   (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule.
@@ -732,9 +736,9 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Deux chemins en tête, « Je pars de mon salaire brut » en premier ; chemin brut et lien du bandeau désactivés, avec une phrase, si l'estimateur n'a pas de données pour l'année.
 - [ ] Un seul champ commune, canton déduit, homonymes suivis de leur canton.
 - [ ] Revenu fédéral pré-rempli depuis le cantonal, lien « différent ? », hypothèse dans la trace.
-- [ ] Questions oui/non regroupées en profils, « Autre situation » déplie le détail.
+- [ ] Questions oui/non regroupées en profils dès que trois questions ou plus ont une réponse courante ; chaque profil énumère ce qu'il affirme ; « Autre situation » déplie le détail.
 - [ ] Montants formatés à la suisse pendant la frappe, `inputmode="decimal"`, suffixe CHF.
-- [ ] Bouton « Verser le maximum (<plafond>) » si un plafond existe, plafond lu dans les données ; « Racheter le maximum possible (X CHF) » sur le rachat 3a rétroactif, X calculé par le moteur.
+- [ ] Bouton « Verser le maximum (<plafond>) » si le calculateur a un champ de montant et qu'un plafond existe, plafond lu dans les données ou retenu par le moteur ; sans objet quand le moteur calcule lui-même le montant optimal (A1), qui est alors le résultat.
 - [ ] Un champ par enfant.
 - [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots.
 - [ ] Exclusions affichées dans la carte au moment où la saisie les déclenche, avec alternative.

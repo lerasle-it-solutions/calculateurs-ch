@@ -144,10 +144,13 @@ const differs = (field: FieldDefinition) =>
 	field.kind === "number" && field.sameAs !== undefined && (filled[field.name] ?? "") !== "" && filled[field.name] !== filled[field.sameAs];
 
 /** Pastille d'un bouton radio (§ 2.3) : cible de 48 px, état coché en `accent-tint`. */
-const pill =
-	"flex min-h-3xl cursor-pointer items-center gap-sm rounded-button border border-rule bg-paper px-lg text-label transition-colors duration-150 hover:border-ink " +
+const pillBase =
+	"flex min-h-3xl cursor-pointer gap-sm border border-rule bg-paper px-lg text-label transition-colors duration-150 hover:border-ink " +
 	"has-[:checked]:border-accent has-[:checked]:bg-accent-tint has-[:checked]:text-ink " +
 	"has-[:disabled]:cursor-not-allowed has-[:disabled]:border-hairline has-[:disabled]:bg-tint has-[:disabled]:text-ink-muted";
+const pill = `${pillBase} items-center rounded-button`;
+/** Profil dont le libellé est suivi de la liste de ce qu'il affirme : rayon de contrôle, contenu en haut. */
+const pillWithDetails = `${pillBase} items-start rounded-control py-md`;
 
 const byId = new Map(catalog.map((entry) => [entry.id, entry]));
 
@@ -251,16 +254,25 @@ const resultFor = definition.fields
 							<legend class="mb-xs text-label font-bold">{segment.group.legend}</legend>
 							<div class="flex flex-wrap gap-sm">
 								{segment.group.profiles.map((profile) => (
-									<label class={pill}>
+									<label class={profile.details ? pillWithDetails : pill}>
 										<input
 											type="radio"
 											name={segment.group.name}
 											value={profile.value}
 											checked={filled[segment.group.name] === profile.value}
 											data-profile-values={JSON.stringify(profile.values)}
-											class="size-icon"
+											class="size-icon shrink-0"
 										/>
-										{profile.label}
+										{profile.details ? (
+											<span class="flex flex-col gap-xs">
+												<span class="font-bold">{profile.label}</span>
+												<ul class="flex list-disc flex-col pl-lg text-fine text-ink-muted">
+													{profile.details.map((detail) => <li>{detail}</li>)}
+												</ul>
+											</span>
+										) : (
+											profile.label
+										)}
 									</label>
 								))}
 								<label class={pill}>

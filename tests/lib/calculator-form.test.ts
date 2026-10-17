@@ -4,7 +4,7 @@ import { exampleFormValues } from "../../src/calculators/field-values";
 import { municipalityLabels } from "../../src/calculators/municipalities";
 import { lppBuyback } from "../../src/calculators/pension/lpp-buyback";
 import { lppBuybackPageData } from "../../src/calculators/pension/lpp-buyback-page-data";
-import { pillar3aBuyback, pillar3aBuybackYear } from "../../src/calculators/pension/pillar-3a-buyback";
+import { pillar3aBuyback, pillar3aBuybackYear, pillar3aGapYears } from "../../src/calculators/pension/pillar-3a-buyback";
 import { pillar3aBuybackPageData } from "../../src/calculators/pension/pillar-3a-buyback-page-data";
 import { pillar3aTaxSaving } from "../../src/calculators/pension/pillar-3a-tax-saving";
 import { pillar3aTaxSavingPageData } from "../../src/calculators/pension/pillar-3a-tax-saving-page-data";
@@ -133,5 +133,30 @@ describe("A2 : profils et versement maximal", () => {
 		const values = exampleFormValues(pillar3aTaxSaving);
 		const outcome = readPillar3aTaxSavingForm(values, pillar3aTaxSavingPageData);
 		expect(outcome.maxima).toEqual({ contribution: pillar3aTaxSavingPageData.smallContributionCap.value });
+	});
+});
+
+describe("A1 : profil « Je remplis les conditions »", () => {
+	const group = pillar3aBuyback.profiles?.[0];
+
+	it("deux profils : « Je remplis les conditions », par défaut, puis « Autre situation »", () => {
+		expect(pillar3aBuyback.profiles).toHaveLength(1);
+		expect(group!.profiles.map((profile) => profile.label)).toEqual(["Je remplis les conditions"]);
+		expect(group!.otherLabel).toBe("Autre situation");
+	});
+
+	it("le libellé énumère ce que le profil affirme, années tirées de l'année de calcul", () => {
+		const details = group!.profiles[0]!.details!.join(" ; ");
+		for (const year of [...pillar3aGapYears, pillar3aBuybackYear]) expect(details).toContain(String(year));
+		expect(details).toMatch(/cotisation \d{4} versée en entier/);
+		expect(details).toMatch(/aucune prestation de vieillesse du 3a perçue/);
+	});
+
+	it("le profil répond à chaque question oui/non qu'il regroupe, et rend le résultat du guide", () => {
+		const values = exampleFormValues(pillar3aBuyback);
+		expect(values.profile).toBe(group!.profiles[0]!.value);
+		for (const name of group!.fields) expect(values[name], name).toBe(group!.profiles[0]!.values[name]);
+		expect(Object.keys(group!.profiles[0]!.values).sort()).toEqual([...group!.fields].sort());
+		expect(readPillar3aBuybackForm(values, pillar3aBuybackPageData).status).toBeNull();
 	});
 });

@@ -276,6 +276,39 @@ export const pillar3aBuyback: CalculatorDefinition = {
 		},
 	],
 
+	// Un profil dès trois questions oui/non à réponse courante ; il énumère ce qu'il affirme (§ 4.3)
+	profiles: [
+		{
+			name: "profile",
+			legend: "Vos conditions",
+			fields: [
+				...pillar3aGapYears.flatMap((year) => [`avsIncome${year}`, `alreadyBoughtBack${year}`]),
+				"currentYearContributionPaidInFull",
+				"avsIncomeInBuybackYear",
+				"oldAgeBenefit",
+			],
+			profiles: [
+				{
+					value: "conditionsMet",
+					label: "Je remplis les conditions",
+					details: [
+						`revenu soumis à l'AVS en ${[...pillar3aGapYears, pillar3aBuybackYear].join(", ").replace(/, (\d+)$/, " et en $1")}`,
+						`cotisation ${pillar3aBuybackYear} versée en entier`,
+						`aucun rachat déjà fait pour ${pillar3aGapYears.join(", ").replace(/, (\d+)$/, " ni pour $1")}`,
+						"aucune prestation de vieillesse du 3a perçue",
+					],
+					values: {
+						...Object.fromEntries(pillar3aGapYears.flatMap((year) => [[`avsIncome${year}`, "yes"], [`alreadyBoughtBack${year}`, "no"]])),
+						currentYearContributionPaidInFull: "yes",
+						avsIncomeInBuybackYear: "yes",
+						oldAgeBenefit: "no",
+					},
+				},
+			],
+			otherLabel: "Autre situation",
+		},
+	],
+
 	eligibility: [
 		{ field: "currentYearContributionPaidInFull", value: "yes", label: `Cotisation 3a ${pillar3aBuybackYear} versée intégralement` },
 		{ field: "avsIncomeInBuybackYear", value: "yes", label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}` },
