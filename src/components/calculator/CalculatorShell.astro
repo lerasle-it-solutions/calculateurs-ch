@@ -3,13 +3,17 @@
  * CalculatorShell — assemble une page de calculateur à partir de sa
  * CalculatorDefinition (voir CLAUDE.md § 2).
  *
- * Rend, dans cet ordre : titre, intro, bandeau ScopeNotice, formulaire généré
- * depuis les champs, ResultCard, CalculationBreakdown, DataFreshness,
- * RelatedVariants, FAQ.
+ * Rend, dans l'ordre du § 4.1 de docs/design-system.md : titre, promesse et
+ * ligne de périmètre (héros compact) ; bandeau du cas exemple, formulaire
+ * généré depuis les champs et carte résultat ; points de vigilance ; trace
+ * (CalculationBreakdown) ; « Ce que ce calcul suppose » (ScopeNotice, fermé) ;
+ * variantes ; FAQ ; sources (DataFreshness). Rien n'est supprimé de l'ancienne
+ * page : l'introduction et le guide passent dans « Ce que ce calcul suppose ».
  *
  * Le Shell ne fait AUCUN calcul : il pose le squelette et le contrat DOM.
- * Le calcul est écrit en JavaScript natif dans le `<script>` de la page, qui
- * lit le formulaire à chaque frappe et émet un évènement `calc:update` :
+ * Le résultat du cas exemple est rendu au build (`initial`) ; le script de la
+ * page, chargé à la première interaction, lit le formulaire à chaque saisie et
+ * émet un évènement `calc:update` :
  *
  *   document.dispatchEvent(new CustomEvent("calc:update", {
  *     detail: { value: "<chaîne formatée>", breakdown: [ { label, detail?, amount, note? } ],
@@ -25,36 +29,39 @@
  * Mise en page (docs/design-system.md § 2.5) : dès `lg`, deux colonnes, saisie
  * à gauche et carte résultat collante à droite ; en dessous, une barre fixée
  * en bas de l'écran répète le libellé et le montant, avec un lien vers le
- * détail. Elle porte `data-result-card` : le script de ResultCard la met à jour,
- * sans une ligne de JavaScript de plus. Jamais d'appel commercial dans la barre.
+ * détail. Elle porte `data-result-card` : les vues du résultat la mettent à
+ * jour comme la carte (src/lib/display/result-views.ts). Jamais d'appel commercial dans la barre.
  */
 import ScopeNotice from "../ui/ScopeNotice.astro";
 import ResultCard from "../ui/ResultCard.astro";
+import TaxComponents from "../ui/TaxComponents.astro";
 import CalculationBreakdown from "../ui/CalculationBreakdown.astro";
 import DataFreshness from "../ui/DataFreshness.astro";
-// Champs : les primitifs génériques viennent du design system (un seul de chaque
-// pour tout le projet) ; seul le champ métier « canton » vit dans cette couche.
-import NumberField from "../ui/NumberField.astro";
-import SelectField from "../ui/SelectField.astro";
-import CantonField from "./fields/CantonField.astro";
-import MunicipalityField from "../ui/MunicipalityField.astro";
-import TextField from "../ui/TextField.astro";
 import RelatedVariants from "./RelatedVariants.astro";
+import VigilancePoints from "./VigilancePoints.astro";
 import Section from "../layout/Section.astro";
 import { fr } from "../../i18n/fr";
-import type { CalculatorDefinition } from "../../calculators/types";
+import type { CalculatorDefinition, FieldDefinition, ProfileGroup } from "../../calculators/types";
+import FormField from "./FormField.astro";
+import { eligibilityState } from "../../lib/display/eligibility";
+import type { FormOutcome } from "../../lib/display/calculator-form";
+import { exampleFormValues } from "../../calculators/field-values";
+import { fillSummary } from "../../lib/display/result-summary";
 
 interface Props {
 	definition: CalculatorDefinition;
-	/** Introduction, un ou plusieurs paragraphes. FRANÇAIS. */
+	/**
+	 * Introduction, un ou plusieurs paragraphes. FRANÇAIS. Rendue dans « Ce que
+	 * ce calcul suppose » ; un paragraphe identique à la promesse n'est pas répété.
+	 */
 	intro: string | string[];
 	/** Libellé de la ResultCard. FRANÇAIS. */
 	resultLabel: string;
 	/** Réserve affichée sous le résultat (estimation indicative…). FRANÇAIS. */
 	resultNote?: string;
-	/** Annonce rendue au build au-dessus du formulaire (année de calcul antérieure…). FRANÇAIS. */
+	/** Annonce rendue au build dans la ligne de périmètre, au-dessus du formulaire (année de calcul antérieure). FRANÇAIS. */
 	notice?: string;
-	/** Lien vers le guide qui explique le calculateur, sous l'introduction. HTML statique. */
+	/** Lien vers le guide qui explique le calculateur, sous l'introduction (« Ce que ce calcul suppose »). */
 	guide?: { label: string; url: string };
 	/** Date de vérification des barèmes utilisés (couche de données, R2). ISO 8601. */
 	verifiedOn: string;
@@ -65,10 +72,27 @@ interface Props {
 	 */
 	catalog?: CalculatorDefinition[];
 	/**
-	 * Nom du champ après lequel rendre le contenu de l'emplacement `form-extra`
-	 * (p. ex. le mode « salaire brut » de l'estimateur), dans le formulaire.
+	 * Chemin « Je pars de mon salaire brut » (§ 4.3) : son contenu est
+	 * l'emplacement `gross-path` (GrossEstimator), rendu après les champs du
+	 * revenu imposable. `available: false` : l'estimateur n'a pas de données pour
+	 * l'année de calcul, le chemin et le lien du bandeau sont désactivés, avec une
+	 * phrase (arbitrage du 17.10.2026).
 	 */
-	formExtraAfter?: string;
+	grossPath?: { available: boolean; year: number };
+	/**
+	 * Résultat du cas exemple, calculé au build en exécutant le moteur sur
+	 * `definition.example` (docs/design-system.md § 4.2) : affiché au
+	 * chargement, sans JavaScript.
+	 */
+	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note" | "maxima" | "summary">;
+	/** Identifiant du bloc des points de vigilance (titre). */
+	vigilanceId?: string;
+	/**
+	 * Adresse du fichier de données de l'année (src/lib/display/tax-data.ts),
+	 * chargé avec le cœur à la première interaction ; la liste des communes en
+	 * est remplie à ce moment-là.
+	 */
+	taxDataUrl?: string;
 }
 
 const {
@@ -80,10 +104,67 @@ const {
 	guide,
 	verifiedOn,
 	catalog = [],
-	formExtraAfter,
+	grossPath,
+	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
+	vigilanceId: vigilanceIdProp,
+	taxDataUrl,
 } = Astro.props;
+const deferred = taxDataUrl !== undefined;
 
-const formExtra = Astro.slots.has("form-extra") ? await Astro.slots.render("form-extra") : "";
+/** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
+const filled = exampleFormValues(definition);
+
+// Profils (§ 4.3) : les questions d'un groupe ne s'affichent que pour « Autre situation »
+const profileGroups = definition.profiles ?? [];
+const groupOf = (field: FieldDefinition) => profileGroups.find((group) => group.fields.includes(field.name));
+
+/** Conditions d'affichage d'un champ : les siennes, et « Autre situation » pour une question de profil. */
+const conditionsOf = (field: FieldDefinition): [string, string][] => {
+	const group = groupOf(field);
+	return [
+		...(field.shownWhen ?? []).map((condition): [string, string] => [condition.field, condition.value]),
+		...(group ? [[group.name, "other"] as [string, string]] : []),
+	];
+};
+const shown = (conditions: [string, string][]) => conditions.every(([name, value]) => filled[name] === value);
+const conditionsAttribute = (conditions: [string, string][]) => (conditions.length > 0 ? JSON.stringify(conditions) : undefined);
+
+/**
+ * Formulaire en segments : un champ ; les champs du revenu imposable, regroupés
+ * dans le bloc de leur chemin ; ou un groupe de profils, rendu avant sa première
+ * question.
+ */
+type Segment =
+	| { kind: "field"; field: FieldDefinition }
+	| { kind: "income"; fields: FieldDefinition[] }
+	| { kind: "profiles"; group: ProfileGroup };
+const segments: Segment[] = [];
+for (const field of definition.fields) {
+	const group = groupOf(field);
+	if (group && group.fields[0] === field.name) segments.push({ kind: "profiles", group });
+	const last = segments.at(-1);
+	if (field.kind === "number" && field.incomePath) {
+		if (last?.kind === "income") last.fields.push(field);
+		else segments.push({ kind: "income", fields: [field] });
+	} else segments.push({ kind: "field", field });
+}
+/** Liste « remplie / non remplie » au chargement (règle unique, src/lib/display/eligibility.ts). */
+const eligibility = definition.eligibility && definition.eligibility.length > 0 ? eligibilityState(definition.eligibility, filled) : null;
+const hasIncomePaths = segments.some((segment) => segment.kind === "income") && grossPath !== undefined;
+const grossContent = Astro.slots.has("gross-path") ? await Astro.slots.render("gross-path") : "";
+/** Revenu repris d'un autre champ (« différent ? ») : déplié au chargement si l'exemple le distingue. */
+const differs = (field: FieldDefinition) =>
+	field.kind === "number" && field.sameAs !== undefined && (filled[field.name] ?? "") !== "" && filled[field.name] !== filled[field.sameAs];
+
+/** Pastille d'un bouton radio (§ 2.3) : cible de 48 px, état coché en `accent-tint`. */
+const pillBase =
+	"flex min-h-3xl cursor-pointer gap-sm border border-rule bg-paper px-lg text-label transition-colors duration-150 hover:border-ink " +
+	"has-checked:border-accent has-checked:bg-accent-tint has-checked:text-ink";
+const pill = `${pillBase} items-center rounded-button`;
+/** Pastille d'un chemin : seul « salaire brut » peut être désactivé (estimateur sans données), d'où l'état désactivé ici seulement. */
+const pathPill = `${pill} has-disabled:cursor-not-allowed has-disabled:border-hairline has-disabled:bg-tint has-disabled:text-ink-muted`;
+/** Profil dont le libellé est suivi de la liste de ce qu'il affirme : rayon de contrôle, contenu en haut. */
+const pillWithDetails = `${pillBase} items-start rounded-control py-md`;
 
 const byId = new Map(catalog.map((entry) => [entry.id, entry]));
 
@@ -108,97 +189,157 @@ const variants = definition.variants
 	.filter((entry): entry is CalculatorDefinition => Boolean(entry))
 	.map((entry) => ({ slug: entry.slug, title: entry.title }));
 
+const introParagraphs = (Array.isArray(intro) ? intro : [intro]).filter((paragraph) => paragraph !== "" && paragraph !== definition.promise);
+const assumptionsId = "ce-que-ce-calcul-suppose";
+/** Identifiant des points de vigilance : celui que la page donne, sinon un identifiant dérivé du formulaire. */
+const vigilanceId = vigilanceIdProp ?? `${formId}-vigilance`;
+
 const resultFor = definition.fields
 	.map((field) => fieldId(field.name))
 	.join(" ");
 ---
 
 <article class="pb-5xl lg:pb-0">
-	<Section class="flex flex-col gap-2xl">
-	<header class="flex max-w-reading flex-col gap-sm">
+	<Section compact class="flex flex-col gap-2xl">
+	<div class="flex min-w-0 flex-col gap-lg">
+	<header class="flex max-w-reading flex-col gap-xs">
 		<h1 class="text-title">{definition.title}</h1>
-		{(Array.isArray(intro) ? intro : [intro]).map((paragraph) => <p class="text-lead text-ink-muted">{paragraph}</p>)}
-		{guide && (
-			<p class="text-label font-bold">
-				<a href={guide.url}>{guide.label}</a>
-			</p>
-		)}
+		<p class="text-lead text-ink-muted">{definition.promise}</p>
+		<p class="text-fine text-ink-muted">
+			{definition.scopeLine}
+			{notice && <> {notice}</>}
+			{definition.scope.partialCantons && definition.scope.partialCantons.length > 0 && (
+				<> {fr.partialCoverage.scopeLine(definition.scope.partialCantons)}</>
+			)}
+			{" "}<a href={`#${assumptionsId}`} class="font-bold">{fr.calculator.assumptionsLink}</a>
+		</p>
 	</header>
 
-	<ScopeNotice
-		forWhom={definition.scope.forWhom}
-		notCovered={notCovered}
-		assumptions={definition.scope.assumptions}
-	/>
-
-	{notice && <p class="max-w-reading rounded-panel bg-tint p-lg text-label font-bold">{notice}</p>}
-
-	<div class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+	<div data-calculator-root data-tax-data={taxDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
+		<p data-example-banner class="rounded-panel bg-tint p-lg text-label">
+			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label} {fr.calculator.exampleReplace}
+			{hasIncomePaths ? (
+				<>
+					{" "}<button
+						type="button"
+						data-switch-gross
+						disabled={!grossPath!.available}
+						class="cursor-pointer font-bold text-accent underline disabled:cursor-not-allowed disabled:text-ink-muted disabled:no-underline"
+					>{fr.incomePath.exampleGrossLink}</button>.
+				</>
+			) : (
+				<>.</>
+			)}
+		</p>
 		<form
 			data-calculator
 			id={formId}
-			class="flex min-w-0 flex-col gap-xl lg:self-start"
+			class="flex min-w-0 flex-col gap-xl"
 			novalidate
+			data-invalid-text={fr.numberField.cardStatus}
+			data-invalid-short={fr.numberField.cardShort}
+			data-error-templates={JSON.stringify(fr.numberField.templates)}
 		>
+			{hasIncomePaths && (
+				<fieldset data-income-paths class="flex flex-col gap-sm">
+					<legend class="sr-only">{fr.incomePath.legend}</legend>
+					<div class="flex flex-wrap gap-sm">
+						<label class={pathPill}>
+							<input type="radio" name="incomePath" value="gross" disabled={!grossPath!.available} class="size-icon" />
+							{fr.incomePath.gross}
+						</label>
+						<label class={pathPill}>
+							<input type="radio" name="incomePath" value="taxable" checked class="size-icon" />
+							{fr.incomePath.taxable}
+						</label>
+					</div>
+					{!grossPath!.available && <p class="text-fine text-ink-muted">{fr.incomePath.grossUnavailable(grossPath!.year)}</p>}
+				</fieldset>
+			)}
 			{
-				definition.fields.map((field) => (
-					<>
-					{field.kind === "number" ? (
-						<NumberField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							value={field.defaultValue}
-							min={field.min}
-							max={field.max}
-							step={field.step}
-							unit={field.unit}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : field.kind === "select" ? (
-						<SelectField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							options={field.options}
-							value={field.defaultValue}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : field.kind === "municipality" ? (
-						<MunicipalityField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							options={field.options}
-							value={field.defaultValue}
-							hint={field.hint}
-							required={field.required}
-						/>
-					) : field.kind === "text" ? (
-						<TextField
-							id={fieldId(field.name)}
-							name={field.name}
-							label={field.label}
-							value={field.defaultValue}
-							inputMode={field.inputMode}
-							placeholder={field.placeholder}
-							hint={field.hint}
-							required={field.required}
-						/>
+				segments.map((segment) =>
+					segment.kind === "profiles" ? (
+						<fieldset
+							data-profile-group={segment.group.name}
+							data-shown-when={segment.group.shownWhen ? conditionsAttribute([[segment.group.shownWhen.field, segment.group.shownWhen.value]]) : undefined}
+							hidden={segment.group.shownWhen ? filled[segment.group.shownWhen.field] !== segment.group.shownWhen.value : false}
+							class="flex flex-col gap-sm"
+						>
+							<legend class="mb-xs text-label font-bold">{segment.group.legend}</legend>
+							<div class="flex flex-wrap gap-sm">
+								{segment.group.profiles.map((profile) => (
+									<label class={profile.details ? pillWithDetails : pill}>
+										<input
+											type="radio"
+											name={segment.group.name}
+											value={profile.value}
+											checked={filled[segment.group.name] === profile.value}
+											data-profile-values={JSON.stringify(profile.values)}
+											class="size-icon shrink-0"
+										/>
+										{profile.details ? (
+											<span class="flex flex-col gap-xs">
+												<span class="font-bold">{profile.label}</span>
+												<ul class="flex list-disc flex-col pl-lg text-fine text-ink-muted">
+													{profile.details.map((detail) => <li>{detail}</li>)}
+												</ul>
+											</span>
+										) : (
+											profile.label
+										)}
+									</label>
+								))}
+								<label class={pill}>
+									<input type="radio" name={segment.group.name} value="other" checked={filled[segment.group.name] === "other"} class="size-icon" />
+									{segment.group.otherLabel}
+								</label>
+							</div>
+						</fieldset>
+					) : segment.kind === "income" ? (
+						<>
+							<div data-path-block="taxable" class="flex flex-col gap-xl">
+								{segment.fields.map((field) =>
+									field.kind === "number" && field.sameAs ? (
+										<details data-same-as={field.sameAs} open={differs(field)} class="group flex flex-col gap-sm">
+											<summary class="flex min-h-3xl cursor-pointer list-none flex-wrap items-center gap-x-sm text-label">
+												<span class="group-open:hidden">{fr.incomePath.federalSame}</span>
+												<span class="font-bold text-accent underline group-open:hidden">{fr.incomePath.federalDifferent}</span>
+												<span class="hidden font-bold text-accent underline group-open:inline">{fr.incomePath.federalSameLink}</span>
+											</summary>
+											<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} deferredOptions={deferred} />
+										</details>
+									) : (
+										<FormField field={field} id={fieldId(field.name)} values={filled} cantonsCovered={definition.scope.cantonsCovered} deferredOptions={deferred} />
+									),
+								)}
+							</div>
+							{hasIncomePaths && grossContent && (
+								<div data-path-block="gross" hidden>
+									<Fragment set:html={grossContent} />
+								</div>
+							)}
+						</>
 					) : (
-						<CantonField
-							field={field}
-							id={fieldId(field.name)}
-							only={definition.scope.cantonsCovered}
-						/>
-					)}
-					{field.name === formExtraAfter && formExtra && <Fragment set:html={formExtra} />}
-					</>
-				))
+						<div
+							class="contents"
+							data-shown-when={conditionsAttribute(conditionsOf(segment.field))}
+							hidden={!shown(conditionsOf(segment.field))}
+						>
+							<FormField
+								field={segment.field}
+								id={fieldId(segment.field.name)}
+								values={filled}
+								cantonsCovered={definition.scope.cantonsCovered}
+								deferredOptions={deferred}
+								maximum={initial.maxima?.[segment.field.name] ?? null}
+							/>
+						</div>
+					),
+				)
 			}
 		</form>
+		</div>
 
 		<div class="min-w-0">
 			<div class="lg:sticky lg:top-5xl">
@@ -206,49 +347,106 @@ const resultFor = definition.fields
 					id={`${formId}-result`}
 					for={resultFor}
 					label={resultLabel}
-					value="—"
+					value={initial.value}
+					status={initial.status}
+					note={initial.note}
+					summary={initial.summary}
+					exitReminder={definition.exitTaxReminder}
 				/>
+				{/* Seul le montant final est annoncé, une fois la saisie arrêtée (result-views.ts) */}
+				<p data-result-announce aria-live="polite" class="sr-only"></p>
+				<TaxComponents summary={initial.summary} />
+				{eligibility && (
+					<section
+						data-eligibility
+						data-met={fr.form.conditionMet}
+						data-not-met={fr.form.conditionNotMet}
+						hidden={!eligibility.visible}
+						class="mt-md flex max-w-reading flex-col gap-xs rounded-panel border border-hairline bg-paper p-lg text-label"
+					>
+						<h3 class="font-bold">{fr.form.eligibilityHeading}</h3>
+						<ul class="flex flex-col gap-xs">
+							{definition.eligibility!.map((item, index) => (
+								<li data-eligibility-item={JSON.stringify(item)} hidden={!eligibility.items[index]!.shown} class="flex flex-wrap justify-between gap-x-md">
+									<span>{item.label}</span>
+									<strong data-condition-state class="font-bold">
+										{eligibility.items[index]!.met ? fr.form.conditionMet : fr.form.conditionNotMet}
+									</strong>
+								</li>
+							))}
+						</ul>
+					</section>
+				)}
 				{/* Compléments du résultat propres à un calculateur (parts, rappels), rendus par la page */}
 				<slot name="result" />
 				{resultNote && <p class="mt-md max-w-reading text-fine text-ink-muted">{resultNote}</p>}
 			</div>
 		</div>
 
+		{definition.vigilance && definition.vigilance.length > 0 && (
+			<div class="min-w-0 lg:col-span-2">
+				<VigilancePoints id={vigilanceId} points={definition.vigilance} />
+			</div>
+		)}
+
 		<div id="detail-du-calcul" class="min-w-0 scroll-mt-5xl lg:col-span-2">
-			<CalculationBreakdown open={true} />
+			<CalculationBreakdown open={true} rows={initial.breakdown} />
 		</div>
 	</div>
 
-	<DataFreshness
-		referenceYear={definition.scope.referenceYear}
-		verifiedOn={verifiedOn}
-		sourceIds={definition.sourceIds}
-	/>
+	</div>
+
+	<details id={assumptionsId} class="scroll-mt-5xl rounded-panel border border-hairline bg-paper">
+		<summary class="flex min-h-3xl cursor-pointer items-center rounded-panel px-xl py-md text-label font-bold hover:bg-tint">
+			{fr.calculator.assumptionsSummary}
+		</summary>
+		<div class="flex flex-col gap-xl border-t border-hairline p-lg md:p-xl">
+			<ScopeNotice
+				forWhom={definition.scope.forWhom}
+				notCovered={notCovered}
+				assumptions={definition.scope.assumptions}
+				headingLevel={3}
+			/>
+			{(introParagraphs.length > 0 || guide) && (
+				<section class="flex max-w-reading flex-col gap-sm">
+					<h3 class="text-label font-bold">{fr.calculator.introHeading}</h3>
+					{introParagraphs.map((paragraph) => <p class="text-body">{paragraph}</p>)}
+					{guide && (
+						<p class="text-label font-bold">
+							<a href={guide.url}>{guide.label}</a>
+						</p>
+					)}
+				</section>
+			)}
+		</div>
+	</details>
 	</Section>
 
-	{
-		(variants.length > 0 || definition.faq.length > 0) && (
-			<Section tone="tint" class="flex flex-col gap-3xl">
-				<RelatedVariants variants={variants} />
+	<Section tone="tint" class="flex flex-col gap-3xl">
+		{variants.length > 0 && <RelatedVariants variants={variants} />}
 
-				{definition.faq.length > 0 && (
-					<section class="flex max-w-reading flex-col gap-lg">
-						<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
-						<div class="border-b border-hairline">
-							{definition.faq.map((item) => (
-								<details class="border-t border-hairline">
-									<summary class="flex min-h-3xl cursor-pointer items-center py-md text-body font-bold">
-										{item.question}
-									</summary>
-									<p class="max-w-reading pb-lg text-body">{item.answer}</p>
-								</details>
-							))}
-						</div>
-					</section>
-				)}
-			</Section>
-		)
-	}
+		{definition.faq.length > 0 && (
+			<section class="flex max-w-reading flex-col gap-lg">
+				<h2 class="text-heading">{fr.calculator.faqTitle}</h2>
+				<div class="border-b border-hairline">
+					{definition.faq.map((item) => (
+						<details class="border-t border-hairline">
+							<summary class="flex min-h-3xl cursor-pointer items-center py-md text-body font-bold">
+								{item.question}
+							</summary>
+							<p class="max-w-reading pb-lg text-body">{item.answer}</p>
+						</details>
+					))}
+				</div>
+			</section>
+		)}
+
+		<DataFreshness
+			referenceYear={definition.scope.referenceYear}
+			verifiedOn={verifiedOn}
+			sourceIds={definition.sourceIds}
+		/>
+	</Section>
 
 	<div
 		data-result-card
@@ -259,8 +457,12 @@ const resultFor = definition.fields
 				<span class="text-fine font-bold">{resultLabel}</span>
 				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
 			</div>
-			<span data-result-value class="text-heading text-accent tabular-nums" aria-hidden="true">—</span>
-			<a data-result-status hidden href={`#${formId}-result`} class="text-label font-bold"></a>
+			<span class="flex flex-col items-end" aria-hidden="true">
+				<span data-result-value hidden={initial.status !== null} class="text-heading text-accent tabular-nums">{initial.value}</span>
+				<span data-bar-net-cost={fr.resultSummary.barNetCost} hidden={!initial.summary} class="text-fine tabular-nums">{initial.summary && fillSummary(fr.resultSummary.barNetCost, initial.summary)}</span>
+			</span>
+			<a data-result-status hidden={initial.status === null} href={`#${formId}-result`} class="text-label font-bold">{initial.status?.short}</a>
+			<a data-load-failed hidden href={`#${formId}-result`} class="text-label font-bold">{fr.calculator.loadFailedShort}</a>
 		</div>
 	</div>
 </article>

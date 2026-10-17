@@ -1,72 +1,180 @@
 ---
+/**
+ * Accueil calculant. Tout montant et tout décompte viennent du moteur ou des
+ * données, calculés au build (src/calculators/home.ts) : héros sur le cas
+ * exemple d'A2, compte à rebours du versement 3a, bande de preuves, résultat
+ * type de chaque calculateur publié. Le moteur se charge à la première
+ * interaction avec le héros (CLAUDE.md § 3) ; sans JavaScript, le résultat de
+ * l'exemple et le lien vers le calculateur restent.
+ */
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHero from "../components/layout/PageHero.astro";
 import Section from "../components/layout/Section.astro";
+import FormField from "../components/calculator/FormField.astro";
+import ResultCard from "../components/ui/ResultCard.astro";
+import Button from "../components/ui/Button.astro";
+import Countdown from "../components/home/Countdown.astro";
 import { fr } from "../i18n/fr";
+import { FAMILY_ORDER, familyUrl } from "../calculators/families";
 import { publishedCalculators } from "../calculators/catalog";
 import {
-  FAMILY_ORDER,
-  familyHasPage,
-  familyUrl,
-} from "../calculators/families";
+	COUNTDOWN_STARTS_ON,
+	HERO_FIELDS,
+	calculatorCards,
+	contributionDeadline,
+	heroOutcome,
+	heroValues,
+	proofFigures,
+	refineUrl,
+} from "../calculators/home";
+import { formatVerificationDate } from "../calculators/site-verification";
+import { pillar3aTaxSaving, pillar3aTaxSavingTexts, pillar3aTaxSavingYear } from "../calculators/pension/pillar-3a-tax-saving";
+import { pillar3aTaxSavingPagePart as pagePart } from "../calculators/pension/pillar-3a-tax-saving-page-data";
+import { pageDataJson } from "../calculators/page-data";
 
 const title = `${fr.site.name} — calculateurs suisses romands qui affichent leurs sources`;
 const description =
-  "Calculateurs de fiscalité et de prévoyance pour la Suisse romande, chaque chiffre sourcé et daté. Aucun compte, aucun cookie de suivi.";
+	"Calculateurs de fiscalité et de prévoyance pour la Suisse romande, chaque chiffre sourcé et daté. Aucun compte, aucun cookie de suivi.";
 
-// Généré depuis le catalogue : seuls les calculateurs publiés sont listés, en
-// liens ; les familles sans calculateur publié tiennent en une seule ligne,
-// sans date promise.
-const families = FAMILY_ORDER.map((family) => ({
-  family,
-  calculators: publishedCalculators(family),
-}));
-const withCalculators = families.filter(({ calculators }) => calculators.length > 0);
-const comingSoon = families
-  .filter(({ calculators }) => calculators.length === 0)
-  .map(({ family }) => fr.family[family]);
+// Héros : les trois champs d'A2, libellés courts, sans aide
+const t = fr.home;
+const labels: Record<(typeof HERO_FIELDS)[number], string> = {
+	municipality: t.heroMunicipality,
+	cantonalTaxableIncome: t.heroIncome,
+	contribution: t.heroContribution(pillar3aTaxSavingYear),
+};
+const heroFields = HERO_FIELDS.map((name) => {
+	const field = pillar3aTaxSaving.fields.find((candidate) => candidate.name === name)!;
+	return { ...field, label: labels[name], hint: undefined, shownWhen: undefined, maximumButton: undefined };
+});
+const values = heroValues();
+const outcome = heroOutcome();
+const deadline = contributionDeadline();
+const proof = proofFigures();
+const cards = calculatorCards();
+
+// Guide mis en avant : le plus récemment mis à jour
+const guides = (await getCollection("articles")).sort((a, b) => b.data.updatedOn.getTime() - a.data.updatedOn.getTime());
+const guide = guides[0];
+const guideDate = guide && new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long", year: "numeric" }).format(guide.data.updatedOn);
+
+// Familles sans calculateur publié : une seule ligne, sans date promise
+const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).length === 0).map((family) => fr.family[family]);
 ---
 
 <BaseLayout title={title} description={description}>
-  <PageHero
-    title={fr.site.name}
-    lead={[
-      fr.site.baseline,
-      "Chaque chiffre utilisé provient d'une source officielle, avec sa date de vérification. Aucun compte, aucun cookie de suivi, aucune publicité. Vos données ne quittent pas votre navigateur.",
-    ]}
-  />
+	<Section hero>
+		<h1 class="max-w-reading text-title">{t.heroTitle}</h1>
+		<p class="mt-sm max-w-reading text-lead text-ink-muted">{t.heroLead}</p>
+		{deadline && <Countdown deadline={deadline} startsOn={COUNTDOWN_STARTS_ON} />}
 
-  <Section tone="tint" id="calculateurs" class="flex flex-col gap-xl">
-    <ul class="grid gap-xl md:grid-cols-2">
-      {
-        withCalculators.map(({ family, calculators }) => (
-          <li class="flex h-full flex-col gap-md rounded-panel bg-paper p-xl">
-            <h2 class="text-subheading">{fr.family[family]}</h2>
-            <ul class="flex flex-col gap-sm text-body">
-              {calculators.map((calculator) => (
-                <li>
-                  <a href={calculator.slug}>{calculator.title}</a>
-                </li>
-              ))}
-            </ul>
-            {familyHasPage(family) && (
-              <a
-                href={familyUrl(family)}
-                class="mt-auto text-label font-bold text-accent"
-              >
-                {fr.home.familyCardAction}
-              </a>
-            )}
-          </li>
-        ))
-      }
-    </ul>
-    {
-      comingSoon.length > 0 && (
-        <p data-home-coming-soon class="text-fine text-ink-muted">
-          {fr.home.comingSoon(comingSoon)}
-        </p>
-      )
-    }
-  </Section>
+		<div data-calculator-root data-tax-data={pagePart.taxDataUrl} class="mt-2xl grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+			<form
+				data-calculator
+				class="flex min-w-0 flex-col gap-xl"
+				novalidate
+				data-invalid-text={fr.numberField.cardStatus}
+				data-invalid-short={fr.numberField.cardShort}
+				data-error-templates={JSON.stringify(fr.numberField.templates)}
+			>
+				{heroFields.map((field) => <FormField field={field} id={`home-${field.name}`} values={values} cantonsCovered={pillar3aTaxSaving.scope.cantonsCovered} deferredOptions />)}
+				{values.federalTaxableIncome && <input type="hidden" name="federalTaxableIncome" value={values.federalTaxableIncome} />}
+				{values.federalDiffers && <input type="hidden" name="federalDiffers" value={values.federalDiffers} />}
+			</form>
+			{/* Sur mobile, le chiffre d'abord : visible sans défiler ; dès lg, à droite des champs */}
+			<div class="order-first flex min-w-0 flex-col items-start gap-lg lg:order-last">
+				<div class="w-full">
+					<ResultCard
+						id="home-result"
+						for={HERO_FIELDS.map((name) => `home-${name}`).join(" ")}
+						label={pillar3aTaxSavingTexts.resultLabel}
+						value={outcome.value}
+						status={outcome.status}
+						note={outcome.note}
+						summary={outcome.summary}
+						exitReminder={pillar3aTaxSaving.exitTaxReminder}
+					/>
+				</div>
+				<p data-result-announce aria-live="polite" class="sr-only"></p>
+				<Button href={refineUrl()} data-refine block>{t.refine}</Button>
+			</div>
+		</div>
+		<script type="application/json" id="home-data" set:html={pageDataJson(pagePart)} />
+	</Section>
+
+	<Section tone="tint" data-home-proof class="flex flex-col gap-lg">
+		<h2 class="sr-only">{t.proofHeading}</h2>
+		<ul class="grid gap-lg text-label font-bold sm:grid-cols-2 lg:grid-cols-4">
+			<li class="tabular-nums">{t.proofCantons(proof.cantons)}</li>
+			<li class="tabular-nums">{t.proofMunicipalities(proof.municipalities)}</li>
+			<li>
+				{t.proofVerified} <a href="/donnees/"><time datetime={proof.verifiedOn}>{formatVerificationDate(proof.verifiedOn)}</time></a>
+			</li>
+			<li><a href={fr.site.repositoryUrl}>{t.proofSource}</a></li>
+		</ul>
+	</Section>
+
+	<Section id="calculateurs" class="flex flex-col gap-2xl">
+		<h2 class="text-heading">{t.calculatorsHeading}</h2>
+		<ul class="grid gap-xl md:grid-cols-2 lg:grid-cols-3">
+			{
+				cards.map((card) => (
+					<li class="flex">
+						<a href={card.slug} class="group flex w-full flex-col gap-md rounded-panel bg-paper p-xl text-ink no-underline shadow-card">
+							<span class="text-fine font-bold text-ink-muted">{card.title}</span>
+							<h3 class="text-subheading group-hover:underline">{card.question}</h3>
+							{card.typical && <p class="text-body tabular-nums">{card.typical}</p>}
+							<span class="mt-auto text-label font-bold text-accent">{t.openCalculator} →</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</Section>
+
+	<Section tone="tint" data-home-why class="flex flex-col gap-2xl">
+		<h2 class="text-heading">{t.whyHeading}</h2>
+		<div class="grid gap-xl md:grid-cols-3">
+			{
+				t.why.map((column) => (
+					<div class="flex flex-col gap-sm">
+						<h3 class="text-subheading">{column.title}</h3>
+						<p class="text-body">{column.text}</p>
+					</div>
+				))
+			}
+		</div>
+	</Section>
+
+	{
+		guide && (
+			<Section data-home-guide class="flex flex-col gap-2xl">
+				<h2 class="text-heading">{t.guideHeading}</h2>
+				<a href={`${familyUrl(guide.data.family)}guides/${guide.id}/`} class="group flex max-w-reading flex-col gap-sm rounded-panel bg-paper p-xl text-ink no-underline shadow-card">
+					<h3 class="text-subheading group-hover:underline">{guide.data.title}</h3>
+					<p class="text-body text-ink-muted">{guide.data.description}</p>
+					<p class="text-fine text-ink-muted">
+						{fr.article.updatedOn} <time datetime={guide.data.updatedOn.toISOString().slice(0, 10)}>{guideDate}</time>
+						{guide.data.readingMinutes && <> · {fr.article.readingTime(guide.data.readingMinutes)}</>}
+					</p>
+					<span class="text-label font-bold text-accent">{t.guideAction} →</span>
+				</a>
+			</Section>
+		)
+	}
+
+	{
+		comingSoon.length > 0 && (
+			<Section tone="tint" compact>
+				<p data-home-coming-soon class="text-fine text-ink-muted">{fr.home.comingSoon(comingSoon)}</p>
+			</Section>
+		)
+	}
 </BaseLayout>
+
+<script>
+	// Seul script au chargement : le résultat de l'exemple est rendu à la construction ;
+	// le calcul se charge à la première interaction avec le héros (CLAUDE.md § 3).
+	import { onFirstInteraction } from "../lib/display/first-interaction";
+	onFirstInteraction(() => import("../lib/display/home-page"));
+</script>

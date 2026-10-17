@@ -12,7 +12,7 @@ import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
 import { assertTaxCoverage, type TaxInput, type TaxScales } from "../tax";
 import * as labels from "./pillar-3a-tax-saving-labels";
-import { computeIncomeTaxSaving } from "./income-tax-saving";
+import { computeIncomeTaxSaving, type IncomeTaxSaving } from "./income-tax-saving";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
 export type Sourced<T> = { value: T; sourceId: string };
@@ -77,6 +77,8 @@ export type Pillar3aTaxSavingResult = {
 	taxSaving: number;
 	cantonalAndMunicipalSaving: number;
 	federalSaving: number;
+	/** Économie par impôt (cantonal, communal, paroissial, taxe personnelle, fédéral), au franc. */
+	componentSavings: IncomeTaxSaving["componentSavings"];
 	/** Économie ÷ montant déduit ; `null` sans déduction. */
 	effectiveRate: number | null;
 	breakdown: BreakdownLine[];
@@ -249,6 +251,7 @@ export function computePillar3aTaxSaving(params: Pillar3aTaxSavingParams): Pilla
 		taxSaving: saving.taxSaving,
 		cantonalAndMunicipalSaving: saving.cantonalAndMunicipalSaving,
 		federalSaving: saving.federalSaving,
+		componentSavings: saving.componentSavings,
 		effectiveRate,
 		breakdown: [
 			...breakdown,

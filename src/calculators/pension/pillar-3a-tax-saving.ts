@@ -7,9 +7,11 @@
  * « grande » cotisation, part du revenu des personnes non affiliées. Une seule
  * année de calcul pour l'instant (décision du 05.10.2026).
  */
-import { getFederalData, getMunicipalMultipliers } from "../../data";
+import { getFederalData } from "../../data";
+import { pillar3aContributionDeadline } from "../contribution-deadline";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf, formatPercent } from "../../lib/format/chf";
+import { municipalityOptions } from "../municipalities";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
@@ -58,9 +60,9 @@ const yesNo = [
 
 const coverage = taxEngineCoverage();
 
-const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
-	.filter((entry) => coverage.cantonsCovered.includes(entry.canton))
-	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
+
+/** Cas exemple : saisies de scénario, fictives (§ 4.2) ; le versement est le plafond de l'année, lu dans les données. */
+const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000 };
 
 const taxableIncomeHint =
 	"Partez du revenu imposable de votre dernière décision de taxation et ajoutez-y la déduction 3a qui y figure, s'il y en a une : le calcul porte sur le revenu avant cette déduction.";
@@ -92,6 +94,22 @@ const CONTRIBUTOR_LABELS = {
 	},
 };
 
+/** Légende et pastilles des profils de chaque personne (§ 4.3) ; celles du conjoint ou partenaire le nomment. */
+const PROFILE_LABELS = {
+	you: {
+		legend: "Votre situation",
+		employeeWithPension: "Salarié avec caisse de pension, avant l'âge de référence",
+		selfEmployedWithoutPension: "Indépendant sans caisse de pension",
+		other: "Autre situation",
+	},
+	spouse: {
+		legend: "Situation de votre conjoint ou partenaire",
+		employeeWithPension: "Conjoint ou partenaire salarié avec caisse de pension, avant l'âge de référence",
+		selfEmployedWithoutPension: "Conjoint ou partenaire indépendant sans caisse de pension",
+		other: "Autre situation du conjoint ou partenaire",
+	},
+};
+
 /** Nom d'un champ de personne : « affiliated » pour vous, « spouseAffiliated » pour le conjoint ou partenaire. */
 export const contributorFieldName = (person: "you" | "spouse", field: string): string =>
 	person === "you" ? field : `spouse${field[0]!.toUpperCase()}${field.slice(1)}`;
@@ -100,9 +118,11 @@ export const contributorFieldName = (person: "you" | "spouse", field: string): s
 const contributorFields = (person: "you" | "spouse"): FieldDefinition[] => {
 	const label = CONTRIBUTOR_LABELS[person];
 	const name = (field: keyof typeof label) => contributorFieldName(person, field);
+	// Champs du conjoint ou partenaire : seulement pour un couple
+	const couple = person === "spouse" ? [{ field: "maritalStatus", value: "married" }] : [];
 	return [
-		{ kind: "select", name: name("hasAvsIncome"), label: label.hasAvsIncome, options: yesNo, defaultValue: "yes", hint: avsIncomeHint, required: true },
-		{ kind: "select", name: name("reachedReferenceAge"), label: label.reachedReferenceAge, options: yesNo, defaultValue: "no", required: true },
+		{ kind: "select", name: name("hasAvsIncome"), label: label.hasAvsIncome, options: yesNo, defaultValue: "yes", hint: avsIncomeHint, required: true, shownWhen: couple },
+		{ kind: "select", name: name("reachedReferenceAge"), label: label.reachedReferenceAge, options: yesNo, defaultValue: "no", required: true, shownWhen: couple },
 		{
 			kind: "select",
 			name: name("workingAfterReferenceAge"),
@@ -110,21 +130,30 @@ const contributorFields = (person: "you" | "spouse"): FieldDefinition[] => {
 			options: yesNo,
 			defaultValue: "yes",
 			required: true,
+			shownWhen: [...couple, { field: name("reachedReferenceAge"), value: "yes" }],
 		},
-		{ kind: "select", name: name("affiliated"), label: label.affiliated, options: yesNo, defaultValue: "yes", hint: affiliationHint, required: true },
-		{ kind: "number", name: name("earnedIncome"), label: label.earnedIncome, unit: "CHF", step: 100, hint: earnedIncomeHint },
-		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true },
+		{ kind: "select", name: name("affiliated"), label: label.affiliated, options: yesNo, defaultValue: "yes", hint: affiliationHint, required: true, shownWhen: couple },
+		{
+			kind: "number",
+			name: name("earnedIncome"),
+			label: label.earnedIncome,
+			unit: "CHF",
+			step: 1,
+			hint: earnedIncomeHint,
+			shownWhen: [...couple, { field: name("affiliated"), value: "no" }],
+		},
+		{ kind: "number", name: name("contribution"), label: label.contribution, unit: "CHF", min: 0, step: 1, required: true, shownWhen: couple, maximumButton: true },
 	];
 };
 
 const fields: FieldDefinition[] = [
-	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
 	{
 		kind: "municipality",
 		name: "municipality",
 		label: "Commune de domicile",
-		options: municipalityOptions,
-		hint: "Commencez à saisir le nom de la commune.",
+		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
+		options: municipalityOptions(coverage.cantonsCovered),
+		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
 		required: true,
 	},
 	{
@@ -139,23 +168,17 @@ const fields: FieldDefinition[] = [
 		required: true,
 	},
 	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{
-		kind: "text",
-		name: "childrenAges",
-		label: "Âge des enfants",
-		inputMode: "numeric",
-		placeholder: "4, 9",
-		hint: "Séparés par une virgule.",
-	},
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
 		label: "Revenu imposable cantonal",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
 	},
 	{
 		kind: "number",
@@ -163,12 +186,31 @@ const fields: FieldDefinition[] = [
 		label: "Revenu imposable fédéral",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
+		sameAs: "cantonalTaxableIncome",
 	},
 	...contributorFields("you"),
 	...contributorFields("spouse"),
+];
+
+/**
+ * Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait,
+ * A4 sans lien) : points de vigilance de la page, en avertissement renforcé,
+ * chacun pouvant coûter la déduction ou de l'argent (arbitrage du 17.10.2026).
+ */
+/** Date limite du versement, lue dans les données (R2) ; sans elle, les phrases qui la citent ne s'affichent pas (R3). */
+const deadline = pillar3aContributionDeadline(year);
+const deadlineSentence = deadline
+	? `le versement doit être crédité sur votre compte ou votre police 3a au plus tard le ${deadline.label} (circulaire AFC n° 18a, ch. 5.1).`
+	: null;
+
+const reminders = [
+	"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
+	...(deadlineSentence ? [`Pour être déductible en ${year}, ${deadlineSentence}`] : []),
+	"L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3).",
 ];
 
 export const pillar3aTaxSaving: CalculatorDefinition = {
@@ -178,6 +220,26 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	title: "Économie d'impôt d'un versement 3a",
 	metaDescription:
 		"Calculez l'impôt économisé grâce à votre versement au pilier 3a dans votre commune romande, selon votre affiliation à un 2e pilier.",
+	question: "Combien d'impôt votre versement 3a vous fait-il économiser ?",
+	metaTitle: `Versement 3a ${year} : combien d'impôt économisez-vous ?`,
+	promise: "L'impôt économisé par votre versement au pilier 3a.",
+	exitTaxReminder: {
+		text: "Le capital 3a sera imposé à son retrait : cette économie n'est pas un gain net.",
+		link: { label: "En savoir plus", url: "/methodologie/#prevoyance" },
+	},
+	scopeLine: `Personnes avec un revenu soumis à l'AVS, imposées au régime ordinaire en Suisse romande, versement en ${year}.`,
+	example: {
+		label: `personne seule à Lausanne, avec caisse de pension, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, versement maximal`,
+		values: {
+			municipality: "Lausanne",
+			maritalStatus: "single",
+			children: "0",
+			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
+			federalTaxableIncome: String(EXAMPLE.federalTaxableIncome),
+			// Plafond de l'année, lu dans les données : jamais un montant tapé (§ 4.2)
+			contribution: String(smallCap),
+		},
+	},
 
 	scope: {
 		forWhom: [
@@ -221,6 +283,7 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			"Pour un couple marié ou lié par un partenariat enregistré, chacun a sa propre déduction, selon sa propre affiliation (art. 7 al. 2 OPP 3) et ses propres conditions : revenu soumis à l'AVS (circulaire AFC n° 18a, ch. 3), âge de référence (art. 7 al. 3 OPP 3). Celui qui ne les remplit pas n'a pas de déduction ; l'autre garde la sienne. L'économie porte sur leur somme.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
+		partialCantons: coverage.partialCantons,
 		referenceYear: pillar3aTaxSavingYear,
 	},
 
@@ -243,11 +306,14 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			answer:
 				"L'excédent n'est pas déductible : le calculateur ramène le montant au plafond, et votre fondation doit vous rembourser la différence (circulaire AFC n° 18a, ch. 9.1).",
 		},
-		{
-			question: "Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ?",
-			answer:
-				"Le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).",
-		},
+		...(deadlineSentence
+			? [
+					{
+						question: "Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ?",
+						answer: `${deadlineSentence[0]!.toUpperCase()}${deadlineSentence.slice(1)} L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).`,
+					},
+				]
+			: []),
 		{
 			question: "Puis-je encore cotiser au pilier 3a après l'âge de référence AVS ?",
 			answer:
@@ -260,6 +326,58 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 		},
 	],
 
+	profiles: (["you", "spouse"] as const).map((person) => {
+		const name = (field: string) => contributorFieldName(person, field);
+		return {
+			name: name("profile"),
+			legend: PROFILE_LABELS[person].legend,
+			fields: ["hasAvsIncome", "reachedReferenceAge", "workingAfterReferenceAge", "affiliated"].map(name),
+			profiles: [
+				{
+					value: "employeeWithPension",
+					label: PROFILE_LABELS[person].employeeWithPension,
+					values: { [name("hasAvsIncome")]: "yes", [name("reachedReferenceAge")]: "no", [name("affiliated")]: "yes" },
+				},
+				{
+					value: "selfEmployedWithoutPension",
+					label: PROFILE_LABELS[person].selfEmployedWithoutPension,
+					values: { [name("hasAvsIncome")]: "yes", [name("reachedReferenceAge")]: "no", [name("affiliated")]: "no" },
+				},
+			],
+			otherLabel: PROFILE_LABELS[person].other,
+			...(person === "spouse" ? { shownWhen: { field: "maritalStatus", value: "married" } } : {}),
+		};
+	}),
+
+	// Conditions de l'année, pour vous et pour le conjoint ou partenaire (règles 3 et 4)
+	eligibility: (["you", "spouse"] as const).flatMap((person) => {
+		const name = (field: string) => contributorFieldName(person, field);
+		const couple = person === "spouse" ? { shownWhen: [{ field: "maritalStatus", value: "married" }] } : {};
+		const who = person === "spouse" ? " (conjoint ou partenaire)" : "";
+		return [
+			{ label: `Revenu soumis à l'AVS en ${year}${who}`, anyOf: [{ field: name("hasAvsIncome"), value: "yes" }], profile: name("profile"), ...couple },
+			{
+				label: `Âge de référence AVS non atteint, ou activité lucrative poursuivie depuis moins de cinq ans${who}`,
+				anyOf: [
+					{ field: name("reachedReferenceAge"), value: "no" },
+					{ field: name("workingAfterReferenceAge"), value: "yes" },
+				],
+				profile: name("profile"),
+				...couple,
+			},
+		];
+	}),
+
+	// Une phrase visible chacun ; le premier rappel, plus long, garde son texte entier dans « En savoir plus »
+	vigilance: [
+		{
+			level: "warning",
+			summary: "Le capital 3a sera imposé à son retrait : l'économie affichée n'est pas un gain net.",
+			text: reminders[0],
+		},
+		...reminders.slice(1).map((summary) => ({ level: "warning" as const, summary })),
+	],
+
 	monetization: { type: "none" },
 };
 
@@ -270,25 +388,14 @@ export const pillar3aTaxSavingTexts = {
 	guide: { label: "Comprendre le pilier 3a et son rachat rétroactif", url: "/prevoyance/guides/rachat-3a-retroactif/" },
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
 	disclaimer: `Estimation indicative, établie d'après les barèmes ${year} et vos saisies. Elle ne constitue ni un conseil fiscal ni un conseil en prévoyance, et ne remplace pas votre décision de taxation.`,
-	summary: {
-		cantonalAndMunicipalSaving: "Canton et commune",
-		federalSaving: "Confédération",
-		effectiveRate: "Économie rapportée au montant déduit",
-		deduction: "Montant déductible retenu",
-	},
 	/** Avertissement de la règle 7, « {amount} » remplacé par l'excédent. */
 	excessWarning:
-		"Attention : {amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
-	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien). */
-	reminders: [
-		"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
-		`Pour être déductible en ${year}, le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1).`,
-		"L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3).",
-	],
+		"{amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
+	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien), points de vigilance de la page. */
+	reminders,
 	outOfScope: pillar3aBuybackTexts.outOfScope,
 	outOfScopeMunicipality: pillar3aBuybackTexts.outOfScopeMunicipality,
 	missingData: pillar3aBuybackTexts.missingData,
-	municipalityMismatch: pillar3aBuybackTexts.municipalityMismatch,
 	unknownMunicipality: pillar3aBuybackTexts.unknownMunicipality,
 	outOfScopeShort: pillar3aBuybackTexts.outOfScopeShort,
 	missingDataShort: pillar3aBuybackTexts.missingDataShort,

@@ -397,5 +397,12 @@
 			"effectiveFrom": "2006-01-01",
 			"note": "LPP (RS 831.40), art. 79b al. 3, 1re phrase : les prestations résultant d'un rachat ne peuvent être versées sous forme de capital avant l'échéance d'un délai de trois ans. Relevé W09 (docs/plan/releve-W09.md) ; PDF archivé dans sources/pdf/2026/ du dépôt privé."
 		}
+	},
+	"pillar3aContributionDeadline": {
+		"value": "12-31",
+		"sourceId": "afc-circular-18a",
+		"verifiedOn": "2026-10-17",
+		"effectiveFrom": "2026-01-01",
+		"note": "Circulaire AFC n° 18a du 22.12.2025, ch. 5.1 : date (MM-JJ) à laquelle le versement doit être crédité sur le compte ou la police 3a pour être déductible l'année de cotisation. C'est le crédit sur le compte ou la police 3a qui compte, pas le débit du compte bancaire."
 	}
 }

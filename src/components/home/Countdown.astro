@@ -1,0 +1,47 @@
+---
+/**
+ * Compte à rebours du versement 3a (accueil), du 1er octobre à la date limite,
+ * calculé dans le navigateur : rendu masqué au build, le script l'affiche dans
+ * la fenêtre et y écrit le nombre de jours. Date limite et source viennent des
+ * données (src/calculators/home.ts) ; sans elles, la page ne rend pas ce
+ * composant (R3). Avis informatif (§ 2.6).
+ */
+import { fr } from "../../i18n/fr";
+import { sourceLink } from "../../lib/source-links";
+
+interface Props {
+	deadline: { monthDay: string; sourceId: string; year: number };
+	startsOn: string;
+}
+
+const { deadline, startsOn } = Astro.props;
+const [month, day] = deadline.monthDay.split("-").map(Number) as [number, number];
+const deadlineText = new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long" }).format(new Date(deadline.year, month - 1, day));
+const source = sourceLink(deadline.sourceId);
+---
+
+<p
+	data-countdown
+	data-deadline={deadline.monthDay}
+	data-starts={startsOn}
+	data-template={fr.home.countdown(deadline.year, deadlineText)}
+	data-template-last={fr.home.countdownLastDay(deadline.year)}
+	hidden
+	class="mt-lg max-w-reading rounded-panel bg-tint p-lg text-label"
+>
+	<span data-countdown-text></span>
+	<a href={source.url} class="block text-fine">{source.name}</a>
+</p>
+
+<script>
+	import { countdownMessage } from "../../lib/display/countdown";
+	const element = document.querySelector<HTMLElement>("[data-countdown]");
+	if (element) {
+		const { deadline, starts, template, templateLast } = element.dataset;
+		const message = countdownMessage(new Date(), deadline!, starts!, { days: template!, lastDay: templateLast! });
+		if (message !== null) {
+			element.querySelector("[data-countdown-text]")!.textContent = message;
+			element.hidden = false;
+		}
+	}
+</script>

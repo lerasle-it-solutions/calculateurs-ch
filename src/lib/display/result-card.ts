@@ -9,9 +9,20 @@ export type StatusLink = { label: string; url: string };
 
 /**
  * Message qui remplace le montant : texte complet dans la carte, mention courte dans la barre mobile.
- * `kind: "coverage"` : limite de couverture du moteur, répétée sous le champ commune (`coverageOnly`).
+ * Son type fixe son rendu (docs/design-system.md § 4.4, `statusTone`) :
+ * - `missing` : donnée que le visiteur n'a pas encore saisie, texte neutre ;
+ * - `invalid` : saisie invalide, style erreur, préfixe « Erreur : » ;
+ * - `coverage` : hors périmètre du moteur (canton, commune, ménage, donnée non relevée), répété sous
+ *   le champ commune (`coverageOnly`) ;
+ * - `exclusion` : cas `notCovered` déclenché par la saisie, avec son alternative ;
+ * - `refusal` : condition légale non remplie, motif du moteur.
+ * Les trois derniers : avertissement renforcé, préfixe « Attention : ».
  */
-export type ResultStatus = { text: string; short: string; link?: StatusLink; kind?: "coverage" };
+export type ResultStatus = { text: string; short: string; link?: StatusLink; kind?: "missing" | "invalid" | "coverage" | "exclusion" | "refusal" };
+
+/** Rendu d'un message de la carte selon son type. */
+export const statusTone = (kind: ResultStatus["kind"]): "neutral" | "error" | "warning" =>
+	kind === "invalid" ? "error" : kind === "coverage" || kind === "exclusion" || kind === "refusal" ? "warning" : "neutral";
 
 /** `note` : mention courte sous le montant, p. ex. « estimation » ; absente, la note s'efface. */
 export type ResultDetail = { value?: string; status?: ResultStatus | null; note?: string | null };
@@ -44,6 +55,12 @@ export function applyResult(slots: ResultCardSlots, detail: ResultDetail): void 
 	const status = detail.status ?? null;
 	slots.value.hidden = status !== null;
 	message.hidden = status === null;
+	// Style du type de message (ResultCard.astro), sur un élément du DOM seulement
+	if ("toggleAttribute" in message) {
+		const tone = status ? statusTone(status.kind) : "neutral";
+		(message as HTMLElement).toggleAttribute("data-warning", tone === "warning");
+		(message as HTMLElement).toggleAttribute("data-error", tone === "error");
+	}
 	if (!messageText) {
 		message.textContent = status?.short ?? "";
 		return;

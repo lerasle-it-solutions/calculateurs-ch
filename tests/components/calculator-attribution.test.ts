@@ -55,6 +55,10 @@ const fictive = (sourceIds: string[]): CalculatorDefinition => ({
 	slug: "/fictif/",
 	title: "Calculateur fictif",
 	metaDescription: "Calculateur fictif pour le test d'attribution.",
+	metaTitle: "Calculateur fictif ?",
+	promise: "Promesse fictive.",
+	scopeLine: "Périmètre fictif.",
+	example: { label: "exemple fictif", values: {} },
 	scope: {
 		forWhom: ["Test"],
 		notCovered: [{ case: "Test" }],

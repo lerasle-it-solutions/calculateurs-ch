@@ -25,16 +25,18 @@ interface Props {
 	columns: Column[];
 	/** Lignes connues au build, cellules déjà formatées ; la première est l'en-tête de ligne. */
 	rows?: string[][];
+	/** Les lignes connues au build ont les colonnes facultatives. */
+	withOptional?: boolean;
 }
 
-const { id, heading, caption, columns, rows = [] } = Astro.props;
+const { id, heading, caption, columns, rows = [], withOptional = false } = Astro.props;
 
 // Filets et marges des cellules portés par le tableau : le script n'écrit aucune classe de cellule.
 const tableClass =
 	"w-full border-collapse text-label [&_tbody_:is(th,td)]:border-b [&_tbody_:is(th,td)]:border-hairline [&_tbody_:is(th,td)]:px-md [&_tbody_:is(th,td)]:py-sm [&_tbody_th]:text-left [&_tbody_th]:font-medium";
 const captionClass = "px-md py-sm text-left text-fine text-ink-muted";
 const headClass = "bg-tint px-md py-sm text-left font-bold";
-const headCells = columns.filter((column) => rows.length === 0 || !column.optional);
+const headCells = columns.filter((column) => withOptional || !column.optional);
 ---
 
 <section id={id} data-result-table hidden={rows.length === 0} class="flex flex-col gap-sm">

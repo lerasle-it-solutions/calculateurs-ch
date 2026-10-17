@@ -10,6 +10,7 @@ import { formatSwissNumber } from "../format/chf";
 import { formatChfAmount } from "./amounts";
 import { coverageStatus } from "./coverage";
 import type { ResultStatus, StatusLink } from "./result-card";
+import type { ResultFigures } from "./result-summary";
 
 export type { StatusLink };
 export { formatChfAmount };
@@ -33,6 +34,8 @@ export type Pillar3aBuybackDisplay = {
 	breakdown: BreakdownRow[];
 	/** Message qui remplace le montant dans la carte de résultat ; `null` quand un résultat est calculé. */
 	status: ResultStatus | null;
+	/** Montant racheté, économie et économie par impôt (résumé de la carte) ; `null` sans calcul. */
+	figures: ResultFigures | null;
 };
 
 
@@ -57,13 +60,14 @@ export function displayPillar3aBuyback(
 				note: line.assumption,
 			})),
 			status: null,
+			figures: { paid: result.buybackAmount, saving: result.taxSaving, components: result.componentSavings },
 		};
 	} catch (error) {
 		if (error instanceof PartialCoverageError) {
-			return { value: "—", breakdown: [], status: coverageStatus(error, texts, officialCalculators) };
+			return { value: "—", breakdown: [], status: coverageStatus(error, texts, officialCalculators), figures: null };
 		}
 		if (error instanceof MissingTaxDataError) {
-			return { value: "—", breakdown: [], status: { text: texts.missingData, short: texts.missingDataShort } };
+			return { value: "—", breakdown: [], status: { text: texts.missingData, short: texts.missingDataShort }, figures: null };
 		}
 		throw error;
 	}

@@ -337,7 +337,7 @@ revenu imposable.
 >    backlog.
 > 6. **Capture de lead et suivi de fraîcheur** intégrés à l'architecture.
 >
-> Version : 2.1 — Cible : Astro 5.x — Déploiement : Cloudflare Pages.
+> Version : 2.1 — Cible : Astro 7.x, Tailwind CSS v4 par `@tailwindcss/vite` — Déploiement : Cloudflare Pages.
 > Domaine canonique : **apex `calculateurs.ch`**, `www` redirigé en 301.
 
 ---
@@ -456,7 +456,7 @@ calculateurs.ch/
 │   ├── components/
 │   │   ├── layout/                      Header, Footer, Breadcrumb, FamilyNav
 │   │   ├── calculator/
-│   │   │   ├── Shell.astro              ← assemble : titre, périmètre, champs, résultat,
+│   │   │   ├── CalculatorShell.astro    ← assemble : titre, périmètre, champs, résultat,
 │   │   │   │                              trace, fraîcheur, variantes, FAQ
 │   │   │   └── RelatedVariants.astro
 │   │   ├── ui/                          ★ primitives, éléments HTML natifs
@@ -499,7 +499,9 @@ calculateurs.ch/
 │   │   ├── fixtures/                    ← jeux FICTIFS, publics
 │   │   └── *.test.ts
 │   ├── data/                            ← schéma, sources, fraîcheur, couverture
-│   ├── leads/                           ← routage, exclusivité, no-leak
+│   ├── build/                           ← après la construction, sur dist/ (postbuild) :
+│   │                                      budgets, canonicals, montants ; no-leak à venir
+│   ├── leads/                           ← routage, exclusivité (à venir)
 │   └── regression/
 │
 └── astro.config.mjs · tsconfig.json · vitest.config.ts · package.json
@@ -688,12 +690,30 @@ JavaScript : les éléments HTML natifs fournissent gratuitement l'accessibilit�
 et la compatibilité avec les lecteurs d'écran — précisément le problème que résolvent
 les bibliothèques de composants, et que nous n'avons pas.
 
-Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée, moins de 30 kb de JS
+Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée — le critère final —, HTML
+d'au plus 30 000 octets transférés (gzip) par page (décision n° 22), moins de 30 kb de JS
 par page (minifié, non compressé, préchargement compris), polices auto-hébergées, **aucune requête vers un domaine tiers**.
+Les données des calculateurs fiscaux ne sont pas dans le HTML : un fichier par année de calcul,
+identique pour tous les visiteurs et tous les cantons, au nom haché, chargé avec le cœur.
 
-Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget
-de 30 000 octets et ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans
-la page (décision du 05.10.2026, W08 étape 0).
+Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget et
+ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans la page (décision du
+05.10.2026, W08 étape 0). Trois plafonds, vérifiés par `tests/build/js-budget.test.ts` (décision
+n° 21, 17.10.2026) :
+
+- **Démarrage** : moins de 30 000 octets ; objectif interne de moins de 10 000 sur une page de
+  calculateur, dont le premier résultat (cas exemple) est rendu à la construction.
+- **Cœur à la demande** : tout ce qu'il faut pour recalculer après une saisie — moteur, champs,
+  chemins, profils, affichage du résultat —, chargé par le démarrage dès le premier focus,
+  `pointerdown` ou `touchstart` sur le formulaire : au plus 40 000 octets. Pendant le chargement,
+  la carte garde le résultat de l'exemple : aucun état vide, aucun indicateur de chargement.
+- **Module à la demande distinct** : toute fonctionnalité qui n'est pas nécessaire au premier
+  recalcul (estimateur du salaire brut, graphiques, comparateur communal, copie du lien,
+  impression, plus tard A4), chargée par le cœur quand elle sert — les graphiques après le premier
+  résultat, le comparateur au clic : au plus 15 000 octets, sans compter ce que le démarrage et le
+  cœur ont déjà chargé. Les tableaux « Et si » et les graphiques d'un calculateur vont dans son
+  module « visualisations », chargé quand leur section approche de l'écran ou après le premier
+  recalcul ; sans JavaScript, ce qui est rendu au build reste visible (décision n° 22).
 
 ---
 
@@ -717,7 +737,7 @@ moment :
   correspondance et rejette une demande dont le partenaire ne correspond pas.
 - Prix, durée d'essai et conditions de résiliation ne sont **jamais déployés** : ils
   restent dans `PARTNERS.md` et les contrats.
-- Un test `no-leak`, exécuté après la construction, échoue si une adresse de partenaire,
+- Un test `no-leak`, dans `tests/build/`, exécuté après la construction, échoue si une adresse de partenaire,
   un identifiant ou le nom du fichier de routage apparaît dans `dist/`.
 
 ---
@@ -760,6 +780,9 @@ const articles = defineCollection({
 Contraintes de schéma, donc vérifiées au build : au moins un calculateur lié, au moins
 deux sources. Un article qui ne mène nulle part ne peut pas être publié.
 Route : `/{famille}/guides/{slug}/`.
+
+Un article daté cite les valeurs en vigueur à sa date ; seules les pages calculateurs et les
+pages de référence lisent les données.
 
 ---
 
@@ -828,18 +851,18 @@ construire le routage multilingue tant que la décision n'est pas prise.
 ```js
 // astro.config.mjs
 import { defineConfig } from "astro/config";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://calculateurs.ch", // apex, sans www
   output: "static",
-  integrations: [
-    sitemap({ changefreq: "monthly", lastmod: new Date() }),
-    tailwind(),
-  ],
+  integrations: [mdx(), sitemap({ changefreq: "monthly", lastmod: new Date() })],
   build: { format: "directory" },
   prefetch: false,
+  // Tailwind CSS v4 par son plugin Vite ; plugins du budget JavaScript (voir le fichier réel)
+  vite: { plugins: [tailwindcss()] },
 });
 ```
 
@@ -849,14 +872,14 @@ export default defineConfig({
   "prebuild": "tsx scripts/fetch-private-data.ts",
   "pretest": "tsx scripts/fetch-private-data.ts",
   "test": "vitest run",
-  "postbuild": "vitest run tests/leads/no-leak.test.ts",
-  "verify-data": "tsx scripts/verify-data.ts",
-  "new-year": "tsx scripts/new-year.ts",
+  "postbuild": "VITEST_DIST=1 vitest run", // tests/build/ sur dist/ (vitest.config.ts) ; no-leak y viendra
+  "verify-data": "tsx scripts/verify-data.ts", // à venir : rapport de fraîcheur, rituel du 1er janvier (§ 1.5)
+  "new-year": "tsx scripts/new-year.ts", // à venir : rituel du 1er janvier (§ 1.5)
   "predeploy": "npm run test && astro check",
 }
 ```
 
-Dépendances : `astro@5`, `@astrojs/sitemap`, `@astrojs/tailwind`, `tailwindcss@4`,
+Dépendances : `astro@7`, `@astrojs/sitemap`, `@tailwindcss/vite`, `tailwindcss@4`,
 `@fontsource/figtree`, `zod`, `vitest`, `tsx`,
 `@astrojs/check`, `typescript`, `@astrojs/mdx` (composants Astro dans les articles
 (figures, tableaux générés depuis src/data/)). **Ni `@astrojs/preact`, ni `preact`, ni aucune
@@ -924,6 +947,8 @@ Règle d'accès aux données privées : **aucun fichier de `src/pages/` ni de
 | 18  | **Cas exemple obligatoire** : chaque calculateur s'ouvre pré-rempli, montant calculé au build | Le visiteur voyait « — » au lieu d'un chiffre ; tout montant « type » vient du moteur, jamais de la main (R3) (16.10.2026) |
 | 19  | **Page calculateur inversée** : calcul d'abord ; une ligne de périmètre au-dessus du formulaire, liée au détail « Ce que ce calcul suppose » ; exclusions dans la carte résultat au moment où la saisie les déclenche (P5) | Le chiffre en 10 secondes, la preuve en un clic ; rien n'est supprimé, tout est déplacé (16.10.2026) |
 | 20  | **Thème sombre écarté** | Les lecteurs impriment et citent ; la feuille d'impression et la cohérence des graphiques priment (16.10.2026) |
+| 21  | **Budget JavaScript en trois plafonds** : démarrage < 30 000 octets (objectif < 10 000), cœur à la demande ≤ 40 000, module distinct ≤ 15 000 | Le moteur seul pèse ~16 ko minifiés ; le calcul d'A3 sans nouvelle fonctionnalité dépassait déjà 30 000 octets à la demande. Le premier résultat étant rendu au build, la page ne charge au démarrage qu'un chargeur de moins de 1 ko (17.10.2026) |
+| 22  | **Module « visualisations » par calculateur et budget HTML en transféré** : tableaux « Et si » et graphiques hors du cœur, ≤ 15 000 octets, chargés à l'approche de leur section ou après le premier recalcul ; HTML ≤ 30 000 octets transférés (gzip) par page, au lieu de 100 000 bruts ; LCP < 1,5 s reste le critère final | Le cœur d'A3 était à 59 octets de son plafond et le HTML d'A2 à 1 ko du sien avant le prompt 5 ; un plafond brut pénalisait le balisage répétitif, que la compression absorbe (17.10.2026) |
 
 ---
 

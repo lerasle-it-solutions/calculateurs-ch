@@ -1,10 +1,23 @@
 ---
 /**
- * NumberField — un champ numérique. Élément natif : <input type="number">,
- * dans un cadre qui porte bordure, focus et états, avec son unité à droite
- * (docs/design-system.md § 2.3). Aucun JavaScript.
+ * NumberField — un champ numérique (docs/design-system.md § 2.3). Élément
+ * natif : <input type="text" inputmode="decimal">, que `type="number"` ne
+ * permettait pas (il n'affiche pas l'apostrophe), dans un cadre qui porte
+ * bordure, focus et états, avec son unité à droite.
+ *
+ * Saisie tolérante (src/lib/format/amount-input.ts) : 70'000, 70’000, 70 000 et
+ * 70000 sont acceptés, décimales au point ou à la virgule. Un montant (« CHF »)
+ * se formate à la suisse pendant la frappe sans que le curseur saute. `min`,
+ * `max` et `step` sont validés par le parseur, plus par le navigateur : le
+ * message, préfixé « Erreur : », s'affiche sous le champ. Les bornes sont
+ * rendues ici, au build ; les gabarits des messages, une seule fois sur le
+ * formulaire (`data-error-templates`, CalculatorShell) ; le script de la page,
+ * chargé à la demande, compose le message. Sans JavaScript, le champ reste une saisie texte ordinaire.
+ *
+ * Emplacement `action` : un bouton à côté du champ (« Verser le maximum »).
  */
 import { fr } from "../../i18n/fr";
+import { formatNumberTyping } from "../../lib/format/amount-input";
 import { fieldFrame, fieldFramedInput, fieldHint, fieldLabel, fieldRequired, fieldUnit } from "./field-styles";
 
 interface Props {
@@ -20,20 +33,14 @@ interface Props {
 	required?: boolean;
 }
 
-const {
-	id,
-	name,
-	label,
-	value,
-	min,
-	max,
-	step,
-	unit,
-	hint,
-	required = false,
-} = Astro.props;
+const { id, name, label, value, min, max, step, unit, hint, required = false } = Astro.props;
 
+/** Un montant se groupe par milliers ; une année, un âge, un taux, non. */
+const grouping = unit === "CHF";
+const text = value === undefined || value === "" ? undefined : formatNumberTyping(String(value), String(value).length, grouping).text;
+const errors = fr.numberField;
 const hintId = hint ? `${id}-hint` : undefined;
+const errorId = `${id}-error`;
 ---
 
 <div class="flex flex-col gap-xs">
@@ -49,26 +56,35 @@ const hintId = hint ? `${id}-hint` : undefined;
 		)
 	}
 
-	<div class={fieldFrame}>
-		<input
-			type="number"
-			id={id}
-			name={name}
-			value={value}
-			min={min}
-			max={max}
-			step={step}
-			required={required}
-			inputmode="decimal"
-			aria-describedby={hintId}
-			class={fieldFramedInput}
-		/>
-		{
-			unit && (
-				<span class={fieldUnit}>
-					{unit}
-				</span>
-			)
-		}
+	<div class="flex flex-wrap items-center gap-sm">
+		<div class:list={[fieldFrame, "grow"]}>
+			<input
+				type="text"
+				inputmode="decimal"
+				autocomplete="off"
+				id={id}
+				name={name}
+				value={text}
+				required={required}
+				aria-describedby={[hintId, errorId].filter(Boolean).join(" ")}
+				data-number
+				data-grouping={grouping ? "" : undefined}
+				data-min={min}
+				data-max={max}
+				data-step={step}
+				class={fieldFramedInput}
+			/>
+			{
+				unit && (
+					<span class={fieldUnit}>
+						{unit}
+					</span>
+				)
+			}
+		</div>
+		<slot name="action" />
 	</div>
+	<p id={errorId} data-field-error hidden class="text-fine font-bold text-error">
+		{errors.errorPrefix} <span data-field-error-text></span>
+	</p>
 </div>

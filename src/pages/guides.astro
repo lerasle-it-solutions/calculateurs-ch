@@ -1,0 +1,39 @@
+---
+/**
+ * Index des guides, toutes familles (docs/design-system.md § 2.4, entrée
+ * « Guides » de l'en-tête) : généré depuis la collection `articles`, le plus
+ * récemment mis à jour d'abord, avec sa date et sa durée de lecture.
+ */
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/layout/PageHero.astro";
+import Section from "../components/layout/Section.astro";
+import { familyUrl } from "../calculators/families";
+import { fr } from "../i18n/fr";
+
+const date = new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long", year: "numeric" });
+const guides = (await getCollection("articles")).sort((a, b) => b.data.updatedOn.getTime() - a.data.updatedOn.getTime());
+---
+
+<BaseLayout title={fr.guidesPage.title} description={fr.guidesPage.metaDescription}>
+	<PageHero title={fr.guidesPage.heading} lead={fr.guidesPage.lead} />
+	<Section tone="tint">
+		<ul class="grid gap-xl md:grid-cols-2">
+			{
+				guides.map((guide) => (
+					<li class="flex">
+						<a href={`${familyUrl(guide.data.family)}guides/${guide.id}/`} class="group flex w-full flex-col gap-sm rounded-panel bg-paper p-xl text-ink no-underline">
+							<span class="text-fine font-bold text-ink-muted">{fr.family[guide.data.family]}</span>
+							<h2 class="text-subheading group-hover:underline">{guide.data.title}</h2>
+							<p class="text-body text-ink-muted">{guide.data.description}</p>
+							<p class="mt-auto text-fine text-ink-muted">
+								{fr.article.updatedOn} <time datetime={guide.data.updatedOn.toISOString().slice(0, 10)}>{date.format(guide.data.updatedOn)}</time>
+								{guide.data.readingMinutes && <> · {fr.article.readingTime(guide.data.readingMinutes)}</>}
+							</p>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</Section>
+</BaseLayout>

@@ -10,6 +10,7 @@ import { resolveTaxYear } from "../data/tax-years";
 import { PILLAR_3A_BUYBACK_ID } from "../calculators/pension/pillar-3a-buyback";
 import { PILLAR_3A_TAX_SAVING_ID } from "../calculators/pension/pillar-3a-tax-saving";
 import { lppBuybackLockPeriod, lppBuybackYear } from "../calculators/pension/lpp-buyback";
+import { pillar3aContributionDeadline } from "../calculators/contribution-deadline";
 import { fr } from "../i18n/fr";
 import { formatChf, formatPercent, formatSwissNumber } from "../lib/format/chf";
 
@@ -61,6 +62,8 @@ const pillar3a = getFederalData(pillar3aYear).pillar3a;
 // Économie d'impôt d'un versement 3a : plafonds de l'année de calcul d'A2, lus dans les données
 const taxSavingYear = resolveTaxYear(PILLAR_3A_TAX_SAVING_ID).year;
 const taxSavingPillar3a = getFederalData(taxSavingYear).pillar3a;
+// Date limite du versement, lue dans les données (R2) ; non relevée, la phrase ne s'affiche pas (R3)
+const contributionDeadline = pillar3aContributionDeadline(taxSavingYear);
 // Estimation depuis le salaire brut : borne supérieure du salaire coordonné LPP de la même année, si elle est relevée
 const estimatorSocial = getFederalData(taxSavingYear).socialInsurance;
 const lppUpperSalaryLimit =
@@ -423,8 +426,8 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				enregistré, chacun a sa propre déduction, selon sa propre affiliation et
 				ses propres conditions (art. 7 al. 2 OPP 3) : celui qui ne les remplit
 				pas n'a pas de déduction, l'autre garde la sienne, et l'économie porte
-				sur leur somme. Le versement doit être crédité sur le compte ou la police
-				3a au plus tard le 31 décembre (ch. 5.1). L'année où l'activité cesse, la
+				sur leur somme.{contributionDeadline && <> Le versement doit être crédité sur le compte ou la police
+				3a au plus tard le {contributionDeadline.label} (ch. 5.1).</>} L'année où l'activité cesse, la
 				cotisation entière reste déductible si elle est versée avant la fin de
 				l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).
 			</p>

@@ -5,12 +5,14 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 /**
- * Après la construction (`postbuild`) : sur la page d'A1, le message de
- * couverture (et tout autre message qui remplace le résultat) se trouve dans le
- * cadre de résultat, `<output data-result-card>`, à la place du montant, avec
- * une espace entre le texte et le lien ; la barre de résultat mobile porte la
- * mention courte, liée à ce cadre. Aucun emplacement de message ailleurs dans la
- * page, où le visiteur ne le verrait pas.
+ * Après la construction (`postbuild`), sur la page d'A1. Principe, reformulé avec
+ * l'accord du mainteneur le 17.10.2026 (docs/design-system.md § 4.3) : un message
+ * qui remplace le résultat (hors périmètre, donnée manquante, saisie à corriger,
+ * condition non remplie) s'affiche dans la carte, `<output data-result-card>`, à
+ * la place du montant, avec une espace entre le texte et le lien, et sa mention
+ * courte dans la barre mobile, liée à la carte. Il peut se répéter sous le champ
+ * qui le déclenche : limite de couverture sous le champ commune, erreur préfixée
+ * « Erreur : » sous le champ concerné ; jamais ailleurs, et jamais seulement là.
  */
 const DIST = fileURLToPath(new URL("../../dist/", import.meta.url));
 const html = (): string => readFileSync(join(DIST, "prevoyance/rachat-3a-retroactif/index.html"), "utf8");
@@ -45,7 +47,7 @@ describe("A1 : message hors périmètre dans le cadre de résultat", () => {
 		expect(bar).toMatch(new RegExp(`<a\\b[^>]*data-result-status[^>]*href="#${outputId}"|<a\\b[^>]*href="#${outputId}"[^>]*data-result-status`));
 	});
 
-	it("aucun emplacement de message hors du cadre de résultat et de la barre mobile", () => {
+	it("hors de la carte et de la barre mobile, un message ne se répète que sous le champ qui le déclenche", () => {
 		const page = html();
 		const card = elementAt(page, page.search(/<output\b[^>]*data-result-card/), "output");
 		const bar = elementAt(page, page.search(/<div\b[^>]*data-result-card/), "div");
@@ -55,6 +57,23 @@ describe("A1 : message hors périmètre dans le cadre de résultat", () => {
 			.replace(bar, "")
 			.replace(/<script\b[\s\S]*?<\/script>/g, "");
 		expect(rest).not.toMatch(/data-status-text|data-status-link|data-result-status|id="pillar3a-status"/);
+
+		// Limite de couverture : sous le champ commune seulement, annoncée par son aria-describedby
+		const municipality = rest.match(/<input\b[^>]*\bname="municipality"[^>]*>/)![0];
+		const municipalityId = municipality.match(/\sid="([^"]+)"/)![1]!;
+		const coverage = [...rest.matchAll(/<div\b[^>]*\sdata-coverage-message[^>]*>/g)].map((match) => match[0]);
+		expect(coverage).toHaveLength(1);
+		expect(coverage[0]).toContain(`id="${municipalityId}-coverage"`);
+
+		// Erreur de saisie : sous un champ numérique, à l'identifiant de ce champ, préfixée « Erreur : »
+		const numberIds = new Set([...rest.matchAll(/<input\b[^>]*\sdata-number[^>]*>/g)].map((match) => match[0].match(/\sid="([^"]+)"/)![1]!));
+		const errors = [...rest.matchAll(/<p\b[^>]*\sid="([^"]+)-error"[^>]*\sdata-field-error[^>]*>([\s\S]*?)<\/p>/g)];
+		expect(errors.length).toBeGreaterThan(0);
+		expect(errors.length).toBe([...rest.matchAll(/\sdata-field-error[\s>]/g)].length);
+		for (const [, id, inner] of errors) {
+			expect(numberIds.has(id!), `${id}-error sans champ numérique`).toBe(true);
+			expect(inner).toMatch(/^\s*Erreur :/);
+		}
 	});
 
 	it("la page embarque les mentions courtes de la barre mobile", () => {

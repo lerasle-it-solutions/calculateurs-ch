@@ -1,25 +1,21 @@
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 
+import { pillar3aBuybackYear } from "../../src/calculators/pension/pillar-3a-buyback";
+import { taxDataFileJson } from "../../src/calculators/tax-data-file";
 import {
 	browserTraceLabelsModule,
 	TRACE_LABELS_ELEMENT_ID,
 	traceLabelValues,
+	traceLabelsElementId,
 } from "../../src/lib/build/browser-trace-labels";
 import * as labels from "../../src/lib/calculations/trace-labels";
 
 /**
  * Libellés fixes de la trace générés à la construction : le module que reçoit
- * le navigateur, lu sur le JSON de la page, rend exactement les chaînes du
- * module Node, sous les mêmes noms.
+ * le navigateur, lu sur le JSON que le chargeur de la page tire du fichier de
+ * données (src/lib/display/first-interaction.ts), rend exactement les chaînes
+ * du module Node, sous les mêmes noms.
  */
-const renderA1 = async (): Promise<string> => {
-	const { default: Page } = await import("../../src/pages/prevoyance/rachat-3a-retroactif.astro");
-	const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
-	return container.renderToString(Page, {
-		request: new Request("https://calculateurs.ch/prevoyance/rachat-3a-retroactif/"),
-	});
-};
 
 /** Exécute le module du navigateur sur le JSON donné et renvoie ses exportations. */
 const runBrowserModule = (json: string): Record<string, unknown> => {
@@ -31,13 +27,12 @@ const runBrowserModule = (json: string): Record<string, unknown> => {
 };
 
 describe("libellés de la trace dans le navigateur", () => {
-	it("la page d'A1 embarque les libellés dans l'ordre du module du navigateur", async () => {
-		const html = await renderA1();
-		const json = html.match(
-			new RegExp(`<script type="application/json" id="${TRACE_LABELS_ELEMENT_ID}">([\\s\\S]*?)</script>`),
-		)?.[1];
-		expect(json, "libellés absents de la page").toBeDefined();
-		expect(JSON.parse(json!)).toEqual(traceLabelValues());
+	it("le fichier de données porte les libellés de chaque module, dans l'ordre du module du navigateur", () => {
+		const { traceLabels } = JSON.parse(taxDataFileJson(pillar3aBuybackYear)) as { traceLabels: Record<string, string[]> };
+		expect(traceLabels[TRACE_LABELS_ELEMENT_ID]).toEqual(traceLabelValues());
+		for (const module of ["pillar-3a-buyback", "pillar-3a-tax-saving", "lpp-buyback", "gross-to-taxable"] as const) {
+			expect(traceLabels[traceLabelsElementId(module)]).toEqual(traceLabelValues(module));
+		}
 	});
 
 	it("le module du navigateur rend chaque libellé du module Node, sous le même nom", () => {

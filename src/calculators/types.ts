@@ -1,3 +1,5 @@
+import type { EligibilityItem } from "../lib/display/eligibility";
+
 /**
  * Définition déclarative d'un calculateur (voir CLAUDE.md § 2).
  *
@@ -16,16 +18,31 @@ type FieldBase = {
 	/** Aide affichée sous le champ. FRANÇAIS. */
 	hint?: string;
 	required?: boolean;
+	/**
+	 * Champ affiché seulement si toutes ces conditions sont remplies (réponses
+	 * d'autres champs) ; masqué, il n'est ni exigé ni lu.
+	 */
+	shownWhen?: { field: string; value: string }[];
 };
 
 export type NumberFieldDefinition = FieldBase & {
 	kind: "number";
-	/** Unité affichée en suffixe : « CHF », « % », « ans »… FRANÇAIS/symbole. */
+	/** Unité affichée en suffixe : « CHF », « % », « ans »… FRANÇAIS/symbole. Un montant « CHF » se formate à la suisse pendant la frappe. */
 	unit?: string;
 	min?: number;
 	max?: number;
 	step?: number;
 	defaultValue?: number;
+	/** Revenu imposable : champ du chemin « Je connais mon revenu imposable » (§ 4.3). */
+	incomePath?: true;
+	/**
+	 * Pré-rempli depuis ce champ, et masqué derrière un lien « différent ? » qui
+	 * le déplie (revenu fédéral repris du cantonal, § 4.3). Replié, il vaut l'autre
+	 * champ, hypothèse inscrite dans la trace (R4).
+	 */
+	sameAs?: string;
+	/** Bouton « Verser le maximum (<plafond>) » à côté du champ ; le plafond vient du moteur (§ 4.3). */
+	maximumButton?: true;
 };
 
 export type SelectFieldDefinition = FieldBase & {
@@ -57,8 +74,18 @@ export type TextFieldDefinition = FieldBase & {
 	defaultValue?: string;
 };
 
+/** Âges des enfants : un champ par enfant, généré depuis le champ du nombre d'enfants (§ 4.3). */
+export type ChildAgesFieldDefinition = FieldBase & {
+	kind: "childAges";
+	/** Champ du nombre d'enfants. */
+	countField: string;
+	/** Libellé de chaque champ, « {n} » remplacé par le rang de l'enfant. FRANÇAIS. */
+	itemLabel: string;
+};
+
 export type FieldDefinition =
 	| NumberFieldDefinition
+	| ChildAgesFieldDefinition
 	| SelectFieldDefinition
 	| CantonFieldDefinition
 	| MunicipalityFieldDefinition
@@ -69,6 +96,60 @@ export type FieldDefinition =
  * sans lien quand aucune adresse ne vaut pour tous les cas.
  */
 export type ExternalAlternative = { label: string; url?: string };
+
+/**
+ * Cas exemple (docs/design-system.md § 4.2) : la page s'ouvre pré-remplie sur
+ * ce profil fictif, et son résultat est calculé à la construction.
+ *
+ * Exception à R2 : ces saisies de scénario ne sont pas des valeurs au sens de
+ * R2 et n'ont pas de `Value<T>`. Elles ne reprennent jamais une valeur légale
+ * (plafond, taux, seuil) : celle-ci est lue dans les données au moment de
+ * déclarer l'exemple, jamais tapée.
+ */
+export type CalculatorExample = {
+	/** Description d'une ligne, FRANÇAIS, après « Exemple : » dans le bandeau. */
+	label: string;
+	/** Saisies, par nom de champ, telles qu'un visiteur les taperait. */
+	values: Record<string, string>;
+};
+
+/**
+ * Profils qui pré-remplissent un groupe de questions oui/non (§ 4.3) : des
+ * pastilles, plus « Autre situation », qui déplie les questions détaillées.
+ */
+export type ProfileGroup = {
+	/** Nom du groupe de boutons radio. Anglais, camelCase. */
+	name: string;
+	/** Légende du groupe. FRANÇAIS. */
+	legend: string;
+	/** Questions oui/non que les profils remplissent, par nom de champ. */
+	fields: string[];
+	/**
+	 * Profils, le premier par défaut ; `values` donne la réponse de chaque
+	 * question. `details` : ce que le profil affirme, en liste sous le libellé
+	 * quand il ne tient pas dans celui-ci (§ 4.3). FRANÇAIS.
+	 */
+	profiles: { value: string; label: string; details?: string[]; values: Record<string, string> }[];
+	/** Libellé de la pastille qui déplie les questions détaillées. FRANÇAIS. */
+	otherLabel: string;
+	/** Groupe affiché seulement si ce champ a cette valeur (conjoint : état civil). */
+	shownWhen?: { field: string; value: string };
+};
+
+/**
+ * Point de vigilance (§ 4.1, bloc 5), sous la carte résultat. `warning` :
+ * avertissement renforcé, réservé à ce qui peut faire perdre la déduction ou
+ * de l'argent ; `info` : avis informatif pour le reste (arbitrage du 17.10.2026).
+ */
+export type VigilancePoint = {
+	level: "warning" | "info";
+	/** Une phrase visible. FRANÇAIS. */
+	summary: string;
+	/** Texte complet, s'il est plus long, dans « En savoir plus » : titre en gras, texte, liste. FRANÇAIS. */
+	title?: string;
+	text?: string;
+	items?: string[];
+};
 
 export type CalculatorDefinition = {
 	/** « family.name » — ex. « pension.pillar-3a-buyback ». */
@@ -83,6 +164,35 @@ export type CalculatorDefinition = {
 	title: string;
 	/** FRANÇAIS — affiché. */
 	metaDescription: string;
+	/**
+	 * Balise <title>, FRANÇAIS : année de calcul et bénéfice, sous forme de
+	 * question, en moins de 60 caractères (checklist, point 16) :
+	 * « Rachat LPP 2026 : combien d'impôt économisez-vous ? ».
+	 */
+	metaTitle: string;
+	/** La question à laquelle le calculateur répond, FRANÇAIS : carte de l'accueil. */
+	question?: string;
+	/** Une phrase, FRANÇAIS, sous le titre : ce que le visiteur obtient (§ 4.1, bloc 2). */
+	promise: string;
+	/** Une phrase, FRANÇAIS, au-dessus du formulaire : pour qui, cantons, année (§ 4.1, bloc 3). */
+	scopeLine: string;
+	/** Cas exemple, obligatoire (§ 4.2, décision n° 18). */
+	example: CalculatorExample;
+	/** Groupes de questions oui/non pré-remplis par profil (§ 4.3). */
+	profiles?: ProfileGroup[];
+	/**
+	 * Rappel de l'imposition à la sortie (3a, LPP), en une phrase avec son lien,
+	 * sous le coût net dans la carte, avec chaque résultat (§ 4.4). FRANÇAIS.
+	 */
+	exitTaxReminder?: { text: string; link: { label: string; url: string } };
+	/** Points de vigilance, toujours affichés sous la carte résultat (§ 4.1). */
+	vigilance?: VigilancePoint[];
+	/**
+	 * Conditions d'éligibilité, en liste de contrôle « remplie / non remplie »
+	 * sous la carte (§ 4.3), affichée selon la règle unique de
+	 * src/lib/display/eligibility.ts.
+	 */
+	eligibility?: EligibilityItem[];
 
 	scope: {
 		/** FRANÇAIS → bandeau, bloc « Pour qui ». */
@@ -100,6 +210,11 @@ export type CalculatorDefinition = {
 		assumptions: string[];
 		/** Codes officiels : VD, GE, VS, FR, NE, JU. */
 		cantonsCovered: string[];
+		/**
+		 * Noms des cantons en couverture partielle (src/calculators/tax-coverage.ts),
+		 * annoncés dans la ligne de périmètre, avant le formulaire (P5).
+		 */
+		partialCantons?: string[];
 		referenceYear: number;
 	};
 

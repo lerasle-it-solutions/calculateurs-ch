@@ -7,9 +7,10 @@
  * lacune sont toutes supposées avec 2e pilier, donc plafonnées à la « petite »
  * cotisation.
  */
-import { getFederalData, getMunicipalMultipliers, sourceRegistry } from "../../data";
+import { getFederalData, sourceRegistry } from "../../data";
 import { resolveTaxYear } from "../../data/tax-years";
 import { formatChf, formatPercent } from "../../lib/format/chf";
+import { municipalityOptions } from "../municipalities";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
@@ -63,20 +64,20 @@ const yesNo = [
 
 const coverage = taxEngineCoverage();
 
-const municipalityOptions = (getMunicipalMultipliers()?.multipliers ?? [])
-	.filter((entry) => coverage.cantonsCovered.includes(entry.canton))
-	.map((entry) => ({ value: `${entry.municipality} (${entry.canton})` }));
 
 const taxableIncomeHint = "Il figure sur votre dernière décision de taxation, ligne revenu imposable.";
 
+/** Cas exemple, celui du guide (src/lib/articles/rachat-3a-retroactif.ts) : saisies de scénario, fictives (§ 4.2). */
+const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000, paidContribution: 2_500 };
+
 const fields: FieldDefinition[] = [
-	{ kind: "canton", name: "canton", label: "Canton de domicile", required: true },
 	{
 		kind: "municipality",
 		name: "municipality",
 		label: "Commune de domicile",
-		options: municipalityOptions,
-		hint: "Commencez à saisir le nom de la commune.",
+		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
+		options: municipalityOptions(coverage.cantonsCovered),
+		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
 		required: true,
 	},
 	{
@@ -91,23 +92,17 @@ const fields: FieldDefinition[] = [
 		required: true,
 	},
 	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{
-		kind: "text",
-		name: "childrenAges",
-		label: "Âge des enfants",
-		inputMode: "numeric",
-		placeholder: "4, 9",
-		hint: "Séparés par une virgule.",
-	},
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
 		label: "Revenu imposable cantonal",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
 	},
 	{
 		kind: "number",
@@ -115,9 +110,11 @@ const fields: FieldDefinition[] = [
 		label: "Revenu imposable fédéral",
 		unit: "CHF",
 		min: 0,
-		step: 100,
+		step: 1,
 		hint: taxableIncomeHint,
 		required: true,
+		incomePath: true,
+		sameAs: "cantonalTaxableIncome",
 	},
 	...pillar3aGapYears.flatMap((year): FieldDefinition[] => [
 		{
@@ -172,6 +169,29 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
 	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
+	question: "Combien d'impôt économisez-vous en rachetant vos années de 3a manquées ?",
+	// Moins de 60 caractères (checklist, point 16) : l'année et le bénéfice, en question
+	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : quelle économie d'impôt ?`,
+	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l'impôt économisé.",
+	exitTaxReminder: {
+		text: "Le capital 3a sera imposé à son retrait : cette économie n'est pas un gain net.",
+		link: { label: "En savoir plus", url: "/methodologie/#prevoyance" },
+	},
+	scopeLine: `Personnes affiliées à un 2e pilier, imposées au régime ordinaire en Suisse romande, rachat en ${pillar3aBuybackYear}.`,
+	example: {
+		label: `personne seule à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}`,
+		values: {
+			municipality: "Lausanne",
+			maritalStatus: "single",
+			children: "0",
+			cantonalTaxableIncome: String(EXAMPLE.cantonalTaxableIncome),
+			federalTaxableIncome: String(EXAMPLE.federalTaxableIncome),
+			[`paidContribution${firstGapYear}`]: String(EXAMPLE.paidContribution),
+			currentYearContributionPaidInFull: "yes",
+			avsIncomeInBuybackYear: "yes",
+			oldAgeBenefit: "no",
+		},
+	},
 
 	scope: {
 		forWhom: [
@@ -210,6 +230,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 			"Le rachat réduit les deux revenus imposables exactement de son montant. Les déductions dont le montant dépend du revenu ne sont pas recalculées.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
+		partialCantons: coverage.partialCantons,
 		referenceYear: pillar3aBuybackYear,
 	},
 
@@ -262,6 +283,56 @@ export const pillar3aBuyback: CalculatorDefinition = {
 		},
 	],
 
+	// Un profil dès trois questions oui/non à réponse courante ; il énumère ce qu'il affirme (§ 4.3)
+	profiles: [
+		{
+			name: "profile",
+			legend: "Vos conditions",
+			fields: [
+				...pillar3aGapYears.flatMap((year) => [`avsIncome${year}`, `alreadyBoughtBack${year}`]),
+				"currentYearContributionPaidInFull",
+				"avsIncomeInBuybackYear",
+				"oldAgeBenefit",
+			],
+			profiles: [
+				{
+					value: "conditionsMet",
+					label: "Je remplis les conditions",
+					details: [
+						`revenu soumis à l'AVS en ${[...pillar3aGapYears, pillar3aBuybackYear].join(", ").replace(/, (\d+)$/, " et en $1")}`,
+						`cotisation ${pillar3aBuybackYear} versée en entier`,
+						`aucun rachat déjà fait pour ${pillar3aGapYears.join(", ").replace(/, (\d+)$/, " ni pour $1")}`,
+						"aucune prestation de vieillesse du 3a perçue",
+					],
+					values: {
+						...Object.fromEntries(pillar3aGapYears.flatMap((year) => [[`avsIncome${year}`, "yes"], [`alreadyBoughtBack${year}`, "no"]])),
+						currentYearContributionPaidInFull: "yes",
+						avsIncomeInBuybackYear: "yes",
+						oldAgeBenefit: "no",
+					},
+				},
+			],
+			otherLabel: "Autre situation",
+		},
+	],
+
+	eligibility: [
+		{
+			label: `Cotisation 3a ${pillar3aBuybackYear} versée intégralement`,
+			anyOf: [{ field: "currentYearContributionPaidInFull", value: "yes" }],
+			profile: "profile",
+		},
+		{ label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}`, anyOf: [{ field: "avsIncomeInBuybackYear", value: "yes" }], profile: "profile" },
+		{ label: "Aucune prestation de vieillesse du pilier 3a déjà perçue", anyOf: [{ field: "oldAgeBenefit", value: "no" }], profile: "profile" },
+	],
+
+	vigilance: [
+		{
+			level: "warning",
+			summary: "Chaque année de lacune ne se rachète qu'une fois : une lacune comblée en partie ne peut plus être complétée, et le solde est perdu.",
+		},
+	],
+
 	monetization: { type: "none" },
 };
 
@@ -277,10 +348,11 @@ export const pillar3aBuybackTexts = {
 	outOfScopeMunicipality: (municipality: string): string =>
 		`Ce calculateur ne couvre pas encore la commune de ${municipality} : une donnée communale nécessaire au calcul n'y est pas relevée. Utilisez la calculette du canton :`,
 	missingData: "Une donnée nécessaire au calcul pour cette commune n'est pas encore relevée : aucun résultat n'est affiché.",
-	municipalityMismatch: "La commune saisie ne correspond pas au canton choisi.",
 	unknownMunicipality: "Choisissez une commune dans la liste proposée.",
 	/** Mentions courtes de la barre de résultat mobile, à la place du montant, liées au message de la carte. */
 	outOfScopeShort: "Hors périmètre, voir le message",
 	missingDataShort: "Donnée manquante, voir le message",
 	inputShort: "Commune à préciser, voir le message",
+	/** Mention courte de la barre mobile quand une condition bloque tout rachat. */
+	blockedShort: "Rachat impossible, voir le message",
 };

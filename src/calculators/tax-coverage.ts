@@ -20,6 +20,8 @@ type Scope = CalculatorDefinition["scope"];
 export type TaxEngineCoverage = {
 	cantonsCovered: CantonCode[];
 	notCovered: Scope["notCovered"];
+	/** Noms des cantons en couverture partielle, annoncés dans la ligne de périmètre (§ 4.1). */
+	partialCantons: string[];
 };
 
 /**
@@ -30,6 +32,7 @@ export type TaxEngineCoverage = {
 export function taxEngineCoverage(): TaxEngineCoverage {
 	const cantonsCovered: CantonCode[] = [];
 	const notCovered: Scope["notCovered"] = [];
+	const partialCantons: string[] = [];
 	for (const { code, name } of ROMANDE_CANTONS) {
 		const file = cantonFiles().find((candidate) => candidate.code === code);
 		const data = file ? cantonDataSchema.parse(file.data) : undefined;
@@ -38,6 +41,7 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 			cantonsCovered.push(code);
 			continue;
 		}
+		partialCantons.push(name);
 		// Couverture limitée à certains ménages : le canton reste couvert pour les autres.
 		const households = coverage.notCoveredHouseholds;
 		if (households !== undefined) cantonsCovered.push(code);
@@ -67,5 +71,5 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 				: { case: `${text} ${fr.partialCoverage.useOfficialCalculator}` },
 		);
 	}
-	return { cantonsCovered, notCovered };
+	return { cantonsCovered, notCovered, partialCantons };
 }

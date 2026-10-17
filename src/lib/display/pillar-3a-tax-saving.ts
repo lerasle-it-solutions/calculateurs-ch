@@ -13,6 +13,7 @@ import { formatChfAmount } from "./amounts";
 import type { BreakdownRow, Pillar3aBuybackDisplayTexts } from "./pillar-3a-buyback";
 import { coverageStatus } from "./coverage";
 import type { ResultStatus, StatusLink } from "./result-card";
+import type { ResultFigures } from "./result-summary";
 
 export type Pillar3aTaxSavingDisplayTexts = Pillar3aBuybackDisplayTexts & {
 	/** Mention courte de la barre mobile quand aucune déduction n'est possible cette année. */
@@ -37,6 +38,10 @@ export type Pillar3aTaxSavingDisplay = {
 	summary: Pillar3aTaxSavingSummary | null;
 	/** Message qui remplace le montant dans la carte de résultat ; `null` quand un résultat est calculé. */
 	status: ResultStatus | null;
+	/** Plafond retenu par le moteur pour chaque personne (bouton « Verser le maximum ») ; `null` sans calcul. */
+	caps: number[] | null;
+	/** Montant déduit, économie et économie par impôt (résumé de la carte) ; `null` sans résultat. */
+	figures: ResultFigures | null;
 };
 
 export function displayPillar3aTaxSaving(
@@ -56,12 +61,15 @@ export function displayPillar3aTaxSaving(
 					: `${formatSwissNumber(line.value, 2)}${line.unit ? ` ${line.unit}` : ""}`,
 			note: line.assumption,
 		}));
+		const caps = result.contributors.map((contributor) => contributor.cap);
 		if (result.blockedReason !== null) {
 			return {
 				value: "—",
 				breakdown,
 				summary: null,
 				status: { text: result.blockedReason, short: texts.blockedShort },
+				caps,
+				figures: null,
 			};
 		}
 		return {
@@ -75,13 +83,20 @@ export function displayPillar3aTaxSaving(
 				excess: result.excess > 0 ? formatChfAmount(result.excess) : null,
 			},
 			status: null,
+			caps,
+			figures: {
+				paid: result.deduction,
+				saving: result.taxSaving,
+				components: result.componentSavings,
+				entered: result.contributors.reduce((sum, contributor) => sum + contributor.contribution, 0),
+			},
 		};
 	} catch (error) {
 		if (error instanceof PartialCoverageError) {
-			return { value: "—", breakdown: [], summary: null, status: coverageStatus(error, texts, officialCalculators) };
+			return { value: "—", breakdown: [], summary: null, status: coverageStatus(error, texts, officialCalculators), caps: null, figures: null };
 		}
 		if (error instanceof MissingTaxDataError) {
-			return { value: "—", breakdown: [], summary: null, status: { text: texts.missingData, short: texts.missingDataShort } };
+			return { value: "—", breakdown: [], summary: null, status: { text: texts.missingData, short: texts.missingDataShort }, caps: null, figures: null };
 		}
 		throw error;
 	}

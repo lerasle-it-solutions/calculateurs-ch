@@ -39,18 +39,18 @@ describe("/donnees/, sources des calculateurs", () => {
 		expect(missing).toEqual([]);
 	});
 
-	it("la circulaire AFC n° 18a figure parmi les sources des règles, avec sa référence légale", async () => {
+	// Depuis le 17.10.2026, la circulaire alimente une valeur (date limite du versement 3a,
+	// federal/2026.json) : elle passe des « sources des règles » aux sources des données.
+	it("la circulaire AFC n° 18a figure parmi les sources des données de /donnees/", async () => {
 		const text = await render("/donnees/", "donnees");
 		const circular = sourceRegistry().get("afc-circular-18a")!;
-		const section = text.slice(text.indexOf("Sources des règles"));
-		expect(section).toContain(circular.name);
-		expect(section).toContain(circular.legalReference!);
+		const data = text.slice(0, text.indexOf("Sources des règles"));
+		expect(data).toContain(circular.name);
 	});
 
-	it("la méthodologie liste aussi les sources des règles de prévoyance", async () => {
+	it("la méthodologie liste la circulaire avec sa référence légale", async () => {
 		const text = await render("/methodologie/", "methodologie");
 		const circular = sourceRegistry().get("afc-circular-18a")!;
-		const section = text.slice(text.indexOf("Sources des règles :"));
-		expect(section).toContain(`${circular.name}, ${circular.legalReference}`);
+		expect(text).toContain(`${circular.name}, ${circular.legalReference}`);
 	});
 });

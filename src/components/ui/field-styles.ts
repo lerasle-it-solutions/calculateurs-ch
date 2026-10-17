@@ -26,9 +26,10 @@ export const fieldControl =
 /** Cadre d'un champ composé (saisie + segment d'unité) : il porte bordure, focus et états. */
 export const fieldFrame =
 	"flex min-h-3xl min-w-0 items-stretch rounded-control border border-rule bg-paper transition-colors duration-150 " +
-	"hover:border-ink focus-within:border-accent focus-within:outline-2 focus-within:outline-accent focus-within:outline-offset-0 " +
-	"has-[[aria-invalid=true]]:border-error has-[[aria-invalid=true]]:bg-error-tint " +
-	"has-[:disabled]:cursor-not-allowed has-[:disabled]:border-hairline has-[:disabled]:bg-tint has-[:disabled]:text-ink-muted";
+	// Sans décalage d'anneau : le cadre est un <div>, que la règle de focus globale (décalée de 2 px) ne vise pas
+	"hover:border-ink focus-within:border-accent focus-within:outline-2 focus-within:outline-accent " +
+	"has-aria-invalid:border-error has-aria-invalid:bg-error-tint " +
+	"has-disabled:cursor-not-allowed has-disabled:border-hairline has-disabled:bg-tint has-disabled:text-ink-muted";
 
 /** Saisie dans un cadre : transparente, le cadre dessine le focus. */
 export const fieldFramedInput =

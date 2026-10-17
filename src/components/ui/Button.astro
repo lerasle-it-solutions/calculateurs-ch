@@ -17,7 +17,9 @@ interface Props {
 	/** Pleine largeur sous `md`. */
 	block?: boolean;
 	class?: string;
-	[key: `data-${string}`]: string | undefined;
+	/** Masqué au rendu (p. ex. un bouton que le script de la page affiche quand il sert). */
+	hidden?: boolean;
+	[key: `data-${string}`]: string | number | undefined;
 }
 
 const {

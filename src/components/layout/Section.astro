@@ -11,16 +11,20 @@ interface Props {
 	class?: string;
 	/** Rythme du héros de page : `md:py-5xl` au lieu de `md:py-4xl`. */
 	hero?: boolean;
+	/** Héros compact des pages calculateurs (§ 3.2) : `py-xl md:py-2xl`. */
+	compact?: boolean;
+	/** Attributs de repérage (`data-home-proof`…), posés sur la `<section>`. */
+	[key: `data-${string}`]: string | boolean | undefined;
 }
 
-const { tone = "paper", id, class: className, hero = false } = Astro.props;
+const { tone = "paper", id, class: className, hero = false, compact = false, ...rest } = Astro.props;
 ---
 
-<section id={id} class={tone === "tint" ? "bg-tint" : "bg-paper"}>
+<section id={id} class={tone === "tint" ? "bg-tint" : "bg-paper"} {...rest}>
 	<div
 		class:list={[
-			"mx-auto w-full max-w-page px-lg py-3xl md:px-2xl",
-			hero ? "md:py-5xl" : "md:py-4xl",
+			"mx-auto w-full max-w-page px-lg md:px-2xl",
+			compact ? "py-xl md:py-2xl" : hero ? "py-3xl md:py-5xl" : "py-3xl md:py-4xl",
 			className,
 		]}
 	>

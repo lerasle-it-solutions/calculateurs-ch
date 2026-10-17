@@ -381,7 +381,7 @@ Mise en page :
 
 ```
 <header class="sticky top-0 z-10 border-b border-hairline bg-paper">
-  <div class="mx-auto flex max-w-page items-center justify-between gap-xl px-lg md:px-2xl min-h-4xl">
+  <div class="relative mx-auto flex max-w-page items-center justify-between gap-md px-lg md:gap-xl md:px-2xl min-h-4xl">
 ```
 
 - Gauche : le logotype `logo.svg`, tel quel, rendu selon le § 1.5 (composant Astro dans un lien
@@ -389,26 +389,33 @@ Mise en page :
 - Entrées : **Calculateurs · Guides · Méthodologie**, en `text-label font-bold text-ink
   no-underline`, `hover:text-accent`, page courante `aria-current="page"` → `text-accent` +
   soulignement 2 px décalé (`underline decoration-2 underline-offset-8`).
-- Droite : pastille « Sources vérifiées le JJ.MM.AAAA » (§ 2.6), liée à `/donnees/`, date dans
+- Dès `md`, à droite : pastille « Sources vérifiées le JJ.MM.AAAA » (§ 2.6), liée à `/donnees/`, date dans
   un `<time datetime>`. La date est la **date de vérification du site** (ci-dessous). Pas
   d'année, et jamais « à jour » (interdit n° 3 des conditions d'usage de l'AFC).
-- **Pas de bouton Menu sous cinq entrées** : les entrées restent visibles à toutes les largeurs.
-  Pas de recherche ni de sélecteur de langue tant que le site est monolingue.
-- Hauteur 64 px. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au défilement (JS).
+- **Sous `md`, une seule rangée** : le logotype et un bouton « Menu » (`<details>`/`<summary>`
+  natif) qui contient les trois entrées et la pastille. **Dès `md`**, les trois entrées et la
+  pastille toujours visibles, sans bouton Menu (arbitrage du 17.10.2026 : il remplace la règle
+  « pas de bouton Menu sous cinq entrées », qui faisait passer l'en-tête sur deux ou trois rangées
+  à 375 px et repoussait le premier champ sous le critère du § 4.1). Pas de recherche ni de
+  sélecteur de langue tant que le site est monolingue.
+- Hauteur 64 px à toutes les largeurs. Collant (`sticky`) autorisé ; jamais masqué/réaffiché au
+  défilement (JS).
 
-**Menu mobile (< `md`), à partir de cinq entrées seulement — sans JavaScript :**
+**Menu mobile (< `md`) — sans JavaScript :**
 
 ```html
 <details class="md:hidden">
   <summary class="flex min-h-3xl list-none items-center gap-sm rounded-button px-lg text-label font-bold">
     <svg aria-hidden="true" …>…</svg> Menu
   </summary>
-  <nav aria-label="Familles de calculateurs"
-       class="absolute inset-x-0 top-full border-b border-hairline bg-paper px-lg py-xl shadow-raised">
-    <ul class="flex flex-col gap-xs">
-      <li><a class="flex min-h-3xl items-center rounded-control px-md text-body font-bold text-ink no-underline hover:bg-tint">…</a></li>
-    </ul>
-  </nav>
+  <div class="absolute inset-x-0 top-full flex flex-col gap-md border-b border-hairline bg-paper px-lg py-xl shadow-raised">
+    <nav aria-label="Navigation principale">
+      <ul class="flex flex-col gap-xs">
+        <li><a class="flex min-h-3xl items-center rounded-control px-md text-body font-bold text-ink no-underline hover:bg-tint">…</a></li>
+      </ul>
+    </nav>
+    <a href="/donnees/" class="…pastille…">Sources vérifiées le <time datetime="…">JJ.MM.AAAA</time></a>
+  </div>
 </details>
 ```
 
@@ -507,7 +514,11 @@ cartes, carrousels automatiques, compteurs animés du résultat.
 **Une seule dérogation** : quand la valeur du résultat change, une transition de **250 ms au
 plus** sur cette valeur signale le recalcul. Elle est désactivée sous
 `prefers-reduced-motion: reduce`. Le compteur animé reste interdit : la nouvelle valeur remplace
-l'ancienne, les chiffres intermédiaires ne s'affichent jamais.
+l'ancienne, les chiffres intermédiaires ne s'affichent jamais. Elle est implémentée **une seule
+fois, dans `ResultCard`** : tous les calculateurs l'ont, ce n'est pas un choix par calculateur
+(arbitrage du 17.10.2026). Token : `--animate-result-refresh` dans `tokens.css` (opacité de 0,4 à
+1 en 200 ms), classe `motion-safe:animate-result-refresh`, relancée par le script à chaque nouvelle
+valeur.
 
 ### 3.4 Garde-fous automatiques
 
@@ -523,7 +534,8 @@ l'ancienne, les chiffres intermédiaires ne s'affichent jamais.
 
 | Budget | Valeur |
 | --- | --- |
-| JavaScript par page | < 30 ko |
+| JavaScript par page | < 30 ko au démarrage (objectif < 10 ko sur un calculateur) ; cœur à la demande ≤ 40 ko, module distinct ≤ 15 ko (`CLAUDE.md` § 3, décision n° 21) |
+| HTML par page | ≤ 30 ko transférés, mesurés en gzip (décision n° 22) ; données des calculateurs hors du HTML |
 | CSS total | < 100 ko (actuel ≈ 15 ko) |
 | Polices | 2 fichiers woff2 latin ≈ 22 ko, `font-display: swap` (Fontsource) |
 | LCP (4G simulée) | < 1,5 s |
@@ -560,7 +572,7 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 2 | Promesse | `<p>` | Une seule phrase, `text-lead text-ink-muted` : ce que le visiteur obtient |
 | 3 | Ligne de périmètre | `<p>` | Une seule ligne au-dessus du formulaire, `text-fine text-ink-muted` : pour qui, cantons, année ; lien vers le détail « Ce que ce calcul suppose » (P5) |
 | 4 | Formulaire et carte résultat | grille § 2.5 | Carte résultat collante (`lg:sticky`), barre mobile en dessous de `lg` |
-| 5 | Points de vigilance | avertissements renforcés (§ 2.6) | Courts : une phrase chacun, préfixe « Attention : » |
+| 5 | Points de vigilance | avertissement renforcé ou avis informatif (§ 2.6) | Courts : une phrase visible chacun ; le texte complet, s'il est plus long, va dans un `<details>` « En savoir plus » à l'intérieur du point, rien n'est supprimé. Avertissement renforcé, préfixe « Attention : », pour ce qui peut faire perdre la déduction ou de l'argent ; avis informatif pour le reste (ci-dessous) |
 | 6 | Détail ligne par ligne | `CalculationBreakdown` (`<details>` + `<table>`) | Trace complète (R4) |
 | 7 | Graphiques | SVG inline (§ 4.6) | Facultatifs ; jamais vides |
 | 8 | Mise en relation | `LeadForm` (`<form>`) | Seulement si `monetization.trigger` est satisfait et qu'un partenaire couvre la situation ; résultat complet avant, jamais un mur ni une fenêtre surgissante (architecture § 4, `CLAUDE.md`) |
@@ -568,6 +580,11 @@ page retrouve sa place ci-dessous, aucun contenu du périmètre déclaré (`scop
 | 10 | Variantes | `RelatedVariants` | — |
 | 11 | FAQ | — | — |
 | 12 | Sources | `DataFreshness` (bloc source, § 2.6) | Année et date propres au calculateur, formule d'attribution de l'AFC intacte ; les `SourceTag` (§ 4.5) citent en ligne dans les blocs précédents |
+
+**Points de vigilance** (arbitrage du 17.10.2026, conforme au § 1.1) : le style avertissement
+renforcé (`warning`) est réservé à ce qui peut faire perdre la déduction ou de l'argent — délai de
+blocage d'un rachat LPP, retrait en capital, solde d'une lacune 3a perdu. Les autres points
+(découvert de la caisse, primauté des prestations…) prennent le style avis informatif.
 
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2). Les blocs 1 à 3 forment le héros compact (§ 3.2).
@@ -588,7 +605,15 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   toujours lue dans les données. « Verser le maximum » dans un cas exemple se déclare comme un
   renvoi au plafond, jamais comme son montant.
 - La page s'ouvre **pré-remplie** sur ce cas, annoncé au-dessus du formulaire par un bandeau
-  (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres ».
+  (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres, ou partez de
+  votre salaire brut. » Le bandeau disparaît à la première saisie.
+- **Le cas exemple est exprimé en revenus imposables** : la page s'ouvre sur le chemin « Je connais
+  mon revenu imposable » (§ 4.3). Le lien « partez de votre salaire brut » du bandeau bascule sur le
+  chemin brut. Basculer sur le chemin brut **vide les champs de revenu** et remplace le montant de
+  la carte par le statut « Saisissez votre salaire brut » : **jamais un chiffre d'exemple à côté de
+  champs vides** (arbitrage du 17.10.2026).
+- Si l'estimateur n'a pas de données pour l'année de calcul, le lien du bandeau et le chemin brut
+  sont **désactivés**, avec une phrase qui l'explique. Le choix est fait au build, par calculateur.
 - La carte résultat affiche **un vrai montant dès le chargement**, jamais « — ». Le résultat du cas
   exemple est calculé au build en exécutant le moteur : il s'affiche aussi sans JavaScript.
 - Tout montant « type » affiché ailleurs — cartes de calculateur, accueil, images de partage — est
@@ -598,10 +623,14 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
 
 ### 4.3 Formulaire
 
-- **Deux chemins en tête du formulaire**, en radios stylés en pastilles (§ 2.3) : « Je pars de mon
-  salaire brut » (**par défaut**) et « Je connais mon revenu imposable ». Le script de l'estimateur
-  reste chargé à la demande (décision du 05.10.2026) : le cas exemple étant calculé au build, le
-  script se charge à la première interaction avec le chemin « salaire brut ».
+- **Deux chemins en tête du formulaire**, en radios natifs stylés en pastilles (§ 2.3) : « Je pars
+  de mon salaire brut » **en premier**, puis « Je connais mon revenu imposable ». La page s'ouvre
+  cochée sur le second, celui du cas exemple (§ 4.2) ; passer au premier vide les champs de revenu
+  et affiche le statut « Saisissez votre salaire brut » dans la carte. Si l'estimateur n'a pas de
+  données pour l'année de calcul, le chemin brut est désactivé, avec une phrase qui l'explique
+  (choix fait au build, par calculateur). Le script de l'estimateur reste chargé à la demande
+  (décision du 05.10.2026) : le cas exemple étant calculé au build, le script se charge à la
+  première interaction avec le chemin « salaire brut ».
 - **Un seul champ commune** (`MunicipalityField`, `<input list>` + `<datalist>`) : le canton est
   déduit de la commune, aucun champ canton séparé. Les homonymes portent leur canton entre
   parenthèses (« <Commune> (VD) »).
@@ -609,14 +638,26 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   déplie le champ fédéral. Le moteur reçoit toujours deux revenus imposables (décision n° 10) ;
   tant que le visiteur ne les distingue pas, l'égalité est une hypothèse inscrite dans la trace (R4).
 - **Questions oui/non regroupées en profils** (pastilles) ; une pastille « Autre situation » déplie
-  le détail des questions.
+  le détail des questions. **Un profil se justifie dès que trois questions oui/non ou plus ont une
+  réponse courante ; son libellé énumère ce qu'il affirme** (arbitrage du 17.10.2026), par une liste
+  en clair sous le libellé quand elle ne tient pas dans celui-ci.
 - **Montants formatés à la suisse pendant la frappe** (`70'000`), `inputmode="decimal"`, saisie
   tolérante, suffixe `CHF` dans le segment d'unité (§ 2.3).
 - **Bouton « Verser le maximum (<plafond>) »** à côté du champ du montant dès qu'un plafond existe ;
   le plafond est lu dans `src/data/`, jamais écrit dans le libellé (R2). Variante fantôme.
+  Sur le rachat 3a rétroactif, il devient **« Racheter le maximum possible (X CHF) »** : X est le
+  montant que le moteur retient selon sa règle de répartition (années entières, plafond de l'année),
+  jamais un plafond recopié (arbitrage du 17.10.2026). Précision du même jour : **le bouton du
+  maximum n'existe que si le calculateur a un champ de montant.** Quand le moteur calcule lui-même
+  le montant optimal (A1), ce montant est le résultat ; aucun bouton. **Le plafond du bouton vient
+  des données ou du moteur, jamais d'une autre saisie du visiteur** (rachat LPP : aucun bouton, le
+  potentiel est une saisie).
 - **Un champ par enfant** (âge), généré à partir du nombre d'enfants.
 - **Conditions d'éligibilité en liste de contrôle** : une ligne par condition, état dit en mots
-  (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule.
+  (« remplie », « non remplie »), jamais par la seule couleur ni par une icône seule. Règle unique
+  (arbitrage du 17.10.2026) : **en profil courant, le libellé du profil tient lieu de liste : aucune
+  liste ne s'affiche. La liste s'affiche quand le visiteur choisit « Autre situation », ou dès qu'une
+  condition n'est pas remplie, et elle nomme alors la condition qui bloque.**
 - **Une exclusion qui change le résultat s'affiche au moment où la saisie la déclenche**, dans la
   carte résultat, en avertissement renforcé avec l'alternative déclarée dans `notCovered` — pas
   dans une liste lue d'avance.
@@ -626,8 +667,12 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
 Le résultat se lit dans cet ordre :
 
 1. **Le chiffre** (`text-display text-accent tabular-nums`), avec son libellé.
-2. **Sa traduction** : la part du montant versé qu'il représente ; le coût net de l'année,
-   **toujours suivi du rappel de l'imposition à la sortie** quand elle s'applique.
+2. **Sa traduction** : la part du montant retenu par le moteur qu'il représente ; le coût net de
+   l'année, **toujours suivi du rappel de l'imposition à la sortie** quand elle s'applique. La base
+   est **toujours le montant retenu par le moteur** (montant déductible), jamais la somme saisie
+   (arbitrage du 17.10.2026). Quand les deux diffèrent, la phrase nomme la base : « soit 26 % du
+   montant déductible (7’258 CHF) », « la part déductible de votre versement ne vous coûte que X
+   CHF cette année » ; égaux, elle reste simple (« soit 26 % de votre versement »).
 3. **La décomposition par impôt** : fédéral, cantonal, communal, paroissial, taxe personnelle le
    cas échéant.
 4. **« Et si »** : variantes de saisie recalculées par le moteur — une économie d'impôt toujours par
@@ -635,6 +680,16 @@ Le résultat se lit dans cet ordre :
 5. **La comparaison avec les autres communes du canton**, calculée par le moteur sur les
    coefficients publics de `src/data/`. Hors du budget de la page (§ 3.5), elle se charge à la
    demande.
+
+**Messages qui remplacent le montant dans la carte** (arbitrage du 17.10.2026), même typologie sur
+tous les calculateurs (`ResultStatus.kind`, `src/lib/display/result-card.ts`) :
+
+| Cas | `kind` | Rendu |
+| --- | --- | --- |
+| Donnée manquante (le visiteur n'a pas tout saisi) | `missing` | Texte neutre (« Saisissez… », « Indiquez… ») |
+| Saisie invalide | `invalid` | Style erreur (§ 2.6), préfixe « Erreur : » |
+| Hors périmètre (canton, commune, ménage, donnée non relevée, cas `notCovered`) | `coverage`, `exclusion` | Avertissement renforcé, préfixe « Attention : », avec l'alternative |
+| Condition légale non remplie (refus du moteur, ex. art. 79b al. 3 LPP) | `refusal` | Avertissement renforcé, préfixe « Attention : », condition nommée |
 
 Et autour du résultat :
 
@@ -687,7 +742,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
 - [ ] Héros compact (`py-xl md:py-2xl`) : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la carte résultat aussi.
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
-- [ ] Points de vigilance courts, en avertissements renforcés, sous le formulaire.
+- [ ] Points de vigilance courts, sous le formulaire : une phrase visible chacun, texte complet dans « En savoir plus » ; avertissement renforcé pour ce qui peut faire perdre la déduction ou de l'argent, avis informatif pour le reste.
 - [ ] Détail ligne par ligne, puis graphiques.
 - [ ] Formulaire de mise en relation, s'il existe, après les graphiques et avant « Ce que ce calcul suppose » ; résultat complet avant, jamais un mur.
 - [ ] `<details>` « Ce que ce calcul suppose » contenant Pour qui, Ce que ça ne couvre pas (avec alternatives) et Hypothèses retenues.
@@ -697,26 +752,27 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 **Cas exemple (§ 4.2)**
 
 - [ ] Cas exemple déclaré dans la définition du calculateur, sous `example` ; aucune valeur légale (plafond, taux, seuil) recopiée dans ses saisies.
-- [ ] Page pré-remplie, bandeau « Exemple : … — remplacez par vos chiffres ».
+- [ ] Page pré-remplie sur le chemin « revenu imposable », bandeau « Exemple : … — remplacez par vos chiffres, ou partez de votre salaire brut. », qui disparaît à la première saisie.
+- [ ] Basculer sur le chemin brut vide les champs de revenu et affiche « Saisissez votre salaire brut » : jamais un chiffre d'exemple à côté de champs vides.
 - [ ] Vrai montant dans la carte au chargement, y compris sans JavaScript ; jamais « — ».
 - [ ] Tout montant « type » affiché hors de la page calculé au build sur ce cas.
 - [ ] Cas fictif, sans lien avec un cas de référence de l'AFC.
 
 **Formulaire (§ 4.3)**
 
-- [ ] Deux chemins en tête, « Je pars de mon salaire brut » par défaut.
+- [ ] Deux chemins en tête, « Je pars de mon salaire brut » en premier ; chemin brut et lien du bandeau désactivés, avec une phrase, si l'estimateur n'a pas de données pour l'année.
 - [ ] Un seul champ commune, canton déduit, homonymes suivis de leur canton.
 - [ ] Revenu fédéral pré-rempli depuis le cantonal, lien « différent ? », hypothèse dans la trace.
-- [ ] Questions oui/non regroupées en profils, « Autre situation » déplie le détail.
+- [ ] Questions oui/non regroupées en profils dès que trois questions ou plus ont une réponse courante ; chaque profil énumère ce qu'il affirme ; « Autre situation » déplie le détail.
 - [ ] Montants formatés à la suisse pendant la frappe, `inputmode="decimal"`, suffixe CHF.
-- [ ] Bouton « Verser le maximum (<plafond>) » si un plafond existe, plafond lu dans les données.
+- [ ] Bouton « Verser le maximum (<plafond>) » si le calculateur a un champ de montant et qu'un plafond existe, plafond lu dans les données ou retenu par le moteur, jamais d'une autre saisie ; sans objet quand le moteur calcule lui-même le montant optimal (A1), qui est alors le résultat.
 - [ ] Un champ par enfant.
-- [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots.
+- [ ] Conditions d'éligibilité en liste « remplie / non remplie », en mots ; masquée en profil courant, affichée en « Autre situation » ou dès qu'une condition n'est pas remplie.
 - [ ] Exclusions affichées dans la carte au moment où la saisie les déclenche, avec alternative.
 
 **Résultat (§ 4.4)**
 
-- [ ] Le chiffre, puis sa traduction (part du montant versé, coût net de l'année).
+- [ ] Le chiffre, puis sa traduction (part du montant retenu par le moteur, coût net de l'année), base nommée quand elle diffère de la somme saisie.
 - [ ] Rappel de l'imposition à la sortie après le coût net, quand elle s'applique.
 - [ ] Décomposition par impôt.
 - [ ] « Et si » recalculés par le moteur, jamais par taux marginal.
@@ -725,6 +781,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] Feuille de style d'impression.
 - [ ] Barre mobile : montant et coût net.
 - [ ] Aucun tableau vide.
+- [ ] Messages de la carte selon leur type : neutre (donnée manquante), erreur (saisie invalide), avertissement renforcé (hors périmètre, condition légale non remplie).
 
 **Sources (§ 4.5)**
 
@@ -742,5 +799,5 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 **Socle (§ 0 à § 3)**
 
 - [ ] Le résultat reste l'élément le plus grand et le plus contrasté de la page.
-- [ ] Transition du résultat ≤ 250 ms, coupée sous `prefers-reduced-motion` (§ 3.3).
+- [ ] Transition du résultat ≤ 250 ms, coupée sous `prefers-reduced-motion`, implémentée dans `ResultCard` (§ 3.3).
 - [ ] `npx vitest run tests/design` passe.

@@ -6,6 +6,7 @@ import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import { coverageStatusOf, type CoverageTexts } from "../../src/lib/display/coverage";
 import { applyResult, coverageOnly, type ResultDetail, type StatusLink } from "../../src/lib/display/result-card";
+import { renderedPageData } from "../setup/rendered-page-data";
 
 /**
  * Limite de couverture au moment du choix (revue UX du 16.10.2026) : dès que la
@@ -34,7 +35,7 @@ const renderPage = async (page: string): Promise<string> => {
 };
 
 const pageData = (html: string, dataId: string): PageData =>
-	JSON.parse(html.match(new RegExp(`<script type="application/json" id="${dataId}">([\\s\\S]*?)</script>`))![1]!) as PageData;
+	renderedPageData<PageData>(html, dataId);
 
 /** Statut établi par le script de la page dès la commune choisie : personne seule, sans enfant. */
 const statusFor = (data: PageData, municipality: string) => {

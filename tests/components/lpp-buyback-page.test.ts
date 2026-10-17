@@ -5,6 +5,7 @@ import { lppBuyback, lppBuybackLockPeriod, lppBuybackTexts, lppBuybackYear } fro
 import { getCantonData, getMunicipalMultipliers } from "../../src/data";
 import { getTaxScales } from "../../src/data/tax-scales";
 import { ROMANDE_CANTONS } from "../../src/calculators/cantons";
+import { taxDataFileJson, taxDataFileUrl } from "../../src/calculators/tax-data-file";
 import type { TaxInput } from "../../src/lib/calculations/tax";
 import { formatChfAmount } from "../../src/lib/display/amounts";
 import { displayLppBuyback, type LppBuybackDisplayTexts } from "../../src/lib/display/lpp-buyback";
@@ -77,7 +78,9 @@ describe("page d'A3", () => {
 		expect(html).toContain('id="lpp-buyback-calendar"');
 		const form = html.slice(html.indexOf("<form"), html.indexOf("</form>"));
 		expect(form.indexOf('name="federalTaxableIncome"')).toBeLessThan(form.indexOf("data-estimator"));
-		expect(html).toContain('id="trace-labels-lpp-buyback"');
+		// Libellés de la trace : dans le fichier de données que la page déclare (src/lib/build/browser-trace-labels.ts)
+		expect(html).toContain(`data-tax-data="${taxDataFileUrl(lppBuybackYear)}"`);
+		expect((JSON.parse(taxDataFileJson(lppBuybackYear)) as { traceLabels: Record<string, string[]> }).traceLabels).toHaveProperty("trace-labels-lpp-buyback");
 		// Avertissements hors de la carte : visibles sans résultat
 		const warnings = html.slice(html.indexOf('id="lpp-buyback-warnings"') - 200);
 		expect(warnings).not.toMatch(/^[^>]*hidden/);

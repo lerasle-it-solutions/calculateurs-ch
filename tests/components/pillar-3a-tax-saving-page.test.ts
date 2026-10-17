@@ -43,24 +43,65 @@ describe("page d'A2", () => {
 });
 
 describe("champs de la page d'A2", () => {
-	it("aucun libellé de champ en double", async () => {
+	it("aucun libellé de champ en double, chacun associé à un contrôle", async () => {
 		const html = decode(await render("economie-impot-3a", pillar3aTaxSaving.slug));
 		const form = html.slice(html.indexOf("<form"), html.indexOf("</form>"));
-		const fieldLabels = [...form.matchAll(/<label\b[^>]*>([\s\S]*?)<\/label>/g)].map((match) =>
-			match[1]!
-				.replace(/<span\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, "")
-				.replace(/<[^>]+>/g, "")
-				.replace(/\s+/g, " ")
-				.trim(),
-		);
-		// Décision du mainteneur du 11.10.2026 : le formulaire compte les champs déclarés par A2
-		// plus ceux du mode « salaire brut » (bloc [data-estimator]) ; la vérification des doublons est inchangée.
-		const estimatorBlock = form.slice(form.indexOf("data-estimator"), form.indexOf("</details>"));
-		const estimatorFields = [...estimatorBlock.matchAll(/<label\b/g)].length;
-		expect(estimatorFields).toBeGreaterThan(0);
-		expect(fieldLabels.length).toBe(pillar3aTaxSaving.fields.length + estimatorFields);
-		const duplicates = fieldLabels.filter((label, index) => fieldLabels.indexOf(label) !== index);
-		expect(duplicates).toEqual([]);
+		const labelsIn = (part: string) =>
+			[...part.matchAll(/<label\b([^>]*)>([\s\S]*?)<\/label>/g)].map((match) => ({
+				attributes: match[1]!,
+				inner: match[2]!,
+				text: match[2]!
+					.replace(/<span\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, "")
+					.replace(/<[^>]+>/g, "")
+					.replace(/\s+/g, " ")
+					.trim(),
+			}));
+		/** Éléments ouverts par une balise portant `attribute`, balise fermante comprise, imbrications comptées. */
+		const blocks = (attribute: string): string[] =>
+			[...form.matchAll(new RegExp(`<(\\w+)\\b[^>]*\\s${attribute}[\\s=>]`, "g"))].map((match) => {
+				const tag = match[1]!;
+				const pattern = new RegExp(`<${tag}\\b|</${tag}>`, "g");
+				pattern.lastIndex = match.index;
+				let depth = 0;
+				for (let next = pattern.exec(form); next; next = pattern.exec(form)) {
+					depth += next[0].startsWith("</") ? -1 : 1;
+					if (depth === 0) return form.slice(match.index, next.index + next[0].length);
+				}
+				throw new Error(`<${tag} ${attribute}> non fermé`);
+			});
+
+		// Adaptation approuvée par le mainteneur le 17.10.2026 (§ 4.3) : les libellés propres au Shell —
+		// deux chemins, pastilles de profil, âges des enfants — et ceux du chemin « salaire brut »
+		// (bloc [data-estimator]) sont comptés à part ; le reste égale les champs déclarés qui ont un libellé.
+		const apart = {
+			paths: blocks("data-income-paths"),
+			profiles: blocks("data-profile-group"),
+			childAges: blocks("data-child-ages"),
+			estimator: blocks("data-estimator"),
+		};
+		const count = (parts: string[]) => parts.reduce((sum, part) => sum + labelsIn(part).length, 0);
+		expect(count(apart.paths)).toBe(2);
+		expect(count(apart.profiles)).toBe((pillar3aTaxSaving.profiles ?? []).reduce((sum, group) => sum + group.profiles.length + 1, 0));
+		expect(count(apart.childAges)).toBeGreaterThan(0);
+		expect(count(apart.estimator)).toBeGreaterThan(0);
+		const rest = Object.values(apart)
+			.flat()
+			.reduce((part, block) => part.replace(block, ""), form);
+		expect(labelsIn(rest).length).toBe(pillar3aTaxSaving.fields.filter((field) => field.kind !== "childAges").length);
+
+		// Aucun doublon, libellés comptés à part compris
+		const all = labelsIn(form);
+		const texts = all.map((label) => label.text);
+		expect(texts.filter((text, index) => texts.indexOf(text) !== index)).toEqual([]);
+
+		// Chaque libellé est associé à un contrôle : par for/id, ou en l'imbriquant
+		for (const label of all) {
+			const target = label.attributes.match(/\sfor="([^"]+)"/)?.[1];
+			const associated = target
+				? new RegExp(`<(?:input|select|textarea)\\b[^>]*\\sid="${target}"`).test(form)
+				: /<(?:input|select|textarea)\b/.test(label.inner);
+			expect(associated, `« ${label.text} » sans contrôle associé`).toBe(true);
+		}
 	});
 
 	it("chaque personne répond aux questions des règles 3 et 4, avec la tournure du conjoint ou partenaire", () => {

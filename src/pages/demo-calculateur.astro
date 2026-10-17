@@ -13,6 +13,11 @@ const buybackDemo: CalculatorDefinition = {
 	slug: "/demo-calculateur/",
 	title: "Calculateur factice — économie d'impôt d'un rachat",
 	metaDescription: "Page interne de démonstration du CalculatorShell.",
+	metaTitle: "Démonstration du CalculatorShell",
+	promise: "Page interne de démonstration du CalculatorShell.",
+	scopeLine: "Calculateur factice, sans valeur fiscale.",
+	// Saisies fictives de démonstration, sans valeur légale (§ 4.2)
+	example: { label: "rachat de 12’000 CHF, taux marginal saisi de 26 %", values: { buybackAmount: "12000", marginalRate: "26" } },
 	scope: {
 		forWhom: [
 			"Personne salariée assujettie à l'impôt en Suisse romande",
@@ -95,6 +100,10 @@ const lppDemo: CalculatorDefinition = {
 	slug: "/demo-calculateur/",
 	title: "Calculateur factice — rachat LPP",
 	metaDescription: "Entrée de catalogue de démonstration.",
+	metaTitle: "Entrée de démonstration",
+	promise: "Entrée de catalogue de démonstration.",
+	scopeLine: "Démonstration.",
+	example: { label: "démonstration", values: {} },
 	scope: {
 		forWhom: [],
 		notCovered: [],
@@ -131,6 +140,12 @@ const catalog = [buybackDemo, lppDemo];
 </CalculatorLayout>
 
 <script>
+	import { attachResultViews } from "../lib/display/result-views";
+	import { parseNumber } from "../lib/format/amount-input";
+
+	// Vues du résultat abonnées à calc:update (ResultCard et CalculationBreakdown n'ont pas de script)
+	attachResultViews();
+
 	// Moteur factice, en JavaScript natif, dans la page (aucun framework).
 	// resultat = montant × (taux / 100). Les deux opérandes sont saisis :
 	// aucune valeur fiscale n'est codée. Rien n'est envoyé nulle part.
@@ -176,8 +191,9 @@ const catalog = [buybackDemo, lppDemo];
 
 		const update = () => {
 			const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
-			const amount = Number(data.buybackAmount);
-			const rate = Number(data.marginalRate);
+			// Saisie tolérante : « 12’000 » comme « 12000 » (NumberField, § 2.3)
+			const amount = parseNumber(data.buybackAmount ?? "") ?? Number.NaN;
+			const rate = parseNumber(data.marginalRate ?? "") ?? Number.NaN;
 			const valid =
 				Number.isFinite(amount) &&
 				Number.isFinite(rate) &&
