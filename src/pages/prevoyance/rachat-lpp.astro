@@ -63,16 +63,6 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex flex-col gap-xl">
 			<div id="lpp-buyback-result" class="flex max-w-reading flex-col gap-md" hidden={shown === null}>
-				<dl class="flex flex-col text-label">
-					{
-						Object.entries(texts.summary).map(([key, label]) => (
-							<div class="flex justify-between gap-md border-b border-hairline py-sm">
-								<dt>{label}</dt>
-								<dd data-summary={key} class="text-right font-bold tabular-nums">{shown?.summary?.[key as keyof typeof texts.summary]}</dd>
-							</div>
-						))
-					}
-				</dl>
 				<p id="lpp-buyback-not-deducted" class="text-label font-bold" hidden={!shown?.notDeducted}>{shown?.notDeducted}</p>
 
 				<ResultTable

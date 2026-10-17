@@ -1,12 +1,17 @@
 /**
- * Vues du résultat abonnées à l'évènement `calc:update` : carte (ResultCard),
- * barre mobile, message de couverture sous le champ commune (MunicipalityField)
- * et trace (CalculationBreakdown). Ces composants n'ont pas de script : ce
+ * Vues du résultat abonnées à l'évènement `calc:update` : carte (ResultCard)
+ * et son résumé, barre mobile, économie par impôt (TaxComponents), message de
+ * couverture sous le champ commune (MunicipalityField), trace
+ * (CalculationBreakdown) et annonce du montant aux lecteurs d'écran. Ces composants n'ont pas de script : ce
  * qu'ils affichent au chargement est rendu à la construction, et le script de
  * la page, chargé à la demande, les abonne ici. Aucune formule.
  */
 import type { BreakdownRow } from "./pillar-3a-buyback";
 import { applyResult, coverageOnly, type ResultDetail } from "./result-card";
+import { fillSummary, type ResultSummary } from "./result-summary";
+
+/** Délai sans nouvelle saisie avant l'annonce du montant : jamais une annonce par frappe. */
+const ANNOUNCE_DELAY_MS = 1000;
 
 const escapeHtml = (value: string) =>
 	value.replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] as string);
@@ -25,7 +30,7 @@ const rowHtml = (row: BreakdownRow) =>
 
 /** Abonne carte, barre mobile, message sous le champ commune et trace à `calc:update`. */
 export function attachResultViews(): void {
-	const on = (handler: (detail: ResultDetail & { breakdown?: BreakdownRow[] }) => void) =>
+	const on = (handler: (detail: ResultDetail & { breakdown?: BreakdownRow[]; summary?: ResultSummary | null }) => void) =>
 		document.addEventListener("calc:update", (event) => handler((event as CustomEvent).detail ?? {}));
 
 	for (const card of document.querySelectorAll<HTMLElement>("[data-result-card]")) {
@@ -40,6 +45,16 @@ export function attachResultViews(): void {
 		on((detail) => {
 			const changed = typeof detail.value === "string" && detail.value !== slots.value.textContent;
 			applyResult(slots, detail);
+			// Part du versement, coût net, rappel de l'imposition à la sortie, coût net de la barre : avec un résultat seulement
+			const summary = detail.summary ?? null;
+			const block = card.querySelector<HTMLElement>("[data-result-summary]");
+			if (block) block.hidden = !summary;
+			for (const line of card.querySelectorAll<HTMLElement>("[data-summary-line], [data-bar-net-cost]")) {
+				line.textContent = summary ? fillSummary(line.dataset.summaryLine ?? line.dataset.barNetCost!, summary) : "";
+				if (line.matches("[data-bar-net-cost]")) line.hidden = !summary;
+			}
+			const reminder = card.querySelector<HTMLElement>("[data-exit-reminder]");
+			if (reminder) reminder.hidden = !summary;
 			if (!changed || !card.matches("output")) return;
 			slots.value.classList.remove("motion-safe:animate-result-refresh");
 			void slots.value.offsetWidth;
@@ -56,6 +71,30 @@ export function attachResultViews(): void {
 			messageLink: message.querySelector<HTMLAnchorElement>("[data-coverage-link]"),
 		};
 		on((detail) => applyResult(slots, coverageOnly(detail)));
+	}
+
+	for (const section of document.querySelectorAll<HTMLElement>("[data-tax-components]")) {
+		on(({ summary }) => {
+			section.hidden = !summary;
+			for (const row of section.querySelectorAll<HTMLElement>("[data-component]")) {
+				const amount = summary?.components.find((entry) => entry.key === row.dataset.component)?.amount;
+				row.hidden = !amount;
+				row.querySelector("dd")!.textContent = amount ?? "";
+			}
+		});
+	}
+
+	// Lecteurs d'écran : le montant final, ou la mention du message, une fois la saisie arrêtée
+	const announcer = document.querySelector<HTMLElement>("[data-result-announce]");
+	const output = document.querySelector<HTMLElement>("output[data-result-card]");
+	if (announcer && output) {
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		on(({ value, status }) => {
+			clearTimeout(timer);
+			timer = setTimeout(() => {
+				announcer.textContent = status ? status.short : `${output.firstElementChild?.textContent ?? ""} : ${value ?? ""}`;
+			}, ANNOUNCE_DELAY_MS);
+		});
 	}
 
 	for (const breakdown of document.querySelectorAll<HTMLElement>("[data-breakdown]")) {

@@ -13,6 +13,7 @@ import { formatChfAmount } from "./amounts";
 import type { BreakdownRow, Pillar3aBuybackDisplayTexts } from "./pillar-3a-buyback";
 import { coverageStatus } from "./coverage";
 import type { ResultStatus, StatusLink } from "./result-card";
+import type { ResultFigures } from "./result-summary";
 
 export type Pillar3aTaxSavingDisplayTexts = Pillar3aBuybackDisplayTexts & {
 	/** Mention courte de la barre mobile quand aucune déduction n'est possible cette année. */
@@ -39,6 +40,8 @@ export type Pillar3aTaxSavingDisplay = {
 	status: ResultStatus | null;
 	/** Plafond retenu par le moteur pour chaque personne (bouton « Verser le maximum ») ; `null` sans calcul. */
 	caps: number[] | null;
+	/** Montant déduit, économie et économie par impôt (résumé de la carte) ; `null` sans résultat. */
+	figures: ResultFigures | null;
 };
 
 export function displayPillar3aTaxSaving(
@@ -66,6 +69,7 @@ export function displayPillar3aTaxSaving(
 				summary: null,
 				status: { text: result.blockedReason, short: texts.blockedShort },
 				caps,
+				figures: null,
 			};
 		}
 		return {
@@ -80,13 +84,14 @@ export function displayPillar3aTaxSaving(
 			},
 			status: null,
 			caps,
+			figures: { paid: result.deduction, saving: result.taxSaving, components: result.componentSavings },
 		};
 	} catch (error) {
 		if (error instanceof PartialCoverageError) {
-			return { value: "—", breakdown: [], summary: null, status: coverageStatus(error, texts, officialCalculators), caps: null };
+			return { value: "—", breakdown: [], summary: null, status: coverageStatus(error, texts, officialCalculators), caps: null, figures: null };
 		}
 		if (error instanceof MissingTaxDataError) {
-			return { value: "—", breakdown: [], summary: null, status: { text: texts.missingData, short: texts.missingDataShort }, caps: null };
+			return { value: "—", breakdown: [], summary: null, status: { text: texts.missingData, short: texts.missingDataShort }, caps: null, figures: null };
 		}
 		throw error;
 	}

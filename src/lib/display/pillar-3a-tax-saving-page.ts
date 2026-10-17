@@ -6,16 +6,11 @@ import { readPillar3aTaxSavingForm, type Pillar3aTaxSavingPageData } from "./pil
 import type { Pillar3aTaxSavingSummary } from "./pillar-3a-tax-saving";
 
 export const start = (clicked: Element | null, file: TaxDataFile): void => {
-	const summary = document.getElementById("pillar3a-saving-summary")!;
 	const excess = document.getElementById("pillar3a-saving-excess")!;
 	startCalculator<Pillar3aTaxSavingPageData & { estimator: GrossToTaxableRuleSet | null; municipalityOptions: string[] }, Pillar3aTaxSavingSummary>({
 		dataId: "pillar3a-saving-data",
 		read: readPillar3aTaxSavingForm,
 		show: (shown, data) => {
-			summary.hidden = shown === null;
-			for (const slot of summary.querySelectorAll<HTMLElement>("[data-summary]")) {
-				slot.textContent = shown?.[slot.dataset.summary as keyof Pillar3aTaxSavingSummary] ?? "";
-			}
 			excess.hidden = !shown?.excess;
 			excess.querySelector("[data-excess-text]")!.textContent = shown?.excess ? data.texts.excessWarning.replace("{amount}", shown.excess) : "";
 		},

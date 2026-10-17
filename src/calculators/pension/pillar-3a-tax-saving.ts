@@ -213,7 +213,12 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	title: "Économie d'impôt d'un versement 3a",
 	metaDescription:
 		"Calculez l'impôt économisé grâce à votre versement au pilier 3a dans votre commune romande, selon votre affiliation à un 2e pilier.",
+	metaTitle: `Versement 3a ${year} : combien d'impôt économisez-vous ?`,
 	promise: "L'impôt économisé par votre versement au pilier 3a.",
+	exitTaxReminder: {
+		text: "Le capital 3a sera imposé à son retrait : cette économie n'est pas un gain net.",
+		link: { label: "En savoir plus", url: "/methodologie/#prevoyance" },
+	},
 	scopeLine: `Personnes avec un revenu soumis à l'AVS, imposées au régime ordinaire en Suisse romande, versement en ${year}.`,
 	example: {
 		label: `personne seule à Lausanne, avec caisse de pension, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, versement maximal`,
@@ -372,12 +377,6 @@ export const pillar3aTaxSavingTexts = {
 	guide: { label: "Comprendre le pilier 3a et son rachat rétroactif", url: "/prevoyance/guides/rachat-3a-retroactif/" },
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
 	disclaimer: `Estimation indicative, établie d'après les barèmes ${year} et vos saisies. Elle ne constitue ni un conseil fiscal ni un conseil en prévoyance, et ne remplace pas votre décision de taxation.`,
-	summary: {
-		cantonalAndMunicipalSaving: "Canton et commune",
-		federalSaving: "Confédération",
-		effectiveRate: "Économie rapportée au montant déduit",
-		deduction: "Montant déductible retenu",
-	},
 	/** Avertissement de la règle 7, « {amount} » remplacé par l'excédent. */
 	excessWarning:
 		"{amount} versés au-delà du plafond ne sont pas déductibles ; votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",

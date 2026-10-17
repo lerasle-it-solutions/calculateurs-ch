@@ -34,6 +34,7 @@
  */
 import ScopeNotice from "../ui/ScopeNotice.astro";
 import ResultCard from "../ui/ResultCard.astro";
+import TaxComponents from "../ui/TaxComponents.astro";
 import CalculationBreakdown from "../ui/CalculationBreakdown.astro";
 import DataFreshness from "../ui/DataFreshness.astro";
 import RelatedVariants from "./RelatedVariants.astro";
@@ -45,6 +46,7 @@ import FormField from "./FormField.astro";
 import { eligibilityState } from "../../lib/display/eligibility";
 import type { FormOutcome } from "../../lib/display/calculator-form";
 import { exampleFormValues } from "../../calculators/field-values";
+import { fillSummary } from "../../lib/display/result-summary";
 
 interface Props {
 	definition: CalculatorDefinition;
@@ -82,7 +84,7 @@ interface Props {
 	 * `definition.example` (docs/design-system.md § 4.2) : affiché au
 	 * chargement, sans JavaScript.
 	 */
-	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note" | "maxima">;
+	initial?: Pick<FormOutcome<unknown>, "value" | "breakdown" | "status" | "note" | "maxima" | "summary">;
 	/** Identifiant du bloc des points de vigilance (titre). */
 	vigilanceId?: string;
 	/**
@@ -347,7 +349,12 @@ const resultFor = definition.fields
 					value={initial.value}
 					status={initial.status}
 					note={initial.note}
+					summary={initial.summary}
+					exitReminder={definition.exitTaxReminder}
 				/>
+				{/* Seul le montant final est annoncé, une fois la saisie arrêtée (result-views.ts) */}
+				<p data-result-announce aria-live="polite" class="sr-only"></p>
+				<TaxComponents summary={initial.summary} />
 				{eligibility && (
 					<section
 						data-eligibility
@@ -449,7 +456,10 @@ const resultFor = definition.fields
 				<span class="text-fine font-bold">{resultLabel}</span>
 				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
 			</div>
-			<span data-result-value hidden={initial.status !== null} class="text-heading text-accent tabular-nums" aria-hidden="true">{initial.value}</span>
+			<span class="flex flex-col items-end" aria-hidden="true">
+				<span data-result-value hidden={initial.status !== null} class="text-heading text-accent tabular-nums">{initial.value}</span>
+				<span data-bar-net-cost={fr.resultSummary.barNetCost} hidden={!initial.summary} class="text-fine tabular-nums">{initial.summary && fillSummary(fr.resultSummary.barNetCost, initial.summary)}</span>
+			</span>
 			<a data-result-status hidden={initial.status === null} href={`#${formId}-result`} class="text-label font-bold">{initial.status?.short}</a>
 			<a data-load-failed hidden href={`#${formId}-result`} class="text-label font-bold">{fr.calculator.loadFailedShort}</a>
 		</div>

@@ -19,12 +19,21 @@
  * une saisie invalide, avertissement renforcé préfixé « Attention : » pour un
  * cas hors périmètre ou une condition légale non remplie.
  *
+ * Sous le montant (§ 4.4) : la part du montant versé et le coût net de l'année
+ * (`summary`, src/lib/display/result-summary.ts), puis, quand une imposition à
+ * la sortie s'applique, son rappel en une phrase avec son lien.
+ *
+ * Lecteurs d'écran : la carte n'est pas une région annoncée (`aria-live="off"`,
+ * l'<output> l'est sinon par défaut) ; seul le montant final est annoncé, une
+ * fois la saisie arrêtée, par la région `data-result-announce` (result-views.ts).
+ *
  * Recalcul : une transition de 200 ms sur la valeur (`animate-result-refresh`,
  * tokens.css), coupée sous `prefers-reduced-motion`, implémentée ici et dans
  * result-views.ts pour tous les calculateurs (§ 3.3, arbitrage du 17.10.2026).
  */
 import { fr } from "../../i18n/fr";
 import { statusTone, type ResultStatus } from "../../lib/display/result-card";
+import { fillSummary, type ResultSummary } from "../../lib/display/result-summary";
 
 interface Props {
 	id: string;
@@ -40,6 +49,10 @@ interface Props {
 	status?: ResultStatus | null;
 	/** Mention sous le montant au chargement. */
 	note?: string | null;
+	/** Part du versement et coût net au chargement (cas exemple). */
+	summary?: ResultSummary | null;
+	/** Rappel de l'imposition à la sortie, affiché avec chaque résultat. FRANÇAIS. */
+	exitReminder?: { text: string; link: { label: string; url: string } };
 }
 
 const {
@@ -51,7 +64,10 @@ const {
 	event = "calc:update",
 	status = null,
 	note = null,
+	summary = null,
+	exitReminder,
 } = Astro.props;
+const t = fr.resultSummary;
 const tone = status ? statusTone(status.kind) : "neutral";
 ---
 
@@ -60,11 +76,23 @@ const tone = status ? statusTone(status.kind) : "neutral";
 	for={forAttr}
 	data-result-card
 	data-event={event}
+	aria-live="off"
 	class="flex scroll-mt-5xl flex-col gap-sm rounded-panel bg-accent-tint p-xl md:p-2xl"
 >
 	<span class="text-label font-bold">{label}</span>
 	<span data-result-value hidden={status !== null} class="text-display text-accent tabular-nums">{value}</span>
 	<span data-result-note hidden={!note} class="text-label font-bold">{note}</span>
+	<span data-result-summary hidden={!summary} class="flex flex-col gap-xs text-body">
+		<span data-summary-line={t.share} class="font-bold">{summary && fillSummary(t.share, summary)}</span>
+		<span data-summary-line={t.netCost}>{summary && fillSummary(t.netCost, summary)}</span>
+	</span>
+	{
+		exitReminder && (
+			<span data-exit-reminder hidden={!summary} class="max-w-reading text-label">
+				{exitReminder.text} <a href={exitReminder.link.url} class="font-bold">{exitReminder.link.label}</a>
+			</span>
+		)
+	}
 	<span
 		data-result-status
 		data-warning={tone === "warning" ? "" : undefined}

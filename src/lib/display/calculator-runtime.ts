@@ -131,7 +131,9 @@ export function startCalculator<D extends HouseholdPageData & { estimator: Gross
 			}
 		}
 		document.dispatchEvent(
-			new CustomEvent("calc:update", { detail: { value: outcome.value, breakdown: outcome.breakdown, status: outcome.status, note: outcome.note } }),
+			new CustomEvent("calc:update", {
+				detail: { value: outcome.value, breakdown: outcome.breakdown, status: outcome.status, note: outcome.note, summary: outcome.summary ?? null },
+			}),
 		);
 	};
 

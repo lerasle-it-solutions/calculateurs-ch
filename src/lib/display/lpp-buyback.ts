@@ -14,6 +14,7 @@ import { formatChfAmount } from "./amounts";
 import { coverageStatus, type CoverageTexts } from "./coverage";
 import type { BreakdownRow } from "./pillar-3a-buyback";
 import type { ResultStatus, StatusLink } from "./result-card";
+import type { ResultFigures } from "./result-summary";
 
 export type LppBuybackDisplayTexts = CoverageTexts & {
 	missingData: string;
@@ -41,6 +42,8 @@ export type LppBuybackDisplay = {
 	calendar: LppBuybackCalendarRow[];
 	/** Message qui remplace le montant ; `null` quand un résultat est calculé. */
 	status: ResultStatus | null;
+	/** Montant racheté, économie du rachat en une fois et économie par impôt (résumé de la carte) ; `null` sans résultat. */
+	figures: ResultFigures | null;
 };
 
 /** Ordre de gravité des classes : la plus grave d'un scénario est affichée. */
@@ -70,6 +73,7 @@ const empty = (status: ResultStatus | null, breakdown: BreakdownRow[] = []): Lpp
 	scenarios: [],
 	calendar: [],
 	status,
+	figures: null,
 });
 
 export function displayLppBuyback(
@@ -117,6 +121,7 @@ export function displayLppBuyback(
 				status: entry.status ? LOCK_STATUS_LABELS[entry.status] : null,
 			})),
 			status: null,
+			figures: { paid: single.amount, saving: single.taxSaving, components: single.componentSavings },
 		};
 	} catch (error) {
 		if (error instanceof PartialCoverageError) return empty(coverageStatus(error, texts, officialCalculators));

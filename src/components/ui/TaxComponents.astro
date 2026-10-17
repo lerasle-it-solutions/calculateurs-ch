@@ -1,0 +1,35 @@
+---
+/**
+ * TaxComponents — l'économie par impôt, sous la carte résultat
+ * (docs/design-system.md § 4.4, point 3). Une ligne par impôt que le moteur
+ * calcule séparément — cantonal, communal, paroissial, taxe personnelle,
+ * fédéral —, jamais de ligne à zéro : une ligne sans montant reste masquée.
+ * Même composant pour tous les calculateurs. Aucun script : le résumé du cas
+ * exemple est rendu au build ; le script de la page met les montants à jour
+ * (result-views.ts).
+ */
+import { fr } from "../../i18n/fr";
+import { TAX_COMPONENTS, type ResultSummary } from "../../lib/display/result-summary";
+
+interface Props {
+	summary?: ResultSummary | null;
+}
+
+const { summary = null } = Astro.props;
+const t = fr.resultSummary;
+const amountOf = (key: string) => summary?.components.find((row) => row.key === key)?.amount;
+---
+
+<section data-tax-components hidden={!summary} class="mt-md flex max-w-reading flex-col gap-xs">
+	<h3 class="text-label font-bold">{t.componentsHeading}</h3>
+	<dl class="flex flex-col text-label">
+		{
+			TAX_COMPONENTS.map((key) => (
+				<div data-component={key} hidden={!amountOf(key)} class="flex justify-between gap-md border-b border-hairline py-sm">
+					<dt>{t.components[key]}</dt>
+					<dd class="text-right font-bold tabular-nums">{amountOf(key)}</dd>
+				</div>
+			))
+		}
+	</dl>
+</section>

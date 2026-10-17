@@ -169,7 +169,12 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
 	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
+	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : combien d'impôt économisez-vous ?`,
 	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l'impôt économisé.",
+	exitTaxReminder: {
+		text: "Le capital 3a sera imposé à son retrait : cette économie n'est pas un gain net.",
+		link: { label: "En savoir plus", url: "/methodologie/#prevoyance" },
+	},
 	scopeLine: `Personnes affiliées à un 2e pilier, imposées au régime ordinaire en Suisse romande, rachat en ${pillar3aBuybackYear}.`,
 	example: {
 		label: `personne seule à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}`,

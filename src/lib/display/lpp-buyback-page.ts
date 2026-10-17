@@ -16,11 +16,6 @@ export const start = (clicked: Element | null, file: TaxDataFile): void => {
 		read: readLppBuybackForm,
 		show: (shown) => {
 			resultBlock.hidden = shown === null;
-			if (shown?.summary) {
-				for (const slot of resultBlock.querySelectorAll<HTMLElement>("[data-summary]")) {
-					slot.textContent = shown.summary[slot.dataset.summary as keyof typeof shown.summary];
-				}
-			}
 			notDeducted.hidden = !shown?.notDeducted;
 			notDeducted.textContent = shown?.notDeducted ?? "";
 			const withLock = Boolean(shown?.calendar.some((entry) => entry.status !== null));

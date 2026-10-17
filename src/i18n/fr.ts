@@ -264,6 +264,26 @@ export const fr = {
 		loadFailedShort: "Calcul indisponible",
 	},
 
+	/** Sous le chiffre de la carte et sous la carte (docs/design-system.md § 4.4). */
+	resultSummary: {
+		/** « {share} » : « 26 % ». Suit le montant. */
+		share: "soit {share} de votre versement",
+		netCost: "votre versement de {paid} ne vous coûte que {netCost} cette année",
+		/** Barre de résultat mobile. */
+		barNetCost: "coût net {netCost}",
+		/** Lignes de la trace. */
+		shareLabel: "Part du versement économisée",
+		netCostLabel: "Coût net du versement cette année",
+		componentsHeading: "Économie par impôt",
+		components: {
+			cantonalTax: "Impôt cantonal",
+			municipalTax: "Impôt communal",
+			churchTax: "Impôt paroissial",
+			personalTax: "Taxe personnelle",
+			federalTax: "Impôt fédéral direct",
+		},
+	},
+
 	dataPage: {
 		/** Méta-description de /donnees/, 155 caractères au plus. */
 		metaDescription:

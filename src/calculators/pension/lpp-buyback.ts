@@ -211,7 +211,13 @@ export const lppBuyback: CalculatorDefinition = {
 	title: "Rachat LPP : économie d'impôt et échelonnement",
 	metaDescription:
 		"Rachat LPP : estimez l'économie d'impôt d'un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+	metaTitle: `Rachat LPP ${lppBuybackYear} : combien d'impôt économisez-vous ?`,
 	promise: "L'impôt économisé par un rachat LPP, en une fois ou échelonné.",
+	exitTaxReminder: {
+		text: "Le capital issu du rachat sera imposé à son retrait : cette économie n'est pas un gain net.",
+		// Lien existant de « Ce que ça ne couvre pas », en attendant le calculateur du retrait en capital
+		link: { label: "En savoir plus", url: "/methodologie/#rachat-lpp" },
+	},
 	scopeLine: `Personnes affiliées à une caisse de pension, imposées au régime ordinaire en Suisse romande, rachat en ${lppBuybackYear}.`,
 	example: {
 		label: `personne seule à Lausanne, revenu imposable de ${formatChf(EXAMPLE.cantonalTaxableIncome)} CHF, rachat de ${formatChf(EXAMPLE.buybackAmount)} CHF`,
@@ -349,11 +355,6 @@ export const lppBuybackTexts = {
 	resultLabel: "Économie d'impôt d'un rachat en une fois",
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
 	disclaimer: `Estimation indicative, établie d'après les barèmes ${lppBuybackYear} et vos saisies. Elle ne constitue ni un conseil fiscal ni un conseil en prévoyance, et ne remplace pas votre décision de taxation.`,
-	summary: {
-		cantonalTax: "Impôt cantonal",
-		municipalTax: "Impôt communal",
-		federalTax: "Impôt fédéral direct",
-	},
 	/** Part non déduite (hypothèse 4) : « {federal} » et « {cantonal} » remplacés par les montants. */
 	notDeducted:
 		"Le calculateur ne fait pas descendre le revenu imposable sous zéro et ne compte aucune économie pour la part du rachat qui le dépasse : {federal} au fédéral, {cantonal} au cantonal.",

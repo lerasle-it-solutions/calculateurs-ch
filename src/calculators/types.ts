@@ -164,6 +164,11 @@ export type CalculatorDefinition = {
 	title: string;
 	/** FRANÇAIS — affiché. */
 	metaDescription: string;
+	/**
+	 * Balise <title>, FRANÇAIS : année de calcul et bénéfice, sous forme de
+	 * question (« Rachat LPP 2026 : combien d'impôt économisez-vous ? »).
+	 */
+	metaTitle: string;
 	/** Une phrase, FRANÇAIS, sous le titre : ce que le visiteur obtient (§ 4.1, bloc 2). */
 	promise: string;
 	/** Une phrase, FRANÇAIS, au-dessus du formulaire : pour qui, cantons, année (§ 4.1, bloc 3). */
@@ -172,6 +177,11 @@ export type CalculatorDefinition = {
 	example: CalculatorExample;
 	/** Groupes de questions oui/non pré-remplis par profil (§ 4.3). */
 	profiles?: ProfileGroup[];
+	/**
+	 * Rappel de l'imposition à la sortie (3a, LPP), en une phrase avec son lien,
+	 * sous le coût net dans la carte, avec chaque résultat (§ 4.4). FRANÇAIS.
+	 */
+	exitTaxReminder?: { text: string; link: { label: string; url: string } };
 	/** Points de vigilance, toujours affichés sous la carte résultat (§ 4.1). */
 	vigilance?: VigilancePoint[];
 	/**

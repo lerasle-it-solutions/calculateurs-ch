@@ -55,16 +55,6 @@ const summary = initial.shown;
 	>
 		{estimator && <GrossEstimator slot="gross-path" lppUpperSalaryLimit={estimator.socialInsurance.occupationalPension.upperSalaryLimit.value} />}
 		<div slot="result" class="mt-md flex max-w-reading flex-col gap-md">
-			<dl id="pillar3a-saving-summary" class="flex flex-col text-label" hidden={summary === null}>
-				{
-					Object.entries(texts.summary).map(([key, label]) => (
-						<div class="flex justify-between gap-md border-b border-hairline py-sm">
-							<dt>{label}</dt>
-							<dd data-summary={key} class="text-right font-bold tabular-nums">{summary?.[key as keyof typeof texts.summary]}</dd>
-						</div>
-					))
-				}
-			</dl>
 			{/* Excédent non déductible, à rembourser : avertissement renforcé (§ 2.6, arbitrage du 17.10.2026) */}
 			<p
 				id="pillar3a-saving-excess"

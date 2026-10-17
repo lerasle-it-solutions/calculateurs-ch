@@ -11,7 +11,7 @@
 import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
 import { assertTaxCoverage, type TaxInput, type TaxScales } from "../tax";
-import { computeIncomeTaxSaving } from "./income-tax-saving";
+import { computeIncomeTaxSaving, type IncomeTaxSaving } from "./income-tax-saving";
 import * as labels from "./pillar-3a-buyback-labels";
 
 /** Une valeur relevée, avec l'acte qui la fixe. */
@@ -297,6 +297,8 @@ export type Pillar3aBuybackResult = {
 	cantonalAndMunicipalSaving: number;
 	/** Part de l'impôt fédéral direct. */
 	federalSaving: number;
+	/** Économie par impôt (cantonal, communal, paroissial, taxe personnelle, fédéral), au franc. */
+	componentSavings: IncomeTaxSaving["componentSavings"];
 	breakdown: BreakdownLine[];
 };
 

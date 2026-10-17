@@ -57,6 +57,8 @@ export function householdPagePart(taxYear: number, cantonsCovered: readonly stri
 			grossSalaryMissing: fr.incomePath.grossSalaryMissing,
 			ageMissing: fr.incomePath.ageMissing,
 			grossMissingShort: fr.incomePath.grossMissingShort,
+			shareLabel: fr.resultSummary.shareLabel,
+			netCostLabel: fr.resultSummary.netCostLabel,
 		},
 	};
 }

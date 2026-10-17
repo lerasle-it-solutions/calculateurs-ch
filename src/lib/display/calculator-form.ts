@@ -16,6 +16,7 @@ import { coverageStatusOf, type CoverageTexts } from "./coverage";
 import type { Estimate } from "./gross-estimate";
 import type { BreakdownRow } from "./pillar-3a-buyback";
 import type { ResultStatus, StatusLink } from "./result-card";
+import { resultSummary, summaryRows, type ResultFigures, type ResultSummary } from "./result-summary";
 
 /** Saisies du formulaire, par nom de champ. */
 export type FormValues = Record<string, string>;
@@ -37,6 +38,8 @@ export type FormOutcome<T> = {
 	shown: T | null;
 	/** Valeur du bouton « maximum » de chaque champ qui en a un ; absente ou `null`, le bouton est masqué. */
 	maxima?: Record<string, number | null>;
+	/** Part du versement, coût net et économie par impôt (§ 4.4) ; absent ou `null` sans résultat. */
+	summary?: ResultSummary | null;
 };
 
 /** Données de la page communes aux calculateurs fiscaux. */
@@ -60,6 +63,9 @@ export type HouseholdPageData = {
 		grossSalaryMissing: string;
 		ageMissing: string;
 		grossMissingShort: string;
+		/** Lignes de la trace qui suivent l'économie : part du versement, coût net de l'année. */
+		shareLabel: string;
+		netCostLabel: string;
 	};
 };
 
@@ -87,6 +93,7 @@ export const emptyOutcome = <T>(status: ResultStatus | null = null): FormOutcome
 	status,
 	note: null,
 	shown: null,
+	summary: null,
 });
 
 /**
@@ -201,15 +208,17 @@ export function readHousehold(
 export function withEstimate<T>(
 	household: Household,
 	data: HouseholdPageData,
-	shown: { value: string; breakdown: BreakdownRow[]; status: ResultStatus | null },
+	shown: { value: string; breakdown: BreakdownRow[]; status: ResultStatus | null; figures: ResultFigures | null },
 	extras: T | null,
 ): FormOutcome<T> {
 	const computed = shown.status === null;
+	const figures = computed ? shown.figures : null;
 	return {
 		value: shown.value,
-		breakdown: computed ? [...household.rows, ...shown.breakdown] : shown.breakdown,
+		breakdown: computed ? [...household.rows, ...shown.breakdown, ...(figures ? summaryRows(figures, data.texts) : [])] : shown.breakdown,
 		status: shown.status && classifyDisplayStatus(shown.status, data, household.taxInput.canton),
 		note: computed && household.estimate !== null ? data.texts.estimateNote : null,
 		shown: computed ? extras : null,
+		summary: figures && resultSummary(figures),
 	};
 }
