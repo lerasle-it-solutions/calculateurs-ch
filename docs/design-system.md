@@ -799,7 +799,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 **Rédaction (`docs/editorial-style.md`)**
 
 - [ ] Tous les textes du calculateur (définition, page, FAQ, messages de la carte, `title`, description) suivent la charte rédactionnelle ; aucun tiret cadratin ni demi-cadratin, au plus un deux-points par paragraphe.
-- [ ] `tests/content/editorial.test.ts` passe sur la page, qui ne figure plus dans `PENDING_PAGES`.
+- [ ] `tests/content/editorial.test.ts` passe (il contrôle toutes les pages construites).
 - [ ] `npm run copy:report` relu pour la page ; chaque phrase de plus de 35 mots restante est justifiée par son sens juridique.
 - [ ] Revue `docs/editorial-review/<page>.md` écrite (avant / après).
 

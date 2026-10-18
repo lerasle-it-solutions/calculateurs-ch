@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/layout/Section.astro";
 import { fr } from "../i18n/fr";
 
-const title = `${fr.footer.privacy} — ${fr.site.name}`;
+const title = fr.site.pageTitle(fr.footer.privacy);
 const description =
   "Quelles données sont traitées par calculateurs.ch, pourquoi, par qui, pendant combien de temps, et comment exercer vos droits au titre de la LPD.";
 ---

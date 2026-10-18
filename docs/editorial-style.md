@@ -162,8 +162,9 @@ ni JSON de données ; le titre, la méta-description, les textes de partage, `al
 Les textes qu'un script n'affiche qu'après une saisie (messages lus dans le JSON de la page) échappent
 à ce test : ils viennent de `fr.ts` et des définitions, que la revue relit.
 
-Pendant la réécriture du site (octobre 2026), les pages pas encore relues figurent dans la liste
-`PENDING_PAGES` du test ; la liste se vide famille par famille et disparaît à la fin.
+Pendant la réécriture du site (octobre 2026), les pages pas encore relues figuraient dans une liste
+d'attente du test, vidée famille par famille puis supprimée le 18 octobre 2026 : toute page de `dist/`
+est désormais contrôlée.
 
 ### 6.2 Le rapport, indicatif
 

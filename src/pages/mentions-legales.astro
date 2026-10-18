@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/layout/Section.astro";
 import { fr } from "../i18n/fr";
 
-const title = `${fr.footer.legal} — ${fr.site.name}`;
+const title = fr.site.pageTitle(fr.footer.legal);
 const description =
   "Éditeur du site, hébergement, nature des résultats fournis, responsabilité, indépendance et financement, propriété intellectuelle.";
 ---

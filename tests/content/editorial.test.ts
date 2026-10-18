@@ -16,15 +16,6 @@ import { DIST, htmlFiles } from "../build/dist-pages";
 const CHARTER = readFileSync(new URL("../../docs/editorial-style.md", import.meta.url), "utf8");
 const FORBIDDEN = parseForbiddenPhrases(CHARTER);
 
-/**
- * Pages pas encore relues (réécriture d'octobre 2026, une famille par commit).
- * La liste se vide à mesure ; toute page qui n'y figure pas est contrôlée.
- */
-const PENDING_PAGES = new Set([
-	"mentions-legales/index.html",
-	"politique-de-confidentialite/index.html",
-]);
-
 const violations = (html: string) =>
 	visibleBlocks(html).flatMap((block) => blockViolations(block.text, FORBIDDEN).map((found) => `${found.rule} : « ${found.excerpt} »`));
 
@@ -54,14 +45,9 @@ describe("charte rédactionnelle dans les pages construites", () => {
 		expect(existsSync(DIST)).toBe(true);
 	});
 
-	it("chaque page en attente de relecture existe encore", () => {
-		const pages = new Set(htmlFiles(DIST).map((file) => relative(DIST, file)));
-		expect([...PENDING_PAGES].filter((page) => !pages.has(page))).toEqual([]);
-	});
-
-	it("aucune page relue ne contient de tiret, de point d'exclamation ni de tournure interdite", () => {
+	// Depuis la fin de la réécriture (18.10.2026), toutes les pages sont contrôlées, sans liste d'attente
+	it("aucune page ne contient de tiret, de point d'exclamation ni de tournure interdite", () => {
 		const offenders = htmlFiles(DIST)
-			.filter((file) => !PENDING_PAGES.has(relative(DIST, file)))
 			.flatMap((file) => violations(readFileSync(file, "utf8")).map((found) => `${relative(DIST, file)} → ${found}`));
 		expect(offenders).toEqual([]);
 	});
