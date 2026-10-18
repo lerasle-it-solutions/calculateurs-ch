@@ -31,7 +31,6 @@ const PENDING_PAGES = new Set([
 	"politique-de-confidentialite/index.html",
 	"prevoyance/guides/rachat-3a-retroactif/index.html",
 	"prevoyance/index.html",
-	"prevoyance/rachat-3a-retroactif/index.html",
 	"prevoyance/rachat-lpp/index.html",
 ]);
 

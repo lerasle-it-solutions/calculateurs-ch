@@ -138,7 +138,8 @@ describe("page d'A1", () => {
 		expect(entry.case).toMatch(/non affiliées.*pas encore couvert/);
 		expect(entry.alternative).toEqual({ label: "Adressez-vous à votre fondation ou à votre assurance 3a." });
 		const faq = pillar3aBuyback.faq[7]!;
-		expect(faq.answer).toMatch(/ne couvre pas encore ce rachat : adressez-vous à votre fondation ou à votre assurance 3a\.$/);
+		// Texte réécrit le 18.10.2026 (docs/editorial-style.md) : deux phrases au lieu d'un deux-points, même renvoi
+		expect(faq.answer).toMatch(/ne couvre pas encore ce rachat\. Adressez-vous à votre fondation ou à votre assurance 3a\.$/);
 		expect(faq.answer).not.toMatch(/A2/);
 	});
 });
