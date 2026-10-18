@@ -26,7 +26,6 @@ const PENDING_PAGES = new Set([
 	"demo-ui/index.html",
 	"mentions-legales/index.html",
 	"politique-de-confidentialite/index.html",
-	"prevoyance/guides/rachat-3a-retroactif/index.html",
 ]);
 
 const violations = (html: string) =>
