@@ -55,7 +55,7 @@ Mot-clé principal conservé : « impôt » et « versement 3a » dans le `title
 | Point 1, phrase visible | Attention : Le capital 3a sera imposé à son retrait : l'économie affichée n'est pas un gain net. | Attention : L’économie affichée n’est pas un gain net, car le capital 3a sera imposé à son retrait. |
 | Point 1, « En savoir plus » | Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit : l'économie affichée n'en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation. | Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit. L’économie affichée n’en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation. |
 | Point 2 | Pour être déductible en 2026, le versement doit être crédité sur votre compte ou votre police 3a au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). | Inchangé *(typographie seule)* : la date vient des données. |
-| Point 3 | L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3). | Si vous cessez votre activité lucrative en cours d’année, la cotisation entière reste déductible, pourvu qu’elle soit versée avant la fin de l’activité (art. 7 al. 4 OPP 3). |
+| Point 3 | L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3). | Si vous cessez votre activité lucrative en cours d’année, la cotisation entière reste déductible, à condition d’être versée avant la fin de l’activité (art. 7 al. 4 OPP 3). |
 
 ## 5. Ce que ce calcul suppose
 
@@ -79,8 +79,8 @@ Mot-clé principal conservé : « impôt » et « versement 3a » dans le `title
 | --- | --- | --- |
 | Quel montant puis-je déduire de mes impôts ? | Affilié à une caisse de pension, à titre obligatoire ou facultatif : au plus la « petite » cotisation, 7’258 CHF en 2026. Sans caisse de pension : 20 % du revenu de votre activité lucrative, au plus 36’288 CHF. C'est l'affiliation qui compte, pas le statut de salarié ou d'indépendant (art. 7 al. 1 OPP 3). | Avec une caisse de pension, à titre obligatoire ou facultatif, vous déduisez au plus la « petite » cotisation, soit 7’258 CHF en 2026. Sans caisse de pension, le plafond est de 20 % du revenu de votre activité lucrative, avec un maximum de 36’288 CHF. Seule l’affiliation compte : être salarié ou indépendant n’y change rien (art. 7 al. 1 OPP 3). |
 | Je touche une rente de ma caisse de pension : suis-je encore affilié au 2e pilier ? | Si vous n'y êtes plus assuré, non : votre plafond est alors celui des personnes sans caisse de pension. Si vous y restez assuré, même sans cotiser, vous l'êtes encore (circulaire AFC n° 18a, ch. 5.7 f). | Non, si vous n’y êtes plus assuré. Votre plafond devient alors celui des personnes sans caisse de pension. Si vous y restez assuré, même sans cotiser, vous êtes toujours affilié (circulaire AFC n° 18a, ch. 5.7 f). |
-| Que se passe-t-il si j'ai versé plus que le plafond ? | L'excédent n'est pas déductible : le calculateur ramène le montant au plafond, et votre fondation doit vous rembourser la différence (circulaire AFC n° 18a, ch. 9.1). | L’excédent n’est pas déductible, et votre fondation doit vous le rembourser (circulaire AFC n° 18a, ch. 9.1). Le calculateur ramène donc le montant au plafond. |
-| Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ? | … au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e). | … au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L’année où vous cessez votre activité lucrative, vous pouvez encore déduire la cotisation entière, à condition de la verser avant la fin de l’activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e). |
+| Que se passe-t-il si j'ai versé plus que le plafond ? | L'excédent n'est pas déductible : le calculateur ramène le montant au plafond, et votre fondation doit vous rembourser la différence (circulaire AFC n° 18a, ch. 9.1). | L’excédent n’est pas déductible, et votre fondation doit vous le rembourser (circulaire AFC n° 18a, ch. 9.1). Le calculateur ne retient donc que le plafond. |
+| Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ? | … au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L'année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d'être versée avant la fin de l'activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e). | … au plus tard le 31 décembre (circulaire AFC n° 18a, ch. 5.1). L’année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d’être versée avant la fin de l’activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e). |
 | Puis-je encore cotiser au pilier 3a après l'âge de référence AVS ? | Oui, si vous exercez encore une activité lucrative, et au plus pendant cinq ans après l'âge de référence (art. 7 al. 3 OPP 3). L'activité doit être prouvée chaque année. | Oui, tant que vous exercez une activité lucrative, et pendant cinq ans au plus après l’âge de référence (art. 7 al. 3 OPP 3). Vous devrez prouver cette activité chaque année. |
 | Pourquoi ne pas simplement multiplier mon versement par mon taux marginal ? | Parce que la déduction peut faire changer de tranche de barème. Le calculateur calcule votre impôt deux fois, avant et après la déduction, et affiche la différence exacte. | Parce que la déduction peut faire passer votre revenu dans une autre tranche du barème, ce qu’un taux marginal ne voit pas. Le calculateur établit donc votre impôt deux fois, avant et après la déduction, et affiche la différence. |
 
@@ -117,13 +117,15 @@ famille.
 
 1. **Année de cessation de l'activité.** « L'année où vous cessez votre activité lucrative » devient,
    dans le point de vigilance, « Si vous cessez votre activité lucrative en cours d'année ». J'y lis la
-   même règle (art. 7 al. 4 OPP 3) ; la FAQ garde la tournure d'origine. À confirmer.
+   même règle (art. 7 al. 4 OPP 3) ; la FAQ garde la tournure d'origine. Accepté par le mainteneur le
+   18.10.2026, avec « à condition d'être versée avant la fin de l'activité » conservé mot pour mot.
 2. **Condition d'âge.** Dans l'hypothèse du couple, « âge de référence (art. 7 al. 3 OPP 3) » devient
    « la condition d'âge de référence » : la condition est celle des deux branches (âge non atteint, ou
    activité poursuivie depuis moins de cinq ans), que le mot seul ne disait pas mieux.
 3. **Excédent.** La phrase mêlait deux affirmations juridiques (non déductible, remboursement) et le
    comportement du calculateur, sous une seule référence (ch. 9.1). Les deux affirmations restent
-   ensemble devant la référence ; le calculateur passe dans la phrase suivante.
+   ensemble devant la référence ; le calculateur passe dans la phrase suivante, dans la formulation du
+   mainteneur (18.10.2026) : « Le calculateur ne retient donc que le plafond. »
 4. **« Différence exacte ».** L'adjectif disparaît (§ 2 du « calcul en bref » et FAQ 6) : il opposait la
    méthode au taux marginal, opposition que la FAQ 6 dit déjà, et « exact » sonne mal sur un résultat
    qui reste une estimation indicative. Si vous tenez au contraste, je propose « la différence entre les deux impôts, pas une

@@ -210,7 +210,7 @@ const deadlineSentence = deadline
 const reminders = [
 	"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit. L’économie affichée n’en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
 	...(deadlineSentence ? [`Pour être déductible en ${year}, ${deadlineSentence}`] : []),
-	"Si vous cessez votre activité lucrative en cours d’année, la cotisation entière reste déductible, pourvu qu’elle soit versée avant la fin de l’activité (art. 7 al. 4 OPP 3).",
+	"Si vous cessez votre activité lucrative en cours d’année, la cotisation entière reste déductible, à condition d’être versée avant la fin de l’activité (art. 7 al. 4 OPP 3).",
 ];
 
 export const pillar3aTaxSaving: CalculatorDefinition = {
@@ -304,14 +304,14 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 		{
 			question: "Que se passe-t-il si j’ai versé plus que le plafond ?",
 			answer:
-				"L’excédent n’est pas déductible, et votre fondation doit vous le rembourser (circulaire AFC n° 18a, ch. 9.1). Le calculateur ramène donc le montant au plafond.",
+				"L’excédent n’est pas déductible, et votre fondation doit vous le rembourser (circulaire AFC n° 18a, ch. 9.1). Le calculateur ne retient donc que le plafond.",
 		},
 		...(deadlineSentence
 			? [
 					{
 						// Apostrophe droite : tests/data/contribution-deadline.test.ts cherche la question par « Jusqu'à quand » (R7)
 						question: "Jusqu'à quand puis-je verser des fonds sur mon pilier 3a ?",
-						answer: `${deadlineSentence[0]!.toUpperCase()}${deadlineSentence.slice(1)} L’année où vous cessez votre activité lucrative, vous pouvez encore déduire la cotisation entière, à condition de la verser avant la fin de l’activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).`,
+						answer: `${deadlineSentence[0]!.toUpperCase()}${deadlineSentence.slice(1)} L’année où vous cessez votre activité lucrative, la cotisation entière reste déductible, à condition d’être versée avant la fin de l’activité (art. 7 al. 4 OPP 3 ; ch. 5.7 e).`,
 					},
 				]
 			: []),
