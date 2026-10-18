@@ -10,19 +10,12 @@ et `src/pages/mentions-legales.astro`.
 | `title` de la politique | Politique de confidentialité — calculateurs.ch | Politique de confidentialité · calculateurs.ch |
 | `title` des mentions | Mentions légales — calculateurs.ch | Mentions légales · calculateurs.ch |
 
-## Ce qui ne change pas, et pourquoi
+## Typographie (18.10.2026, seconde passe)
 
-**Le texte des deux pages est inchangé, mot pour mot.** Aucun engagement, aucune formulation : il ne
-contenait ni tiret, ni point d'exclamation, ni tournure interdite. Seule la typographie (apostrophe
-droite, espace ordinaire avant le deux-points) s'écarte de la charte.
-
-Je ne l'ai pas appliquée. Changer le texte imposait de changer la date « Dernière mise à jour » (16.10.2026
-pour la politique, 02.10.2026 pour les mentions). Or une nouvelle date sur une politique de
-confidentialité annonce au lecteur une modification de ses engagements, ce qui serait faux pour un
-changement purement typographique. Je propose d'appliquer la typographie à la prochaine modification
-réelle de l'une ou l'autre page, avec sa date.
-
-Les dates « Dernière mise à jour » restent donc inchangées.
+À la demande du mainteneur, la typographie française s'applique au texte des deux pages : apostrophe
+typographique, espace fine avant « : ; ? », insécables dans les guillemets. **Changement typographique,
+fond inchangé, date conservée** : aucun mot ne change, et les dates « Dernière mise à jour » restent
+le 16.10.2026 (politique) et le 02.10.2026 (mentions).
 
 ## Ce que signale encore `copy:report`
 
