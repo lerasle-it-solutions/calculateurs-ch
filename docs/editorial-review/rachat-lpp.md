@@ -62,7 +62,7 @@ confirme, car le potentiel du certificat peut être réduit. »
 | Pour qui, 1 | … affilié à titre facultatif : c'est l'affiliation qui compte, pas le statut (art. 4 et 44 LPP). | … affilié à titre facultatif, car seule compte l’affiliation, pas le statut (art. 4 et 44 LPP). |
 | Ne couvre pas, 1 | Calcul du potentiel de rachat lui-même : il dépend du règlement et de l'historique de la personne (art. 79b al. 1 LPP). | Calcul du potentiel de rachat lui-même, qui dépend du règlement et de l’historique de la personne (art. 79b al. 1 LPP). |
 | Ne couvre pas, 2, alternative | Le calculateur du retrait en capital LPP/3a est en préparation ; d'ici là, voir la méthodologie. | Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie. |
-| Hypothèse 1 (98 mots dans sa dernière phrase) | … Le montant du certificat de prévoyance n'en tient pas toujours compte : faites-le confirmer par votre caisse en lui déclarant ces avoirs. Les réductions sont : l'avoir 3a qui dépasse… (art. 60a al. 2) ; les avoirs de libre passage… (art. 60a al. 3) ; les prestations de vieillesse déjà perçues… (art. 60a al. 4) ; pour une personne arrivée de l'étranger… (art. 60b). | … Faites-le confirmer par votre caisse en lui déclarant les avoirs concernés, car le montant du certificat de prévoyance n’en tient pas toujours compte. Quatre réductions s’appliquent. D’abord l’avoir 3a qui dépasse… (art. 60a al. 2). Ensuite les avoirs de libre passage… (art. 60a al. 3). Puis les prestations de vieillesse déjà perçues… (art. 60a al. 4). Enfin, pour une personne arrivée de l’étranger… (art. 60b). |
+| Hypothèse 1 (98 mots dans sa dernière phrase) | … Le montant du certificat de prévoyance n'en tient pas toujours compte : faites-le confirmer par votre caisse en lui déclarant ces avoirs. Les réductions sont : l'avoir 3a qui dépasse… (art. 60a al. 2) ; les avoirs de libre passage… (art. 60a al. 3) ; les prestations de vieillesse déjà perçues… (art. 60a al. 4) ; pour une personne arrivée de l'étranger… (art. 60b). | … Faites-le confirmer par votre caisse en lui déclarant les avoirs concernés, car le montant du certificat de prévoyance n’en tient pas toujours compte. Les réductions sont les suivantes. L’avoir 3a qui dépasse… (art. 60a al. 2). Les avoirs de libre passage… (art. 60a al. 3). Les prestations de vieillesse déjà perçues… (art. 60a al. 4). Pour une personne arrivée de l’étranger… (art. 60b). |
 | Hypothèse 4 | … pour la part du rachat qui le dépasse ; le résultat signale cette part. | … pour la part du rachat qui le dépasse, et le résultat signale cette part. |
 | Hypothèse 5 | Échelonnement : le montant est réparti… | En cas d’échelonnement, le montant est réparti… |
 | Hypothèse 6 (deux tirets cadratins) | Aucun retrait en capital du 2e pilier — prestation de vieillesse, versement anticipé pour le logement, départ définitif, toutes institutions confondues — n'a lieu dans les 3 ans qui suivent chaque versement. | Aucun retrait en capital du 2e pilier n’a lieu dans les 3 ans qui suivent chaque versement, toutes institutions confondues. Cela vaut pour une prestation de vieillesse, un versement anticipé pour le logement ou un départ définitif. |
@@ -78,9 +78,9 @@ confirme, car le potentiel du certificat peut être réduit. »
 
 ## 7. Phrases au sens juridique délicat
 
-1. **« Quatre réductions s'appliquent ».** L'original disait « Les réductions sont : » suivi de quatre
-   éléments, sans les compter. Je lis la liste comme complète (art. 60a al. 2 à 4 et 60b OPP 2) ; si elle
-   ne l'est pas, je propose « Les réductions sont les suivantes. » à la place.
+1. **« Les réductions sont les suivantes ».** Première version : « Quatre réductions s'appliquent », avec
+   « D'abord… Ensuite… Puis… Enfin ». Le mainteneur a retenu le 18.10.2026 une formule sans nombre ni
+   ordinal, pour que la liste ne paraisse pas exhaustive.
 2. **FAQ « J'ai un 3a ou un compte de libre passage » (44 mots).** Laissée en une phrase : le test du
    composant exige que « 24 ans » et sa référence (art. 60a al. 2 et 3 OPP 2) restent dans la même
    phrase, et c'est juste, car la réduction et la condition d'âge vont ensemble.
