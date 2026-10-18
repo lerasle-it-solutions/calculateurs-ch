@@ -88,10 +88,22 @@ garde-fou n'en dépend pas. Les notes du registre, qui ne s'affichent pas, ne ch
 
 Le niveau 2 décrivait encore « un bandeau au-dessus de chaque formulaire », antérieur à la décision n° 19.
 À la demande du mainteneur, il décrit désormais la page actuelle : « Une ligne de périmètre, au-dessus de
-chaque formulaire, indique pour qui le calculateur est fait et renvoie au détail “Ce que ce calcul
-suppose”. Ce détail précise ce que le calculateur ne couvre pas, avec un lien vers une alternative, et les
+chaque formulaire, indique pour qui le calculateur est fait. Elle renvoie au détail “Ce que ce calcul
+suppose”, qui précise ce que le calculateur ne couvre pas, avec un lien vers une alternative, et les
 hypothèses qu’il retient. Toute exclusion qui s’applique à votre saisie s’affiche en outre dans la carte
 du résultat, au moment où la saisie la déclenche. » Aucune autre page ne décrivait le bandeau.
+
+## 5 bis. Seconde passe sur la prose (18.10.2026)
+
+| Passage | Avant | Après |
+| --- | --- | --- |
+| Quotient vaudois (36 mots) | … qui dépend de toute la famille (1 pour une personne seule, 1,8 pour des époux, 1,3 pour un parent seul, plus 0,5 par enfant). | … qui dépend de toute la famille. Ce diviseur vaut 1 pour une personne seule, 1,8 pour des époux, 1,3 pour un parent seul, plus 0,5 par enfant. |
+| Refus du calcul de rachat LPP (38 mots) | Le calcul est refusé, avec son motif, dans deux cas : le montant envisagé dépasse le potentiel (art. 79b al. 1 LPP), ou un versement anticipé pour la propriété du logement n’est pas remboursé (art. 79b al. 3 LPP). | Le calcul est refusé, avec son motif, si le montant envisagé dépasse le potentiel (art. 79b al. 1 LPP). Il l’est aussi si un versement anticipé pour la propriété du logement n’est pas remboursé (art. 79b al. 3 LPP). |
+| Niveau 3 (36 mots) | Pour les calculateurs qui portent sur une décision difficilement réversible, comme un retrait en capital du 2e pilier, un encart distinct rappelle… | Certains calculateurs portent sur une décision difficilement réversible, comme un retrait en capital du 2e pilier. Un encart distinct y rappelle… |
+
+Reste une phrase de prose de plus de 35 mots, celle de l'affiliation après l'âge de référence (40 mots).
+Une seule référence la couvre (ch. 5.7 f), et elle reste donc entière (décision du mainteneur,
+18.10.2026). Les huit autres signalements sont des listes de références légales.
 
 ## 6. Tests adaptés
 

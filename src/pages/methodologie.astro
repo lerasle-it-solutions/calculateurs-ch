@@ -277,16 +277,16 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				<strong>Le quotient familial vaudois n’est pas un splitting.</strong> Un
 				splitting divise le revenu des époux par un diviseur fixe pour lire le
 				taux. À Vaud, le revenu imposable est divisé par un nombre de parts qui
-				dépend de toute la famille{
+				dépend de toute la famille.{
 					vaudParts && (
 						<>
-							{" "}({formatSwissNumber(vaudParts.single, 2)} pour une personne
-							seule, {formatSwissNumber(vaudParts.married, 2)} pour des époux,{" "}
-							{formatSwissNumber(vaudParts.singleWithChildren, 2)} pour un parent
-							seul, plus {formatSwissNumber(vaudParts.perChild, 2)} par enfant)
+							{" "}Ce diviseur vaut {formatSwissNumber(vaudParts.single, 2)} pour une
+							personne seule, {formatSwissNumber(vaudParts.married, 2)} pour des
+							époux, {formatSwissNumber(vaudParts.singleWithChildren, 2)} pour un
+							parent seul, plus {formatSwissNumber(vaudParts.perChild, 2)} par enfant.
 						</>
 					)
-				}. Le taux lu sur ce quotient s’applique ensuite au revenu entier, et
+				} Le taux lu sur ce quotient s’applique ensuite au revenu entier, et
 				la réduction obtenue grâce aux parts d’enfants est plafonnée. Comme le
 				quotient est arrondi, le revenu qui détermine le taux avance par
 				marches : c’est pourquoi la pente se mesure sur 1’000 francs, et
@@ -473,8 +473,8 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				compte, il se fait confirmer par la caisse, en lui déclarant ces avoirs. Le
 				rachat est intégralement déductible du revenu imposable cantonal et
 				fédéral de l’année du versement (art. 33 al. 1 let. d LIFD ; art. 9 al. 2
-				let. d LHID ; art. 81 al. 2 LPP). Le calcul est refusé, avec son motif, dans deux cas : le montant
-				envisagé dépasse le potentiel (art. 79b al. 1 LPP), ou un versement
+				let. d LHID ; art. 81 al. 2 LPP). Le calcul est refusé, avec son motif, si le montant envisagé dépasse
+				le potentiel (art. 79b al. 1 LPP). Il l’est aussi si un versement
 				anticipé pour la propriété du logement n’est pas remboursé (art. 79b
 				al. 3 LPP). Dans ce second cas, le règlement de la caisse peut admettre
 				une exception lorsque le remboursement n’est plus admis (art. 30d al. 3
@@ -675,9 +675,9 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 					<h3 class="text-subheading">Niveau 2 : périmètre déclaré du calculateur</h3>
 					<p class="max-w-reading text-body">
 						Une ligne de périmètre, au-dessus de chaque formulaire, indique pour qui
-						le calculateur est fait et renvoie au détail « Ce que ce calcul
-						suppose ». Ce détail précise ce que le calculateur ne couvre pas, avec
-						un lien vers une alternative, et les hypothèses qu’il retient. Toute
+						le calculateur est fait. Elle renvoie au détail « Ce que ce calcul
+						suppose », qui précise ce que le calculateur ne couvre pas, avec un
+						lien vers une alternative, et les hypothèses qu’il retient. Toute
 						exclusion qui s’applique à votre saisie s’affiche en outre dans la carte
 						du résultat, au moment où la saisie la déclenche.
 					</p>
@@ -686,10 +686,10 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				<div class="flex flex-col gap-2xs">
 					<h3 class="text-subheading">Niveau 3 : avertissement renforcé</h3>
 					<p class="max-w-reading text-body">
-						Pour les calculateurs qui portent sur une décision difficilement
-						réversible, comme un retrait en capital du 2<sup>e</sup> pilier, un
-						encart distinct rappelle que la décision est durable et
-						invite explicitement à consulter un conseiller avant d’agir.
+						Certains calculateurs portent sur une décision difficilement réversible,
+						comme un retrait en capital du 2<sup>e</sup> pilier. Un encart distinct
+						y rappelle que la décision est durable et invite explicitement à
+						consulter un conseiller avant d’agir.
 					</p>
 				</div>
 			</div>
