@@ -11,9 +11,13 @@
  */
 import { formatSwissNumber } from "../lib/format/chf";
 
+const SITE_NAME = "calculateurs.ch";
+
 export const fr = {
 	site: {
-		name: "calculateurs.ch",
+		name: SITE_NAME,
+		/** Balise title d'une page hors calculateur : « <nom> · calculateurs.ch » (docs/editorial-style.md § 3.1). */
+		pageTitle: (name: string): string => `${name} · ${SITE_NAME}`,
 		baseline: "Calculateurs suisses romands qui affichent leurs sources.",
 		/** Adresse de contact, toujours affichée en clair dans son lien mailto: (pied de page, pages légales). */
 		contactEmail: "contact@calculateurs.ch",
@@ -44,8 +48,13 @@ export const fr = {
 	},
 
 	home: {
-		heroTitle: "Combien votre 3e pilier vous fait-il économiser d'impôt ?",
-		heroLead: "Votre commune, votre revenu imposable, votre versement : le calcul se fait dans votre navigateur.",
+		/** Balise title de l'accueil, moins de 60 caractères (docs/editorial-style.md § 5). */
+		metaTitle: "Calculs d’impôt sourcés en Suisse romande · calculateurs.ch",
+		/** 155 caractères au plus. */
+		metaDescription:
+			"Des calculateurs d’impôt et de prévoyance pour la Suisse romande, dont chaque chiffre est sourcé et daté. Aucun compte, aucun cookie de suivi.",
+		heroTitle: "Combien votre 3e pilier vous fait-il économiser d’impôt ?",
+		heroLead: "Indiquez votre commune, votre revenu imposable et votre versement. Le calcul se fait dans votre navigateur.",
 		/** Libellés courts des trois champs du héros. */
 		heroMunicipality: "Commune de domicile",
 		heroIncome: "Revenu imposable",
@@ -56,7 +65,7 @@ export const fr = {
 		 * formatée au build (« 31 décembre ») ; « {days} » est remplacé dans le navigateur.
 		 */
 		countdown: (year: number, deadline: string): string =>
-			`Il reste {days} jours pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}. Comptez quelques jours ouvrables pour que le virement soit crédité.`,
+			`Il reste {days} jours pour verser votre 3a ${year}, et le versement doit être crédité au plus tard le ${deadline}. Comptez quelques jours ouvrables pour que le virement soit crédité.`,
 		/** Le jour de la date limite. */
 		countdownLastDay: (year: number): string => `Dernier jour pour que votre versement 3a ${year} soit crédité.`,
 		proofHeading: "Les données",
@@ -66,21 +75,21 @@ export const fr = {
 		proofSource: "Code source ouvert",
 		calculatorsHeading: "Les calculateurs",
 		/** Résultat type d'une carte, calculé au build sur le cas exemple. */
-		typicalResult: (municipality: string, income: string, saving: string): string => `${municipality}, ${income} : ${saving} d'impôt en moins`,
+		typicalResult: (municipality: string, income: string, saving: string): string => `${municipality}, ${income} : ${saving} d’impôt en moins`,
 		openCalculator: "Calculer",
-		whyHeading: "Pourquoi ces chiffres sont justes",
+		whyHeading: "Comment ces chiffres sont calculés",
 		why: [
 			{
 				title: "Calculé deux fois, jamais au taux marginal",
-				text: "Votre impôt est calculé avant et après la déduction ; l'économie est la différence exacte, pas un taux marginal multiplié par votre versement.",
+				text: "Votre impôt est calculé deux fois, avant et après la déduction. L’économie affichée est la différence entre les deux, jamais un taux marginal multiplié par votre versement.",
 			},
 			{
 				title: "Chaque montant sourcé et daté",
-				text: "Barèmes, coefficients et plafonds viennent des textes officiels, chacun avec sa date de vérification, publiée sur la page des données.",
+				text: "Les barèmes, les coefficients et les plafonds viennent des textes officiels. Chaque valeur porte sa date de vérification, publiée sur la page des données.",
 			},
 			{
 				title: "Rien ne quitte votre navigateur",
-				text: "Le calcul se fait sur votre appareil. Aucun compte, aucun cookie de suivi : vos saisies ne sont envoyées nulle part.",
+				text: "Le calcul se fait sur votre appareil, sans compte ni cookie de suivi. Vos saisies ne sont envoyées nulle part.",
 			},
 		],
 		guideHeading: "Le guide",
@@ -121,9 +130,9 @@ export const fr = {
 		/** Courriel prérempli avec l'URL de la page, composé au build : aucune saisie du calculateur. */
 		reportError: "Signaler une erreur",
 		reportSubject: "Erreur sur calculateurs.ch",
-		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
+		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
 		/** Ligne d'identité de l'éditeur (texte du mainteneur, 17.10.2026). */
-		publisher: "Édité par Lerasle IT Solutions, Epalinges (VD). Les calculs ne dépendent d'aucune banque, assurance ni autre prestataire.",
+		publisher: "Édité par Lerasle IT Solutions, Epalinges (VD). Les calculs ne dépendent d’aucune banque, assurance ni autre prestataire.",
 		methodology: "Méthodologie",
 		data: "Données et sources",
 		legal: "Mentions légales",
@@ -134,7 +143,7 @@ export const fr = {
 	},
 
 	breadcrumb: {
-		navLabel: "Fil d'Ariane",
+		navLabel: "Fil d’Ariane",
 		separator: "›",
 	},
 

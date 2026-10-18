@@ -26,7 +26,6 @@ const PENDING_PAGES = new Set([
 	"demo-ui/index.html",
 	"donnees/index.html",
 	"guides/index.html",
-	"index.html",
 	"mentions-legales/index.html",
 	"methodologie/index.html",
 	"politique-de-confidentialite/index.html",

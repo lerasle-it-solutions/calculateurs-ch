@@ -29,7 +29,8 @@ const block = (attribute: string) => home.match(new RegExp(`<(section|div)\\b[^>
 
 describe("héros", () => {
 	it("H1 et trois champs pré-remplis avec le cas exemple d'A2", () => {
-		expect(text(home.match(/<h1\b[\s\S]*?<\/h1>/)![0])).toBe(fr.home.heroTitle);
+		// `text` ramène tout blanc, espace fine comprise, à une espace : même normalisation pour l'attendu (18.10.2026)
+		expect(text(home.match(/<h1\b[\s\S]*?<\/h1>/)![0])).toBe(fr.home.heroTitle.replace(/\s+/g, " "));
 		const example = exampleFormValues(pillar3aTaxSaving);
 		const valueOf = (name: string) => home.match(new RegExp(`<input\\b[^>]*\\sname="${name}"[^>]*>`))?.[0].match(/\svalue="([^"]*)"/)?.[1];
 		expect(decodeEntities(valueOf("municipality")!)).toBe(example.municipality);
