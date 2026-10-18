@@ -25,12 +25,10 @@ const PENDING_PAGES = new Set([
 	"demo-calculateur/index.html",
 	"demo-ui/index.html",
 	"donnees/index.html",
-	"guides/index.html",
 	"mentions-legales/index.html",
 	"methodologie/index.html",
 	"politique-de-confidentialite/index.html",
 	"prevoyance/guides/rachat-3a-retroactif/index.html",
-	"prevoyance/index.html",
 ]);
 
 const violations = (html: string) =>

@@ -221,6 +221,11 @@ export const fr = {
 	},
 
 	familyPage: {
+		/** Page de famille : chapeau et méta-description (155 caractères au plus), une entrée par famille publiée. */
+		pension: {
+			metaDescription: "Calculateurs du 3e pilier et du 2e pilier pour la Suisse romande, avec la source et la date de chaque chiffre.",
+			lead: "Des calculateurs pour votre 3e pilier et votre caisse de pension, en Suisse romande. Chaque chiffre vient d’une source officielle, datée.",
+		},
 		guidesHeading: "Guides",
 		/** Lien d'action à la fin de chaque carte de guide. */
 		readGuide: "Lire le guide",
@@ -335,11 +340,11 @@ export const fr = {
 	},
 
 	guidesPage: {
-		title: "Guides — calculateurs.ch",
+		title: `Guides · ${SITE_NAME}`,
 		heading: "Guides",
 		lead: "Les règles derrière chaque calcul, expliquées et sourcées, avec un exemple chiffré.",
 		/** 155 caractères au plus. */
-		metaDescription: "Guides de prévoyance et de fiscalité pour la Suisse romande : les règles derrière chaque calculateur, expliquées et sourcées.",
+		metaDescription: "Guides de prévoyance et de fiscalité pour la Suisse romande : les règles derrière chaque calculateur, expliquées et sourcées.",
 	},
 
 	/** Sous le chiffre de la carte et sous la carte (docs/design-system.md § 4.4). */

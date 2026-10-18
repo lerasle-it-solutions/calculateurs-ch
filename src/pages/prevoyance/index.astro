@@ -17,15 +17,14 @@ const guides = await getCollection("articles", (entry) => entry.data.family === 
 // Calculateurs annoncés : contenu de page, sans lien. A2 et A3, publiés, ont leur carte ci-dessus.
 const announced: string[] = [];
 
-const title = `${fr.family.pension} — ${fr.site.name}`;
-const description =
-	"Calculateurs de prévoyance pour la Suisse romande, 3e pilier et 2e pilier, avec la source et la date de chaque chiffre.";
+const title = fr.site.pageTitle(fr.family.pension);
+const description = fr.familyPage.pension.metaDescription;
 ---
 
 <BaseLayout title={title} description={description}>
 	<PageHero
 		title={fr.family.pension}
-		lead="Des calculateurs pour le 3e pilier et la prévoyance professionnelle, en Suisse romande. Chaque chiffre provient d'une source officielle datée."
+		lead={fr.familyPage.pension.lead}
 	/>
 
 	<Section tone="tint">
