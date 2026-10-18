@@ -107,18 +107,20 @@ describe("champs de la page d'A2", () => {
 	it("chaque personne répond aux questions des règles 3 et 4, avec la tournure du conjoint ou partenaire", () => {
 		const labelOf = (name: string) => pillar3aTaxSaving.fields.find((field) => field.name === name)?.label;
 		expect(labelOf("workingAfterReferenceAge")).toBe(
-			"Exercez-vous encore une activité lucrative, et avez-vous atteint l'âge de référence il y a moins de cinq ans ?",
+			// Texte réécrit le 18.10.2026 (docs/editorial-style.md) : apostrophe typographique, espace fine avant « ? »
+			"Exercez-vous encore une activité lucrative, et avez-vous atteint l’âge de référence il y a moins de cinq ans\u202f?",
 		);
 		for (const name of ["spouseHasAvsIncome", "spouseReachedReferenceAge", "spouseWorkingAfterReferenceAge"]) {
 			expect(labelOf(name)).toMatch(/^Votre conjoint ou partenaire (a-t-il|exerce-t-il) /);
 		}
-		expect(labelOf("spouseEarnedIncome")).toMatch(/^Revenu de l'activité lucrative de votre conjoint ou partenaire en \d{4}$/);
+		expect(labelOf("spouseEarnedIncome")).toMatch(/^Revenu de l’activité lucrative de votre conjoint ou partenaire en \d{4}$/);
 		expect(labelOf("spouseContribution")).toMatch(/^Montant versé au pilier 3a par votre conjoint ou partenaire en \d{4}$/);
 	});
 
 	it("l'aide du revenu imposable demande le revenu avant la déduction 3a de la dernière taxation", () => {
+		// Texte réécrit le 18.10.2026 (docs/editorial-style.md), même consigne
 		const hint =
-			"Partez du revenu imposable de votre dernière décision de taxation et ajoutez-y la déduction 3a qui y figure, s'il y en a une : le calcul porte sur le revenu avant cette déduction.";
+			"Reprenez le revenu imposable de votre dernière décision de taxation et rajoutez-y la déduction 3a qui y figure, s’il y en a une. Le calcul part du revenu avant cette déduction.";
 		for (const name of ["cantonalTaxableIncome", "federalTaxableIncome"]) {
 			expect(pillar3aTaxSaving.fields.find((field) => field.name === name)?.hint).toBe(hint);
 		}

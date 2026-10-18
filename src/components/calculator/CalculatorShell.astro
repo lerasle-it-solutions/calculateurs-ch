@@ -218,10 +218,9 @@ const resultFor = definition.fields
 	<div data-calculator-root data-tax-data={taxDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
 		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
 		<p data-example-banner class="rounded-panel bg-tint p-lg text-label">
-			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label} {fr.calculator.exampleReplace}
-			{hasIncomePaths ? (
+			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label}. {fr.calculator.exampleReplace}{hasIncomePaths ? (
 				<>
-					{" "}<button
+					,{" "}<button
 						type="button"
 						data-switch-gross
 						disabled={!grossPath!.available}

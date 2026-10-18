@@ -261,7 +261,7 @@ Règles :
 - Pas de croix suisse ni de drapeau, même stylisés (armoiries protégées par la loi, et cliché).
 - En-tête du site : `import Logo from "../../assets/brand/logo.svg"` puis
   `<Logo class="h-xl w-auto md:h-2xl" aria-hidden="true" />` dans un lien vers l'accueil portant
-  `aria-label="calculateurs.ch — accueil"`. Pied de page sur fond `ink` : `logo-blanc.svg`, même méthode.
+  `aria-label="Accueil de calculateurs.ch"`. Pied de page sur fond `ink` : `logo-blanc.svg`, même méthode.
 
 ---
 
@@ -605,7 +605,7 @@ s'affiche dans la carte résultat au moment où elle est déclenchée** (§ 4.3)
   toujours lue dans les données. « Verser le maximum » dans un cas exemple se déclare comme un
   renvoi au plafond, jamais comme son montant.
 - La page s'ouvre **pré-remplie** sur ce cas, annoncé au-dessus du formulaire par un bandeau
-  (avis informatif, § 2.6) : « Exemple : <description> — remplacez par vos chiffres, ou partez de
+  (avis informatif, § 2.6) : « Exemple : <description>. Remplacez par vos chiffres, ou partez de
   votre salaire brut. » Le bandeau disparaît à la première saisie.
 - **Le cas exemple est exprimé en revenus imposables** : la page s'ouvre sur le chemin « Je connais
   mon revenu imposable » (§ 4.3). Le lien « partez de votre salaire brut » du bandeau bascule sur le
@@ -752,7 +752,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 **Cas exemple (§ 4.2)**
 
 - [ ] Cas exemple déclaré dans la définition du calculateur, sous `example` ; aucune valeur légale (plafond, taux, seuil) recopiée dans ses saisies.
-- [ ] Page pré-remplie sur le chemin « revenu imposable », bandeau « Exemple : … — remplacez par vos chiffres, ou partez de votre salaire brut. », qui disparaît à la première saisie.
+- [ ] Page pré-remplie sur le chemin « revenu imposable », bandeau « Exemple : <description>. Remplacez par vos chiffres, ou partez de votre salaire brut. », qui disparaît à la première saisie.
 - [ ] Basculer sur le chemin brut vide les champs de revenu et affiche « Saisissez votre salaire brut » : jamais un chiffre d'exemple à côté de champs vides.
 - [ ] Vrai montant dans la carte au chargement, y compris sans JavaScript ; jamais « — ».
 - [ ] Tout montant « type » affiché hors de la page calculé au build sur ce cas.
@@ -795,6 +795,13 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 - [ ] SVG inline produit par le script de la page, tokens uniquement, aucune bibliothèque.
 - [ ] Titre formulé comme un constat.
 - [ ] `<table>` équivalent dans un `<details>`.
+
+**Rédaction (`docs/editorial-style.md`)**
+
+- [ ] Tous les textes du calculateur (définition, page, FAQ, messages de la carte, `title`, description) suivent la charte rédactionnelle ; aucun tiret cadratin ni demi-cadratin, au plus un deux-points par paragraphe.
+- [ ] `tests/content/editorial.test.ts` passe sur la page, qui ne figure plus dans `PENDING_PAGES`.
+- [ ] `npm run copy:report` relu pour la page ; chaque phrase de plus de 35 mots restante est justifiée par son sens juridique.
+- [ ] Revue `docs/editorial-review/<page>.md` écrite (avant / après).
 
 **Socle (§ 0 à § 3)**
 

@@ -95,7 +95,7 @@ export const fr = {
 	header: {
 		navLabel: "Navigation principale",
 		/** Nom accessible du lien du logo vers l'accueil. */
-		homeLabel: "calculateurs.ch — accueil",
+		homeLabel: "Accueil de calculateurs.ch",
 		/** Sous `md`, bouton du menu replié (<details>), qui contient les entrées et la pastille. */
 		menu: "Menu",
 		/** Trois entrées (docs/design-system.md § 2.4, révisé le 17.10.2026). */
@@ -302,7 +302,7 @@ export const fr = {
 
 	calculator: {
 		faqTitle: "Questions fréquentes",
-		/** Bandeau du cas exemple (docs/design-system.md § 4.2) : « Exemple : <label> — remplacez par vos chiffres. » */
+		/** Bandeau du cas exemple (docs/design-system.md § 4.2) : « Exemple : <label>. Remplacez par vos chiffres, ou partez de votre salaire brut. » */
 		examplePrefix: "Exemple :",
 		/** Ligne de périmètre → détail replié (§ 4.1, P5). */
 		assumptionsLink: "Ce que ce calcul suppose",
@@ -315,7 +315,7 @@ export const fr = {
 		vigilanceMore: "En savoir plus",
 		/** Préfixe d'un avertissement renforcé (§ 2.6). */
 		warningPrefix: "Attention :",
-		exampleReplace: "— remplacez par vos chiffres,",
+		exampleReplace: "Remplacez par vos chiffres",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
 		seeBreakdown: "Voir le détail",
 		/** Échec du chargement du calcul (cœur ou fichier de données) : message neutre dans la carte. */

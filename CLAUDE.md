@@ -872,7 +872,8 @@ export default defineConfig({
   "prebuild": "tsx scripts/fetch-private-data.ts",
   "pretest": "tsx scripts/fetch-private-data.ts",
   "test": "vitest run",
-  "postbuild": "VITEST_DIST=1 vitest run", // tests/build/ sur dist/ (vitest.config.ts) ; no-leak y viendra
+  "postbuild": "VITEST_DIST=1 vitest run", // tests/build/ et tests/content/editorial.test.ts sur dist/ (vitest.config.ts) ; no-leak y viendra
+  "copy:report": "tsx scripts/copy-report.ts", // rapport de style du texte visible, indicatif (docs/editorial-style.md § 6.2)
   "verify-data": "tsx scripts/verify-data.ts", // à venir : rapport de fraîcheur, rituel du 1er janvier (§ 1.5)
   "new-year": "tsx scripts/new-year.ts", // à venir : rituel du 1er janvier (§ 1.5)
   "predeploy": "npm run test && astro check",
@@ -992,3 +993,8 @@ Rappel des règles non négociables (le détail est dans le fichier importé) :
   exemple, formulaire, résultat, étiquette `SourceTag`, graphiques.
 - La liste de contrôle du § 4.7 est **obligatoire pour tout calculateur**, nouveau ou repris ;
   `/ux-check <slug>` la vérifie point par point, sans rien corriger.
+- Tout texte visible suit la **charte rédactionnelle**, `docs/editorial-style.md` : rythme,
+  ponctuation (aucun tiret cadratin ni demi-cadratin), typographie française, tournures interdites,
+  et ce qui ne change jamais (sens juridique, chiffres, attribution de l'AFC, URL, contraintes SEO).
+  `tests/content/editorial.test.ts` la vérifie après la construction ; `npm run copy:report` mesure
+  le rythme, sans jamais bloquer.

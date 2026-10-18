@@ -54,8 +54,9 @@ export function displayPillar3aTaxSaving(
 		const breakdown = result.breakdown.map((line) => ({
 			label: line.label,
 			detail: line.formula,
+			// Étape sans montant (choix du barème) : case vide, jamais un tiret (docs/editorial-style.md § 3.1)
 			amount: line.noAmount
-				? "—"
+				? ""
 				: line.unit === "CHF"
 					? formatChfAmount(line.value)
 					: `${formatSwissNumber(line.value, 2)}${line.unit ? ` ${line.unit}` : ""}`,

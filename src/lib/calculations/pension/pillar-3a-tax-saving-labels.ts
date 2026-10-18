@@ -6,8 +6,9 @@
 
 export const NO_DEDUCTION = "aucune déduction";
 export const DEDUCTION_BLOCKED = "Aucune déduction possible cette année";
-export const NO_AVS_INCOME = "Aucun revenu soumis à l'AVS cette année : aucune cotisation 3a n'est déductible (circulaire AFC n° 18a, ch. 3 et 5.1).";
-export const AFTER_REFERENCE_AGE_BLOCKED = "Âge de référence atteint, sans activité lucrative ou depuis cinq ans ou plus : aucune cotisation 3a n'est déductible (art. 7 al. 3 OPP 3).";
+// Les deux motifs de refus s'affichent aussi dans la carte : typographie de docs/editorial-style.md § 3.3
+export const NO_AVS_INCOME = "Sans revenu soumis à l’AVS cette année, aucune cotisation 3a n’est déductible (circulaire AFC n° 18a, ch. 3 et 5.1).";
+export const AFTER_REFERENCE_AGE_BLOCKED = "L’âge de référence est atteint, sans activité lucrative ou depuis cinq ans ou plus. Aucune cotisation 3a n’est donc déductible (art. 7 al. 3 OPP 3).";
 export const AFTER_REFERENCE_AGE_ALLOWED = "Cotisation après l'âge de référence";
 export const AFTER_REFERENCE_AGE_ASSUMPTION = "Activité lucrative exercée, moins de cinq ans après l'âge de référence : la cotisation reste possible (art. 7 al. 3 OPP 3). L'activité est à prouver chaque année (circulaire AFC n° 18a, ch. 3).";
 export const REFERENCE_AGE_WORKING = "activité lucrative exercée, âge de référence atteint il y a moins de cinq ans";
