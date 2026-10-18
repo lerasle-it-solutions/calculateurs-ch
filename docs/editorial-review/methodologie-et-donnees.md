@@ -84,13 +84,14 @@ garde-fou n'en dépend pas. Les notes du registre, qui ne s'affichent pas, ne ch
   le refus du calcul de rachat LPP (deux cas sous un même deux-points), le niveau 3 d'avertissement.
   Chacune garde une seule affirmation avec sa référence.
 
-## 5. Point à trancher (fond, non modifié)
+## 5. Niveau 2 d'avertissement (fond mis à jour, 18.10.2026)
 
-Le niveau 2 décrit encore « un bandeau au-dessus de chaque formulaire » qui indique le périmètre. Depuis
-la décision n° 19, c'est une ligne de périmètre au-dessus du formulaire, liée au détail « Ce que ce calcul
-suppose », sous le résultat. Je n'ai pas changé ce fond. Proposition : « Une ligne au-dessus de chaque
-formulaire indique pour qui le calculateur est fait et renvoie au détail “Ce que ce calcul suppose”, qui
-précise ce qu'il ne couvre pas, avec un lien vers une alternative, et les hypothèses qu'il retient. »
+Le niveau 2 décrivait encore « un bandeau au-dessus de chaque formulaire », antérieur à la décision n° 19.
+À la demande du mainteneur, il décrit désormais la page actuelle : « Une ligne de périmètre, au-dessus de
+chaque formulaire, indique pour qui le calculateur est fait et renvoie au détail “Ce que ce calcul
+suppose”. Ce détail précise ce que le calculateur ne couvre pas, avec un lien vers une alternative, et les
+hypothèses qu’il retient. Toute exclusion qui s’applique à votre saisie s’affiche en outre dans la carte
+du résultat, au moment où la saisie la déclenche. » Aucune autre page ne décrivait le bandeau.
 
 ## 6. Tests adaptés
 
