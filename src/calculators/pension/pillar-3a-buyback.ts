@@ -45,14 +45,14 @@ export const pillar3aGapYears: number[] = Array.from(
 );
 
 export const pillar3aBuybackIntro: string[] = [
-	`Depuis ${firstBuybackYear}, il est possible pour la première fois de rattraper des versements manqués au pilier 3a, mais seulement pour les années à partir de ${firstGapYear}. Une année où vous n'avez pas versé le maximum peut être rachetée pendant ${lookbackYears} ans, et le rachat se déduit de votre revenu imposable, comme une cotisation ordinaire.`,
-	`Chaque année, vous pouvez racheter au total jusqu'à la « petite » cotisation 3a de l'année (${chf(smallCap)} CHF en ${pillar3aBuybackYear}), en plus de votre cotisation ordinaire, qui doit avoir été versée en entier. Cette limite vaut aussi pour les indépendants sans 2e pilier. Il faut en outre avoir eu un revenu soumis à l'AVS l'année de la lacune et l'année du rachat. Le rachat se demande par écrit à votre fondation ou à votre assurance, qui doit l'autoriser avant que vous ne versiez.`,
-	"Ce calculateur indique, année par année, ce que vous pouvez encore racheter, jusqu'à quand, et l'impôt que vous économiseriez.",
+	`Depuis ${firstBuybackYear}, vous pouvez rattraper des versements manqués au pilier 3a. C’est une première, limitée aux années à partir de ${firstGapYear}. Une année où vous n’avez pas versé le maximum se rachète pendant ${lookbackYears} ans, et le rachat se déduit de votre revenu imposable comme une cotisation ordinaire.`,
+	`En une année, vos rachats peuvent atteindre au total la « petite » cotisation 3a de l’année (${chf(smallCap)} CHF en ${pillar3aBuybackYear}), en plus de votre cotisation ordinaire, qui doit avoir été versée en entier. Cette limite vaut aussi pour les indépendants sans 2e pilier. Il faut encore avoir eu un revenu soumis à l’AVS l’année de la lacune et l’année du rachat. Le rachat se demande par écrit à votre fondation ou à votre assurance, qui doit l’autoriser avant tout versement.`,
+	"Le calculateur montre, année par année, ce que vous pouvez encore racheter et jusqu’à quand, puis l’impôt que ce rachat vous ferait économiser.",
 ];
 
 const opp3 = sourceRegistry().get("opp3-art-7a");
 if (!opp3) throw new Error("Source opp3-art-7a absente du registre.");
-const opp3Link = { label: "Le texte de l'OPP 3 sur Fedlex", url: opp3.url };
+const opp3Link = { label: "Le texte de l’OPP 3 sur Fedlex", url: opp3.url };
 
 /** Sources du moteur fiscal, puis celles du pilier 3a. */
 const sourceIds = [...new Set([...taxEngineSourceIds(pillar3aBuybackYear), "opp3-art-7a", "ofas-pillar-3a-caps"])];
@@ -65,7 +65,7 @@ const yesNo = [
 const coverage = taxEngineCoverage();
 
 
-const taxableIncomeHint = "Il figure sur votre dernière décision de taxation, ligne revenu imposable.";
+const taxableIncomeHint = "Vous le trouvez sur votre dernière décision de taxation, à la ligne « revenu imposable ».";
 
 /** Cas exemple, celui du guide (src/lib/articles/rachat-3a-retroactif.ts) : saisies de scénario, fictives (§ 4.2). */
 const EXAMPLE = { cantonalTaxableIncome: 70_000, federalTaxableIncome: 72_000, paidContribution: 2_500 };
@@ -77,7 +77,7 @@ const fields: FieldDefinition[] = [
 		label: "Commune de domicile",
 		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
 		options: municipalityOptions(coverage.cantonsCovered),
-		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
+		hint: "Tapez les premières lettres de votre commune. Le canton s’en déduit.",
 		required: true,
 	},
 	{
@@ -91,8 +91,8 @@ const fields: FieldDefinition[] = [
 		defaultValue: "single",
 		required: true,
 	},
-	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
+	{ kind: "number", name: "children", label: "Nombre d’enfants", min: 0, step: 1, defaultValue: 0, required: true },
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l’enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
@@ -127,7 +127,7 @@ const fields: FieldDefinition[] = [
 			defaultValue: 0,
 			required: true,
 		},
-		{ kind: "select", name: `avsIncome${year}`, label: `Revenu soumis à l'AVS en ${year}`, options: yesNo, defaultValue: "yes", required: true },
+		{ kind: "select", name: `avsIncome${year}`, label: `Revenu soumis à l’AVS en ${year}`, options: yesNo, defaultValue: "yes", required: true },
 		{
 			kind: "select",
 			name: `alreadyBoughtBack${year}`,
@@ -148,7 +148,7 @@ const fields: FieldDefinition[] = [
 	{
 		kind: "select",
 		name: "avsIncomeInBuybackYear",
-		label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}`,
+		label: `Revenu soumis à l’AVS en ${pillar3aBuybackYear}`,
 		options: yesNo,
 		defaultValue: "yes",
 		required: true,
@@ -168,18 +168,18 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	family: "pension",
 	slug: "/prevoyance/rachat-3a-retroactif/",
 	title: "Rachat rétroactif du pilier 3a",
-	metaDescription: `Calculez ce que vous pouvez racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu'à quand, et l'impôt économisé dans votre commune romande.`,
-	question: "Combien d'impôt économisez-vous en rachetant vos années de 3a manquées ?",
+	metaDescription: `Ce que vous pouvez encore racheter dans votre pilier 3a depuis ${firstGapYear}, jusqu’à quand, et l’impôt que vous économisez dans votre commune romande.`,
+	question: "Combien d’impôt économisez-vous en rachetant vos années de 3a manquées ?",
 	// Moins de 60 caractères (checklist, point 16) : l'année et le bénéfice, en question
-	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : quelle économie d'impôt ?`,
-	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l'impôt économisé.",
+	metaTitle: `Rachat 3a rétroactif ${pillar3aBuybackYear} : quelle économie d’impôt ?`,
+	promise: "Ce que vous pouvez encore racheter dans votre 3a, et l’impôt que vous économisez.",
 	exitTaxReminder: {
-		text: "Le capital 3a sera imposé à son retrait : cette économie n'est pas un gain net.",
+		text: "Le capital 3a sera imposé à son retrait, cette économie n’est donc pas un gain net.",
 		link: { label: "En savoir plus", url: "/methodologie/#prevoyance" },
 	},
-	scopeLine: `Personnes affiliées à un 2e pilier, imposées au régime ordinaire en Suisse romande, rachat en ${pillar3aBuybackYear}.`,
+	scopeLine: `Pour un rachat en ${pillar3aBuybackYear}, par une personne affiliée à un 2e pilier et imposée au régime ordinaire en Suisse romande.`,
 	example: {
-		label: `personne seule à Lausanne, revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, ${chf(EXAMPLE.paidContribution)} CHF versés en ${firstGapYear}`,
+		label: `une personne seule à Lausanne, avec un revenu imposable de ${chf(EXAMPLE.cantonalTaxableIncome)} CHF, qui a versé ${chf(EXAMPLE.paidContribution)} CHF en ${firstGapYear}`,
 		values: {
 			municipality: "Lausanne",
 			maritalStatus: "single",
@@ -195,38 +195,38 @@ export const pillar3aBuyback: CalculatorDefinition = {
 
 	scope: {
 		forWhom: [
-			`Salarié ou indépendant affilié à un 2e pilier, ayant réalisé un revenu soumis à l'AVS, imposé au régime ordinaire dans un canton romand, qui n'a pas versé le maximum au pilier 3a une ou plusieurs années depuis ${firstGapYear}.`,
+			`Un salarié ou un indépendant affilié à un 2e pilier et imposé au régime ordinaire dans un canton romand. Il a réalisé un revenu soumis à l’AVS et n’a pas versé le maximum au pilier 3a une ou plusieurs années depuis ${firstGapYear}.`,
 		],
 		notCovered: [
 			{
-				case: `Lacunes antérieures à ${firstGapYear} : elles ne sont pas rachetables. La disposition transitoire de la modification de l'OPP 3 du 6 novembre 2024 n'ouvre le rachat qu'aux lacunes nées à partir de ${firstGapYear}.`,
+				case: `Les lacunes antérieures à ${firstGapYear}, qui ne sont pas rachetables. La disposition transitoire de la modification de l’OPP 3 du 6 novembre 2024 n’ouvre le rachat qu’aux lacunes nées à partir de ${firstGapYear}.`,
 				alternative: opp3Link,
 			},
 			{
-				case: "Personnes imposées à la source sans quasi-résidence : le calcul suppose une taxation ordinaire.",
-				alternative: { label: "Renseignez-vous auprès de l'administration fiscale de votre canton." },
+				case: "Les personnes imposées à la source sans quasi-résidence, car le calcul suppose une taxation ordinaire.",
+				alternative: { label: "Renseignez-vous auprès de l’administration fiscale de votre canton." },
 			},
 			{
-				case: "Personnes ayant déjà perçu une prestation de vieillesse du pilier 3a, ou ayant dépassé de plus de cinq ans l'âge de référence : le rachat est exclu (art. 7a al. 4 et 5 OPP 3).",
+				case: "Les personnes qui ont déjà perçu une prestation de vieillesse du pilier 3a, ou qui ont dépassé l’âge de référence de plus de cinq ans. Pour elles, le rachat est exclu (art. 7a al. 4 et 5 OPP 3).",
 				alternative: opp3Link,
 			},
 			{
-				case: "Rachat des personnes non affiliées à un 2e pilier (indépendants sans caisse de pension, salariés sous le seuil LPP), dont la lacune se calcule sur la « grande » cotisation : il n'est pas encore couvert.",
+				case: "Le rachat des personnes non affiliées à un 2e pilier (indépendants sans caisse de pension, salariés sous le seuil LPP). Leur lacune se calcule sur la « grande » cotisation, et ce cas n’est pas encore couvert.",
 				alternative: { label: "Adressez-vous à votre fondation ou à votre assurance 3a." },
 			},
 			{
-				case: "Rendement futur du capital racheté.",
+				case: "Le rendement futur du capital racheté.",
 				alternative: "pension.retirement-projection",
 			},
 			...coverage.notCovered,
 		],
 		assumptions: [
-			"Le total des rachats d'une même année est plafonné à la « petite » cotisation de cette année, quel que soit le nombre de lacunes comblées, et ne dépasse pas les lacunes (art. 7a al. 2).",
-			"La cotisation de l'année du rachat doit avoir été versée intégralement avant la demande de rachat (art. 7a al. 1 let. c, art. 7b al. 2 let. a).",
-			"Un revenu soumis à l'AVS est exigé l'année de la lacune (art. 7b al. 2 let. b) et l'année du rachat (OFAS, « Le troisième pilier » ; art. 7a al. 1 let. c).",
-			"Un seul rachat par année de lacune : une lacune comblée en partie ne peut plus être complétée, et le solde est perdu (art. 7a al. 3).",
+			"Le total des rachats d’une même année est plafonné à la « petite » cotisation de cette année, quel que soit le nombre de lacunes comblées, et ne dépasse pas les lacunes (art. 7a al. 2).",
+			"La cotisation de l’année du rachat doit avoir été versée intégralement avant la demande de rachat (art. 7a al. 1 let. c, art. 7b al. 2 let. a).",
+			"Un revenu soumis à l’AVS est exigé l’année de la lacune (art. 7b al. 2 let. b) et l’année du rachat (OFAS, « Le troisième pilier » ; art. 7a al. 1 let. c).",
+			"Une année de lacune ne se rachète qu’une fois, si bien qu’une lacune comblée en partie ne peut plus être complétée et que le solde est perdu (art. 7a al. 3).",
 			`Une lacune peut être rachetée pendant les ${lookbackYears} années qui suivent (art. 7a al. 1 let. a).`,
-			"L'économie est la différence entre l'impôt total (canton, commune et Confédération) avant et après le rachat. Elle ne dépend pas de la fortune, dont l'impôt ne change pas.",
+			"L’économie est la différence entre l’impôt total (canton, commune et Confédération) avant et après le rachat. Elle ne dépend pas de la fortune, dont l’impôt ne change pas.",
 			"Le rachat réduit les deux revenus imposables exactement de son montant. Les déductions dont le montant dépend du revenu ne sont pas recalculées.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
@@ -240,46 +240,46 @@ export const pillar3aBuyback: CalculatorDefinition = {
 	variants: ["pension.pillar-3a-tax-saving", "pension.lpp-buyback"],
 	faq: [
 		{
-			question: "Quelles années puis-je racheter, et jusqu'à quand ?",
-			answer: `Seules les lacunes apparues depuis ${firstGapYear} ; les années antérieures ne pourront jamais être rachetées. Chaque lacune reste rachetable pendant ${lookbackYears} ans : celle de ${firstGapYear} jusqu'en ${firstGapYear + lookbackYears}.`,
+			question: "Quelles années puis-je racheter, et jusqu’à quand ?",
+			answer: `Seulement les lacunes apparues depuis ${firstGapYear}. Les années antérieures ne pourront jamais être rachetées. Chaque lacune reste rachetable pendant ${lookbackYears} ans, celle de ${firstGapYear} par exemple jusqu’en ${firstGapYear + lookbackYears}.`,
 		},
 		{
-			question: "Quelles conditions dois-je remplir ?",
+			question: "Quelles conditions dois-je remplir ?",
 			answer:
-				"Avoir eu un revenu soumis à l'AVS l'année de la lacune et l'année du rachat ; avoir versé en entier la cotisation ordinaire de l'année du rachat ; ne jamais avoir perçu de prestation de vieillesse du pilier 3a, y compris d'une police arrivée à échéance. Après une telle prestation, plus aucun rachat n'est possible. Les indemnités de l'assurance-chômage comptent comme revenu soumis à l'AVS.",
+				"Il vous faut un revenu soumis à l’AVS l’année de la lacune et l’année du rachat. La cotisation ordinaire de l’année du rachat doit être versée en entier. Enfin, vous ne devez jamais avoir perçu de prestation de vieillesse du pilier 3a, y compris d’une police arrivée à échéance, car après une telle prestation plus aucun rachat n’est possible. Les indemnités de l’assurance-chômage comptent comme revenu soumis à l’AVS.",
 		},
 		{
-			question: "J'ai interrompu mon activité une année : ai-je une lacune ?",
+			question: "J’ai interrompu mon activité une année : ai-je une lacune ?",
 			answer:
-				"Seulement si vous avez eu un revenu soumis à l'AVS cette année-là. Une année sans aucun revenu de ce type, par exemple pour une formation, ne crée pas de lacune rachetable.",
+				"Seulement si vous avez eu un revenu soumis à l’AVS cette année-là. Une année sans aucun revenu de ce type, par exemple pour une formation, ne crée pas de lacune rachetable.",
 		},
 		{
-			question: "Combien puis-je racheter en une année ?",
-			answer: `Au total, au plus la « petite » cotisation de l'année du rachat (${chf(smallCap)} CHF en ${pillar3aBuybackYear}), en plus de votre cotisation ordinaire, et jamais plus que vos lacunes. Ce plafond vaut pour tous, indépendants compris. Un même rachat peut combler plusieurs années.`,
+			question: "Combien puis-je racheter en une année ?",
+			answer: `Au total, au plus la « petite » cotisation de l’année du rachat (${chf(smallCap)} CHF en ${pillar3aBuybackYear}), en plus de votre cotisation ordinaire, et jamais plus que vos lacunes. Ce plafond vaut pour tous, indépendants compris. Un même rachat peut combler plusieurs années.`,
 		},
 		{
-			question: "Et si mes lacunes dépassent ce plafond ?",
+			question: "Et si mes lacunes dépassent ce plafond ?",
 			answer:
-				"Chaque année de lacune ne se rachète qu'une fois : si vous n'en comblez qu'une partie, le reste est perdu. Mieux vaut combler des années entières qui tiennent sous le plafond, en commençant par celles qui expirent le plus tôt, et garder les autres pour une année suivante. C'est la répartition que propose le calculateur.",
+				"Chaque année de lacune ne se rachète qu’une fois, et si vous n’en comblez qu’une partie, le reste est perdu. Mieux vaut donc combler des années entières qui tiennent sous le plafond, en commençant par celles qui expirent le plus tôt, et garder les autres pour une année suivante. C’est la répartition que propose le calculateur.",
 		},
 		{
-			question: "Comment se passe la demande ?",
+			question: "Comment se passe la demande ?",
 			answer:
-				"Par écrit, auprès de votre fondation bancaire ou de votre assurance : vous indiquez le montant, les années concernées et le montant par année, et vous confirmez remplir les conditions. L'institution vérifie et autorise le rachat ; vous ne versez qu'ensuite, selon ses instructions. Elle vous remet une attestation pour votre déclaration d'impôt.",
+				"Par écrit, auprès de votre fondation bancaire ou de votre assurance. Vous y indiquez le montant, les années concernées et le montant par année, et vous confirmez remplir les conditions. L’institution vérifie puis autorise le rachat, et vous ne versez qu’ensuite, selon ses instructions. Elle vous remet une attestation pour votre déclaration d’impôt.",
 		},
 		{
-			question: "Quand faut-il s'y prendre ?",
+			question: "Quand faut-il s’y prendre ?",
 			answer:
-				"Le rachat se déduit du revenu de l'année où il est versé. Il doit donc être autorisé et payé avant la fin de l'année, et beaucoup d'institutions ferment les demandes plus tôt, parfois dès la mi-décembre. Renseignez-vous dès l'automne.",
+				"Le rachat se déduit du revenu de l’année où il est versé. Il doit donc être autorisé et payé avant la fin de l’année, et beaucoup d’institutions ferment les demandes plus tôt, parfois dès la mi-décembre. Renseignez-vous dès l’automne.",
 		},
 		{
-			question: "Je suis indépendant, ou salarié sans caisse de pension : qu'est-ce que cela change ?",
-			answer: `Ce qui compte, c'est l'affiliation à un 2e pilier, pas le statut. Sans caisse de pension, votre lacune se calcule sur la « grande » cotisation (${percent(largeRate)} du revenu, au plus ${chf(largeCap)} CHF), mais le rachat annuel reste plafonné à la petite. Ce calculateur ne couvre pas encore ce rachat : adressez-vous à votre fondation ou à votre assurance 3a.`,
+			question: "Je suis indépendant, ou salarié sans caisse de pension : qu’est-ce que cela change ?",
+			answer: `Seule compte l’affiliation à un 2e pilier, pas votre statut. Sans caisse de pension, votre lacune se calcule sur la « grande » cotisation (${percent(largeRate)} du revenu, au plus ${chf(largeCap)} CHF), mais le rachat annuel reste plafonné à la petite. Ce calculateur ne couvre pas encore ce rachat. Adressez-vous à votre fondation ou à votre assurance 3a.`,
 		},
 		{
-			question: "Pourquoi ne pas multiplier le rachat par mon taux marginal ?",
+			question: "Pourquoi ne pas multiplier le rachat par mon taux marginal ?",
 			answer:
-				"Parce que le rachat peut faire changer de tranche de barème. Le calculateur calcule votre impôt deux fois, avant et après le rachat, et affiche la différence exacte.",
+				"Parce que le rachat peut faire passer votre revenu dans une autre tranche du barème, ce qu’un taux marginal ne voit pas. Le calculateur établit donc votre impôt deux fois, avant et après le rachat, et affiche la différence.",
 		},
 	],
 
@@ -299,7 +299,7 @@ export const pillar3aBuyback: CalculatorDefinition = {
 					value: "conditionsMet",
 					label: "Je remplis les conditions",
 					details: [
-						`revenu soumis à l'AVS en ${[...pillar3aGapYears, pillar3aBuybackYear].join(", ").replace(/, (\d+)$/, " et en $1")}`,
+						`revenu soumis à l’AVS en ${[...pillar3aGapYears, pillar3aBuybackYear].join(", ").replace(/, (\d+)$/, " et en $1")}`,
 						`cotisation ${pillar3aBuybackYear} versée en entier`,
 						`aucun rachat déjà fait pour ${pillar3aGapYears.join(", ").replace(/, (\d+)$/, " ni pour $1")}`,
 						"aucune prestation de vieillesse du 3a perçue",
@@ -322,14 +322,14 @@ export const pillar3aBuyback: CalculatorDefinition = {
 			anyOf: [{ field: "currentYearContributionPaidInFull", value: "yes" }],
 			profile: "profile",
 		},
-		{ label: `Revenu soumis à l'AVS en ${pillar3aBuybackYear}`, anyOf: [{ field: "avsIncomeInBuybackYear", value: "yes" }], profile: "profile" },
+		{ label: `Revenu soumis à l’AVS en ${pillar3aBuybackYear}`, anyOf: [{ field: "avsIncomeInBuybackYear", value: "yes" }], profile: "profile" },
 		{ label: "Aucune prestation de vieillesse du pilier 3a déjà perçue", anyOf: [{ field: "oldAgeBenefit", value: "no" }], profile: "profile" },
 	],
 
 	vigilance: [
 		{
 			level: "warning",
-			summary: "Chaque année de lacune ne se rachète qu'une fois : une lacune comblée en partie ne peut plus être complétée, et le solde est perdu.",
+			summary: "Chaque année de lacune ne se rachète qu’une fois, et si vous n’en comblez qu’une partie, le solde est perdu.",
 		},
 	],
 
@@ -338,16 +338,16 @@ export const pillar3aBuyback: CalculatorDefinition = {
 
 /** Textes de la page propres à A1, en français. */
 export const pillar3aBuybackTexts = {
-	resultLabel: "Économie d'impôt",
+	resultLabel: "Économie d’impôt",
 	/** Guide de la famille qui explique le rachat rétroactif (src/content/articles/rachat-3a-retroactif.mdx). */
 	guide: { label: "Comprendre le rachat rétroactif", url: "/prevoyance/guides/rachat-3a-retroactif/" },
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
-	disclaimer: `Estimation indicative, établie d'après les barèmes ${pillar3aBuybackYear} et vos saisies. Elle ne constitue ni un conseil fiscal ni un conseil en prévoyance, et ne remplace pas votre décision de taxation.`,
+	disclaimer: `Ce montant est une estimation indicative, établie d’après les barèmes ${pillar3aBuybackYear} et vos saisies. Il ne constitue pas un conseil fiscal ou en prévoyance, et ne remplace pas votre décision de taxation.`,
 	outOfScope: (canton: string): string =>
-		`Ce calculateur ne couvre pas encore votre ménage dans le canton ${canton} : ses résultats ne reproduiraient pas exactement ceux du calculateur officiel. Utilisez la calculette du canton :`,
+		`Ce calculateur ne couvre pas encore votre ménage dans le canton ${canton}, parce que ses résultats ne reproduiraient pas exactement ceux du calculateur officiel. Utilisez la calculette du canton :`,
 	outOfScopeMunicipality: (municipality: string): string =>
-		`Ce calculateur ne couvre pas encore la commune de ${municipality} : une donnée communale nécessaire au calcul n'y est pas relevée. Utilisez la calculette du canton :`,
-	missingData: "Une donnée nécessaire au calcul pour cette commune n'est pas encore relevée : aucun résultat n'est affiché.",
+		`Ce calculateur ne couvre pas encore la commune de ${municipality}, faute d’une donnée communale relevée pour le calcul. Utilisez la calculette du canton :`,
+	missingData: "Une donnée nécessaire au calcul n’est pas encore relevée pour cette commune, et aucun résultat n’est donc affiché.",
 	unknownMunicipality: "Choisissez une commune dans la liste proposée.",
 	/** Mentions courtes de la barre de résultat mobile, à la place du montant, liées au message de la carte. */
 	outOfScopeShort: "Hors périmètre, voir le message",

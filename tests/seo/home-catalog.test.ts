@@ -57,7 +57,8 @@ describe("accueil généré depuis le catalogue", () => {
 			expect(lines).toEqual([]);
 			return;
 		}
-		expect(lines).toEqual([fr.home.comingSoon(familiesWithout.map((family) => fr.family[family]))]);
+		// `text` ramène tout blanc à une espace, espace fine comprise : même normalisation pour l'attendu (18.10.2026)
+		expect(lines).toEqual([fr.home.comingSoon(familiesWithout.map((family) => fr.family[family])).replace(/\s+/g, " ")]);
 	});
 
 	it("aucune mention « en préparation » ni date promise", () => {

@@ -77,7 +77,7 @@ const updatedIso = article.updatedOn.toISOString().slice(0, 10);
 				{sources.map((source) => (
 					<li>
 						<a href={source.url}>{source.name}</a>
-						{source.publisher && <> — {source.publisher}</>}
+						{source.publisher && <> ({source.publisher})</>}
 					</li>
 				))}
 			</ul>

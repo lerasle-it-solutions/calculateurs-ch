@@ -107,18 +107,20 @@ describe("champs de la page d'A2", () => {
 	it("chaque personne répond aux questions des règles 3 et 4, avec la tournure du conjoint ou partenaire", () => {
 		const labelOf = (name: string) => pillar3aTaxSaving.fields.find((field) => field.name === name)?.label;
 		expect(labelOf("workingAfterReferenceAge")).toBe(
-			"Exercez-vous encore une activité lucrative, et avez-vous atteint l'âge de référence il y a moins de cinq ans ?",
+			// Texte réécrit le 18.10.2026 (docs/editorial-style.md) : apostrophe typographique, espace fine avant « ? »
+			"Exercez-vous encore une activité lucrative, et avez-vous atteint l’âge de référence il y a moins de cinq ans\u202f?",
 		);
 		for (const name of ["spouseHasAvsIncome", "spouseReachedReferenceAge", "spouseWorkingAfterReferenceAge"]) {
 			expect(labelOf(name)).toMatch(/^Votre conjoint ou partenaire (a-t-il|exerce-t-il) /);
 		}
-		expect(labelOf("spouseEarnedIncome")).toMatch(/^Revenu de l'activité lucrative de votre conjoint ou partenaire en \d{4}$/);
+		expect(labelOf("spouseEarnedIncome")).toMatch(/^Revenu de l’activité lucrative de votre conjoint ou partenaire en \d{4}$/);
 		expect(labelOf("spouseContribution")).toMatch(/^Montant versé au pilier 3a par votre conjoint ou partenaire en \d{4}$/);
 	});
 
 	it("l'aide du revenu imposable demande le revenu avant la déduction 3a de la dernière taxation", () => {
+		// Texte réécrit le 18.10.2026 (docs/editorial-style.md), même consigne
 		const hint =
-			"Partez du revenu imposable de votre dernière décision de taxation et ajoutez-y la déduction 3a qui y figure, s'il y en a une : le calcul porte sur le revenu avant cette déduction.";
+			"Reprenez le revenu imposable de votre dernière décision de taxation et rajoutez-y la déduction 3a qui y figure, s’il y en a une. Le calcul part du revenu avant cette déduction.";
 		for (const name of ["cantonalTaxableIncome", "federalTaxableIncome"]) {
 			expect(pillar3aTaxSaving.fields.find((field) => field.name === name)?.hint).toBe(hint);
 		}
@@ -136,7 +138,8 @@ describe("page d'A1", () => {
 		expect(entry.case).toMatch(/non affiliées.*pas encore couvert/);
 		expect(entry.alternative).toEqual({ label: "Adressez-vous à votre fondation ou à votre assurance 3a." });
 		const faq = pillar3aBuyback.faq[7]!;
-		expect(faq.answer).toMatch(/ne couvre pas encore ce rachat : adressez-vous à votre fondation ou à votre assurance 3a\.$/);
+		// Texte réécrit le 18.10.2026 (docs/editorial-style.md) : deux phrases au lieu d'un deux-points, même renvoi
+		expect(faq.answer).toMatch(/ne couvre pas encore ce rachat\. Adressez-vous à votre fondation ou à votre assurance 3a\.$/);
 		expect(faq.answer).not.toMatch(/A2/);
 	});
 });
@@ -155,7 +158,8 @@ describe("méthodologie, section Prévoyance", () => {
 		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
 		const html = decode(await container.renderToString(Page, { request: new Request("https://calculateurs.ch/methodologie/") }));
 		const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
-		const section = text.slice(text.indexOf("Économie d'impôt d'un versement 3a"), text.indexOf("Sources rattachées aux calculateurs de prévoyance"));
+		// Intertitre réécrit le 18.10.2026 : apostrophe typographique (docs/editorial-style.md § 3.3)
+		const section = text.slice(text.indexOf("Économie d’impôt d’un versement 3a"), text.indexOf("Sources rattachées aux calculateurs de prévoyance"));
 		expect(section.length).toBeGreaterThan(0);
 		for (const reference of ["art. 7 al. 1 OPP 3", "ch. 5.5", "ch. 3", "art. 7 al. 3 OPP 3", "art. 7 al. 2 OPP 3", "ch. 5.7 g"]) {
 			expect(section, reference).toContain(reference);

@@ -62,15 +62,15 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
 				notCovered.map((item) => (
 					<li>
 						{item.case}
+						{/* L'alternative sur sa propre ligne, sans tiret (docs/editorial-style.md § 3.1) */}
 						{item.alternative && (
-							<>
-								{" — "}
+							<span class="block">
 								{item.alternative.url ? (
 									<a href={item.alternative.url}>{item.alternative.label}</a>
 								) : (
 									item.alternative.label
 								)}
-							</>
+							</span>
 						)}
 					</li>
 				))

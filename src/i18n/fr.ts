@@ -11,9 +11,13 @@
  */
 import { formatSwissNumber } from "../lib/format/chf";
 
+const SITE_NAME = "calculateurs.ch";
+
 export const fr = {
 	site: {
-		name: "calculateurs.ch",
+		name: SITE_NAME,
+		/** Balise title d'une page hors calculateur : « <nom> · calculateurs.ch » (docs/editorial-style.md § 3.1). */
+		pageTitle: (name: string): string => `${name} · ${SITE_NAME}`,
 		baseline: "Calculateurs suisses romands qui affichent leurs sources.",
 		/** Adresse de contact, toujours affichée en clair dans son lien mailto: (pied de page, pages légales). */
 		contactEmail: "contact@calculateurs.ch",
@@ -30,22 +34,31 @@ export const fr = {
 		requiredText: "(obligatoire)",
 		/** Rubrique ou calculateur annoncé, sans page encore. */
 		comingSoon: "En préparation",
-		/** Valeur affichée tant qu'aucun résultat n'est disponible. */
-		emptyValue: "—",
+		/**
+		 * Valeur par défaut d'une carte sans résultat (page sans cas exemple, démonstration) : vide,
+		 * jamais un tiret (docs/editorial-style.md § 3.1). Les calculateurs publiés passent toujours le
+		 * résultat de leur cas exemple, calculé au build (docs/design-system.md § 4.2).
+		 */
+		emptyValue: "",
 	},
 
 	notFound: {
 		/** Étiquette au-dessus du titre de la page 404. */
 		eyebrow: "Erreur 404",
-		title: "Cette page n'existe pas.",
-		lead: "L'adresse est peut-être mal saisie, ou la page a été déplacée. Les calculateurs publiés sont accessibles depuis l'accueil.",
-		home: "Retour à l'accueil",
-		metaDescription: "La page demandée n'existe pas sur calculateurs.ch.",
+		title: "Cette page n’existe pas.",
+		lead: "L’adresse est peut-être mal saisie, ou la page a été déplacée. Les calculateurs publiés sont accessibles depuis l’accueil.",
+		home: "Retour à l’accueil",
+		metaDescription: "La page demandée n’existe pas sur calculateurs.ch.",
 	},
 
 	home: {
-		heroTitle: "Combien votre 3e pilier vous fait-il économiser d'impôt ?",
-		heroLead: "Votre commune, votre revenu imposable, votre versement : le calcul se fait dans votre navigateur.",
+		/** Balise title de l'accueil, moins de 60 caractères (docs/editorial-style.md § 5). */
+		metaTitle: "Calculs d’impôt sourcés en Suisse romande · calculateurs.ch",
+		/** 155 caractères au plus. */
+		metaDescription:
+			"Des calculateurs d’impôt et de prévoyance pour la Suisse romande, dont chaque chiffre est sourcé et daté. Aucun compte, aucun cookie de suivi.",
+		heroTitle: "Combien votre 3e pilier vous fait-il économiser d’impôt ?",
+		heroLead: "Indiquez votre commune, votre revenu imposable et votre versement. Le calcul se fait dans votre navigateur.",
 		/** Libellés courts des trois champs du héros. */
 		heroMunicipality: "Commune de domicile",
 		heroIncome: "Revenu imposable",
@@ -56,7 +69,7 @@ export const fr = {
 		 * formatée au build (« 31 décembre ») ; « {days} » est remplacé dans le navigateur.
 		 */
 		countdown: (year: number, deadline: string): string =>
-			`Il reste {days} jours pour verser votre 3a ${year} — le versement doit être crédité au plus tard le ${deadline}. Comptez quelques jours ouvrables pour que le virement soit crédité.`,
+			`Il reste {days} jours pour verser votre 3a ${year}, et le versement doit être crédité au plus tard le ${deadline}. Comptez quelques jours ouvrables pour que le virement soit crédité.`,
 		/** Le jour de la date limite. */
 		countdownLastDay: (year: number): string => `Dernier jour pour que votre versement 3a ${year} soit crédité.`,
 		proofHeading: "Les données",
@@ -66,21 +79,21 @@ export const fr = {
 		proofSource: "Code source ouvert",
 		calculatorsHeading: "Les calculateurs",
 		/** Résultat type d'une carte, calculé au build sur le cas exemple. */
-		typicalResult: (municipality: string, income: string, saving: string): string => `${municipality}, ${income} : ${saving} d'impôt en moins`,
+		typicalResult: (municipality: string, income: string, saving: string): string => `${municipality}, ${income} : ${saving} d’impôt en moins`,
 		openCalculator: "Calculer",
-		whyHeading: "Pourquoi ces chiffres sont justes",
+		whyHeading: "Comment ces chiffres sont calculés",
 		why: [
 			{
 				title: "Calculé deux fois, jamais au taux marginal",
-				text: "Votre impôt est calculé avant et après la déduction ; l'économie est la différence exacte, pas un taux marginal multiplié par votre versement.",
+				text: "Votre impôt est calculé deux fois, avant et après la déduction. L’économie affichée est la différence entre les deux, jamais un taux marginal multiplié par votre versement.",
 			},
 			{
 				title: "Chaque montant sourcé et daté",
-				text: "Barèmes, coefficients et plafonds viennent des textes officiels, chacun avec sa date de vérification, publiée sur la page des données.",
+				text: "Les barèmes, les coefficients et les plafonds viennent des textes officiels. Chaque valeur porte sa date de vérification, publiée sur la page des données.",
 			},
 			{
 				title: "Rien ne quitte votre navigateur",
-				text: "Le calcul se fait sur votre appareil. Aucun compte, aucun cookie de suivi : vos saisies ne sont envoyées nulle part.",
+				text: "Le calcul se fait sur votre appareil, sans compte ni cookie de suivi. Vos saisies ne sont envoyées nulle part.",
 			},
 		],
 		guideHeading: "Le guide",
@@ -89,13 +102,13 @@ export const fr = {
 		familyCardAction: "Voir les calculateurs",
 		/** Seule ligne des familles sans calculateur publié, libellés de `fr.family`. Aucune date promise. */
 		comingSoon: (families: string[]) =>
-			`Prochainement : ${families.map((family) => family.toLocaleLowerCase("fr-CH")).join(", ")}.`,
+			`Prochainement : ${families.map((family) => family.toLocaleLowerCase("fr-CH")).join(", ")}.`,
 	},
 
 	header: {
 		navLabel: "Navigation principale",
 		/** Nom accessible du lien du logo vers l'accueil. */
-		homeLabel: "calculateurs.ch — accueil",
+		homeLabel: "Accueil de calculateurs.ch",
 		/** Sous `md`, bouton du menu replié (<details>), qui contient les entrées et la pastille. */
 		menu: "Menu",
 		/** Trois entrées (docs/design-system.md § 2.4, révisé le 17.10.2026). */
@@ -121,9 +134,9 @@ export const fr = {
 		/** Courriel prérempli avec l'URL de la page, composé au build : aucune saisie du calculateur. */
 		reportError: "Signaler une erreur",
 		reportSubject: "Erreur sur calculateurs.ch",
-		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
+		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
 		/** Ligne d'identité de l'éditeur (texte du mainteneur, 17.10.2026). */
-		publisher: "Édité par Lerasle IT Solutions, Epalinges (VD). Les calculs ne dépendent d'aucune banque, assurance ni autre prestataire.",
+		publisher: "Édité par Lerasle IT Solutions, Epalinges (VD). Les calculs ne dépendent d’aucune banque, assurance ni autre prestataire.",
 		methodology: "Méthodologie",
 		data: "Données et sources",
 		legal: "Mentions légales",
@@ -134,7 +147,7 @@ export const fr = {
 	},
 
 	breadcrumb: {
-		navLabel: "Fil d'Ariane",
+		navLabel: "Fil d’Ariane",
 		separator: "›",
 	},
 
@@ -149,18 +162,18 @@ export const fr = {
 	/** Canton déclaré en couverture partielle par la couche de données. */
 	partialCoverage: {
 		/** Ligne de périmètre : cantons déclarés en couverture partielle, liés au détail (§ 4.1). */
-		scopeLine: (cantons: string[]): string => `${cantons.join(", ")} : couverture partielle.`,
+		scopeLine: (cantons: string[]): string => `${cantons.join(", ")} : couverture partielle.`,
 		/** Préfixe du message de couverture sous le champ commune (avertissement renforcé, § 2.6). */
 		fieldPrefix: "Attention :",
 		notCoveredCase: (canton: string): string =>
-			`${canton} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ce canton.`,
+			`${canton} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton, et aucun résultat n’est donc affiché pour ce canton.`,
 		useOfficialCalculator: "Utilisez le calculateur fiscal officiel du canton.",
 		/** Couverture partielle limitée à certains ménages. */
 		notCoveredHouseholdsCase: (canton: string, households: string): string =>
-			`${canton}, ${households} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton ; aucun résultat n'est affiché pour ces contribuables.`,
+			`${canton}, ${households} : nos calculs ne reproduisent pas encore ceux du calculateur fiscal officiel du canton, et aucun résultat n’est donc affiché pour ces contribuables.`,
 		/** Couverture limitée à certains ménages et aux communes dont le barème communal est relevé. */
 		coveredHouseholdsAndMunicipalitiesCase: (canton: string, households: string, covered: string[]): string =>
-			`${canton} : nous ne couvrons pour l'instant que ${households}, dans les communes suivantes : ${covered.join(", ")}. Pour les autres situations, utilisez la calculette officielle du canton.`,
+			`${canton} : nous ne couvrons pour l’instant que ${households}, et seulement dans ${covered.length > 1 ? "les communes de" : "la commune de"} ${covered.join(", ")}. Pour les autres situations, utilisez la calculette officielle du canton.`,
 		/** Ménages couverts, dans la phrase ci-dessus. */
 		coveredHouseholds: {
 			single: "les personnes seules sans enfant",
@@ -179,7 +192,7 @@ export const fr = {
 		summary: "Voir le calcul ligne par ligne",
 		stepColumn: "Étape",
 		amountColumn: "Montant",
-		empty: "Le détail du calcul s'affiche dès que la carte résultat donne un montant.",
+		empty: "Le détail du calcul s’affiche dès que la carte résultat donne un montant.",
 	},
 
 	dataFreshness: {
@@ -204,14 +217,19 @@ export const fr = {
 	 */
 	taxYearFallback: {
 		pillar3aBuyback: (year: number, calendarYear: number): string =>
-			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
+			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 		pillar3aTaxSaving: (year: number, calendarYear: number): string =>
-			`Ce calcul porte sur un versement effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
+			`Ce calcul porte sur un versement effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 		lppBuyback: (year: number, calendarYear: number): string =>
-			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
+			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
 	familyPage: {
+		/** Page de famille : chapeau et méta-description (155 caractères au plus), une entrée par famille publiée. */
+		pension: {
+			metaDescription: "Calculateurs du 3e pilier et du 2e pilier pour la Suisse romande, avec la source et la date de chaque chiffre.",
+			lead: "Des calculateurs pour votre 3e pilier et votre caisse de pension, en Suisse romande. Chaque chiffre vient d’une source officielle, datée.",
+		},
 		guidesHeading: "Guides",
 		/** Lien d'action à la fin de chaque carte de guide. */
 		readGuide: "Lire le guide",
@@ -220,7 +238,7 @@ export const fr = {
 	article: {
 		/** Avant la date de mise à jour, en tête d'article. */
 		updatedOn: "Mis à jour le",
-		readingTime: (minutes: number): string => `Lecture : ${minutes} minutes`,
+		readingTime: (minutes: number): string => `Lecture : ${minutes} minutes`,
 		sourcesHeading: "Sources officielles",
 		/** Réserve en fin d'article, datée de sa mise à jour. */
 		disclaimer: (date: string): string =>
@@ -234,16 +252,16 @@ export const fr = {
 		taxable: "Je connais mon revenu imposable",
 		/** Estimateur sans données pour l'année de calcul : chemin brut désactivé (arbitrage du 17.10.2026). */
 		grossUnavailable: (year: number): string =>
-			`L'estimation depuis le salaire brut n'est pas encore disponible pour ${year} : partez de votre revenu imposable.`,
+			`L’estimation depuis le salaire brut n’est pas encore disponible pour ${year} : partez de votre revenu imposable.`,
 		/** Bandeau du cas exemple : lien vers le chemin brut. */
 		exampleGrossLink: "ou partez de votre salaire brut",
 		/** Revenu fédéral pré-rempli depuis le cantonal, lien qui le déplie. */
-		federalSame: "Revenu imposable fédéral : identique au cantonal.",
-		federalDifferent: "Différent ?",
+		federalSame: "Revenu imposable fédéral : identique au cantonal.",
+		federalDifferent: "Différent ?",
 		/** Déplié : le lien replie le champ, le fédéral reprend le cantonal. */
-		federalSameLink: "Identique au cantonal ?",
+		federalSameLink: "Identique au cantonal ?",
 		federalAssumedLabel: "Revenu imposable fédéral",
-		federalAssumed: "Supposé égal au revenu imposable cantonal ; dépliez « Différent ? » pour le saisir.",
+		federalAssumed: "Supposé égal au revenu imposable cantonal ; dépliez « Différent ? » pour le saisir.",
 		grossSalaryMissing: "Saisissez votre salaire brut.",
 		/** Carte résultat, donnée manquante (§ 4.4) : commune ou revenu imposable vide. */
 		municipalityMissing: "Indiquez votre commune de domicile.",
@@ -256,7 +274,7 @@ export const fr = {
 	/** Saisie des nombres (NumberField, docs/design-system.md § 2.3) : messages sous le champ, préfixés « Erreur : ». */
 	numberField: {
 		errorPrefix: "Erreur :",
-		invalid: "saisissez un nombre, par exemple 70'000.",
+		invalid: "saisissez un nombre, par exemple 70’000.",
 		min: (min: string): string => `indiquez au moins ${min}.`,
 		max: (max: string): string => `indiquez au plus ${max}.`,
 		step: (step: string): string => (step === "1" ? "indiquez un nombre entier." : `indiquez un multiple de ${step}.`),
@@ -273,7 +291,7 @@ export const fr = {
 	form: {
 		conditionMet: "remplie",
 		conditionNotMet: "non remplie",
-		eligibilityHeading: "Conditions d'éligibilité",
+		eligibilityHeading: "Conditions d’éligibilité",
 		/** « {amount} » : plafond retenu par le moteur, formaté. */
 		depositMaximum: (amount: string): string => `Verser le maximum (${amount} CHF)`,
 	},
@@ -291,10 +309,10 @@ export const fr = {
 		spousePensionContribution: "Cotisation LPP annuelle de votre conjoint ou partenaire",
 		pensionHint: (upperSalaryLimit: string): string =>
 			`Reportez le montant de votre fiche de salaire. Le minimum légal est souvent dépassé, surtout au-delà de ${upperSalaryLimit} CHF de salaire.`,
-		premiumsPerAdult: "Primes d'assurance maladie et accidents payées dans l'année, par adulte",
-		premiumsPerChild: "Primes d'assurance maladie et accidents payées dans l'année, par enfant",
+		premiumsPerAdult: "Primes d’assurance maladie et accidents payées dans l’année, par adulte",
+		premiumsPerChild: "Primes d’assurance maladie et accidents payées dans l’année, par enfant",
 		premiumsHint: "Montant figurant sur vos polices ou votre attestation de primes.",
-		accidentRate: "Taux de l'assurance-accidents non professionnelle",
+		accidentRate: "Taux de l’assurance-accidents non professionnelle",
 		accidentRateHint: "Taux figurant sur votre fiche de salaire.",
 		/** Mention sous le résultat quand les revenus imposables sont estimés. */
 		resultNote: "Estimation depuis le salaire brut",
@@ -302,8 +320,8 @@ export const fr = {
 
 	calculator: {
 		faqTitle: "Questions fréquentes",
-		/** Bandeau du cas exemple (docs/design-system.md § 4.2) : « Exemple : <label> — remplacez par vos chiffres. » */
-		examplePrefix: "Exemple :",
+		/** Bandeau du cas exemple (docs/design-system.md § 4.2) : « Exemple : <label>. Remplacez par vos chiffres, ou partez de votre salaire brut. » */
+		examplePrefix: "Exemple :",
 		/** Ligne de périmètre → détail replié (§ 4.1, P5). */
 		assumptionsLink: "Ce que ce calcul suppose",
 		assumptionsSummary: "Ce que ce calcul suppose",
@@ -315,22 +333,22 @@ export const fr = {
 		vigilanceMore: "En savoir plus",
 		/** Préfixe d'un avertissement renforcé (§ 2.6). */
 		warningPrefix: "Attention :",
-		exampleReplace: "— remplacez par vos chiffres,",
+		exampleReplace: "Remplacez par vos chiffres",
 		/** Lien de la barre de résultat mobile vers le détail du calcul. */
 		seeBreakdown: "Voir le détail",
 		/** Échec du chargement du calcul (cœur ou fichier de données) : message neutre dans la carte. */
-		loadFailed: "Le calcul n'a pas pu se charger. Vérifiez votre connexion, puis réessayez.",
+		loadFailed: "Le calcul n’a pas pu se charger. Vérifiez votre connexion, puis réessayez.",
 		loadRetry: "Réessayer",
 		/** Même échec, dans la barre de résultat mobile. */
 		loadFailedShort: "Calcul indisponible",
 	},
 
 	guidesPage: {
-		title: "Guides — calculateurs.ch",
+		title: `Guides · ${SITE_NAME}`,
 		heading: "Guides",
 		lead: "Les règles derrière chaque calcul, expliquées et sourcées, avec un exemple chiffré.",
 		/** 155 caractères au plus. */
-		metaDescription: "Guides de prévoyance et de fiscalité pour la Suisse romande : les règles derrière chaque calculateur, expliquées et sourcées.",
+		metaDescription: "Guides de prévoyance et de fiscalité pour la Suisse romande : les règles derrière chaque calculateur, expliquées et sourcées.",
 	},
 
 	/** Sous le chiffre de la carte et sous la carte (docs/design-system.md § 4.4). */
@@ -361,7 +379,7 @@ export const fr = {
 		metaDescription:
 			"Chaque source officielle utilisée sur le site, avec sa date de vérification et sa prochaine relecture.",
 		title: "Données et sources",
-		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu'elle alimente et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
+		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu’elle alimente et l’échéance de sa prochaine relecture. Cette page est générée depuis la couche de données, si bien qu’elle ne peut pas mentir sur son propre état.",
 		summary: (tracked: number, overdue: number): string =>
 			`${tracked} source${tracked > 1 ? "s" : ""}, dont ${overdue} en retard.`,
 		columnSource: "Source",
@@ -374,7 +392,7 @@ export const fr = {
 		neverVerified: "Jamais vérifiée",
 		sourceUnknown: "source non enregistrée",
 		empty:
-			"Aucune valeur chiffrée n'est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
+			"Aucune valeur chiffrée n’est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
 		cadence: {
 			annual: "Annuelle",
 			biennial: "Biennale",
@@ -386,22 +404,22 @@ export const fr = {
 		ruleSources: {
 			heading: "Sources des règles",
 			intro:
-				"Ces sources fondent une règle de calcul — un plafond, une condition, une méthode — sans fournir de valeur chiffrée : elles ne figurent donc pas dans le tableau ci-dessus.",
+				"Ces sources fondent une règle de calcul, qu’il s’agisse d’un plafond, d’une condition ou d’une méthode, sans fournir de valeur chiffrée. Elles ne figurent donc pas dans le tableau ci-dessus.",
 			verifiedOn: "vérifiée le",
 		},
 		collectionTools: {
 			heading: "Outils de collecte",
 			intro:
-				"Ces outils ont servi à relever les valeurs ; la source juridique de chacune reste l'acte officiel cité dans le tableau ci-dessus. Les conditions d'usage d'un outil s'appliquent aux données qu'il a fournies.",
+				"Ces outils ont servi à relever les valeurs, mais la source juridique de chacune reste l’acte officiel cité dans le tableau ci-dessus. Les conditions d’usage d’un outil s’appliquent aux données qu’il a fournies.",
 			collectedValues: (count: number): string => `${formatSwissNumber(count)} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
 		},
 		municipalCsv: {
 			heading: "Détail communal",
 			intro: (count: number): string =>
-				`Les coefficients communaux (${formatSwissNumber(count)} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
+				`Les coefficients communaux (${formatSwissNumber(count)} communes) ne sont pas listés ligne par ligne ici, pour que ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
 			downloadLabel: "Télécharger les coefficients communaux (CSV)",
 			unitCaveat:
-				"Les coefficients sont repris tels que reçus de l'AFC ; leur unité (points d'indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant usage dans un calculateur — voir la méthodologie.",
+				"Les coefficients sont repris tels que reçus de l’AFC. Leur unité (points d’indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant tout usage dans un calculateur, comme l’explique la méthodologie.",
 		},
 	},
 
@@ -411,7 +429,7 @@ export const fr = {
 		email: "Adresse e-mail",
 		phone: "Téléphone",
 		consent: (partner: string): string =>
-			`J'accepte que mes coordonnées soient transmises à ${partner} dans le seul but indiqué ci-dessus. Aucune autre transmission, aucune revente.`,
+			`J’accepte que mes coordonnées soient transmises à ${partner} dans le seul but indiqué ci-dessus. Aucune autre transmission, aucune revente.`,
 		submit: "Envoyer la demande",
 		sending: "Envoi en cours…",
 		/** Préfixes des messages d'état (docs/design-system.md § 2.6). */
@@ -419,6 +437,6 @@ export const fr = {
 		failedPrefix: "Erreur : ",
 		sent: "Demande envoyée. Le partenaire vous recontacte directement.",
 		failed:
-			"L'envoi a échoué. Réessayez plus tard — votre résultat reste affiché ci-dessus.",
+			"L’envoi a échoué. Réessayez plus tard, votre résultat reste affiché ci-dessus.",
 	},
 } as const;

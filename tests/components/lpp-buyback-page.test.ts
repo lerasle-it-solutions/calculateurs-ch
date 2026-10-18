@@ -29,7 +29,8 @@ describe("définition d'A3", () => {
 		expect(lppBuyback.id).toBe("pension.lpp-buyback");
 		expect(lppBuyback.slug).toBe("/prevoyance/rachat-lpp/");
 		expect(lppBuyback.metaDescription).toBe(
-			"Rachat LPP : estimez l'économie d'impôt d'un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+			// Texte de la fiche, typographie de docs/editorial-style.md § 3.3 (18.10.2026)
+			"Rachat LPP\u202f: estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
 		);
 		expect(lppBuyback.scope.assumptions).toHaveLength(8);
 		expect(lppBuyback.faq).toHaveLength(9);
@@ -44,11 +45,12 @@ describe("définition d'A3", () => {
 		const of = (start: string) => cases.find((entry) => entry.case.startsWith(start))?.alternative;
 		expect(of("Calcul du potentiel de rachat")).toEqual({ label: "Le certificat de prévoyance annuel, ou une demande écrite à la caisse." });
 		expect(of("Imposition du capital à la sortie")).toEqual({
-			label: "Le calculateur du retrait en capital LPP/3a est en préparation ; d'ici là, voir la méthodologie.",
+			// Texte réécrit le 18.10.2026 (docs/editorial-style.md), même renvoi
+			label: "Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie.",
 			url: "/methodologie/#rachat-lpp",
 		});
 		expect(of("Rachat consécutif à un divorce")).toBeDefined();
-		expect(of("Personnes imposées à la source")).toEqual({ label: "Renseignez-vous auprès de l'administration fiscale de votre canton." });
+		expect(of("Personnes imposées à la source")).toEqual({ label: "Renseignez-vous auprès de l’administration fiscale de votre canton." });
 		expect(of("Comparaison entre un rachat LPP et un versement 3a")).toBe("pension.pillar-3a-tax-saving");
 		expect(of("Rendement du capital racheté")).toEqual({ label: "Le certificat de prévoyance, ou une simulation demandée à la caisse." });
 	});

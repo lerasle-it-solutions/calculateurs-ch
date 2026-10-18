@@ -55,8 +55,9 @@ export type LppBuybackDisplay = {
 const row = (line: BreakdownLine): BreakdownRow => ({
 	label: line.label,
 	detail: line.formula,
+	// Étape sans montant : case vide, jamais un tiret (docs/editorial-style.md § 3.1)
 	amount: line.noAmount
-		? "—"
+		? ""
 		: line.unit === "CHF"
 			? formatChfAmount(line.value)
 			: `${formatSwissNumber(line.value, 2)}${line.unit ? ` ${line.unit}` : ""}`,

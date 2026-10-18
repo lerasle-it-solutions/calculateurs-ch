@@ -16,6 +16,7 @@
     "test": "vitest run",
     "predeploy": "npm run test && astro check",
     "smoke": "tsx scripts/smoke-check.ts",
+    "copy:report": "tsx scripts/copy-report.ts",
     "import:estv-tax-data": "tsx scripts/import-estv-tax-data.ts",
     "read:estv-exports": "tsx scripts/read-estv-exports.ts"
   },

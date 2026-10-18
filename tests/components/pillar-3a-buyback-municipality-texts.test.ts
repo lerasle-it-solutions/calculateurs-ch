@@ -97,7 +97,8 @@ describe("A1, textes hors périmètre des communes", () => {
 		expect(brig?.communalScaleIndexation, "Brig-Glis a désormais une indexation : choisir une autre commune").toBeUndefined();
 		const shown = show(data, "Brig-Glis (VS)");
 		expect(shown.status?.text).toBe(
-			"Ce calculateur ne couvre pas encore la commune de Brig-Glis : une donnée communale nécessaire au calcul n'y est pas relevée. Utilisez la calculette du canton :",
+			// Texte réécrit le 18.10.2026 (docs/editorial-style.md), même message : commune non couverte, donnée non relevée, renvoi à la calculette
+			"Ce calculateur ne couvre pas encore la commune de Brig-Glis, faute d’une donnée communale relevée pour le calcul. Utilisez la calculette du canton\u202f:",
 		);
 		expect(shown.status?.link).toEqual(data.officialCalculators.VS);
 		expect(shown.value).toBe("—");

@@ -11,7 +11,7 @@ const buybackDemo: CalculatorDefinition = {
 	id: "pension.demo-buyback",
 	family: "pension",
 	slug: "/demo-calculateur/",
-	title: "Calculateur factice — économie d'impôt d'un rachat",
+	title: "Calculateur factice, économie d’impôt d’un rachat",
 	metaDescription: "Page interne de démonstration du CalculatorShell.",
 	metaTitle: "Démonstration du CalculatorShell",
 	promise: "Page interne de démonstration du CalculatorShell.",
@@ -98,7 +98,7 @@ const lppDemo: CalculatorDefinition = {
 	id: "pension.demo-lpp",
 	family: "pension",
 	slug: "/demo-calculateur/",
-	title: "Calculateur factice — rachat LPP",
+	title: "Calculateur factice, rachat LPP",
 	metaDescription: "Entrée de catalogue de démonstration.",
 	metaTitle: "Entrée de démonstration",
 	promise: "Entrée de catalogue de démonstration.",
@@ -178,7 +178,7 @@ const catalog = [buybackDemo, lppDemo];
 					label: "Taux marginal retenu",
 					detail: "Saisi",
 					amount: percent.format(rate / 100),
-					note: "Valeur fournie par l'utilisateur — aucune interpolation de barème.",
+					note: "Valeur fournie par l’utilisateur, sans interpolation de barème.",
 				},
 				{
 					label: "Économie d'impôt estimée",
@@ -202,7 +202,7 @@ const catalog = [buybackDemo, lppDemo];
 
 			const result = valid
 				? compute(amount, rate)
-				: { value: "—", breakdown: [] as BreakdownRow[] };
+				: { value: "", breakdown: [] as BreakdownRow[] };
 
 			document.dispatchEvent(
 				new CustomEvent("calc:update", { detail: result }),

@@ -44,7 +44,7 @@ export const lppBuybackVerifiedOn = (() => {
 })();
 
 export const lppBuybackIntro: string[] = [
-	"Estimez l'économie d'impôt d'un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+	"Estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
 ];
 
 /** Sources du moteur fiscal, puis celles du rachat (fiche A3, § Données requises). */
@@ -62,7 +62,7 @@ const sourceIds = [
 const coverage = taxEngineCoverage();
 
 
-const taxableIncomeHint = "Revenu imposable sans la déduction du rachat, par exemple celui de votre dernière décision de taxation.";
+const taxableIncomeHint = "Votre revenu imposable sans la déduction du rachat, par exemple celui de votre dernière décision de taxation.";
 
 /** Cas exemple : saisies de scénario, fictives (§ 4.2). */
 const EXAMPLE = { cantonalTaxableIncome: 110_000, federalTaxableIncome: 112_000, buybackPotential: 50_000, buybackAmount: 30_000 };
@@ -74,7 +74,7 @@ const fields: FieldDefinition[] = [
 		label: "Commune de domicile",
 		// Un seul champ commune : le canton est déduit, les homonymes portent le leur (§ 4.3)
 		options: municipalityOptions(coverage.cantonsCovered),
-		hint: "Commencez à saisir le nom de la commune ; le canton en est déduit.",
+		hint: "Tapez les premières lettres de votre commune. Le canton s’en déduit.",
 		required: true,
 	},
 	{
@@ -88,8 +88,8 @@ const fields: FieldDefinition[] = [
 		defaultValue: "single",
 		required: true,
 	},
-	{ kind: "number", name: "children", label: "Nombre d'enfants", min: 0, step: 1, defaultValue: 0, required: true },
-	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l'enfant {n}" },
+	{ kind: "number", name: "children", label: "Nombre d’enfants", min: 0, step: 1, defaultValue: 0, required: true },
+	{ kind: "childAges", name: "childrenAges", label: "Âge des enfants", countField: "children", itemLabel: "Âge de l’enfant {n}" },
 	{
 		kind: "number",
 		name: "cantonalTaxableIncome",
@@ -120,7 +120,7 @@ const fields: FieldDefinition[] = [
 		unit: "CHF",
 		min: 0,
 		step: 1,
-		hint: "Montant confirmé par votre caisse, après déclaration de vos avoirs 3a et de libre passage. Le montant du certificat n'en tient pas toujours compte.",
+		hint: "Montant confirmé par votre caisse, après déclaration de vos avoirs 3a et de libre passage. Le montant du certificat n’en tient pas toujours compte.",
 		required: true,
 	},
 	{
@@ -136,7 +136,7 @@ const fields: FieldDefinition[] = [
 	{
 		kind: "select",
 		name: "unrepaidHomeOwnershipWithdrawal",
-		label: "Avez-vous reçu un versement anticipé pour la propriété du logement, non encore remboursé ?",
+		label: "Avez-vous reçu un versement anticipé pour la propriété du logement, non encore remboursé ?",
 		options: [
 			{ value: "no", label: "Non" },
 			{ value: "yes", label: "Oui" },
@@ -160,46 +160,48 @@ const fields: FieldDefinition[] = [
  * 17.10.2026, et le texte de la fiche, entier, dans « En savoir plus ». Avertissement renforcé pour ce qui peut faire perdre la
  * déduction ou de l'argent (délai de blocage, imposition à la sortie, montant
  * non admis) ; avis informatif pour le reste (arbitrage du 17.10.2026).
+ * Les phrases visibles (`summary`) sont figées par tests/data/calculator-examples.test.ts :
+ * elles gardent leur texte et leur typographie d'origine (mainteneur, 18.10.2026).
  */
 const lppBuybackWarnings = [
 	{
 		level: "warning",
 		summary: `Aucun retrait en capital du 2e pilier, quel qu'en soit le motif, dans les ${lock} ans qui suivent chaque rachat : sinon la déduction est refusée.`,
 		title: `Délai de blocage de ${lock} ans.`,
-		text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En droit fiscal, l'interdiction est plus large :`,
+		text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En droit fiscal, l’interdiction est plus large :`,
 		items: [
-			`en principe, tout versement en capital dans les ${lock} ans est réputé abusif, et le rachat n'est pas déductible, sans autre examen (ATF 142 II 399 consid. 4.1) ;`,
-			"selon la pratique fiscale, le retrait compte quel que soit son motif (retraite, logement, départ à l'étranger) et quelle que soit l'institution qui verse le capital ;",
-			"chaque versement fait courir son propre délai : échelonner ses rachats repousse la date du premier retrait en capital possible (art. 79b al. 3 LPP) ;",
-			"respecter le délai n'exclut pas un contrôle pour évasion fiscale (même arrêt, consid. 4.1).",
+			`en principe, tout versement en capital dans les ${lock} ans est réputé abusif, et le rachat n’est pas déductible, sans autre examen (ATF 142 II 399 consid. 4.1) ;`,
+			"selon la pratique fiscale, le retrait compte quel que soit son motif (retraite, logement, départ à l’étranger) et quelle que soit l’institution qui verse le capital ;",
+			"chaque versement fait courir son propre délai, si bien qu’échelonner ses rachats repousse la date du premier retrait en capital possible (art. 79b al. 3 LPP) ;",
+			"respecter le délai n’exclut pas un contrôle pour évasion fiscale (même arrêt, consid. 4.1).",
 		],
 	},
 	{
 		level: "warning",
 		summary: "Le capital issu du rachat sera imposé à son retrait : l'économie affichée n'est pas un gain net.",
 		title: "Imposition à la sortie.",
-		text: "Les prestations issues du rachat seront imposées à leur versement : en capital, séparément du reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID) ; en rente, avec le revenu de chaque année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID). L'économie affichée n'est donc pas un gain net. Le calculateur du retrait en capital LPP/3a est en préparation.",
+		text: "Les prestations issues du rachat seront imposées à leur versement. En capital, elles le sont séparément du reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID). En rente, elles s’ajoutent au revenu de chaque année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID). L’économie affichée n’est donc pas un gain net. Le calculateur du retrait en capital LPP/3a est en préparation.",
 		items: [],
 	},
 	{
 		level: "info",
 		summary: "L'économie d'impôt reste valable ; l'effet du rachat sur votre rente ne se lit qu'auprès de votre caisse.",
 		title: "Primauté des prestations.",
-		text: "Les règles de déduction ne distinguent pas selon le mode de calcul de la caisse (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID) : l'économie d'impôt affichée reste valable. En revanche, ce que le rachat change à votre rente ne se lit qu'auprès de la caisse.",
+		text: "Les règles de déduction ne font aucune différence selon le mode de calcul de la caisse (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID). L’économie d’impôt affichée reste donc valable. Ce que le rachat change à votre rente, en revanche, ne se lit qu’auprès de la caisse.",
 		items: [],
 	},
 	{
 		level: "info",
 		summary: "Une caisse en découvert peut appliquer des mesures d'assainissement à l'avoir racheté : vérifiez son degré de couverture.",
 		title: "Découvert de la caisse.",
-		text: "Une caisse en découvert peut prélever des cotisations d'assainissement et, si cela ne suffit pas, rémunérer l'avoir de vieillesse en dessous du taux minimal légal (art. 65d LPP). L'avoir racheté fait partie de votre avoir de vieillesse : les mesures d'assainissement s'y appliquent comme au reste (art. 65d LPP). Consultez son degré de couverture dans son rapport annuel avant de racheter.",
+		text: "Une caisse en découvert peut prélever des cotisations d’assainissement et, si cela ne suffit pas, rémunérer l’avoir de vieillesse en dessous du taux minimal légal (art. 65d LPP). L’avoir racheté fait partie de votre avoir de vieillesse, et les mesures d’assainissement s’y appliquent comme au reste (art. 65d LPP). Consultez le degré de couverture de la caisse dans son rapport annuel avant de racheter.",
 		items: [],
 	},
 	{
 		level: "warning",
 		summary: "Ne versez que le montant que votre caisse vous confirme : le potentiel du certificat peut être réduit.",
 		title: "Montant admis par la caisse.",
-		text: "Le potentiel affiché sur le certificat peut être réduit après examen de votre situation : avoirs 3a ou de libre passage, arrivée de l'étranger, retrait anticipé pour le logement (art. 60a et 60b OPP 2 ; art. 79b al. 3 LPP). Ne versez que le montant que la caisse vous confirme.",
+		text: "Le potentiel affiché sur le certificat peut être réduit après examen de votre situation : avoirs 3a ou de libre passage, arrivée de l’étranger, retrait anticipé pour le logement (art. 60a et 60b OPP 2 ; art. 79b al. 3 LPP). Ne versez que le montant que la caisse vous confirme.",
 		items: [],
 	},
 ] satisfies (LppBuybackWarning & VigilancePoint)[];
@@ -208,20 +210,20 @@ export const lppBuyback: CalculatorDefinition = {
 	id: LPP_BUYBACK_ID,
 	family: "pension",
 	slug: "/prevoyance/rachat-lpp/",
-	title: "Rachat LPP : économie d'impôt et échelonnement",
+	title: "Rachat LPP : économie d’impôt et échelonnement",
 	metaDescription:
-		"Rachat LPP : estimez l'économie d'impôt d'un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
-	question: "Combien d'impôt économise un rachat LPP, et faut-il l'échelonner ?",
-	metaTitle: `Rachat LPP ${lppBuybackYear} : combien d'impôt économisez-vous ?`,
-	promise: "L'impôt économisé par un rachat LPP, en une fois ou échelonné.",
+		"Rachat LPP : estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+	question: "Combien d’impôt économise un rachat LPP, et faut-il l’échelonner ?",
+	metaTitle: `Rachat LPP ${lppBuybackYear} : combien d’impôt économisez-vous ?`,
+	promise: "Ce qu’un rachat LPP vous fait économiser d’impôt, en une fois ou échelonné.",
 	exitTaxReminder: {
-		text: "Le capital issu du rachat sera imposé à son retrait : cette économie n'est pas un gain net.",
+		text: "Le capital issu du rachat sera imposé à son retrait, cette économie n’est donc pas un gain net.",
 		// Lien existant de « Ce que ça ne couvre pas », en attendant le calculateur du retrait en capital
 		link: { label: "En savoir plus", url: "/methodologie/#rachat-lpp" },
 	},
-	scopeLine: `Personnes affiliées à une caisse de pension, imposées au régime ordinaire en Suisse romande, rachat en ${lppBuybackYear}.`,
+	scopeLine: `Pour un rachat en ${lppBuybackYear}, par une personne affiliée à une caisse de pension et imposée au régime ordinaire en Suisse romande.`,
 	example: {
-		label: `personne seule à Lausanne, revenu imposable de ${formatChf(EXAMPLE.cantonalTaxableIncome)} CHF, rachat de ${formatChf(EXAMPLE.buybackAmount)} CHF`,
+		label: `une personne seule à Lausanne, avec un revenu imposable de ${formatChf(EXAMPLE.cantonalTaxableIncome)} CHF, qui rachète ${formatChf(EXAMPLE.buybackAmount)} CHF`,
 		values: {
 			municipality: "Lausanne",
 			maritalStatus: "single",
@@ -236,31 +238,31 @@ export const lppBuyback: CalculatorDefinition = {
 
 	scope: {
 		forWhom: [
-			"Une personne affiliée à une institution de prévoyance professionnelle. Il peut s'agir d'un salarié ou d'un indépendant affilié à titre facultatif : c'est l'affiliation qui compte, pas le statut (art. 4 et 44 LPP).",
+			"Une personne affiliée à une institution de prévoyance professionnelle. Il peut s’agir d’un salarié ou d’un indépendant affilié à titre facultatif, car seule compte l’affiliation, pas le statut (art. 4 et 44 LPP).",
 			"Elle réside dans un canton romand et y est imposée au régime ordinaire. Son certificat de prévoyance, ou une attestation de sa caisse, indique un potentiel de rachat.",
-			"Au Valais, seules les personnes seules sans enfant domiciliées dans une commune dont l'indexation est relevée sont couvertes, soit Sion aujourd'hui.",
+			"Au Valais, seules les personnes seules sans enfant domiciliées dans une commune dont l’indexation est relevée sont couvertes, soit Sion aujourd’hui.",
 		],
 		notCovered: [
 			{
-				case: "Calcul du potentiel de rachat lui-même : il dépend du règlement et de l'historique de la personne (art. 79b al. 1 LPP).",
+				case: "Calcul du potentiel de rachat lui-même, qui dépend du règlement et de l’historique de la personne (art. 79b al. 1 LPP).",
 				alternative: { label: "Le certificat de prévoyance annuel, ou une demande écrite à la caisse." },
 			},
 			{
-				case: "Imposition du capital à la sortie, et donc le point mort entre l'économie d'aujourd'hui et l'impôt au retrait.",
+				case: "Imposition du capital à la sortie, et donc le point mort entre l’économie d’aujourd’hui et l’impôt au retrait.",
 				alternative: {
-					label: "Le calculateur du retrait en capital LPP/3a est en préparation ; d'ici là, voir la méthodologie.",
+					label: "Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie.",
 					url: "/methodologie/#rachat-lpp",
 				},
 			},
 			{
-				case: "Rachat consécutif à un divorce ou à la dissolution d'un partenariat enregistré.",
+				case: "Rachat consécutif à un divorce ou à la dissolution d’un partenariat enregistré.",
 				alternative: {
-					label: "Le rachat reste déductible comme tout rachat (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID). Le délai de blocage ne s'applique pas (art. 79b al. 4 LPP), mais la déduction est refusée en cas d'évasion fiscale (ATF 142 II 399 consid. 4).",
+					label: "Le rachat reste déductible comme tout rachat (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID). Le délai de blocage ne s’applique pas (art. 79b al. 4 LPP), mais la déduction est refusée en cas d’évasion fiscale (ATF 142 II 399 consid. 4).",
 				},
 			},
 			{
 				case: "Personnes imposées à la source sans taxation ordinaire ultérieure.",
-				alternative: { label: "Renseignez-vous auprès de l'administration fiscale de votre canton." },
+				alternative: { label: "Renseignez-vous auprès de l’administration fiscale de votre canton." },
 			},
 			...coverage.notCovered,
 			{
@@ -273,14 +275,14 @@ export const lppBuyback: CalculatorDefinition = {
 			},
 		],
 		assumptions: [
-			"Le potentiel saisi doit tenir compte des réductions prévues par l'OPP 2. Le montant du certificat de prévoyance n'en tient pas toujours compte : faites-le confirmer par votre caisse en lui déclarant ces avoirs. Les réductions sont : l'avoir 3a qui dépasse la somme des petites cotisations déductibles depuis 24 ans, intérêts au taux minimal LPP compris (art. 60a al. 2) ; les avoirs de libre passage qui n'ont pas été transférés à la caisse (art. 60a al. 3) ; les prestations de vieillesse déjà perçues par une personne qui a repris une activité ou augmenté son taux d'activité (art. 60a al. 4) ; pour une personne arrivée de l'étranger et jamais affiliée en Suisse, un rachat annuel plafonné pendant cinq ans, sauf transfert direct d'avoirs d'un système de prévoyance étranger sans déduction fiscale (art. 60b).",
-			"Le rachat est intégralement déductible du revenu imposable cantonal et fédéral de l'année du versement (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID ; art. 81 al. 2 LPP).",
-			"L'économie se calcule par différence de deux impôts totaux, sans rachat puis avec rachat. Chaque ligne (cantonal, communal, fédéral) est arrondie au franc avant l'addition. Le taux marginal n'est jamais utilisé.",
-			"Le calculateur ne fait pas descendre le revenu imposable sous zéro et ne compte aucune économie pour la part du rachat qui le dépasse ; le résultat signale cette part.",
-			`Échelonnement : le montant est réparti en tranches égales sur 1 à ${maxTranches} années successives. Le revenu imposable et les barèmes de l'année de calcul sont supposés constants sur toute la période, et le potentiel reste disponible jusqu'à la dernière tranche.`,
-			`Aucun retrait en capital du 2e pilier — prestation de vieillesse, versement anticipé pour le logement, départ définitif, toutes institutions confondues — n'a lieu dans les ${lock} ans qui suivent chaque versement.`,
-			"Couple : une seule personne rachète. Le revenu imposable saisi est celui du ménage.",
-			"Il s'agit d'un rachat facultatif ordinaire, pas d'un rachat consécutif à un divorce.",
+			"Le potentiel saisi doit tenir compte des réductions prévues par l’OPP 2. Faites-le confirmer par votre caisse en lui déclarant les avoirs concernés, car le montant du certificat de prévoyance n’en tient pas toujours compte. Les réductions sont les suivantes. L’avoir 3a qui dépasse la somme des petites cotisations déductibles depuis 24 ans, intérêts au taux minimal LPP compris (art. 60a al. 2). Les avoirs de libre passage qui n’ont pas été transférés à la caisse (art. 60a al. 3). Les prestations de vieillesse déjà perçues par une personne qui a repris une activité ou augmenté son taux d’activité (art. 60a al. 4). Pour une personne arrivée de l’étranger et jamais affiliée en Suisse, un rachat annuel plafonné pendant cinq ans, sauf transfert direct d’avoirs d’un système de prévoyance étranger sans déduction fiscale (art. 60b).",
+			"Le rachat est intégralement déductible du revenu imposable cantonal et fédéral de l’année du versement (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID ; art. 81 al. 2 LPP).",
+			"L’économie se calcule par différence de deux impôts totaux, sans rachat puis avec rachat. Chaque ligne (cantonal, communal, fédéral) est arrondie au franc avant l’addition. Le taux marginal n’est jamais utilisé.",
+			"Le calculateur ne fait pas descendre le revenu imposable sous zéro et ne compte aucune économie pour la part du rachat qui le dépasse, et le résultat signale cette part.",
+			`En cas d’échelonnement, le montant est réparti en tranches égales sur 1 à ${maxTranches} années successives. Le revenu imposable et les barèmes de l’année de calcul sont supposés constants sur toute la période, et le potentiel reste disponible jusqu’à la dernière tranche.`,
+			`Aucun retrait en capital du 2e pilier n’a lieu dans les ${lock} ans qui suivent chaque versement, toutes institutions confondues. Cela vaut pour une prestation de vieillesse, un versement anticipé pour le logement ou un départ définitif.`,
+			"Pour un couple, une seule personne rachète, et le revenu imposable saisi est celui du ménage.",
+			"Il s’agit d’un rachat facultatif ordinaire, pas d’un rachat consécutif à un divorce.",
 		],
 		cantonsCovered: coverage.cantonsCovered,
 		partialCantons: coverage.partialCantons,
@@ -293,48 +295,48 @@ export const lppBuyback: CalculatorDefinition = {
 	variants: [PILLAR_3A_BUYBACK_ID, PILLAR_3A_TAX_SAVING_ID, CAPITAL_WITHDRAWAL_ID],
 	faq: [
 		{
-			question: "Où trouver mon potentiel de rachat ?",
+			question: "Où trouver mon potentiel de rachat ?",
 			answer:
-				"Sur votre certificat de prévoyance annuel, ou auprès de votre caisse. Il dépend de son règlement (art. 79b al. 1 LPP) et ne peut pas être reconstitué de l'extérieur. Le montant du certificat ne tient pas toujours compte de vos avoirs 3a et de libre passage : faites-le confirmer par votre caisse en les lui déclarant.",
+				"Sur votre certificat de prévoyance annuel, ou auprès de votre caisse. Il dépend de son règlement (art. 79b al. 1 LPP) et ne peut pas être reconstitué de l’extérieur. Comme le montant du certificat ne tient pas toujours compte de vos avoirs 3a et de libre passage, faites-le confirmer par votre caisse en les lui déclarant.",
 		},
 		{
-			question: "Combien vais-je réellement économiser ?",
+			question: "Combien vais-je réellement économiser ?",
 			answer:
-				"Le calculateur compare votre impôt sans rachat et avec rachat. C'est plus juste que d'appliquer un taux marginal, qui surestime l'économie pour les gros rachats.",
+				"Le calculateur compare votre impôt sans rachat et avec rachat. C’est plus juste que d’appliquer un taux marginal, qui surestime l’économie pour les gros rachats.",
 		},
 		{
-			question: "Vaut-il mieux racheter en une fois ou sur plusieurs années ?",
+			question: "Vaut-il mieux racheter en une fois ou sur plusieurs années ?",
 			answer: `Les barèmes étant progressifs, répartir un gros rachat garde souvent chaque déduction dans des tranches plus imposées. Mais chaque versement fait courir son propre délai de blocage de ${lock} ans (art. 79b al. 3 LPP). Le calculateur montre les deux effets.`,
 		},
 		{
-			question: `Que se passe-t-il si je retire un capital dans les ${lock} ans ?`,
+			question: `Que se passe-t-il si je retire un capital dans les ${lock} ans ?`,
 			answer:
-				"En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise (ATF 142 II 399 consid. 4.1). Selon la pratique fiscale, cela vaut quelle que soit l'institution qui verse le capital, et quel que soit le motif du retrait.",
+				"En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise (ATF 142 II 399 consid. 4.1). Selon la pratique fiscale, cela vaut quelle que soit l’institution qui verse le capital, et quel que soit le motif du retrait.",
 		},
 		{
-			question: "J'ai retiré de l'argent pour acheter mon logement. Puis-je racheter ?",
+			question: "J’ai retiré de l’argent pour acheter mon logement. Puis-je racheter ?",
 			answer:
-				"En règle générale, seulement après avoir remboursé ce versement anticipé (art. 79b al. 3 LPP). Lorsque le remboursement n'est plus possible, en principe à l'approche de la retraite, le règlement de votre caisse peut autoriser des rachats dans certaines limites (art. 60d OPP 2). Votre caisse vous dira si c'est le cas.",
+				"En règle générale, seulement après avoir remboursé ce versement anticipé (art. 79b al. 3 LPP). Lorsque le remboursement n’est plus possible, en principe à l’approche de la retraite, le règlement de votre caisse peut autoriser des rachats dans certaines limites (art. 60d OPP 2). Votre caisse vous dira si c’est le cas.",
 		},
 		{
-			question: "J'ai un 3a ou un compte de libre passage. Mon potentiel est-il réduit ?",
+			question: "J’ai un 3a ou un compte de libre passage. Mon potentiel est-il réduit ?",
 			answer:
-				"Il peut l'être. La part de votre 3a qui dépasse la somme des versements maximaux déductibles depuis vos 24 ans, intérêts au taux minimal LPP compris, et vos avoirs de libre passage non transférés sont déduits du rachat possible (art. 60a al. 2 et 3 OPP 2). Déclarez-les à votre caisse.",
+				"Il peut l’être. La part de votre 3a qui dépasse la somme des versements maximaux déductibles depuis vos 24 ans, intérêts au taux minimal LPP compris, et vos avoirs de libre passage non transférés sont déduits du rachat possible (art. 60a al. 2 et 3 OPP 2). Déclarez-les à votre caisse.",
 		},
 		{
-			question: "Je suis arrivé de l'étranger récemment. Puis-je racheter ?",
+			question: "Je suis arrivé de l’étranger récemment. Puis-je racheter ?",
 			answer:
-				"Oui. Mais si vous n'avez jamais été affilié à une caisse suisse, vos rachats sont plafonnés chaque année pendant vos premières années d'affiliation (art. 60b OPP 2). Saisissez le montant que votre caisse admet.",
+				"Oui. Mais si vous n’avez jamais été affilié à une caisse suisse, vos rachats sont plafonnés chaque année pendant vos premières années d’affiliation (art. 60b OPP 2). Saisissez le montant que votre caisse admet.",
 		},
 		{
-			question: "Mon rachat suit un divorce. Le calcul s'applique-t-il ?",
+			question: "Mon rachat suit un divorce. Le calcul s’applique-t-il ?",
 			answer:
-				"Le rachat reste déductible comme tout rachat (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID). Le délai de blocage ne s'applique pas (art. 79b al. 4 LPP), mais la déduction est refusée en cas d'évasion fiscale (ATF 142 II 399 consid. 4).",
+				"Le rachat reste déductible comme tout rachat (art. 33 al. 1 let. d LIFD ; art. 9 al. 2 let. d LHID). Le délai de blocage ne s’applique pas (art. 79b al. 4 LPP), mais la déduction est refusée en cas d’évasion fiscale (ATF 142 II 399 consid. 4).",
 		},
 		{
-			question: "Et si ma caisse est en découvert ?",
+			question: "Et si ma caisse est en découvert ?",
 			answer:
-				"L'avoir racheté fait partie de votre avoir de vieillesse : les mesures d'assainissement s'y appliquent comme au reste (art. 65d LPP). Consultez le degré de couverture dans le rapport annuel de la caisse.",
+				"L’avoir racheté fait partie de votre avoir de vieillesse, et les mesures d’assainissement s’y appliquent comme au reste (art. 65d LPP). Consultez le degré de couverture dans le rapport annuel de la caisse.",
 		},
 	],
 
@@ -353,12 +355,12 @@ export type LppBuybackWarning = { title: string; text: string; items: string[] }
 
 /** Textes de la page propres à A3, en français. */
 export const lppBuybackTexts = {
-	resultLabel: "Économie d'impôt d'un rachat en une fois",
+	resultLabel: "Économie d’impôt d’un rachat en une fois",
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
-	disclaimer: `Estimation indicative, établie d'après les barèmes ${lppBuybackYear} et vos saisies. Elle ne constitue ni un conseil fiscal ni un conseil en prévoyance, et ne remplace pas votre décision de taxation.`,
+	disclaimer: `Ce montant est une estimation indicative, établie d’après les barèmes ${lppBuybackYear} et vos saisies. Il ne constitue pas un conseil fiscal ou en prévoyance, et ne remplace pas votre décision de taxation.`,
 	/** Part non déduite (hypothèse 4) : « {federal} » et « {cantonal} » remplacés par les montants. */
 	notDeducted:
-		"Le calculateur ne fait pas descendre le revenu imposable sous zéro et ne compte aucune économie pour la part du rachat qui le dépasse : {federal} au fédéral, {cantonal} au cantonal.",
+		"Le calculateur ne fait pas descendre le revenu imposable sous zéro et ne compte aucune économie pour la part du rachat qui le dépasse : {federal} au fédéral, {cantonal} au cantonal.",
 	scenarios: {
 		heading: "Rachat en une fois ou échelonné",
 		caption: `Économie totale selon le nombre de tranches, versées des années successives dès ${lppBuybackYear}`,
@@ -375,7 +377,7 @@ export const lppBuybackTexts = {
 	},
 	calendar: {
 		heading: `Délai de blocage de ${lock} ans`,
-		caption: "Pour chaque année de versement, l'année où le délai s'achève et celle dès laquelle un retrait en capital ne remet plus en cause la déduction",
+		caption: "Pour chaque année de versement, l’année où le délai s’achève et celle dès laquelle un retrait en capital ne remet plus en cause la déduction",
 		columns: {
 			buybackYear: "Année du versement",
 			lockEnds: "Fin du délai, à vérifier jour pour jour",
@@ -384,11 +386,11 @@ export const lppBuybackTexts = {
 		},
 		/** Seuils des trois classes (fiche, § Sortie 3), tirés du délai des données. */
 		classes: [
-			`compatible, si au moins ${lock + 1} années séparent le rachat du retrait ;`,
-			`à vérifier jour pour jour, si l'écart est de ${lock} années ;`,
-			`dans le délai, si l'écart est de ${lock - 1} années ou moins. La déduction de cette tranche serait alors refusée (ATF 142 II 399 consid. 4.1).`,
+			`compatible, si au moins ${lock + 1} années séparent le rachat du retrait ;`,
+			`à vérifier jour pour jour, si l’écart est de ${lock} années ;`,
+			`dans le délai, si l’écart est de ${lock - 1} années ou moins. La déduction de cette tranche serait alors refusée (ATF 142 II 399 consid. 4.1).`,
 		],
-		classesIntro: "Si une année de retrait est saisie, chaque tranche est classée :",
+		classesIntro: "Si une année de retrait est saisie, chaque tranche est classée :",
 	},
 	/** Les cinq avertissements obligatoires, toujours affichés sous la carte (points de vigilance). */
 	warnings: lppBuybackWarnings,
