@@ -21,9 +21,6 @@ const FORBIDDEN = parseForbiddenPhrases(CHARTER);
  * La liste se vide à mesure ; toute page qui n'y figure pas est contrôlée.
  */
 const PENDING_PAGES = new Set([
-	"404.html",
-	"demo-calculateur/index.html",
-	"demo-ui/index.html",
 	"mentions-legales/index.html",
 	"politique-de-confidentialite/index.html",
 ]);

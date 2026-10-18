@@ -67,7 +67,7 @@ export function estimateDefaults(ruleSet: GrossToTaxableRuleSet, canton: string,
 const row = (line: { label: string; formula: string; value: number; unit?: string; noAmount?: boolean; assumption?: string }): BreakdownRow => ({
 	label: line.label,
 	detail: line.formula,
-	amount: line.noAmount ? "—" : line.unit === "CHF" ? formatChfAmount(line.value) : `${formatSwissNumber(line.value, 2)}${line.unit ? ` ${line.unit}` : ""}`,
+	amount: line.noAmount ? "" : line.unit === "CHF" ? formatChfAmount(line.value) : `${formatSwissNumber(line.value, 2)}${line.unit ? ` ${line.unit}` : ""}`,
 	note: line.assumption,
 });
 

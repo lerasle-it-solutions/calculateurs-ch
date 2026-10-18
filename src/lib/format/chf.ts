@@ -24,7 +24,8 @@ export function formatSwissNumber(value: number, maximumFractionDigits = 0): str
 	const [integer = "0", fraction = ""] = rounded.toFixed(maximumFractionDigits).split(".");
 	const decimals = fraction.replace(/0+$/, "");
 	const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS_SEPARATOR);
-	const sign = value < 0 && rounded !== 0 ? "-" : "";
+	// Signe moins typographique (U+2212) : docs/editorial-style.md § 3.1
+	const sign = value < 0 && rounded !== 0 ? "−" : "";
 	return `${sign}${grouped}${decimals ? `,${decimals}` : ""}`;
 }
 

@@ -25,7 +25,8 @@ afterEach(() => {
 describe("annonce de l'année de calcul sur A1", () => {
 	it("le 02.01.2027, la page annonce le calcul sur les barèmes 2026, au-dessus du formulaire", async () => {
 		const html = await renderA1At("2027-01-02T09:00:00+01:00");
-		const notice = "Ce calcul porte sur un rachat effectué en 2026 : les barèmes de 2027 ne sont pas encore relevés.";
+		// Espace fine avant le deux-points (docs/editorial-style.md § 3.3, 18.10.2026), même annonce
+		const notice = "Ce calcul porte sur un rachat effectué en 2026\u202f: les barèmes de 2027 ne sont pas encore relevés.";
 		expect(html).toContain(notice);
 		expect(html.indexOf(notice)).toBeLessThan(html.indexOf("<form"));
 	});

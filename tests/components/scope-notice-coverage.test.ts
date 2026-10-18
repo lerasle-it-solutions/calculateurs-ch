@@ -39,7 +39,8 @@ describe("bandeau de périmètre d'A1, Valais", () => {
 		expect(partial).toContain("Valais");
 		const scopeLine = visibleText(html.slice(0, formStart));
 		expect(scopeLine).toContain(visibleText(pillar3aBuyback.scopeLine));
-		expect(scopeLine).toContain(fr.partialCoverage.scopeLine(partial));
+		// Même normalisation des blancs que la ligne lue dans la page (espace fine, 18.10.2026)
+		expect(scopeLine).toContain(visibleText(fr.partialCoverage.scopeLine(partial)));
 		expect(html.slice(0, formStart)).toContain('href="#ce-que-ce-calcul-suppose"');
 
 		// Détail « Ce que ce calcul suppose » : l'<aside> est dans ce <details>, après la carte résultat
@@ -53,7 +54,8 @@ describe("bandeau de périmètre d'A1, Valais", () => {
 		const notice = visibleText(html.slice(asideStart, asideEnd));
 		expect(notice).toContain("Valais");
 		for (const name of covered) expect(notice, `${name} absente du bandeau`).toContain(name);
-		expect(notice).toContain("dans les communes suivantes");
+		// Texte réécrit le 18.10.2026 (docs/editorial-style.md) : un seul deux-points, communes toujours nommées
+		expect(notice).toContain(covered.length > 1 ? "dans les communes de" : "dans la commune de");
 		expect(pillar3aBuyback.scope.notCovered).toHaveLength(6);
 	});
 });

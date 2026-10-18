@@ -17,7 +17,8 @@ describe("formateur suisse", () => {
 		expect(formatChf(7372.6)).toBe("7’373");
 		expect(formatSwissNumber(1.8, 2)).toBe("1,8");
 		expect(formatSwissNumber(0.5, 2)).toBe("0,5");
-		expect(formatSwissNumber(-7258)).toBe("-7’258");
+		// Signe moins typographique, U+2212 (docs/editorial-style.md § 3.1, 18.10.2026)
+		expect(formatSwissNumber(-7258)).toBe("\u22127’258");
 		expect(formatSwissNumber(-0.4)).toBe("0");
 		expect(formatPercent(0.2)).toBe("20 %");
 		expect(() => formatChf(Number.NaN)).toThrow();
