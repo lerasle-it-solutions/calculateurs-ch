@@ -375,7 +375,7 @@ export const fr = {
 		metaDescription:
 			"Chaque source officielle utilisée sur le site, avec sa date de vérification et sa prochaine relecture.",
 		title: "Données et sources",
-		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu'elle alimente et l'échéance de sa prochaine relecture. Cette page est générée depuis la couche de données : elle ne peut pas mentir sur son propre état.",
+		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu’elle alimente et l’échéance de sa prochaine relecture. Cette page est générée depuis la couche de données, si bien qu’elle ne peut pas mentir sur son propre état.",
 		summary: (tracked: number, overdue: number): string =>
 			`${tracked} source${tracked > 1 ? "s" : ""}, dont ${overdue} en retard.`,
 		columnSource: "Source",
@@ -388,7 +388,7 @@ export const fr = {
 		neverVerified: "Jamais vérifiée",
 		sourceUnknown: "source non enregistrée",
 		empty:
-			"Aucune valeur chiffrée n'est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
+			"Aucune valeur chiffrée n’est encore publiée. Cette page se remplira à mesure que les barèmes entrent dans la couche de données, chacun avec sa source et sa date de vérification.",
 		cadence: {
 			annual: "Annuelle",
 			biennial: "Biennale",
@@ -400,22 +400,22 @@ export const fr = {
 		ruleSources: {
 			heading: "Sources des règles",
 			intro:
-				"Ces sources fondent une règle de calcul — un plafond, une condition, une méthode — sans fournir de valeur chiffrée : elles ne figurent donc pas dans le tableau ci-dessus.",
+				"Ces sources fondent une règle de calcul, qu’il s’agisse d’un plafond, d’une condition ou d’une méthode, sans fournir de valeur chiffrée. Elles ne figurent donc pas dans le tableau ci-dessus.",
 			verifiedOn: "vérifiée le",
 		},
 		collectionTools: {
 			heading: "Outils de collecte",
 			intro:
-				"Ces outils ont servi à relever les valeurs ; la source juridique de chacune reste l'acte officiel cité dans le tableau ci-dessus. Les conditions d'usage d'un outil s'appliquent aux données qu'il a fournies.",
+				"Ces outils ont servi à relever les valeurs, mais la source juridique de chacune reste l’acte officiel cité dans le tableau ci-dessus. Les conditions d’usage d’un outil s’appliquent aux données qu’il a fournies.",
 			collectedValues: (count: number): string => `${formatSwissNumber(count)} valeur${count > 1 ? "s" : ""} relevée${count > 1 ? "s" : ""}`,
 		},
 		municipalCsv: {
 			heading: "Détail communal",
 			intro: (count: number): string =>
-				`Les coefficients communaux (${formatSwissNumber(count)} communes) ne sont pas listés ligne par ligne ici — ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
+				`Les coefficients communaux (${formatSwissNumber(count)} communes) ne sont pas listés ligne par ligne ici, pour que ce tableau reste lisible quel que soit le nombre de communes. Le détail complet, avec la source et la date de vérification de chaque valeur, est disponible en CSV.`,
 			downloadLabel: "Télécharger les coefficients communaux (CSV)",
 			unitCaveat:
-				"Les coefficients sont repris tels que reçus de l'AFC ; leur unité (points d'indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant usage dans un calculateur — voir la méthodologie.",
+				"Les coefficients sont repris tels que reçus de l’AFC. Leur unité (points d’indice, centimes additionnels…) reste à confirmer auprès du droit fiscal cantonal avant tout usage dans un calculateur, comme l’explique la méthodologie.",
 		},
 	},
 

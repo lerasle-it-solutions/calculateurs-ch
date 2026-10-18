@@ -158,7 +158,8 @@ describe("méthodologie, section Prévoyance", () => {
 		const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
 		const html = decode(await container.renderToString(Page, { request: new Request("https://calculateurs.ch/methodologie/") }));
 		const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
-		const section = text.slice(text.indexOf("Économie d'impôt d'un versement 3a"), text.indexOf("Sources rattachées aux calculateurs de prévoyance"));
+		// Intertitre réécrit le 18.10.2026 : apostrophe typographique (docs/editorial-style.md § 3.3)
+		const section = text.slice(text.indexOf("Économie d’impôt d’un versement 3a"), text.indexOf("Sources rattachées aux calculateurs de prévoyance"));
 		expect(section.length).toBeGreaterThan(0);
 		for (const reference of ["art. 7 al. 1 OPP 3", "ch. 5.5", "ch. 3", "art. 7 al. 3 OPP 3", "art. 7 al. 2 OPP 3", "ch. 5.7 g"]) {
 			expect(section, reference).toContain(reference);

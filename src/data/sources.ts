@@ -44,7 +44,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1991/1184_1184_1184/fr",
 		legalReference:
-			"RS 642.11 — art. 22 al. 1 (revenus de la prévoyance professionnelle imposables), art. 33 et 35 (déductions), dont art. 33 al. 1 let. d (déduction du rachat LPP), art. 36 (barème IFD), art. 36 al. 3 (montant minimal perçu), art. 38 (prestations en capital)",
+			"RS 642.11, art. 22 al. 1 (revenus de la prévoyance professionnelle imposables), art. 33 et 35 (déductions), dont art. 33 al. 1 let. d (déduction du rachat LPP), art. 36 (barème IFD), art. 36 al. 3 (montant minimal perçu), art. 38 (prestations en capital)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-23",
 		dataClass: "public",
@@ -69,7 +69,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "ofas-ahv-contributions",
-		name: "Mémento 2.01 — Cotisations salariales à l'AVS, à l'AI et aux APG",
+		name: "Mémento 2.01, « Cotisations salariales à l’AVS, à l’AI et aux APG »",
 		authority: "Centre d'information AVS/AI, en collaboration avec l'Office fédéral des assurances sociales (OFAS)",
 		url: "https://www.ahv-iv.ch/p/2.01.f",
 		legalReference: "LAVS art. 5, LAI art. 3, LAPG art. 27 ; mémento état au 01.01.2026, ch. 3 (taux de cotisation)",
@@ -86,7 +86,7 @@ export const SOURCES = defineSources([
 		name: "Loi fédérale sur l'assurance-chômage obligatoire et l'indemnité en cas d'insolvabilité (LACI)",
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1982/2184_2184_2184/fr",
-		legalReference: "RS 837.0 — art. 3 al. 2 et 3 (taux de cotisation, plafond au gain maximal assuré LAA)",
+		legalReference: "RS 837.0, art. 3 al. 2 et 3 (taux de cotisation, plafond au gain maximal assuré LAA)",
 		cadence: "irregular",
 		verifiedOn: "2026-10-10",
 		dataClass: "public",
@@ -96,10 +96,10 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "olaa-max-insured-earnings",
-		name: "Ordonnance sur l'assurance-accidents (OLAA) — gain maximal assuré",
+		name: "Ordonnance sur l'assurance-accidents (OLAA), gain maximal assuré",
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1983/38_38_38/fr",
-		legalReference: "RS 832.202 — art. 22 al. 1 (gain maximal assuré)",
+		legalReference: "RS 832.202, art. 22 al. 1 (gain maximal assuré)",
 		cadence: "irregular",
 		verifiedOn: "2026-10-10",
 		dataClass: "public",
@@ -113,7 +113,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1983/797_797_797/fr",
 		legalReference:
-			"RS 831.40 — art. 2 al. 1 et art. 7 al. 1 (seuil d'entrée), art. 8 al. 1 et 2 (salaire coordonné), art. 16 (bonifications de vieillesse), art. 4 et 44 (indépendants), art. 30d al. 3 let. a (versement anticipé logement : exception), art. 65d (découvert de l'institution), art. 79b al. 1 à 4 (rachat ; al. 3 : délai de blocage et versement anticipé logement), art. 81 al. 2 (déduction) ; montants adaptés selon l'art. 5 OPP 2 (modification du 28.08.2024, RO 2024 469)",
+			"RS 831.40, art. 2 al. 1 et art. 7 al. 1 (seuil d'entrée), art. 8 al. 1 et 2 (salaire coordonné), art. 16 (bonifications de vieillesse), art. 4 et 44 (indépendants), art. 30d al. 3 let. a (versement anticipé logement : exception), art. 65d (découvert de l'institution), art. 79b al. 1 à 4 (rachat ; al. 3 : délai de blocage et versement anticipé logement), art. 81 al. 2 (déduction) ; montants adaptés selon l'art. 5 OPP 2 (modification du 28.08.2024, RO 2024 469)",
 		cadence: "biennial",
 		verifiedOn: "2026-10-10",
 		dataClass: "public",
@@ -128,7 +128,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1984/543_543_543/fr",
 		legalReference:
-			"RS 831.441.1, état le 01.08.2026 — art. 60a al. 2, 3 et 4 et art. 60b (limites du potentiel de rachat), art. 60d (versement anticipé logement : exception, si le règlement l'admet)",
+			"RS 831.441.1, état le 01.08.2026, art. 60a al. 2, 3 et 4 et art. 60b (limites du potentiel de rachat), art. 60d (versement anticipé logement : exception, si le règlement l'admet)",
 		cadence: "biennial",
 		verifiedOn: "2026-10-12",
 		dataClass: "public",
@@ -142,7 +142,7 @@ export const SOURCES = defineSources([
 		name: "ATF 142 II 399",
 		authority: "Tribunal fédéral",
 		url: "https://search.bger.ch/ext/eurospider/live/fr/php/clir/http/index.php?lang=fr&type=show_document&highlight_docid=atf://142-II-399:fr",
-		legalReference: "arrêts 2C_966/2015 et 2C_967/2015 du 18.07.2016 — consid. 3.3.5, 4.1 et 4.2 à 4.4",
+		legalReference: "arrêts 2C_966/2015 et 2C_967/2015 du 18.07.2016, consid. 3.3.5, 4.1 et 4.2 à 4.4",
 		cadence: "irregular",
 		verifiedOn: "2026-10-12",
 		dataClass: "public",
@@ -157,7 +157,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1993/1363_1363_1363/fr",
 		legalReference:
-			"RS 642.118.1 — art. 7 et appendice ch. 1 (autres frais professionnels) ; appendice mis à jour par l'O du DFF du 10.09.2025, RO 2025 578, en vigueur depuis le 01.01.2026",
+			"RS 642.118.1, art. 7 et appendice ch. 1 (autres frais professionnels) ; appendice mis à jour par l'O du DFF du 10.09.2025, RO 2025 578, en vigueur depuis le 01.01.2026",
 		cadence: "irregular",
 		verifiedOn: "2026-10-11",
 		dataClass: "public",
@@ -171,7 +171,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/2024/659/fr",
 		legalReference:
-			"RS 831.309.1 — annexe (art. 3), primes moyennes 2026, en vigueur depuis le 01.01.2026 ; annexe : https://www.bsv.admin.ch/dam/fr/sd-web/juMQ1SfoExDq/FR%20Anhang%20(Art.%203)%20Durchschnittspr%C3%A4mien%202026.pdf",
+			"RS 831.309.1, annexe (art. 3), primes moyennes 2026, en vigueur depuis le 01.01.2026 ; annexe : https://www.bsv.admin.ch/dam/fr/sd-web/juMQ1SfoExDq/FR%20Anhang%20(Art.%203)%20Durchschnittspr%C3%A4mien%202026.pdf",
 		cadence: "annual",
 		verifiedOn: "2026-10-11",
 		dataClass: "public",
@@ -182,10 +182,10 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "cst-art-128",
-		name: "Constitution fédérale de la Confédération suisse — art. 128, impôt fédéral direct",
+		name: "Constitution fédérale de la Confédération suisse, art. 128 (impôt fédéral direct)",
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1999/404/fr",
-		legalReference: "RS 101, art. 128 al. 1 let. a — taux maximal de 11,5 % sur le revenu des personnes physiques",
+		legalReference: "RS 101, art. 128 al. 1 let. a, taux maximal de 11,5 % sur le revenu des personnes physiques",
 		cadence: "irregular",
 		verifiedOn: "2026-09-28",
 		dataClass: "public",
@@ -210,7 +210,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "estv-cantonal-sheet-ju",
-		name: "Feuille cantonale de l'AFC — Jura",
+		name: "Feuille cantonale de l'AFC, Jura",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv2.admin.ch/stp/kb/ju-fr.pdf",
 		cadence: "annual",
@@ -223,7 +223,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "estv-cantonal-sheet-ne",
-		name: "Feuille cantonale de l'AFC — Neuchâtel",
+		name: "Feuille cantonale de l'AFC, Neuchâtel",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv2.admin.ch/stp/kb/ne-fr.pdf",
 		cadence: "annual",
@@ -236,7 +236,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "estv-cantonal-sheet-ge",
-		name: "Feuille cantonale de l'AFC — Genève",
+		name: "Feuille cantonale de l'AFC, Genève",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv2.admin.ch/stp/kb/ge-fr.pdf",
 		cadence: "annual",
@@ -249,7 +249,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "estv-cantonal-sheet-fr",
-		name: "Feuille cantonale de l'AFC — Fribourg",
+		name: "Feuille cantonale de l'AFC, Fribourg",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv2.admin.ch/stp/kb/fr-fr.pdf",
 		cadence: "annual",
@@ -262,7 +262,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "estv-cantonal-sheet-vd",
-		name: "Feuille cantonale de l'AFC — Vaud",
+		name: "Feuille cantonale de l'AFC, Vaud",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv2.admin.ch/stp/kb/vd-fr.pdf",
 		cadence: "annual",
@@ -275,7 +275,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "estv-cantonal-sheet-vs",
-		name: "Feuille cantonale de l'AFC — Valais",
+		name: "Feuille cantonale de l'AFC, Valais",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv2.admin.ch/stp/kb/vs-fr.pdf",
 		cadence: "annual",
@@ -310,7 +310,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Vaud",
 		url: "https://prestations.vd.ch/pub/blv-publication/actes/consolide/642.11?key=1543827825458&id=8df99d51-8df8-49ed-9ef5-2fa4817d0004",
 		legalReference:
-			"RSV 642.11 — art. 47 (barème revenu) · art. 59 (barème fortune) · art. 49 (prestations en capital : 1/5 des taux de l'art. 47) · art. 2 (impôt de base et coefficient annuel) · art. 48a (bénéfices de liquidation)",
+			"RSV 642.11, art. 47 (barème revenu) · art. 59 (barème fortune) · art. 49 (prestations en capital : 1/5 des taux de l'art. 47) · art. 2 (impôt de base et coefficient annuel) · art. 48a (bénéfices de liquidation)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -325,7 +325,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Genève",
 		url: "https://silgeneve.ch/legis/data/rsg/rsg_d3_08.htm",
 		legalReference:
-			"rs/GE D 3 08 — art. 41 al. 1 (barème revenu) · art. 59 al. 1 (barème fortune) et al. 2 (impôt supplémentaire sur la fortune, SANS centimes additionnels) · art. 45 (prestations en capital : 1/5 du barème de l'art. 41) · art. 41 al. 2 à 4 (taux à 50 % / 55,56 %)",
+			"rs/GE D 3 08, art. 41 al. 1 (barème revenu) · art. 59 al. 1 (barème fortune) et al. 2 (impôt supplémentaire sur la fortune, SANS centimes additionnels) · art. 45 (prestations en capital : 1/5 du barème de l'art. 41) · art. 41 al. 2 à 4 (taux à 50 % / 55,56 %)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -340,7 +340,7 @@ export const SOURCES = defineSources([
 		authority: "Canton du Valais",
 		url: "https://lex.vs.ch/app/fr/texts_of_law/642.1",
 		legalReference:
-			"RS/VS 642.1 — art. 32 al. 1 et annexe 1 (barème revenu) · art. 32 al. 2 (barème annexé par échelons de 100 francs) · art. 32 al. 3 (abattement familial cantonal, identique à l'art. 178 al. 3) · art. 60 (barème fortune) · art. 33b al. 1 et 4 (prestations en capital : taux des prestations périodiques, plafonné à 4 %, réduction de 2 % pour couples, max 2 450 CHF) · art. 178 (BARÈME COMMUNAL PROPRE) · art. 237 (majoration / réduction par le Grand Conseil)",
+			"RS/VS 642.1, art. 32 al. 1 et annexe 1 (barème revenu) · art. 32 al. 2 (barème annexé par échelons de 100 francs) · art. 32 al. 3 (abattement familial cantonal, identique à l'art. 178 al. 3) · art. 60 (barème fortune) · art. 33b al. 1 et 4 (prestations en capital : taux des prestations périodiques, plafonné à 4 %, réduction de 2 % pour couples, max 2 450 CHF) · art. 178 (BARÈME COMMUNAL PROPRE) · art. 237 (majoration / réduction par le Grand Conseil)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -355,7 +355,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Fribourg",
 		url: "https://bdlf.fr.ch/app/fr/texts_of_law/631.1",
 		legalReference:
-			"RSF 631.1 — art. 37 al. 1 (barème revenu) et al. 3 (taux à 50 %) · art. 62 al. 1a (barème fortune) · art. 39 (prestations en capital : 1/2/3/4/5 % par tranches de 50 000, déduction de 10 000 pour couples, exonération sous 10 000) · art. 2 al. 2 (taux FIXES pour les prestations en capital : aucun coefficient annuel)",
+			"RSF 631.1, art. 37 al. 1 (barème revenu) et al. 3 (taux à 50 %) · art. 62 al. 1a (barème fortune) · art. 39 (prestations en capital : 1/2/3/4/5 % par tranches de 50 000, déduction de 10 000 pour couples, exonération sous 10 000) · art. 2 al. 2 (taux FIXES pour les prestations en capital : aucun coefficient annuel)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -370,7 +370,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Neuchâtel",
 		url: "https://rsn.ne.ch/DATA/program/books/rsne/pdf/631.0.pdf",
 		legalReference:
-			"RSN 631.0 — art. 40b quater (barème revenu, périodes 2024 à 2026) et art. 40b ter (2023 et dès 2027) · art. 53 (barème fortune) · art. 42 (prestations en capital : quart du barème du revenu, taux de base minimal 2,5 %) · art. 40b ter al. 3 (splitting 52 %) · art. 40c (rabais d'impôt de 200 CHF par enfant, déduit DE L'IMPÔT)",
+			"RSN 631.0, art. 40b quater (barème revenu, périodes 2024 à 2026) et art. 40b ter (2023 et dès 2027) · art. 53 (barème fortune) · art. 42 (prestations en capital : quart du barème du revenu, taux de base minimal 2,5 %) · art. 40b ter al. 3 (splitting 52 %) · art. 40c (rabais d'impôt de 200 CHF par enfant, déduit DE L'IMPÔT)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-28",
 		dataClass: "public",
@@ -385,7 +385,7 @@ export const SOURCES = defineSources([
 		authority: "République et Canton du Jura",
 		url: "https://rsju.jura.ch/fr/viewdocument.html?idn=20113&id=37000",
 		legalReference:
-			"RSJU 641.11 — art. 35 al. 1 (barème préférentiel) et al. 2 (autres contribuables) · art. 48 al. 1 (barème fortune) et al. 2 (minimum imposable) · art. 37 (prestations en capital) · art. 2 al. 1 et 3 (quotité, valable POUR TOUS LES IMPÔTS, y compris les prestations en capital) · art. 105-106 (quotité communale)",
+			"RSJU 641.11, art. 35 al. 1 (barème préférentiel) et al. 2 (autres contribuables) · art. 48 al. 1 (barème fortune) et al. 2 (minimum imposable) · art. 37 (prestations en capital) · art. 2 al. 1 et 3 (quotité, valable POUR TOUS LES IMPÔTS, y compris les prestations en capital) · art. 105-106 (quotité communale)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -447,7 +447,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "vs-income-scale-indexation",
-		name: "Barème de l'impôt cantonal, revenu des personnes physiques — indexation de 173 %",
+		name: "Barème de l'impôt cantonal, revenu des personnes physiques, indexation de 173 %",
 		authority: "Service cantonal des contributions, canton du Valais",
 		url: "https://www.vs.ch/documents/d/scc/deductions-forfaitaires-2026",
 		legalReference: "art. 32 al. 4 LF (RS/VS 642.1)",
@@ -461,7 +461,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "vs-scc-cantonal-rate-notice",
-		name: "Calcul du taux pour l'impôt cantonal — notice du Service cantonal des contributions",
+		name: "Calcul du taux pour l'impôt cantonal, notice du Service cantonal des contributions",
 		authority: "Service cantonal des contributions, canton du Valais",
 		url: "https://www.vs.ch/fr/web/scc/baremes-canton-communes",
 		legalReference: "art. 32 al. 1 LF (RS/VS 642.1)",
@@ -475,7 +475,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "vs-scc-communal-rate-notice",
-		name: "Calcul du taux pour l'impôt communal — notice du Service cantonal des contributions",
+		name: "Calcul du taux pour l'impôt communal, notice du Service cantonal des contributions",
 		authority: "Service cantonal des contributions, canton du Valais",
 		url: "https://www.vs.ch/fr/web/scc/baremes-canton-communes",
 		legalReference: "art. 178 al. 1 LF (RS/VS 642.1)",
@@ -489,7 +489,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "vs-scc-cantonal-income-table-2026",
-		name: "Taux d'impôt cantonaux 2026, indice 173 — table du Service cantonal des contributions",
+		name: "Taux d'impôt cantonaux 2026, indice 173, table du Service cantonal des contributions",
 		authority: "Service cantonal des contributions, canton du Valais",
 		url: "https://www.vs.ch/fr/web/scc/baremes-canton-communes",
 		legalReference: "barème annexé de l'art. 32 al. 2 LF (RS/VS 642.1) : « Un barème annexé à la loi établit, par échelons de 100 francs, le montant de l'impôt dû »",
@@ -507,7 +507,7 @@ export const SOURCES = defineSources([
 		authority: "Canton du Valais",
 		url: "https://www.vs.ch/documents/508074/628286/Coefficients_Indexations_Communes_2022-2027.pdf/53d0770a-3e87-6d30-03d7-011ca4c7a3e0?t=1675666086332",
 		legalReference:
-			"RS/VS 642.1 — art. 178 (barème communal), art. 179 et 180 (coefficients d'indexation communaux), art. 236 et 237",
+			"RS/VS 642.1, art. 178 (barème communal), art. 179 et 180 (coefficients d'indexation communaux), art. 236 et 237",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -523,7 +523,7 @@ export const SOURCES = defineSources([
 		name: "Coefficients communaux de l'année GE",
 		authority: "Canton de Genève",
 		url: "https://silgeneve.ch/legis/data/rsg/rsg_d3_05p30.htm",
-		legalReference: "rs/GE D 3 05.30 — arrêté du 18 mars 2026",
+		legalReference: "rs/GE D 3 05.30, arrêté du 18 mars 2026",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -540,7 +540,7 @@ export const SOURCES = defineSources([
 		authority: "République et Canton du Jura",
 		url: "https://www.jura.ch/Htdocs/Files/v/df8873b29ac94b19ca37ba3cd2342e441d1d36d69901ca072f0552c0edab3822.pdf/quotites_2026.pdf",
 		legalReference:
-			"Quotités communales — art. 106 al. 1 LI",
+			"Quotités communales, art. 106 al. 1 LI",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -557,7 +557,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Vaud",
 		url: "https://prestations.vd.ch/pub/blv-publication/actes/consolide/642.12?key=1790241123087&id=2601e61d-0961-41db-ba5a-1c06f0197fd0",
 		legalReference:
-			"LRIPP, RSV 642.12, du 10 octobre 2023 — art. 4 (réduction annuelle de l'impôt cantonal de base, à l'exception des art. 48a et 49 LI)",
+			"LRIPP, RSV 642.12, du 10 octobre 2023, art. 4 (réduction annuelle de l'impôt cantonal de base, à l'exception des art. 48a et 49 LI)",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -607,11 +607,11 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "vd-la-2026",
-		name: "Loi sur l'impôt 2026 (LA 2026) — VD",
+		name: "Loi sur l'impôt 2026 (LA 2026), VD",
 		authority: "Canton de Vaud",
 		url: "https://prestations.vd.ch/pub/blv-publication/actes/consolide/642.00.011024.2?key=1790330228162&id=661f87a2-bfb7-4249-86ef-de25613890c5",
 		legalReference:
-			"BLV 642.00.011024.2 — loi du 1er octobre 2024 sur l'impôt 2026, art. 2 : coefficient annuel fixé à 155 % de l'impôt de base (art. 47, 49, 59, 105, 111, 118 et 126 LI), applicable aussi à l'impôt d'après la dépense",
+			"BLV 642.00.011024.2, loi du 1er octobre 2024 sur l'impôt 2026, art. 2 : coefficient annuel fixé à 155 % de l'impôt de base (art. 47, 49, 59, 105, 111, 118 et 126 LI), applicable aussi à l'impôt d'après la dépense",
 		cadence: "annual",
 		verifiedOn: "2026-09-26",
 		dataClass: "public",
@@ -626,7 +626,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Vaud",
 		url: "https://prestations.vd.ch/pub/blv-publication/actes/consolide/650.11?key=1543827910010&id=66dcd6f6-b573-4422-a30f-b0d0845151cf",
 		legalReference:
-			"RSV 650.11 — art. 8 (taux communaux en pour-cent de l'impôt cantonal de base)",
+			"RSV 650.11, art. 8 (taux communaux en pour-cent de l'impôt cantonal de base)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -641,7 +641,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Genève",
 		url: "https://silgeneve.ch/legis/data/rsg/rsg_d3_07.htm",
 		legalReference:
-			"rs/GE D 3 07 — art. 2 : 47,5 centimes + 1 centime supplémentaire (maintien, aide et soins à domicile) sur l'impôt cantonal sur le revenu et la fortune",
+			"rs/GE D 3 07, art. 2 : 47,5 centimes + 1 centime supplémentaire (maintien, aide et soins à domicile) sur l'impôt cantonal sur le revenu et la fortune",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -655,7 +655,7 @@ export const SOURCES = defineSources([
 		name: "Loi générale sur les contributions publiques (GE)",
 		authority: "Canton de Genève",
 		url: "https://silgeneve.ch/legis/data/rsg/rsg_d3_05.htm",
-		legalReference: "rs/GE D 3 05 — art. 374 à 377 : taxe personnelle",
+		legalReference: "rs/GE D 3 05, art. 374 à 377 : taxe personnelle",
 		cadence: "irregular",
 		verifiedOn: "2026-09-28",
 		dataClass: "public",
@@ -670,7 +670,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Genève",
 		url: "https://silgeneve.ch/legis/data/rsg/rsg_d3_06.htm",
 		legalReference:
-			"rs/GE D 3 06 — art. 1 : l'impôt direct sur le revenu des personnes physiques, à l'exception des centimes additionnels communaux, est diminué de 12 %",
+			"rs/GE D 3 06, art. 1 : l'impôt direct sur le revenu des personnes physiques, à l'exception des centimes additionnels communaux, est diminué de 12 %",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -685,7 +685,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Genève",
 		url: "https://silgeneve.ch/legis/data/rsg/rsg_d3_08p05.htm",
 		legalReference:
-			"rs/GE D 3 08.05 — art. 17 (barème du revenu indexé pour 2026) et art. 18 (barèmes de la fortune indexés, al. 1 et 2)",
+			"rs/GE D 3 08.05, art. 17 (barème du revenu indexé pour 2026) et art. 18 (barèmes de la fortune indexés, al. 1 et 2)",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -700,7 +700,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Fribourg",
 		url: "https://bdlf.fr.ch/app/fr/texts_of_law/631.12",
 		legalReference:
-			"RSF 631.12 — art. 1 al. 1 : 96 % des taux de l'art. 37 LICD (revenu) ; al. 2 : 100 % des taux de l'art. 62 LICD (fortune)",
+			"RSF 631.12, art. 1 al. 1 : 96 % des taux de l'art. 37 LICD (revenu) ; al. 2 : 100 % des taux de l'art. 62 LICD (fortune)",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -715,7 +715,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Fribourg",
 		url: "https://bdlf.fr.ch/app/fr/texts_of_law/632.1",
 		legalReference:
-			"RSF 632.1 — art. 3 al. 3 et art. 4 : coefficient en pour-cent de l'impôt cantonal de base, plafond 100 %, exceptionnellement 125 % ; coefficients revenu et fortune identiques",
+			"RSF 632.1, art. 3 al. 3 et art. 4 : coefficient en pour-cent de l'impôt cantonal de base, plafond 100 %, exceptionnellement 125 % ; coefficients revenu et fortune identiques",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -730,7 +730,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Fribourg",
 		url: "https://bdlf.fr.ch/app/fr/texts_of_law/190.1",
 		legalReference:
-			"RSF 190.1 — art. 16 : coefficient paroissial en pour-cent de l'impôt cantonal de base, plafond 20 % pour les personnes physiques",
+			"RSF 190.1, art. 16 : coefficient paroissial en pour-cent de l'impôt cantonal de base, plafond 20 % pour les personnes physiques",
 		cadence: "irregular",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -745,7 +745,7 @@ export const SOURCES = defineSources([
 		authority: "Canton de Neuchâtel",
 		url: "https://rsn.ne.ch/DATA/program/books/RSN2024/20243/htm/631.00.htm",
 		legalReference:
-			"RSN 631.00 — art. 1 al. 6 : 124 % de l'impôt de base pour 2025 et 2026 ; al. 4 : 125 % pour 2018-2024 et dès 2027",
+			"RSN 631.00, art. 1 al. 6 : 124 % de l'impôt de base pour 2025 et 2026 ; al. 4 : 125 % pour 2018-2024 et dès 2027",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -756,11 +756,11 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "ju-adli-2026",
-		name: "Arrêté portant adaptation des déductions et des taux unitaires (ADLI 2026) — JU",
+		name: "Arrêté portant adaptation des déductions et des taux unitaires (ADLI 2026), JU",
 		authority: "République et Canton du Jura",
 		url: "https://rsju.jura.ch/fr/viewdocument.html?idn=20113&id=39355",
 		legalReference:
-			"RSJU 641.111.24 — art. 1 (taux unitaires du revenu, art. 35 LI), art. 2 (prestations en capital, art. 37 LI), art. 3 (fortune, art. 48 LI)",
+			"RSJU 641.111.24, art. 1 (taux unitaires du revenu, art. 35 LI), art. 2 (prestations en capital, art. 37 LI), art. 3 (fortune, art. 48 LI)",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -775,7 +775,7 @@ export const SOURCES = defineSources([
 		authority: "République et Canton du Jura",
 		url: "https://www.jura.ch/Htdocs/Files/v/df8873b29ac94b19ca37ba3cd2342e441d1d36d69901ca072f0552c0edab3822.pdf/quotites_2026.pdf",
 		legalReference:
-			"RSJU 641.11 — art. 2 al. 1 et 3 (quotité cantonale votée au budget, valable pour tous les impôts) ; art. 106 al. 1 (quotité communale votée au budget)",
+			"RSJU 641.11, art. 2 al. 1 et 3 (quotité cantonale votée au budget, valable pour tous les impôts) ; art. 106 al. 1 (quotité communale votée au budget)",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -790,7 +790,7 @@ export const SOURCES = defineSources([
 		authority: "Canton du Valais",
 		url: "https://lex.vs.ch/app/fr/texts_of_law/642.1",
 		legalReference:
-			"RS/VS 642.1 — art. 178 (barème communal du revenu et de la fortune ; al. 3 : abattement familial communal), art. 179 et 180 (adaptation par les communes), art. 236 et 237",
+			"RS/VS 642.1, art. 178 (barème communal du revenu et de la fortune ; al. 3 : abattement familial communal), art. 179 et 180 (adaptation par les communes), art. 236 et 237",
 		cadence: "annual",
 		verifiedOn: "2026-09-24",
 		dataClass: "public",
@@ -805,7 +805,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1985/1778_1778_1778/fr",
 		legalReference:
-			"RS 831.461.3 — art. 7 al. 1 let. a et b (plafonds annuels, en pour-cent du montant-limite supérieur de l'art. 8 al. 1 LPP) · art. 7a (rachat : dix années précédentes, plafond total de 8 % du montant-limite par année de rachat, un seul rachat par année de lacune) · art. 7b (demande de rachat) · disposition transitoire de la modification du 6 novembre 2024 (lacunes antérieures au 1er janvier 2025 non rachetables)",
+			"RS 831.461.3, art. 7 al. 1 let. a et b (plafonds annuels, en pour-cent du montant-limite supérieur de l'art. 8 al. 1 LPP) · art. 7a (rachat : dix années précédentes, plafond total de 8 % du montant-limite par année de rachat, un seul rachat par année de lacune) · art. 7b (demande de rachat) · disposition transitoire de la modification du 6 novembre 2024 (lacunes antérieures au 1er janvier 2025 non rachetables)",
 		cadence: "irregular",
 		verifiedOn: "2026-09-29",
 		dataClass: "public",
@@ -816,7 +816,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "ofas-pillar-3a-caps",
-		name: "Le troisième pilier — plafonds des cotisations au pilier 3a",
+		name: "« Le troisième pilier », plafonds des cotisations au pilier 3a",
 		authority: "Office fédéral des assurances sociales (OFAS)",
 		url: "https://www.bsv.admin.ch/fr/le-troisieme-pilier",
 		legalReference: "OPP 3 art. 7 al. 1 let. a (« petite » cotisation) et let. b (« grande » cotisation)",
@@ -844,7 +844,7 @@ export const SOURCES = defineSources([
 	},
 	{
 		id: "afc-circular-18a",
-		name: "Circulaire n° 18a — Traitement fiscal des cotisations et des prestations du pilier 3a",
+		name: "Circulaire n° 18a, « Traitement fiscal des cotisations et des prestations du pilier 3a »",
 		authority: "Administration fédérale des contributions (AFC)",
 		url: "https://www.estv.admin.ch/dam/fr/sd-web/yQgKmvu80LEr/dbst-ks-2025-1-018a-dv-fr.pdf",
 		legalReference: "Circulaire AFC n° 18a du 22 décembre 2025, 1-018a-DV-2025-f, ch. 3, 5.1, 5.5, 5.6, 5.7 e à g et 9.1",

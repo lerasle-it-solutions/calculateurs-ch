@@ -30,7 +30,7 @@ const formatDate = (isoDate: string): string =>
 ---
 
 <BaseLayout
-	title={`${fr.dataPage.title} — ${fr.site.name}`}
+	title={fr.site.pageTitle(fr.dataPage.title)}
 	description={fr.dataPage.metaDescription}
 >
 	<Section hero={true}>
@@ -88,7 +88,7 @@ const formatDate = (isoDate: string): string =>
 											<span>{row.source.name}</span>
 										) : (
 											<span class="text-fine text-ink-muted">
-												{row.sourceId} — {fr.dataPage.sourceUnknown}
+												{row.sourceId} ({fr.dataPage.sourceUnknown})
 											</span>
 										)}
 										{row.source &&
@@ -100,7 +100,8 @@ const formatDate = (isoDate: string): string =>
 										{row.source?.authority ?? fr.dataPage.sourceUnknown}
 									</td>
 									<td class="border-b border-hairline px-md py-sm text-fine">
-										{row.source ? fr.dataPage.cadence[row.source.cadence] : "—"}
+										{/* Case vide sans source, jamais un tiret (docs/editorial-style.md § 3.1) */}
+										{row.source ? fr.dataPage.cadence[row.source.cadence] : ""}
 									</td>
 									<td class="border-b border-hairline px-md py-sm text-right tabular-nums">
 										{formatSwissNumber(row.trackedValues)}
@@ -116,7 +117,7 @@ const formatDate = (isoDate: string): string =>
 									</td>
 									<td class="border-b border-hairline px-md py-sm tabular-nums">
 										{row.nextDueOn === null ? (
-											fr.common.emptyValue
+											""
 										) : (
 											<time datetime={row.nextDueOn}>
 												{formatDate(row.nextDueOn)}
@@ -175,7 +176,7 @@ const formatDate = (isoDate: string): string =>
 									<a href={tool.source.url}>{tool.source.name}</a>
 								) : (
 									<span>
-										{tool.source?.name ?? `${tool.sourceId} — ${fr.dataPage.sourceUnknown}`}
+										{tool.source?.name ?? `${tool.sourceId} (${fr.dataPage.sourceUnknown})`}
 									</span>
 								)}
 								<span class="text-fine text-ink-muted">

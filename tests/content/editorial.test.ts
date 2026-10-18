@@ -24,9 +24,7 @@ const PENDING_PAGES = new Set([
 	"404.html",
 	"demo-calculateur/index.html",
 	"demo-ui/index.html",
-	"donnees/index.html",
 	"mentions-legales/index.html",
-	"methodologie/index.html",
 	"politique-de-confidentialite/index.html",
 	"prevoyance/guides/rachat-3a-retroactif/index.html",
 ]);

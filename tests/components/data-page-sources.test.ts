@@ -45,12 +45,13 @@ describe("/donnees/, sources des calculateurs", () => {
 		const text = await render("/donnees/", "donnees");
 		const circular = sourceRegistry().get("afc-circular-18a")!;
 		const data = text.slice(0, text.indexOf("Sources des règles"));
-		expect(data).toContain(circular.name);
+		// Le rendu ramène tout blanc à une espace, insécables des guillemets comprises (18.10.2026)
+		expect(data).toContain(circular.name.replace(/\s+/g, " "));
 	});
 
 	it("la méthodologie liste la circulaire avec sa référence légale", async () => {
 		const text = await render("/methodologie/", "methodologie");
 		const circular = sourceRegistry().get("afc-circular-18a")!;
-		expect(text).toContain(`${circular.name}, ${circular.legalReference}`);
+		expect(text).toContain(`${circular.name}, ${circular.legalReference}`.replace(/\s+/g, " "));
 	});
 });
