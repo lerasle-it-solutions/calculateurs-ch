@@ -47,6 +47,18 @@ Reprises pour garder un seul énoncé par règle sur le site (§ 4.1, « une seu
 | Tableau, ligne « retrait en capital » | Les motifs (retraite, logement, départ) n’apparaissaient que dans la situation | Ajout de « Selon la pratique fiscale, le retrait compte quel que soit son motif. » (A3, méthodologie § 6, phrase 48 de `tracabilite-A3.md`, sans la mention de l’institution), pour que la portée des motifs soit attribuée à la pratique et non à l’arrêt |
 | Les deux se cumulent | Un avoir 3a élevé peut toutefois réduire le rachat possible, comme le montre le tableau plus haut. | Un avoir 3a élevé peut toutefois réduire le rachat possible (art. 60a al. 2 OPP 2). |
 
+## Relecture du mainteneur (20.10.2026)
+
+Corrections appliquées mot pour mot :
+
+| Passage | Avant | Après |
+| --- | --- | --- |
+| Réponse courte, dernière phrase | … le logement et l’imposition à la sortie. | … le logement et votre caisse de pension. |
+| Tableau, retrait en capital | En principe, tout versement en capital dans les 3 ans est réputé abusif, et le rachat n’est pas déductible. | En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise. (A3, FAQ 4) |
+| Tableau, aucune caisse | … (art. 79b al. 1 LPP). Sans caisse de pension, il reste le 3a, avec la grande cotisation (art. 7 al. 1 let. b OPP 3). Le plafond du 3a passe alors à… | Le rachat se fait dans votre caisse de pension, à hauteur des prestations prévues par son règlement. Sans caisse de pension, il reste le 3a. Son plafond passe alors à… (références dans la colonne « Base ») |
+| Les deux se cumulent | Saisissez ensuite dans le calculateur de rachat LPP votre revenu imposable après la déduction 3a. | Saisissez ensuite dans le calculateur de rachat LPP vos revenus imposables cantonal et fédéral, diminués de la déduction 3a. |
+| Sources | LPP, art. 65d, 79b et 81 | LPP, art. 65d et 79b |
+
 ## Écarts assumés avec la lettre de la charte
 
 - **Colonne « Base » du tableau de décision.** Les références n’y sont pas « en fin de phrase et entre

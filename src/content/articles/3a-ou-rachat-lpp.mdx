@@ -17,7 +17,7 @@ sources:
     name: "LHID, art. 9 al. 2 let. d et e, et art. 11 al. 3"
     publisher: Fedlex
   - sourceId: fedlex-lpp
-    name: "LPP, art. 65d, 79b et 81"
+    name: "LPP, art. 65d et 79b"
     publisher: Fedlex
   - sourceId: fedlex-opp2
     name: "OPP 2, art. 60a, 60b et 60d"
@@ -34,7 +34,7 @@ import { buybackYearColumn, compatibleFromColumn, differenceColumn, example1Amou
 
 **Calculez votre cas : [calculateur de rachat LPP](/prevoyance/rachat-lpp/) et [calculateur d’économie d’impôt 3a](/prevoyance/economie-impot-3a/).**
 
-**La réponse courte.** Un versement au pilier 3a, dans la limite de son plafond, et un rachat dans votre caisse de pension se déduisent tous deux du revenu imposable. La déduction vaut pour l’impôt fédéral direct comme pour les impôts cantonaux et communaux (art. 33 al. 1 let. d et e LIFD ; art. 9 al. 2 let. d et e LHID). À montant égal, ils font donc économiser le même impôt l’année du versement. Le choix se joue ailleurs : le plafond du 3a, le délai de blocage du rachat, le logement et l’imposition à la sortie.
+**La réponse courte.** Un versement au pilier 3a, dans la limite de son plafond, et un rachat dans votre caisse de pension se déduisent tous deux du revenu imposable. La déduction vaut pour l’impôt fédéral direct comme pour les impôts cantonaux et communaux (art. 33 al. 1 let. d et e LIFD ; art. 9 al. 2 let. d et e LHID). À montant égal, ils font donc économiser le même impôt l’année du versement. Le choix se joue ailleurs : le plafond du 3a, le délai de blocage du rachat, le logement et votre caisse de pension.
 
 ## Même montant, même économie
 
@@ -58,10 +58,10 @@ Les deux colonnes sont identiques au franc près. Les deux montants se retranche
 
 | Votre situation | Ce qui s’applique | Base |
 | --- | --- | --- |
-| Un retrait en capital du 2e pilier est prévu dans les {lockYears} ans qui suivent le rachat (retraite, logement, départ à l’étranger). | Pendant {lockYears} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital. En principe, tout versement en capital dans les {lockYears} ans est réputé abusif, et le rachat n’est pas déductible. Selon la pratique fiscale, le retrait compte quel que soit son motif. | art. 79b al. 3 LPP ; ATF 142 II 399 consid. 4.1 |
+| Un retrait en capital du 2e pilier est prévu dans les {lockYears} ans qui suivent le rachat (retraite, logement, départ à l’étranger). | Pendant {lockYears} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital. En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise. Selon la pratique fiscale, le retrait compte quel que soit son motif. | art. 79b al. 3 LPP ; ATF 142 II 399 consid. 4.1 |
 | Vous avez reçu un versement anticipé pour le logement, pas encore remboursé. | En règle générale, le rachat LPP n’est possible qu’après le remboursement. Lorsque le remboursement n’est plus possible, en principe à l’approche de la retraite, le règlement de votre caisse peut autoriser des rachats dans certaines limites. | art. 79b al. 3 LPP ; art. 60d OPP 2 |
 | Vous voulez déduire plus que la petite cotisation, {smallCap2026} francs en 2026. | Avec une caisse de pension, le 3a se déduit au plus à hauteur de la petite cotisation. Le rachat LPP n’a pas ce plafond, car votre caisse le permet jusqu’à hauteur des prestations de son règlement. | art. 7 al. 1 let. a OPP 3 ; art. 79b al. 1 LPP |
-| Vous n’êtes affilié à aucune caisse de pension. | Le rachat se fait dans votre caisse de pension, à hauteur des prestations prévues par son règlement (art. 79b al. 1 LPP). Sans caisse de pension, il reste le 3a, avec la grande cotisation (art. 7 al. 1 let. b OPP 3). Le plafond du 3a passe alors à {largeCapRate2026} du revenu de l’activité lucrative, au plus {largeCap2026} francs en 2026. | art. 79b al. 1 LPP ; art. 7 al. 1 let. b OPP 3 |
+| Vous n’êtes affilié à aucune caisse de pension. | Le rachat se fait dans votre caisse de pension, à hauteur des prestations prévues par son règlement. Sans caisse de pension, il reste le 3a. Son plafond passe alors à {largeCapRate2026} du revenu de l’activité lucrative, au plus {largeCap2026} francs en 2026. | art. 79b al. 1 LPP ; art. 7 al. 1 let. b OPP 3 |
 | Vous n’avez pas versé le maximum au 3a une année depuis {firstGapYear}. | Depuis {firstBuybackYear}, ces lacunes se rachètent après coup, dans la limite de la petite cotisation de l’année du rachat, toutes lacunes confondues. Les conditions sont détaillées dans le guide du [rachat rétroactif du 3e pilier](/prevoyance/guides/rachat-3a-retroactif/). | art. 7a OPP 3 |
 | Votre avoir 3a est élevé. | La part de votre 3a qui dépasse la somme des versements maximaux déductibles depuis vos 24 ans, intérêts au taux minimal LPP compris, est déduite du rachat LPP possible. | art. 60a al. 2 OPP 2 |
 | Vous êtes arrivé de l’étranger et n’avez jamais été affilié à une caisse suisse. | Vos rachats LPP sont plafonnés chaque année pendant vos premières années d’affiliation. | art. 60b OPP 2 |
@@ -96,7 +96,7 @@ Chaque versement fait courir son propre délai, si bien qu’échelonner ses rac
 
 Rien n’oblige à choisir. Le versement 3a et le rachat LPP sont deux déductions distinctes, qui s’appliquent la même année (art. 33 al. 1 let. d et e LIFD ; art. 9 al. 2 let. d et e LHID). Un avoir 3a élevé peut toutefois réduire le rachat possible (art. 60a al. 2 OPP 2).
 
-Chaque calculateur chiffre une seule déduction. Pour une année où vous faites les deux, calculez d’abord votre versement 3a. Saisissez ensuite dans le calculateur de rachat LPP votre revenu imposable après la déduction 3a. L’économie totale est la somme des deux résultats.
+Chaque calculateur chiffre une seule déduction. Pour une année où vous faites les deux, calculez d’abord votre versement 3a. Saisissez ensuite dans le calculateur de rachat LPP vos revenus imposables cantonal et fédéral, diminués de la déduction 3a. L’économie totale est la somme des deux résultats.
 
 ## À la sortie
 
