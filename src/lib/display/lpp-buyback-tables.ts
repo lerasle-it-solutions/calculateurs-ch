@@ -11,9 +11,9 @@ import type { LppBuybackCalendarRow, LppBuybackScenarioRow, LppBuybackTables } f
 /** Ordre de gravité des classes : la plus grave d'un scénario est affichée. */
 const SEVERITY: LockStatus[] = ["compatible", "checkExactDate", "withinLockPeriod"];
 
-/** Écart signé, dit en mots et non par la couleur : « + 295 CHF », « – 12 CHF ». */
+/** Écart signé, dit en mots et non par la couleur : « + 295 CHF », « − 12 CHF » (signe moins typographique, docs/editorial-style.md § 3.1). */
 const signedChf = (amount: number): string =>
-	amount > 0 ? `+ ${formatChfAmount(amount)}` : amount < 0 ? `– ${formatChfAmount(-amount)}` : formatChfAmount(0);
+	amount > 0 ? `+ ${formatChfAmount(amount)}` : amount < 0 ? `− ${formatChfAmount(-amount)}` : formatChfAmount(0);
 
 export function lppBuybackTableRows(
 	tables: LppBuybackTables | null,
