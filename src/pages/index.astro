@@ -52,10 +52,11 @@ const deadline = contributionDeadline();
 const proof = proofFigures();
 const cards = calculatorCards();
 
-// Guide mis en avant : le plus récemment mis à jour
+// Derniers guides : les plus récemment mis à jour, deux cartes au plus ; lien vers /guides/ s'il en reste
+const HOME_GUIDE_COUNT = 2;
 const guides = (await getCollection("articles")).sort((a, b) => b.data.updatedOn.getTime() - a.data.updatedOn.getTime());
-const guide = guides[0];
-const guideDate = guide && new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long", year: "numeric" }).format(guide.data.updatedOn);
+const homeGuides = guides.slice(0, HOME_GUIDE_COUNT);
+const guideDate = new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long", year: "numeric" });
 
 // Familles sans calculateur publié : une seule ligne, sans date promise
 const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).length === 0).map((family) => fr.family[family]);
@@ -146,18 +147,27 @@ const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).
 	</Section>
 
 	{
-		guide && (
+		homeGuides.length > 0 && (
 			<Section data-home-guide class="flex flex-col gap-2xl">
 				<h2 class="text-heading">{t.guideHeading}</h2>
-				<a href={`${familyUrl(guide.data.family)}guides/${guide.id}/`} class="group flex max-w-reading flex-col gap-sm rounded-panel bg-paper p-xl text-ink no-underline shadow-card">
-					<h3 class="text-subheading group-hover:underline">{guide.data.title}</h3>
-					<p class="text-body text-ink-muted">{guide.data.description}</p>
-					<p class="text-fine text-ink-muted">
-						{fr.article.updatedOn} <time datetime={guide.data.updatedOn.toISOString().slice(0, 10)}>{guideDate}</time>
-						{guide.data.readingMinutes && <> · {fr.article.readingTime(guide.data.readingMinutes)}</>}
+				<div class="grid gap-xl md:grid-cols-2">
+					{homeGuides.map((guide) => (
+						<a href={`${familyUrl(guide.data.family)}guides/${guide.id}/`} class="group flex max-w-reading flex-col gap-sm rounded-panel bg-paper p-xl text-ink no-underline shadow-card">
+							<h3 class="text-subheading group-hover:underline">{guide.data.title}</h3>
+							<p class="text-body text-ink-muted">{guide.data.description}</p>
+							<p class="text-fine text-ink-muted">
+								{fr.article.updatedOn} <time datetime={guide.data.updatedOn.toISOString().slice(0, 10)}>{guideDate.format(guide.data.updatedOn)}</time>
+								{guide.data.readingMinutes && <> · {fr.article.readingTime(guide.data.readingMinutes)}</>}
+							</p>
+							<span class="text-label font-bold text-accent">{t.guideAction} →</span>
+						</a>
+					))}
+				</div>
+				{guides.length > homeGuides.length && (
+					<p class="text-label font-bold">
+						<a href="/guides/">{t.allGuides}</a>
 					</p>
-					<span class="text-label font-bold text-accent">{t.guideAction} →</span>
-				</a>
+				)}
 			</Section>
 		)
 	}

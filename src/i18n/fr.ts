@@ -96,8 +96,10 @@ export const fr = {
 				text: "Le calcul se fait sur votre appareil, sans compte ni cookie de suivi. Vos saisies ne sont envoyées nulle part.",
 			},
 		],
-		guideHeading: "Le guide",
+		guideHeading: "Derniers guides",
 		guideAction: "Lire le guide",
+		/** Lien sous les cartes de guides, seulement si d'autres guides ne sont pas affichés. */
+		allGuides: "Tous les guides",
 		/** Lien d'action à la fin de chaque carte de famille. */
 		familyCardAction: "Voir les calculateurs",
 		/** Seule ligne des familles sans calculateur publié, libellés de `fr.family`. Aucune date promise. */

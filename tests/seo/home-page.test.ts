@@ -1,8 +1,10 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { getCollection } from "astro:content";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { allCalculators, isPublished } from "../../src/calculators/catalog";
 import { exampleOutcome } from "../../src/calculators/example-outcomes";
+import { familyUrl } from "../../src/calculators/families";
 import { exampleFormValues } from "../../src/calculators/field-values";
 import { COUNTDOWN_STARTS_ON, contributionDeadline, countdownDays, heroOutcome, proofFigures, refineUrl } from "../../src/calculators/home";
 import { PILLAR_3A_TAX_SAVING_ID, pillar3aTaxSaving } from "../../src/calculators/pension/pillar-3a-tax-saving";
@@ -122,5 +124,14 @@ describe("pourquoi ces chiffres sont justes, guide", () => {
 		const guide = block("data-home-guide");
 		expect(guide).toMatch(/<time datetime="\d{4}-\d{2}-\d{2}"/);
 		expect(text(guide)).toMatch(/\d+ min/);
+	});
+
+	it("les deux guides les plus récemment mis à jour sont liés, et « Tous les guides » seulement s'il en reste", async () => {
+		const guides = (await getCollection("articles")).sort((a, b) => b.data.updatedOn.getTime() - a.data.updatedOn.getTime());
+		const section = block("data-home-guide");
+		const linked = [...section.matchAll(/href="(\/[a-z-]+\/guides\/[^"]+\/)"/g)].map((match) => match[1]);
+		expect(linked).toEqual(guides.slice(0, 2).map((guide) => `${familyUrl(guide.data.family)}guides/${guide.id}/`));
+		expect(text(section)).toContain(fr.home.guideHeading);
+		expect(section.includes('href="/guides/"')).toBe(guides.length > 2);
 	});
 });
