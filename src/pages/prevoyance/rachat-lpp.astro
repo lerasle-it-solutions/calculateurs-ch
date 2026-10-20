@@ -48,6 +48,7 @@ const calendarRows = (shown?.calendar ?? []).map((entry) => [entry.buybackYear, 
 		intro={lppBuybackIntro}
 		resultLabel={texts.resultLabel}
 		resultNote={texts.disclaimer}
+		guide={texts.guide}
 		notice={
 			lppBuybackTaxYear.isFallback
 				? fr.taxYearFallback.lppBuyback(lppBuybackTaxYear.year, lppBuybackTaxYear.calendarYear)

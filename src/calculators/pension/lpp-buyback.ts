@@ -18,6 +18,8 @@ import { PILLAR_3A_BUYBACK_ID, pillar3aBuybackTexts } from "./pillar-3a-buyback"
 import { PILLAR_3A_TAX_SAVING_ID } from "./pillar-3a-tax-saving";
 
 export const LPP_BUYBACK_ID = "pension.lpp-buyback";
+/** Article 2, « 3a ou rachat LPP » : lien « guide » et alternative de la comparaison avec le 3a. */
+const LPP_BUYBACK_GUIDE_URL = "/prevoyance/guides/3a-ou-rachat-lpp/";
 /** Retrait en capital LPP/3a (A4), variante dès sa publication. */
 const CAPITAL_WITHDRAWAL_ID = "pension.capital-withdrawal";
 
@@ -267,7 +269,7 @@ export const lppBuyback: CalculatorDefinition = {
 			...coverage.notCovered,
 			{
 				case: "Comparaison entre un rachat LPP et un versement 3a.",
-				alternative: PILLAR_3A_TAX_SAVING_ID,
+				alternative: { label: "3a ou rachat LPP : lequel choisir selon votre situation ?", url: LPP_BUYBACK_GUIDE_URL },
 			},
 			{
 				case: "Rendement du capital racheté, ou amélioration de la rente.",
@@ -356,6 +358,8 @@ export type LppBuybackWarning = { title: string; text: string; items: string[] }
 /** Textes de la page propres à A3, en français. */
 export const lppBuybackTexts = {
 	resultLabel: "Économie d’impôt d’un rachat en une fois",
+	/** Guide de la famille (article 2, src/content/articles/3a-ou-rachat-lpp.mdx), maillage réciproque (W10). */
+	guide: { label: "Choisir entre un versement 3a et un rachat LPP", url: LPP_BUYBACK_GUIDE_URL },
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
 	disclaimer: `Ce montant est une estimation indicative, établie d’après les barèmes ${lppBuybackYear} et vos saisies. Il ne constitue pas un conseil fiscal ou en prévoyance, et ne remplace pas votre décision de taxation.`,
 	/** Part non déduite (hypothèse 4) : « {federal} » et « {cantonal} » remplacés par les montants. */

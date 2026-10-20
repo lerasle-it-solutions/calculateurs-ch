@@ -51,7 +51,11 @@ describe("définition d'A3", () => {
 		});
 		expect(of("Rachat consécutif à un divorce")).toBeDefined();
 		expect(of("Personnes imposées à la source")).toEqual({ label: "Renseignez-vous auprès de l’administration fiscale de votre canton." });
-		expect(of("Comparaison entre un rachat LPP et un versement 3a")).toBe("pension.pillar-3a-tax-saving");
+		// Renvoi vers l'article 2 depuis W10 (maillage réciproque, docs/plan/W10.md), et non plus vers A2
+		expect(of("Comparaison entre un rachat LPP et un versement 3a")).toEqual({
+			label: "3a ou rachat LPP : lequel choisir selon votre situation ?",
+			url: "/prevoyance/guides/3a-ou-rachat-lpp/",
+		});
 		expect(of("Rendement du capital racheté")).toEqual({ label: "Le certificat de prévoyance, ou une simulation demandée à la caisse." });
 	});
 
