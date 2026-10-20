@@ -43,6 +43,8 @@ Reprises pour garder un seul énoncé par règle sur le site (§ 4.1, « une seu
 | Tableau, ligne « aucune caisse » | Le rachat LPP suppose une caisse de pension, qui le permet jusqu’à hauteur des prestations de son règlement. Sans caisse, le plafond du 3a passe à… | Sans caisse de pension, aucun rachat LPP n’est possible. Le plafond du 3a passe alors à… (la ligne précédente disait déjà « jusqu’à hauteur des prestations de son règlement ») |
 | Exemple 2, total | Au total, c’est 15’837 francs, … | Au total, l’économie atteint 15’837 francs, … |
 | Réponse courte | Une phrase de 37 mots réunissant la déduction et ses deux impôts | Deux phrases : la déduction, puis les impôts concernés avec leurs articles |
+| Tableau, ligne « retrait en capital » | Les motifs (retraite, logement, départ) n’apparaissaient que dans la situation | Ajout de « Selon la pratique fiscale, le retrait compte quel que soit son motif. » (A3, méthodologie § 6, phrase 48 de `tracabilite-A3.md`, sans la mention de l’institution), pour que la portée des motifs soit attribuée à la pratique et non à l’arrêt |
+| Les deux se cumulent | Un avoir 3a élevé peut toutefois réduire le rachat possible, comme le montre le tableau plus haut. | Un avoir 3a élevé peut toutefois réduire le rachat possible (art. 60a al. 2 OPP 2). |
 
 ## Écarts assumés avec la lettre de la charte
 
