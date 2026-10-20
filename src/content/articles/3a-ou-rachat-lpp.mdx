@@ -1,0 +1,107 @@
+---
+title: "3a ou rachat LPP : lequel choisir selon votre situation ?"
+metaTitle: "3a ou rachat LPP en 2026 : lequel choisir ?"
+description: "À montant égal, un versement 3a et un rachat LPP font économiser le même impôt. Ce qui les départage, situation par situation, avec deux exemples chiffrés."
+family: pension
+publishedOn: 2026-10-20
+updatedOn: 2026-10-20
+readingMinutes: 6
+relatedCalculators:
+  - pension.lpp-buyback
+  - pension.pillar-3a-tax-saving
+sources:
+  - sourceId: fedlex-lifd
+    name: "LIFD, art. 33 al. 1 let. d et e, et art. 38"
+    publisher: Fedlex
+  - sourceId: fedlex-lhid
+    name: "LHID, art. 9 al. 2 let. d et e, et art. 11 al. 3"
+    publisher: Fedlex
+  - sourceId: fedlex-lpp
+    name: "LPP, art. 65d, 79b et 81"
+    publisher: Fedlex
+  - sourceId: fedlex-opp2
+    name: "OPP 2, art. 60a, 60b et 60d"
+    publisher: Fedlex
+  - sourceId: opp3-art-7a
+    name: "OPP 3, art. 7 et 7a"
+    publisher: Fedlex
+  - sourceId: atf-142-ii-399
+    name: "ATF 142 II 399, consid. 4.1"
+    publisher: Tribunal fédéral
+---
+
+import { buybackYearColumn, compatibleFromColumn, differenceColumn, example1Amount, example1CantonalIncome, example1FederalIncome, example1LppCantonal, example1LppFederal, example1LppMunicipal, example1LppNetCost, example1LppTotal, example1Municipality, example1Pillar3aCantonal, example1Pillar3aFederal, example1Pillar3aMunicipal, example1Pillar3aNetCost, example1Pillar3aTotal, example1Potential, example1Share, example2Amount, example2CantonalIncome, example2Children, example2CompatibleFrom1, example2CompatibleFrom2, example2CompatibleFrom3, example2Difference, example2DifferenceAmount, example2FederalIncome, example2LastTrancheYear, example2LockEnds1, example2LockEnds2, example2LockEnds3, example2LockYear1, example2LockYear2, example2LockYear3, example2Municipality, example2Potential, example2SingleCantonal, example2SingleFederal, example2SingleMunicipal, example2SingleSaving, example2SingleShare, example2SpreadSaving, example2SpreadShare, example2TrancheAmount, example2TrancheCount, example2Tranches, example2TrancheSaving, example2Year, firstBuybackYear, firstGapYear, largeCap2026, largeCapRate2026, lockAssumption, lockEndsColumn, lockYears, scenarioColumn, singleLabel, smallCap2026, spreadLabel, totalColumn, tranchesColumn } from "../../lib/articles/3a-ou-rachat-lpp";
+
+**Calculez votre cas : [calculateur de rachat LPP](/prevoyance/rachat-lpp/) et [calculateur d’économie d’impôt 3a](/prevoyance/economie-impot-3a/).**
+
+**La réponse courte.** Un versement au pilier 3a, dans la limite de son plafond, et un rachat dans votre caisse de pension se déduisent tous deux du revenu imposable. La déduction vaut pour l’impôt fédéral direct comme pour les impôts cantonaux et communaux (art. 33 al. 1 let. d et e LIFD ; art. 9 al. 2 let. d et e LHID). À montant égal, ils font donc économiser le même impôt l’année du versement. Le choix se joue ailleurs : le plafond du 3a, le délai de blocage du rachat, le logement et l’imposition à la sortie.
+
+## Même montant, même économie
+
+*Calcul effectué le 20 octobre 2026 sur les calculateurs du site, barèmes 2026. Les revenus sont des montants ronds choisis pour l’exemple.*
+
+Une personne seule, sans enfant, habite {example1Municipality} et est affiliée à une caisse de pension. Son revenu imposable cantonal est de {example1CantonalIncome} francs, son revenu imposable fédéral de {example1FederalIncome} francs. Elle hésite entre verser {example1Amount} francs sur son pilier 3a, soit la petite cotisation 2026, et racheter le même montant dans sa caisse. Celle-ci lui indique un potentiel de rachat de {example1Potential} francs.
+
+| Économie d’impôt | Versement 3a | Rachat LPP |
+| --- | --- | --- |
+| Impôt cantonal | {example1Pillar3aCantonal} francs | {example1LppCantonal} francs |
+| Impôt communal | {example1Pillar3aMunicipal} francs | {example1LppMunicipal} francs |
+| Impôt fédéral direct | {example1Pillar3aFederal} francs | {example1LppFederal} francs |
+| Économie totale | {example1Pillar3aTotal} francs | {example1LppTotal} francs |
+| Coût net de l’année | {example1Pillar3aNetCost} francs | {example1LppNetCost} francs |
+
+Les deux colonnes sont identiques au franc près. Les deux montants se retranchent des deux mêmes revenus imposables, et chaque calculateur établit l’impôt deux fois, avant et après la déduction. L’économie représente {example1Share} du montant versé, qui ne coûte donc que {example1LppNetCost} francs nets cette année-là.
+
+## Ce qui les départage
+
+À économie égale, votre situation tranche.
+
+| Votre situation | Ce qui s’applique | Base |
+| --- | --- | --- |
+| Un retrait en capital du 2e pilier est prévu dans les {lockYears} ans qui suivent le rachat (retraite, logement, départ à l’étranger). | Pendant {lockYears} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital. En principe, tout versement en capital dans les {lockYears} ans est réputé abusif, et le rachat n’est pas déductible. | art. 79b al. 3 LPP ; ATF 142 II 399 consid. 4.1 |
+| Vous avez reçu un versement anticipé pour le logement, pas encore remboursé. | En règle générale, le rachat LPP n’est possible qu’après le remboursement. Lorsque le remboursement n’est plus possible, en principe à l’approche de la retraite, le règlement de votre caisse peut autoriser des rachats dans certaines limites. | art. 79b al. 3 LPP ; art. 60d OPP 2 |
+| Vous voulez déduire plus que la petite cotisation, {smallCap2026} francs en 2026. | Avec une caisse de pension, le 3a se déduit au plus à hauteur de la petite cotisation. Le rachat LPP n’a pas ce plafond, car votre caisse le permet jusqu’à hauteur des prestations de son règlement. | art. 7 al. 1 let. a OPP 3 ; art. 79b al. 1 LPP |
+| Vous n’êtes affilié à aucune caisse de pension. | Sans caisse de pension, aucun rachat LPP n’est possible. Le plafond du 3a passe alors à {largeCapRate2026} du revenu de l’activité lucrative, au plus {largeCap2026} francs en 2026. | art. 79b al. 1 LPP ; art. 7 al. 1 let. b OPP 3 |
+| Vous n’avez pas versé le maximum au 3a une année depuis {firstGapYear}. | Depuis {firstBuybackYear}, ces lacunes se rachètent après coup, dans la limite de la petite cotisation de l’année du rachat, toutes lacunes confondues. Les conditions sont détaillées dans le guide du [rachat rétroactif du 3e pilier](/prevoyance/guides/rachat-3a-retroactif/). | art. 7a OPP 3 |
+| Votre avoir 3a est élevé. | La part de votre 3a qui dépasse la somme des versements maximaux déductibles depuis vos 24 ans, intérêts au taux minimal LPP compris, est déduite du rachat LPP possible. | art. 60a al. 2 OPP 2 |
+| Vous êtes arrivé de l’étranger et n’avez jamais été affilié à une caisse suisse. | Vos rachats LPP sont plafonnés chaque année pendant vos premières années d’affiliation. | art. 60b OPP 2 |
+| Votre caisse est en découvert. | Une caisse en découvert peut prélever des cotisations d’assainissement et, si cela ne suffit pas, rémunérer l’avoir de vieillesse en dessous du taux minimal légal. L’avoir racheté fait partie de votre avoir de vieillesse, et les mesures d’assainissement s’y appliquent comme au reste. | art. 65d LPP |
+
+## Un gros rachat s’échelonne
+
+*Calcul effectué le 20 octobre 2026 sur le calculateur de rachat LPP, barèmes 2026. Les revenus sont des montants ronds choisis pour l’exemple.*
+
+Un couple marié avec {example2Children} enfants habite la ville de {example2Municipality}. Le revenu imposable du ménage est de {example2CantonalIncome} francs au canton et de {example2FederalIncome} francs au fédéral. Une seule des deux personnes rachète {example2Amount} francs dans sa caisse, sur un potentiel de {example2Potential} francs. Elle compare un rachat en une fois, en {example2Year}, et le même montant réparti en {example2TrancheCount} tranches égales versées de {example2Year} à {example2LastTrancheYear}.
+
+| {scenarioColumn} | {tranchesColumn} | {totalColumn} | {differenceColumn} |
+| --- | --- | --- | --- |
+| {singleLabel} | {example2Amount} francs | {example2SingleSaving} francs | |
+| {spreadLabel} | {example2Tranches} francs | {example2SpreadSaving} francs | {example2Difference} francs |
+
+En une fois, le rachat fait économiser {example2SingleSaving} francs en {example2Year}, soit {example2SingleShare} du montant racheté. L’impôt cantonal baisse de {example2SingleCantonal} francs, l’impôt communal de {example2SingleMunicipal} francs et l’impôt fédéral direct de {example2SingleFederal} francs.
+
+Échelonné, chaque tranche de {example2TrancheAmount} francs fait économiser {example2TrancheSaving} francs. Au total, l’économie atteint {example2SpreadSaving} francs, soit {example2SpreadShare} du montant racheté et {example2DifferenceAmount} francs de plus. Les barèmes étant progressifs, répartir un gros rachat garde souvent chaque déduction dans des tranches plus imposées. Le revenu imposable et les barèmes de 2026 sont supposés constants sur toute la période, et le potentiel reste disponible jusqu’à la dernière tranche.
+
+Chaque versement fait courir son propre délai, si bien qu’échelonner ses rachats repousse la date du premier retrait en capital possible (art. 79b al. 3 LPP).
+
+| {buybackYearColumn} | {lockEndsColumn} | {compatibleFromColumn} |
+| --- | --- | --- |
+| {example2LockYear1} | {example2LockEnds1} | {example2CompatibleFrom1} |
+| {example2LockYear2} | {example2LockEnds2} | {example2CompatibleFrom2} |
+| {example2LockYear3} | {example2LockEnds3} | {example2CompatibleFrom3} |
+
+{lockAssumption}
+
+## Les deux se cumulent
+
+Rien n’oblige à choisir. Le versement 3a et le rachat LPP sont deux déductions distinctes, qui s’appliquent la même année (art. 33 al. 1 let. d et e LIFD ; art. 9 al. 2 let. d et e LHID). Un avoir 3a élevé peut toutefois réduire le rachat possible, comme le montre le tableau plus haut.
+
+Chaque calculateur chiffre une seule déduction. Pour une année où vous faites les deux, calculez d’abord votre versement 3a. Saisissez ensuite dans le calculateur de rachat LPP votre revenu imposable après la déduction 3a. L’économie totale est la somme des deux résultats.
+
+## À la sortie
+
+Retiré en capital, l’avoir issu d’un versement 3a ou d’un rachat LPP est imposé séparément du reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID). L’économie d’aujourd’hui n’est donc pas un gain net. Le site ne compare pas encore l’impôt à la sortie.
+
+## Calculez votre cas
+
+Pour un rachat dans votre caisse de pension, en une fois ou échelonné, avec le délai de blocage de chaque tranche, utilisez le [calculateur de rachat LPP](/prevoyance/rachat-lpp/). Pour votre cotisation 3a de l’année, avec ou sans caisse de pension, ouvrez le [calculateur d’économie d’impôt 3a](/prevoyance/economie-impot-3a/). Et pour les années manquées depuis {firstGapYear}, le [calculateur de rachat 3a rétroactif](/prevoyance/rachat-3a-retroactif/) chiffre la lacune et l’économie.
