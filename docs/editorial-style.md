@@ -97,13 +97,15 @@ limite d'un deux-points par paragraphe. Le préfixe « Exemple : » du bandeau d
 
 Glossaire des entités (23 octobre 2026, revue `docs/editorial-review/seo-bing-2026-10.md`) : un même
 objet porte le même nom sur tout le site, pour le lecteur comme pour les moteurs et les assistants qui
-citent le site. Les noms d'actes et de pages officielles restent tels quels.
+citent le site. Les noms d'actes et de pages officielles restent tels quels. « Caisse de pension » ne
+désigne que l'institution à laquelle on est affilié : elle ne remplace pas « institution de
+prévoyance » dans une règle qui couvre aussi un compte de libre passage (arbitrage du 23.10.2026).
 
 | Entité | Dire | Seulement dans | Ne pas dire |
 | --- | --- | --- | --- |
 | Le pilier en général | 3e pilier | « Le troisième pilier », titre de la page de l'OFAS | troisième pilier, 3ème pilier |
 | Le compte, le versement, le rachat | pilier 3a ; « 3a » en apposition (versement 3a, rachat 3a) | « prévoyance individuelle liée », nom de l'OPP 3 | 3e pilier A |
-| L'institution du 2e pilier | caisse de pension | « institution de prévoyance », quand la phrase cite un article (art. 80 LPP) | fonds de pension, caisse de retraite |
+| L'institution du 2e pilier | caisse de pension | « institution de prévoyance », quand la phrase cite un article (art. 80 LPP), ou quand la règle vise aussi les fondations de libre passage : retrait en capital, délai de blocage, « toutes institutions confondues » | fonds de pension, caisse de retraite |
 | La prévoyance professionnelle | 2e pilier, LPP, rachat LPP | « prévoyance professionnelle », nom d'un acte ou formule légale | deuxième pilier, BVG |
 | L'administration fiscale fédérale | AFC ; Administration fédérale des contributions (AFC) au premier emploi d'une page | | ESTV |
 | L'impôt de la Confédération | impôt fédéral direct | « IFD », nom abrégé d'une ordonnance, références | |

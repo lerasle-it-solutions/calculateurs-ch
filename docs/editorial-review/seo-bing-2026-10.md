@@ -47,7 +47,7 @@ proposition ci-dessus et un test qui lit la description dans la définition et l
 | Le compte, le versement, le rachat | pilier 3a ; « 3a » en apposition (versement 3a, rachat 3a) | « prévoyance individuelle liée », dans le nom de l'OPP 3 | 3e pilier A, épargne retraite |
 | Le prestataire 3a | fondation 3a, assurance 3a | fondation bancaire, quand il faut la distinguer de l'assurance | prestataire 3a |
 | La prévoyance professionnelle | 2e pilier | « prévoyance professionnelle », dans le nom d'un acte ou une formule légale | deuxième pilier |
-| L'institution | caisse de pension | « institution de prévoyance », quand la phrase cite un article (art. 80 LPP) | fonds de pension, caisse de retraite |
+| L'institution | caisse de pension | « institution de prévoyance », quand la phrase cite un article (art. 80 LPP), ou quand la règle vise aussi le libre passage | fonds de pension, caisse de retraite |
 | La loi et le rachat | LPP, rachat LPP | | BVG |
 | L'administration fiscale fédérale | AFC ; « Administration fédérale des contributions (AFC) » au premier emploi d'une page et dans la formule d'attribution | | ESTV |
 | L'impôt de la Confédération | impôt fédéral direct | « IFD », dans le nom abrégé d'une ordonnance et dans les références | impôt fédéral, sans précision |
@@ -64,6 +64,14 @@ méthodologie, disait déjà « caisse de pension ».
 | `/methodologie/`, plafond 3a | Une personne affiliée à une institution de prévoyance, à titre obligatoire ou facultatif, déduit… | Une personne affiliée à une caisse de pension, à titre obligatoire ou facultatif, déduit… |
 | `/methodologie/`, rachat LPP | Il s’adresse à une personne affiliée à une institution de prévoyance professionnelle, salariée ou… | Il s’adresse à une personne affiliée à une caisse de pension, salariée ou… |
 | `/prevoyance/rachat-lpp/`, « Pour qui » | Une personne affiliée à une institution de prévoyance professionnelle. | Une personne affiliée à une caisse de pension. |
+
+**Revérifiés le 23.10.2026** (arbitrage du mainteneur) : les trois phrases portent sur l'affiliation
+(qui déduit la petite cotisation, qui peut racheter), et un compte de libre passage n'est pas une
+affiliation. Aucune ne vise les fondations de libre passage : les trois remplacements restent.
+L'exception est inscrite au § 4.2 de la charte : « institution de prévoyance » reste là où la règle
+couvre aussi le libre passage (retrait en capital, délai de blocage, « toutes institutions
+confondues »). Le site formule déjà le délai de blocage d'A3 avec « 2e pilier » et « toutes
+institutions confondues », sans « caisse ».
 
 Restent tels quels : la ligne de trace d'A2 « Affilié à une institution de prévoyance (art. 80 LPP) »,
 qui cite l'article, et les références du registre des sources (`src/data/sources.ts`).
