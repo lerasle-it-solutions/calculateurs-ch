@@ -501,6 +501,7 @@ calculateurs.ch/
 │   ├── data/                            ← schéma, sources, fraîcheur, couverture
 │   ├── build/                           ← après la construction, sur dist/ (postbuild) :
 │   │                                      budgets, canonicals, montants ; no-leak à venir
+│   ├── seo/                             ← balises, sitemap, liens, JSON-LD ; bing.test.ts sur dist/
 │   ├── leads/                           ← routage, exclusivité (à venir)
 │   └── regression/
 │
@@ -858,7 +859,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://calculateurs.ch", // apex, sans www
   output: "static",
-  integrations: [mdx(), sitemap({ changefreq: "monthly", lastmod: new Date() })],
+  // sitemap : pages indexables seulement ; lastmod = dernier commit des sources de la page,
+  // ni changefreq ni priority (src/lib/seo/lastmod.ts)
+  integrations: [mdx(), sitemap({ filter: includeInSitemap, serialize: (item) => ({ url: item.url, lastmod: lastmodOf(new URL(item.url).pathname) }) })],
   build: { format: "directory" },
   prefetch: false,
   // Tailwind CSS v4 par son plugin Vite ; plugins du budget JavaScript (voir le fichier réel)
@@ -869,10 +872,11 @@ export default defineConfig({
 ```jsonc
 // scripts npm
 {
-  "prebuild": "tsx scripts/fetch-private-data.ts",
+  "prebuild": "tsx scripts/ensure-git-history.ts && tsx scripts/fetch-private-data.ts", // historique git complet pour le lastmod du sitemap (Cloudflare clone en profondeur réduite)
   "pretest": "tsx scripts/fetch-private-data.ts",
   "test": "vitest run",
-  "postbuild": "VITEST_DIST=1 vitest run", // tests/build/ et tests/content/editorial.test.ts sur dist/ (vitest.config.ts) ; no-leak y viendra
+  "postbuild": "VITEST_DIST=1 vitest run", // tests/build/, tests/content/editorial.test.ts et tests/seo/bing.test.ts sur dist/ (vitest.config.ts) ; no-leak y viendra
+  "smoke": "tsx scripts/smoke-check.ts", // à la main après une mise en ligne : statuts, canonical, redirections, 404, Bingbot
   "copy:report": "tsx scripts/copy-report.ts", // rapport de style du texte visible, indicatif (docs/editorial-style.md § 6.2)
   "verify-data": "tsx scripts/verify-data.ts", // à venir : rapport de fraîcheur, rituel du 1er janvier (§ 1.5)
   "new-year": "tsx scripts/new-year.ts", // à venir : rituel du 1er janvier (§ 1.5)
