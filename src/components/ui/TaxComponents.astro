@@ -21,7 +21,7 @@ const amountOf = (key: string) => summary?.components.find((row) => row.key === 
 ---
 
 <section data-tax-components hidden={!summary} class="mt-md flex max-w-reading flex-col gap-xs">
-	<h3 class="text-label font-bold">{t.componentsHeading}</h3>
+	<h2 class="text-label font-bold">{t.componentsHeading}</h2>
 	<dl class="flex flex-col text-label">
 		{
 			TAX_COMPONENTS.map((key) => (

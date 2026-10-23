@@ -10,6 +10,10 @@ Le slug à vérifier est `$ARGUMENTS` : le slug français de l'URL publique (ex.
 2. Parcours la liste du § 4.7 **point par point, dans l'ordre**, sans en sauter un. Pour chaque point, conclus par l'un de ces états : **conforme**, **écart**, **sans objet** (avec la raison, par exemple aucun plafond pour le bouton « Verser le maximum »), **non vérifiable par lecture** (à vérifier dans le navigateur, avec ce qu'il faut regarder).
 3. Pour chaque écart, donne le fichier et la ligne au format `chemin:ligne`, ce que la règle exige (avec son paragraphe, ex. § 4.3) et ce que le code fait.
 4. Lance `npx vitest run tests/design` et rapporte le résultat tel quel.
+5. Lance `npm run fold` (après `npm run build` si `dist/` manque ou date d'avant tes dernières
+   lectures ; première fois : `npx playwright install chromium`) et rapporte tel quel les lignes de la
+   page : 375 × 667 tranche le point du premier écran (§ 4.1) ; un écart à 320 × 568 se signale, ce
+   n'est pas un écart à la liste tant que le montant de la barre mobile reste visible.
 
 Rends un tableau : point, état, `chemin:ligne`, constat. Termine par le nombre de points conformes, d'écarts, sans objet et non vérifiables.
 

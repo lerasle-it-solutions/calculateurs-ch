@@ -1,26 +1,26 @@
 ---
 /**
  * ArticleSchema — JSON-LD schema.org/Article d'un guide. Auteur et éditeur :
- * l'entité calculateurs.ch, jamais une personne.
+ * l'éditeur du site, déclaré sur l'accueil, jamais une personne.
+ *
+ * Rien que la page ne dise (tests/seo/bing.test.ts) : le titre est le H1, la
+ * description est la méta-description, les dates sont celles de la ligne
+ * « Publié le … · mis à jour le … » affichée sous le titre (arbitrage du
+ * mainteneur, 23.10.2026).
  */
+import { organizationReference } from "../../lib/seo/entities";
 import { jsonLd } from "../../lib/utils/json-ld";
-import { fr } from "../../i18n/fr";
 
 interface Props {
 	headline: string;
 	description: string;
 	url: string;
-	publishedOn: Date;
-	updatedOn: Date;
+	/** Dates ISO (AAAA-MM-JJ) des <time datetime> affichés. */
+	publishedIso: string;
+	updatedIso: string;
 }
 
-const { headline, description, url, publishedOn, updatedOn } = Astro.props;
-
-const organization = {
-	"@type": "Organization",
-	name: fr.site.name,
-	url: new URL("/", Astro.site).href,
-};
+const { headline, description, url, publishedIso, updatedIso } = Astro.props;
 
 const schema = {
 	"@context": "https://schema.org",
@@ -29,10 +29,10 @@ const schema = {
 	description,
 	url: new URL(url, Astro.site).href,
 	inLanguage: "fr-CH",
-	datePublished: publishedOn.toISOString().slice(0, 10),
-	dateModified: updatedOn.toISOString().slice(0, 10),
-	author: organization,
-	publisher: organization,
+	datePublished: publishedIso,
+	dateModified: updatedIso,
+	author: organizationReference(),
+	publisher: organizationReference(),
 };
 ---
 

@@ -200,8 +200,9 @@ const resultFor = definition.fields
 ---
 
 <article class="pb-5xl lg:pb-0">
-	<Section compact class="flex flex-col gap-2xl">
-	<div class="flex min-w-0 flex-col gap-lg">
+	{/* Premier écran mobile (§ 4.1, `npm run fold`) : marges réduites sous `md`, rendu inchangé dès `md`. */}
+	<Section compact tightTop class="flex flex-col gap-2xl">
+	<div class="flex min-w-0 flex-col gap-sm md:gap-lg">
 	<header class="flex max-w-reading flex-col gap-xs">
 		<h1 class="text-title">{definition.title}</h1>
 		<p class="text-lead text-ink-muted">{definition.promise}</p>
@@ -216,8 +217,8 @@ const resultFor = definition.fields
 	</header>
 
 	<div data-calculator-root data-tax-data={taxDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
-		<div class="flex min-w-0 flex-col gap-xl lg:self-start">
-		<p data-example-banner class="rounded-panel bg-tint p-lg text-label">
+		<div class="flex min-w-0 flex-col gap-lg md:gap-xl lg:self-start">
+		<p data-example-banner class="rounded-panel bg-tint p-md text-label md:p-lg">
 			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label}. {fr.calculator.exampleReplace}{hasIncomePaths ? (
 				<>
 					,{" "}<button
@@ -363,7 +364,7 @@ const resultFor = definition.fields
 						hidden={!eligibility.visible}
 						class="mt-md flex max-w-reading flex-col gap-xs rounded-panel border border-hairline bg-paper p-lg text-label"
 					>
-						<h3 class="font-bold">{fr.form.eligibilityHeading}</h3>
+						<h2 class="font-bold">{fr.form.eligibilityHeading}</h2>
 						<ul class="flex flex-col gap-xs">
 							{definition.eligibility!.map((item, index) => (
 								<li data-eligibility-item={JSON.stringify(item)} hidden={!eligibility.items[index]!.shown} class="flex flex-wrap justify-between gap-x-md">
@@ -396,8 +397,9 @@ const resultFor = definition.fields
 	</div>
 
 	<details id={assumptionsId} class="scroll-mt-5xl rounded-panel border border-hairline bg-paper">
+		{/* Titre dans le résumé : « Pour qui », « Ce que ça ne couvre pas »… (h3) se rangent sous lui. */}
 		<summary class="flex min-h-3xl cursor-pointer items-center rounded-panel px-xl py-md text-label font-bold hover:bg-tint">
-			{fr.calculator.assumptionsSummary}
+			<h2>{fr.calculator.assumptionsSummary}</h2>
 		</summary>
 		<div class="flex flex-col gap-xl border-t border-hairline p-lg md:p-xl">
 			<ScopeNotice
@@ -458,7 +460,7 @@ const resultFor = definition.fields
 			</div>
 			<span class="flex flex-col items-end" aria-hidden="true">
 				<span data-result-value hidden={initial.status !== null} class="text-heading text-accent tabular-nums">{initial.value}</span>
-				<span data-bar-net-cost={fr.resultSummary.barNetCost} hidden={!initial.summary} class="text-fine tabular-nums">{initial.summary && fillSummary(fr.resultSummary.barNetCost, initial.summary)}</span>
+				<span data-bar-net-cost={fr.resultSummary.barNetCost} hidden={!initial.summary} class="whitespace-nowrap text-fine tabular-nums">{initial.summary && fillSummary(fr.resultSummary.barNetCost, initial.summary)}</span>
 			</span>
 			<a data-result-status hidden={initial.status === null} href={`#${formId}-result`} class="text-label font-bold">{initial.status?.short}</a>
 			<a data-load-failed hidden href={`#${formId}-result`} class="text-label font-bold">{fr.calculator.loadFailedShort}</a>

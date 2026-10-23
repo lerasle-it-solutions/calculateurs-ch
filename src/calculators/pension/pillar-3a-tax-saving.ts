@@ -219,7 +219,7 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 	slug: "/prevoyance/economie-impot-3a/",
 	title: "Économie d’impôt d’un versement 3a",
 	metaDescription:
-		"Combien d’impôt votre versement au pilier 3a vous fait-il économiser ? Votre impôt est calculé avant et après la déduction, dans votre commune romande.",
+		"Votre impôt est calculé avant et après la déduction de votre versement 3a, dans votre commune romande. La différence est l’impôt que vous économisez.",
 	question: "Combien d’impôt votre versement 3a vous fait-il économiser ?",
 	metaTitle: `Versement 3a ${year} : combien d’impôt économisez-vous ?`,
 	promise: "Ce que votre versement au pilier 3a vous fait économiser d’impôt, dans votre commune.",

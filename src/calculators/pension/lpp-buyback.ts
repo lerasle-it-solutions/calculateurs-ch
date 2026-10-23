@@ -214,7 +214,7 @@ export const lppBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-lpp/",
 	title: "Rachat LPP : économie d’impôt et échelonnement",
 	metaDescription:
-		"Rachat LPP : estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+		"Estimez l’impôt qu’un rachat dans votre caisse de pension vous fait économiser, en une fois ou échelonné, et vérifiez le délai de blocage.",
 	question: "Combien d’impôt économise un rachat LPP, et faut-il l’échelonner ?",
 	metaTitle: `Rachat LPP ${lppBuybackYear} : combien d’impôt économisez-vous ?`,
 	promise: "Ce qu’un rachat LPP vous fait économiser d’impôt, en une fois ou échelonné.",
@@ -240,7 +240,7 @@ export const lppBuyback: CalculatorDefinition = {
 
 	scope: {
 		forWhom: [
-			"Une personne affiliée à une institution de prévoyance professionnelle. Il peut s’agir d’un salarié ou d’un indépendant affilié à titre facultatif, car seule compte l’affiliation, pas le statut (art. 4 et 44 LPP).",
+			"Une personne affiliée à une caisse de pension. Il peut s’agir d’un salarié ou d’un indépendant affilié à titre facultatif, car seule compte l’affiliation, pas le statut (art. 4 et 44 LPP).",
 			"Elle réside dans un canton romand et y est imposée au régime ordinaire. Son certificat de prévoyance, ou une attestation de sa caisse, indique un potentiel de rachat.",
 			"Au Valais, seules les personnes seules sans enfant domiciliées dans une commune dont l’indexation est relevée sont couvertes, soit Sion aujourd’hui.",
 		],

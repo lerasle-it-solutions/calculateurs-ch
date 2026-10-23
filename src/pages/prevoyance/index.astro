@@ -17,7 +17,7 @@ const guides = await getCollection("articles", (entry) => entry.data.family === 
 // Calculateurs annoncés : contenu de page, sans lien. A2 et A3, publiés, ont leur carte ci-dessus.
 const announced: string[] = [];
 
-const title = fr.site.pageTitle(fr.family.pension);
+const title = fr.familyPage.pension.metaTitle;
 const description = fr.familyPage.pension.metaDescription;
 ---
 

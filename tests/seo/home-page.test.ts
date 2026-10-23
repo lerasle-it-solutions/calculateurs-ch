@@ -30,9 +30,18 @@ const plain = (value: string) => value.replace(/\s+/g, " ");
 const block = (attribute: string) => home.match(new RegExp(`<(section|div)\\b[^>]*\\s${attribute}[\\s\\S]*?</\\1>`))?.[0] ?? "";
 
 describe("héros", () => {
-	it("H1 et trois champs pré-remplis avec le cas exemple d'A2", () => {
+	it("H1 qui décrit le site, question du héros en H2, et trois champs pré-remplis avec le cas exemple d'A2", () => {
 		// `text` ramène tout blanc, espace fine comprise, à une espace : même normalisation pour l'attendu (18.10.2026)
-		expect(text(home.match(/<h1\b[\s\S]*?<\/h1>/)![0])).toBe(fr.home.heroTitle.replace(/\s+/g, " "));
+		// H1 : une ligne qui décrit le site, en style chapeau ; la question du 3e pilier passe en H2, au
+		// même rendu (arbitrage du mainteneur, 23.10.2026, prompt SEO « Bing »).
+		const h1 = home.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/)![0];
+		expect(home.match(/<h1\b/g)).toHaveLength(1);
+		expect(text(h1)).toBe(fr.home.siteHeading.replace(/\s+/g, " "));
+		expect(h1).toMatch(/class="[^"]*\btext-lead\b/);
+		const hero = home.match(/<h2\b[^>]*>[\s\S]*?<\/h2>/)![0];
+		expect(text(hero)).toBe(fr.home.heroTitle.replace(/\s+/g, " "));
+		expect(hero).toMatch(/class="[^"]*\btext-title\b/);
+		expect(home.indexOf(h1)).toBeLessThan(home.indexOf(hero));
 		const example = exampleFormValues(pillar3aTaxSaving);
 		const valueOf = (name: string) => home.match(new RegExp(`<input\\b[^>]*\\sname="${name}"[^>]*>`))?.[0].match(/\svalue="([^"]*)"/)?.[1];
 		expect(decodeEntities(valueOf("municipality")!)).toBe(example.municipality);

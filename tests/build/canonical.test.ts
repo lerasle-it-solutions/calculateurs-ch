@@ -3,7 +3,7 @@ import { relative, sep } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { DIST, htmlFiles } from "./dist-pages";
+import { DIST, htmlFiles, publicPath } from "./dist-pages";
 
 /**
  * Après la construction (`postbuild`) : chaque page de dist/ porte un seul
@@ -13,14 +13,6 @@ import { DIST, htmlFiles } from "./dist-pages";
  * scripts/smoke-check.ts contrôle le site servi.
  */
 const SITE = "https://calculateurs.ch";
-
-/** Chemin public d'un fichier de dist/ : `a/b/index.html` → `/a/b/`, `404.html` → `/404/`. */
-export const publicPath = (file: string): string => {
-	const parts = relative(DIST, file).split(sep);
-	const last = parts.pop() as string;
-	if (last !== "index.html") parts.push(last.replace(/\.html$/, ""));
-	return parts.length === 0 ? "/" : `/${parts.join("/")}/`;
-};
 
 const canonicals = (html: string): string[] =>
 	[...html.matchAll(/<link\b[^>]*\brel=["']canonical["'][^>]*>/g)].map((tag) => tag[0].match(/\bhref=["']([^"']*)["']/)?.[1] ?? "");

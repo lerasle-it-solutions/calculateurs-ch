@@ -46,7 +46,8 @@ const trail: Crumb[] = [
 		<BreadcrumbSchema trail={trail} />
 	</Fragment>
 
-	<div class="mx-auto w-full max-w-page px-lg pt-xl md:px-2xl">
+	{/* Premier écran mobile (§ 4.1, `npm run fold`) : marge haute réduite sous `md`. */}
+	<div class="mx-auto w-full max-w-page px-lg pt-sm md:px-2xl md:pt-xl">
 		<Breadcrumb trail={trail} />
 	</div>
 	<slot />

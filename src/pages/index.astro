@@ -9,6 +9,7 @@
  */
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteSchema from "../components/seo/SiteSchema.astro";
 import Section from "../components/layout/Section.astro";
 import FormField from "../components/calculator/FormField.astro";
 import ResultCard from "../components/ui/ResultCard.astro";
@@ -63,15 +64,22 @@ const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).
 ---
 
 <BaseLayout title={title} description={description}>
-	<Section hero>
-		<h1 class="max-w-reading text-title">{t.heroTitle}</h1>
+	<SiteSchema slot="head" />
+	{/*
+		Premier écran mobile (§ 4.1, `npm run fold`) : sous `md`, le héros est une colonne flexible
+		réordonnée par CSS, sans toucher à l'ordre du document : titres et consigne, puis la carte et
+		son montant, puis le compte à rebours, puis les champs. Dès `md`, rendu inchangé.
+	*/}
+	<Section hero tightTop class="flex flex-col md:block">
+		<h1 class="max-w-reading text-lead text-ink-muted">{t.siteHeading}</h1>
+		<h2 class="mt-xs max-w-reading text-title">{t.heroTitle}</h2>
 		<p class="mt-sm max-w-reading text-lead text-ink-muted">{t.heroLead}</p>
-		{deadline && <Countdown deadline={deadline} startsOn={COUNTDOWN_STARTS_ON} />}
+		{deadline && <Countdown deadline={deadline} startsOn={COUNTDOWN_STARTS_ON} class="order-2 md:order-none" />}
 
-		<div data-calculator-root data-tax-data={pagePart.taxDataUrl} class="mt-2xl grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+		<div data-calculator-root data-tax-data={pagePart.taxDataUrl} class="contents min-w-0 gap-2xl md:mt-2xl md:grid lg:grid-cols-[2fr_3fr]">
 			<form
 				data-calculator
-				class="flex min-w-0 flex-col gap-xl"
+				class="order-3 mt-2xl flex min-w-0 flex-col gap-xl md:order-none md:mt-0"
 				novalidate
 				data-invalid-text={fr.numberField.cardStatus}
 				data-invalid-short={fr.numberField.cardShort}
@@ -82,7 +90,7 @@ const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).
 				{values.federalDiffers && <input type="hidden" name="federalDiffers" value={values.federalDiffers} />}
 			</form>
 			{/* Sur mobile, le chiffre d'abord : visible sans défiler ; dès lg, à droite des champs */}
-			<div class="order-first flex min-w-0 flex-col items-start gap-lg lg:order-last">
+			<div class="order-1 mt-lg flex min-w-0 flex-col items-start gap-lg md:order-first md:mt-0 lg:order-last">
 				<div class="w-full">
 					<ResultCard
 						id="home-result"

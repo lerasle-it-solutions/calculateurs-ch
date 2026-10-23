@@ -13,18 +13,27 @@ interface Props {
 	hero?: boolean;
 	/** Héros compact des pages calculateurs (§ 3.2) : `py-xl md:py-2xl`. */
 	compact?: boolean;
+	/**
+	 * Premier écran mobile (§ 4.1, `npm run fold`) : sous `md`, marge haute réduite
+	 * (`pt-sm` au lieu de `py-xl` ou `py-3xl` en haut) ; dès `md`, rythme inchangé.
+	 */
+	tightTop?: boolean;
 	/** Attributs de repérage (`data-home-proof`…), posés sur la `<section>`. */
 	[key: `data-${string}`]: string | boolean | undefined;
 }
 
-const { tone = "paper", id, class: className, hero = false, compact = false, ...rest } = Astro.props;
+const { tone = "paper", id, class: className, hero = false, compact = false, tightTop = false, ...rest } = Astro.props;
 ---
 
 <section id={id} class={tone === "tint" ? "bg-tint" : "bg-paper"} {...rest}>
 	<div
 		class:list={[
 			"mx-auto w-full max-w-page px-lg md:px-2xl",
-			compact ? "py-xl md:py-2xl" : hero ? "py-3xl md:py-5xl" : "py-3xl md:py-4xl",
+			compact
+				? tightTop ? "pt-sm pb-xl md:py-2xl" : "py-xl md:py-2xl"
+				: hero
+					? tightTop ? "pt-sm pb-3xl md:py-5xl" : "py-3xl md:py-5xl"
+					: "py-3xl md:py-4xl",
 			className,
 		]}
 	>

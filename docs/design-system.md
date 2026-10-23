@@ -503,7 +503,8 @@ Alpine.js, fenêtre de consentement — par respect du budget de performance.
 - Héros de page : H1 + chapeau (`text-lead text-ink-muted`) + au plus un bouton principal,
   `py-3xl md:py-5xl`, aligné à gauche.
 - **Héros compact des pages calculateurs** : H1, phrase de promesse, ligne de périmètre (§ 4.1),
-  `py-xl md:py-2xl`, aligné à gauche, sans bouton.
+  `py-xl md:py-2xl` (haut réduit à `pt-sm` sous `md`, avec le fil d'Ariane, pour le premier écran),
+  aligné à gauche, sans bouton.
 
 ### 3.3 Mouvement
 
@@ -589,8 +590,14 @@ blocage d'un rachat LPP, retrait en capital, solde d'une lacune 3a perdu. Les au
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2). Les blocs 1 à 3 forment le héros compact (§ 3.2).
 
-**Critère vérifiable** : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la
-carte résultat l'est aussi.
+**Critère vérifiable** : à 375 × 667 px, le premier champ est visible sans défiler, au-dessus de la
+barre de résultat mobile ; dès `lg`, la carte résultat l'est aussi. Sur l'accueil, le montant du cas
+exemple est visible sans défiler. Critère bloquant à 375 × 667. À 320 × 568, le montant reste visible
+dans la barre mobile ; le premier champ peut demander un défilement (arbitrage du 23.10.2026).
+`npm run fold` (scripts/fold-check.ts, Playwright) le mesure sur `dist/` : il échoue sur un écart à
+375 × 667 et signale, sans échouer, ceux de 320 × 568. Il ne tourne pas au build Cloudflare et se lance
+avant chaque mise en ligne. Sous `md`, les marges du héros sont réduites (`Section tightTop`) ; dès `md`,
+le rendu ne change pas.
 
 Le périmètre est annoncé avant la saisie, jamais après (P5) : la ligne de périmètre l'annonce, le
 détail « Ce que ce calcul suppose » le développe, et **toute exclusion qui s'applique à la saisie
@@ -740,7 +747,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 
 - [ ] H1, puis une phrase de promesse, puis une ligne de périmètre avec lien vers « Ce que ce calcul suppose ».
 - [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
-- [ ] Héros compact (`py-xl md:py-2xl`) : à 375 × 667 px, le premier champ est visible sans défiler ; dès `lg`, la carte résultat aussi.
+- [ ] Héros compact (`py-xl md:py-2xl`, haut réduit sous `md`) : à 375 × 667 px, le premier champ est visible sans défiler, au-dessus de la barre mobile ; dès `lg`, la carte résultat aussi ; à 320 × 568, le montant reste visible dans la barre mobile ; `npm run fold` passe.
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
 - [ ] Points de vigilance courts, sous le formulaire : une phrase visible chacun, texte complet dans « En savoir plus » ; avertissement renforcé pour ce qui peut faire perdre la déduction ou de l'argent, avis informatif pour le reste.
 - [ ] Détail ligne par ligne, puis graphiques.
