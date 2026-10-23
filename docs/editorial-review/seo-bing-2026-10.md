@@ -29,15 +29,15 @@ caractères, puis en octets UTF-8.
 | `/prevoyance/` | Calculateurs du 3e pilier et du 2e pilier pour la Suisse romande, avec la source et la date de chaque chiffre. (110) | Calculateurs du 3e pilier et du rachat LPP en Suisse romande. L’impôt est calculé dans votre commune, avec la source et la date de chaque chiffre. (146 / 150) |
 | `/prevoyance/economie-impot-3a/` | Combien d’impôt votre versement au pilier 3a vous fait-il économiser ? Votre impôt est calculé avant et après la déduction, dans votre commune romande. (151 / 161, reprend la question du `title`) | Votre impôt est calculé avant et après la déduction de votre versement 3a, dans votre commune romande. La différence est l’impôt que vous économisez. (149 / 158) |
 | `/prevoyance/guides/3a-ou-rachat-lpp/` | … Ce qui les départage, situation par situation, avec deux exemples chiffrés. (155 / 162) | … Ce qui les départage, cas par cas, avec deux exemples chiffrés. (143 / 150) |
+| `/prevoyance/rachat-lpp/` | Rachat LPP : estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage. (140 / 154, s'ouvre sur « Rachat LPP » comme le `title`) | Estimez l’impôt qu’un rachat dans votre caisse de pension vous fait économiser, en une fois ou échelonné, et vérifiez le délai de blocage. (138 / 148) |
 | `/prevoyance/guides/rachat-3a-retroactif/` | Racheter les lacunes de son 3e pilier depuis 2025 : conditions de l’OPP 3, plafond annuel, exemple chiffré et cinq pièges qui font perdre une déduction. (152, reprend « conditions, plafond, 5 pièges » du `title`) | Les lacunes de votre 3e pilier nées depuis 2025 se rachètent désormais. Qui y a droit, combien racheter par an et ce qui fait perdre la déduction. (146 / 150) |
 
 La méta-description d'un calculateur s'affiche aussi sur sa carte de `/prevoyance/` : les deux changent
 ensemble. Les dates de mise à jour des guides (`updatedOn`) ne changent pas : leur texte est intact.
 
-**Non modifiée, à trancher** : `/prevoyance/rachat-lpp/` s'ouvre sur « Rachat LPP : », comme son `title`.
-Son texte est celui de la fiche, figé par `tests/components/lpp-buyback-page.test.ts`. Proposition
-(138 caractères, 148 octets) : « Estimez l’impôt qu’un rachat dans votre caisse de pension vous fait
-économiser, en une fois ou échelonné, et vérifiez le délai de blocage. »
+La méta-description d'A3 était le texte de la fiche, recopié dans
+`tests/components/lpp-buyback-page.test.ts`. Le mainteneur a accepté, au titre de R7 (23.10.2026), la
+proposition ci-dessus et un test qui lit la description dans la définition et la tient aux cibles.
 
 ## 3. Glossaire des entités
 

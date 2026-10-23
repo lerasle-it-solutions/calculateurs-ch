@@ -9,6 +9,7 @@ import { taxDataFileJson, taxDataFileUrl } from "../../src/calculators/tax-data-
 import type { TaxInput } from "../../src/lib/calculations/tax";
 import { formatChfAmount } from "../../src/lib/display/amounts";
 import { displayLppBuyback, type LppBuybackDisplayTexts } from "../../src/lib/display/lpp-buyback";
+import { checkMeta, repeatsTitle } from "../../src/lib/seo/meta-rules";
 
 /**
  * A3 — définition et page (W09, prompt 4a) : textes de la fiche corrigée du
@@ -25,19 +26,24 @@ const render = async (): Promise<string> => {
 };
 
 describe("définition d'A3", () => {
-	it("reprend la fiche : URL, méta-description, 8 hypothèses, 9 questions, variantes A1, A2 et A4", () => {
+	it("reprend la fiche : URL, 8 hypothèses, 9 questions, variantes A1, A2 et A4", () => {
 		expect(lppBuyback.id).toBe("pension.lpp-buyback");
 		expect(lppBuyback.slug).toBe("/prevoyance/rachat-lpp/");
-		expect(lppBuyback.metaDescription).toBe(
-			// Texte de la fiche, typographie de docs/editorial-style.md § 3.3 (18.10.2026)
-			"Rachat LPP\u202f: estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
-		);
 		expect(lppBuyback.scope.assumptions).toHaveLength(8);
 		expect(lppBuyback.faq).toHaveLength(9);
 		expect(lppBuyback.variants).toEqual(["pension.pillar-3a-buyback", "pension.pillar-3a-tax-saving", "pension.capital-withdrawal"]);
 		for (const id of ["fedlex-lpp", "fedlex-opp2", "fedlex-lifd", "fedlex-lhid", "atf-142-ii-399", "estv-base-data-module"]) {
 			expect(lppBuyback.sourceIds, id).toContain(id);
 		}
+	});
+
+	// La méta-description n'est plus recopiée de la fiche : elle est lue dans la définition et tenue
+	// aux cibles SEO (accord du mainteneur au titre de R7, 23.10.2026, prompt SEO « Bing »).
+	it("rend la méta-description de la définition, aux cibles de Bing, sans reprendre le title", async () => {
+		const html = await render();
+		expect(html).toContain(`<meta name="description" content="${lppBuyback.metaDescription}"`);
+		expect(checkMeta(lppBuyback.metaTitle, lppBuyback.metaDescription)).toEqual({ errors: [], warnings: [] });
+		expect(repeatsTitle(lppBuyback.metaTitle, lppBuyback.metaDescription)).toBe(false);
 	});
 
 	it("les six entrées fixes de « ne couvre pas », avec leurs alternatives", () => {

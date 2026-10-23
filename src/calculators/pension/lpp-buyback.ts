@@ -214,7 +214,7 @@ export const lppBuyback: CalculatorDefinition = {
 	slug: "/prevoyance/rachat-lpp/",
 	title: "Rachat LPP : économie d’impôt et échelonnement",
 	metaDescription:
-		"Rachat LPP : estimez l’économie d’impôt d’un rachat dans votre caisse de pension, en une fois ou échelonné, et vérifiez le délai de blocage.",
+		"Estimez l’impôt qu’un rachat dans votre caisse de pension vous fait économiser, en une fois ou échelonné, et vérifiez le délai de blocage.",
 	question: "Combien d’impôt économise un rachat LPP, et faut-il l’échelonner ?",
 	metaTitle: `Rachat LPP ${lppBuybackYear} : combien d’impôt économisez-vous ?`,
 	promise: "Ce qu’un rachat LPP vous fait économiser d’impôt, en une fois ou échelonné.",
