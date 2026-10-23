@@ -60,6 +60,9 @@ export const fr = {
 		/** 155 caractères au plus. */
 		metaDescription:
 			"Des calculateurs d’impôt et de prévoyance pour la Suisse romande, dont chaque chiffre est sourcé et daté. Aucun compte, aucun cookie de suivi.",
+		/** H1 de l'accueil, en style chapeau : ce qu'est le site, cohérent avec le title (arbitrage du 23.10.2026). */
+		siteHeading: "Calculateurs d’impôt et de prévoyance pour la Suisse romande",
+		/** Titre du héros, en H2 au rendu d'un H1. */
 		heroTitle: "Combien votre 3e pilier vous fait-il économiser d’impôt ?",
 		heroLead: "Indiquez votre commune, votre revenu imposable et votre versement. Le calcul se fait dans votre navigateur.",
 		/** Libellés courts des trois champs du héros. */

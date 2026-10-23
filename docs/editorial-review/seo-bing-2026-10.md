@@ -76,7 +76,22 @@ institutions confondues », sans « caisse ».
 Restent tels quels : la ligne de trace d'A2 « Affilié à une institution de prévoyance (art. 80 LPP) »,
 qui cite l'article, et les références du registre des sources (`src/data/sources.ts`).
 
-## 4. `copy:report`
+## 4. Accueil : H1 et titre du héros
+
+Arbitrage du mainteneur, 23 octobre 2026. Le H1 dit ce qu'est le site, en cohérence avec le `title`
+(« Calculs d’impôt sourcés en Suisse romande ») et la méta-description ; la question du 3e pilier
+devient le titre du héros, en H2, au même rendu.
+
+| Élément | Avant | Après |
+| --- | --- | --- |
+| H1 (style chapeau, `text-lead text-ink-muted`) | Combien votre 3e pilier vous fait-il économiser d’impôt ? | Calculateurs d’impôt et de prévoyance pour la Suisse romande |
+| H2 du héros (`text-title`, rendu inchangé) | — | Combien votre 3e pilier vous fait-il économiser d’impôt ? |
+
+À 375 × 667 px, le premier champ de l'accueil était déjà sous le pli (y = 947 px, après le compte à
+rebours et la carte résultat) ; la ligne du H1 le décale de 62 px (y = 1 009). Le critère du § 4.1 du
+design system vise les pages de calculateur.
+
+## 5. `copy:report`
 
 Aucune des phrases réécrites n'y figure, avant comme après : toutes ont moins de 35 mots et au plus un
 deux-points. Les signalements restants de `/donnees/`, `/methodologie/` et `/mentions-legales/` sont des

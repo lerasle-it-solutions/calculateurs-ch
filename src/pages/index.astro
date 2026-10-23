@@ -66,7 +66,9 @@ const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).
 <BaseLayout title={title} description={description}>
 	<SiteSchema slot="head" />
 	<Section hero>
-		<h1 class="max-w-reading text-title">{t.heroTitle}</h1>
+		{/* H1 : ce qu'est le site ; la question du héros garde le rendu d'un titre de page, en H2. */}
+		<h1 class="max-w-reading text-lead text-ink-muted">{t.siteHeading}</h1>
+		<h2 class="mt-xs max-w-reading text-title">{t.heroTitle}</h2>
 		<p class="mt-sm max-w-reading text-lead text-ink-muted">{t.heroLead}</p>
 		{deadline && <Countdown deadline={deadline} startsOn={COUNTDOWN_STARTS_ON} />}
 
