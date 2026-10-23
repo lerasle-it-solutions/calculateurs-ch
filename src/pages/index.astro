@@ -9,6 +9,7 @@
  */
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteSchema from "../components/seo/SiteSchema.astro";
 import Section from "../components/layout/Section.astro";
 import FormField from "../components/calculator/FormField.astro";
 import ResultCard from "../components/ui/ResultCard.astro";
@@ -63,6 +64,7 @@ const comingSoon = FAMILY_ORDER.filter((family) => publishedCalculators(family).
 ---
 
 <BaseLayout title={title} description={description}>
+	<SiteSchema slot="head" />
 	<Section hero>
 		<h1 class="max-w-reading text-title">{t.heroTitle}</h1>
 		<p class="mt-sm max-w-reading text-lead text-ink-muted">{t.heroLead}</p>

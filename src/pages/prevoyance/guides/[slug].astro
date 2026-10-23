@@ -45,13 +45,7 @@ const updatedIso = article.updatedOn.toISOString().slice(0, 10);
 
 <BaseLayout title={article.metaTitle ?? article.title} description={article.description}>
 	<Fragment slot="head">
-		<ArticleSchema
-			headline={article.title}
-			description={article.description}
-			url={url}
-			publishedOn={article.publishedOn}
-			updatedOn={article.updatedOn}
-		/>
+		<ArticleSchema headline={article.title} url={url} updatedOn={article.updatedOn} />
 		<BreadcrumbSchema trail={trail} />
 	</Fragment>
 

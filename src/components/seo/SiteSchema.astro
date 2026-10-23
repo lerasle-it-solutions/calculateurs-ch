@@ -1,0 +1,13 @@
+---
+/**
+ * SiteSchema — JSON-LD schema.org/WebSite et Organization, sur l'accueil
+ * seulement. Les autres pages renvoient à l'éditeur par son `@id`
+ * (src/lib/seo/entities.ts). Logo : la tuile carrée de public/brand/.
+ */
+import { siteSchema } from "../../lib/seo/entities";
+import { jsonLd } from "../../lib/utils/json-ld";
+
+const logoUrl = new URL("/brand/icon-512.png", Astro.site).href;
+---
+
+<script type="application/ld+json" is:inline set:html={jsonLd(siteSchema(logoUrl))} />

@@ -1,11 +1,14 @@
 ---
 /**
  * CalculatorSchema — JSON-LD schema.org/WebApplication pour une page de
- * calculateur, alimenté depuis la CalculatorDefinition.
+ * calculateur, alimenté depuis la CalculatorDefinition. Nom et description
+ * sont ceux qu'affiche la page (H1 et promesse) : rien dans le JSON-LD qui ne
+ * se lise sur la page (tests/seo/bing.test.ts). Éditeur : renvoi à l'entité
+ * déclarée sur l'accueil.
  */
 import type { CalculatorDefinition } from "../../calculators/types";
+import { organizationReference } from "../../lib/seo/entities";
 import { jsonLd } from "../../lib/utils/json-ld";
-import { fr } from "../../i18n/fr";
 
 interface Props {
 	definition: CalculatorDefinition;
@@ -19,17 +22,13 @@ const schema = {
 	"@context": "https://schema.org",
 	"@type": "WebApplication",
 	name: definition.title,
-	description: definition.metaDescription,
+	description: definition.promise,
 	url,
 	applicationCategory: "FinanceApplication",
 	operatingSystem: "Web",
 	inLanguage: "fr-CH",
 	isAccessibleForFree: true,
-	publisher: {
-		"@type": "Organization",
-		name: fr.site.name,
-		url: new URL("/", Astro.site).href,
-	},
+	publisher: organizationReference(),
 };
 ---
 

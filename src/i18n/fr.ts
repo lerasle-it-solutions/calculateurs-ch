@@ -12,6 +12,9 @@
 import { formatSwissNumber } from "../lib/format/chf";
 
 const SITE_NAME = "calculateurs.ch";
+/** Éditeur du site : pied de page et JSON-LD Organization de l'accueil (src/lib/seo/entities.ts). */
+const PUBLISHER_NAME = "Lerasle IT Solutions";
+const PUBLISHER_LOCALITY = "Epalinges";
 
 export const fr = {
 	site: {
@@ -138,7 +141,9 @@ export const fr = {
 		reportSubject: "Erreur sur calculateurs.ch",
 		reportBody: (url: string): string => `Page concernée : ${url}\n\nCe qui me semble faux :\n`,
 		/** Ligne d'identité de l'éditeur (texte du mainteneur, 17.10.2026). */
-		publisher: "Édité par Lerasle IT Solutions, Epalinges (VD). Les calculs ne dépendent d’aucune banque, assurance ni autre prestataire.",
+		publisherName: PUBLISHER_NAME,
+		publisherLocality: PUBLISHER_LOCALITY,
+		publisher: `Édité par ${PUBLISHER_NAME}, ${PUBLISHER_LOCALITY} (VD). Les calculs ne dépendent d’aucune banque, assurance ni autre prestataire.`,
 		methodology: "Méthodologie",
 		data: "Données et sources",
 		legal: "Mentions légales",
