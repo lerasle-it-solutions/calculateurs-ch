@@ -1,0 +1,42 @@
+{
+	"https://calculateurs.ch/": {
+		"hash": "bc8b3c90082d42588d1bf091e152a17740cec19a8eafb12109aeaa69d36f23d8",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/donnees/": {
+		"hash": "37a3ff0eb2dcdee284dd1a784c393b49db07df9d96f77a3fbbb05cf2cb5c0ad8",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/guides/": {
+		"hash": "becbfabc00fd14b49362cfeb588e7f62d414912ae24d87937c587dc6acbb8bc2",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/methodologie/": {
+		"hash": "aadb050bad7444a347fbb7ccd9554423ec49cc9d85bd7987461a6c3aa35386a9",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/prevoyance/": {
+		"hash": "f0c573ebf7e20e2853f4094970e4402c93ed58ed6061df6713dff8709d580a95",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/prevoyance/economie-impot-3a/": {
+		"hash": "b228476f74b9872aaead2f8461680a5a45f7f98e17d5cc4cb7399a035afea7f4",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/prevoyance/guides/3a-ou-rachat-lpp/": {
+		"hash": "48082ed670965fef67c4226a31e15ab98e21320e1a157e9af7537899ef0d973a",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/prevoyance/guides/rachat-3a-retroactif/": {
+		"hash": "4306ee0efc3c4f4e068db53fc6528ff56a25e67922b8afba974fce6050d02052",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	},
+	"https://calculateurs.ch/prevoyance/rachat-3a-retroactif/": {
+		"hash": "01eee373a9a591c125cfa9006e0d024977e1ceeacd409c0e31236992a8c05011",
+		"lastmod": "2026-10-18T10:50:48+02:00"
+	},
+	"https://calculateurs.ch/prevoyance/rachat-lpp/": {
+		"hash": "234e2a6bd8a1a26ba218daa9044a206922b81b95f7e4e6b2317730c1e566295a",
+		"lastmod": "2026-10-23T08:57:31+02:00"
+	}
+}

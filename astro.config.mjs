@@ -5,7 +5,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { browserTraceLabels } from "./src/lib/build/browser-trace-labels.ts";
 import { directDynamicImport } from "./src/lib/build/direct-dynamic-import.ts";
-import { lastmodOf } from "./src/lib/seo/lastmod.ts";
+import { readLedger } from "./src/lib/seo/content-lastmod.ts";
 import { includeInSitemap } from "./src/lib/seo/sitemap.ts";
 
 // https://astro.build/config
@@ -22,9 +22,13 @@ export default defineConfig({
     sitemap({
       // Les pages en noindex (démonstration, mentions légales, 404…) ne sont pas listées.
       filter: includeInSitemap,
-      // lastmod : dernier commit des sources de la page, jamais la date de construction ;
-      // ni changefreq ni priority, que Bing ignore (src/lib/seo/lastmod.ts).
-      serialize: (item) => ({ url: item.url, lastmod: lastmodOf(new URL(item.url).pathname) }),
+      // lastmod : date du dernier changement du texte de <main>, lue dans seo/lastmod.json
+      // (npm run lastmod), jamais la date de construction ; ni changefreq ni priority, que
+      // Bing ignore (src/lib/seo/content-lastmod.ts).
+      serialize: (item) => {
+        const entry = readLedger()[item.url];
+        return entry ? { url: item.url, lastmod: entry.lastmod } : { url: item.url };
+      },
     }),
   ],
   build: { format: "directory" },

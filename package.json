@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "tsx scripts/ensure-git-history.ts && tsx scripts/fetch-private-data.ts",
+    "prebuild": "tsx scripts/fetch-private-data.ts",
     "build": "astro build",
     "postbuild": "VITEST_DIST=1 vitest run",
     "preview": "astro preview",
@@ -16,6 +16,7 @@
     "test": "vitest run",
     "predeploy": "npm run test && astro check",
     "smoke": "tsx scripts/smoke-check.ts",
+    "lastmod": "tsx scripts/lastmod.ts",
     "copy:report": "tsx scripts/copy-report.ts",
     "import:estv-tax-data": "tsx scripts/import-estv-tax-data.ts",
     "read:estv-exports": "tsx scripts/read-estv-exports.ts"

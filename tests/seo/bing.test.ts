@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { fr } from "../../src/i18n/fr";
 import { visibleBlocks } from "../../src/lib/build/visible-text";
 import { ORGANIZATION_ID, WEBSITE_ID } from "../../src/lib/seo/entities";
-import { lastmodOf } from "../../src/lib/seo/lastmod";
+import { distHashes, ledgerProblems, readLedger } from "../../src/lib/seo/content-lastmod";
 import { checkMeta, headingJumps, isW3cDatetime, repeatsTitle } from "../../src/lib/seo/meta-rules";
 import { DIST, htmlFiles, publicPath } from "../build/dist-pages";
 
@@ -19,8 +19,9 @@ import { DIST, htmlFiles, publicPath } from "../build/dist-pages";
  *   signalés sans bloquer ; un seul H1, aucun saut de niveau ; langue fr-CH ;
  *   canonical absolu sur l'apex ; aucune directive qui restreint l'extrait ;
  *   `alt` sur chaque image, titre accessible sur chaque SVG porteur de sens ;
- * - sitemap : exactement les pages indexables, `lastmod` daté du dernier commit
- *   de leurs sources (src/lib/seo/lastmod.ts), sans changefreq ni priority ;
+ * - sitemap : exactement les pages indexables, `lastmod` lu dans seo/lastmod.json,
+ *   lui-même à jour des empreintes de <main> (src/lib/seo/content-lastmod.ts),
+ *   sans changefreq ni priority ;
  * - robots.txt : ligne Sitemap, rien de bloqué ;
  * - liens internes : directement sur l'URL canonique, slash final compris ;
  * - JSON-LD : syntaxe, types schema.org connus, et rien qui ne soit sur la page.
@@ -206,9 +207,15 @@ describe("sitemap et robots.txt", () => {
 		for (const [, value] of index.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)) expect(isW3cDatetime(value!), value).toBe(true);
 	});
 
-	it("lastmod égal au dernier commit des sources de la page, jamais à la date de construction", () => {
-		const offenders = urlEntries().filter((entry) => new Date(entry.lastmod!).getTime() !== new Date(lastmodOf(new URL(entry.loc).pathname)).getTime());
-		expect(offenders.map((entry) => `${entry.loc} : ${entry.lastmod} au lieu de ${lastmodOf(new URL(entry.loc).pathname)}`)).toEqual([]);
+	it("seo/lastmod.json est à jour des empreintes de <main> dans dist/", () => {
+		const problems = ledgerProblems(readLedger(), distHashes(DIST));
+		expect(problems, `seo/lastmod.json n'est pas à jour : lancez npm run lastmod, puis reconstruisez.\n  ${problems.join("\n  ")}`).toEqual([]);
+	});
+
+	it("lastmod du sitemap égal à celui de seo/lastmod.json, jamais à la date de construction", () => {
+		const ledger = readLedger();
+		const offenders = urlEntries().filter((entry) => ledger[entry.loc] === undefined || new Date(entry.lastmod!).getTime() !== new Date(ledger[entry.loc]!.lastmod).getTime());
+		expect(offenders.map((entry) => `${entry.loc} : ${entry.lastmod} au lieu de ${ledger[entry.loc]?.lastmod} (lancez npm run lastmod, puis reconstruisez)`)).toEqual([]);
 	});
 
 	it("robots.txt déclare l'index du sitemap et ne bloque ni CSS, ni JS, ni données", () => {

@@ -391,9 +391,12 @@ calculateurs.ch/
 │   ├── import-estv-tax-data.ts          ← NEUTRALISÉ, conservé pour ses schémas zod
 │   ├── fetch-private-data.ts            ★ injecte le dépôt privé (prebuild, pretest)
 │   ├── verify-data.ts                   ← rapport de fraîcheur
+│   ├── lastmod.ts                       ← met à jour seo/lastmod.json depuis dist/
 │   └── new-year.ts                      ← rituel du 1er janvier
 │
 ├── imports/estv/{année}/{ct}/           ← exports AFC bruts — HORS DÉPÔT
+├── seo/lastmod.json                     ← lastmod du sitemap : empreinte de <main> et date, par URL
+│                                          (npm run lastmod après un build qui change un texte)
 │
 ├── src/
 │   │
@@ -838,7 +841,7 @@ daté.
 | Ids de calculateur               | `family.name`, **anglais**                    | `pension.pillar-3a-buyback`                  |
 | Ids de source                    | `kebab-case`, acronymes officiels conservés   | `opp3-art-7a`, `vd-li`                       |
 | Chaînes d'interface              | **français**, dans `src/i18n/fr.ts`           | —                                            |
-| Messages de commit               | **anglais**, préfixés de la semaine ; hors semaine du plan, préfixe `UX - ` (interface et textes) ou `SEO - ` (référencement : balises, sitemap, données structurées), toujours en anglais | `W06 - publish pillar-3a buyback calculator`, `UX - document calculator page patterns`, `SEO - date sitemap lastmod from git history` |
+| Messages de commit               | **anglais**, préfixés de la semaine ; hors semaine du plan, préfixe `UX - ` (interface et textes) ou `SEO - ` (référencement : balises, sitemap, données structurées), toujours en anglais | `W06 - publish pillar-3a buyback calculator`, `UX - document calculator page patterns`, `SEO - date sitemap lastmod by content hash` |
 | Variables CSS                    | tokens `@theme` dans `tokens.css`             | `--color-accent`                             |
 
 **Toutes les chaînes d'interface dans `src/i18n/fr.ts` dès le jour 1.** Ça ne coûte
@@ -859,9 +862,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://calculateurs.ch", // apex, sans www
   output: "static",
-  // sitemap : pages indexables seulement ; lastmod = dernier commit des sources de la page,
-  // ni changefreq ni priority (src/lib/seo/lastmod.ts)
-  integrations: [mdx(), sitemap({ filter: includeInSitemap, serialize: (item) => ({ url: item.url, lastmod: lastmodOf(new URL(item.url).pathname) }) })],
+  // sitemap : pages indexables seulement ; lastmod lu dans seo/lastmod.json (empreinte du texte
+  // de <main>), ni changefreq ni priority (src/lib/seo/content-lastmod.ts)
+  integrations: [mdx(), sitemap({ filter: includeInSitemap, serialize: (item) => ({ url: item.url, lastmod: readLedger()[item.url]?.lastmod }) })],
   build: { format: "directory" },
   prefetch: false,
   // Tailwind CSS v4 par son plugin Vite ; plugins du budget JavaScript (voir le fichier réel)
@@ -872,11 +875,12 @@ export default defineConfig({
 ```jsonc
 // scripts npm
 {
-  "prebuild": "tsx scripts/ensure-git-history.ts && tsx scripts/fetch-private-data.ts", // historique git complet pour le lastmod du sitemap (Cloudflare clone en profondeur réduite)
+  "prebuild": "tsx scripts/fetch-private-data.ts",
   "pretest": "tsx scripts/fetch-private-data.ts",
   "test": "vitest run",
   "postbuild": "VITEST_DIST=1 vitest run", // tests/build/, tests/content/editorial.test.ts et tests/seo/bing.test.ts sur dist/ (vitest.config.ts) ; no-leak y viendra
   "smoke": "tsx scripts/smoke-check.ts", // à la main après une mise en ligne : statuts, canonical, redirections, 404, Bingbot
+  "lastmod": "tsx scripts/lastmod.ts", // après un build qui change un texte : met à jour seo/lastmod.json (empreinte de <main> → date), à commiter
   "copy:report": "tsx scripts/copy-report.ts", // rapport de style du texte visible, indicatif (docs/editorial-style.md § 6.2)
   "verify-data": "tsx scripts/verify-data.ts", // à venir : rapport de fraîcheur, rituel du 1er janvier (§ 1.5)
   "new-year": "tsx scripts/new-year.ts", // à venir : rituel du 1er janvier (§ 1.5)
