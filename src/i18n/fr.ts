@@ -145,6 +145,8 @@ export const fr = {
 		publisherLocality: PUBLISHER_LOCALITY,
 		publisher: `Édité par ${PUBLISHER_NAME}, ${PUBLISHER_LOCALITY} (VD). Les calculs ne dépendent d’aucune banque, assurance ni autre prestataire.`,
 		methodology: "Méthodologie",
+		/** Nom de /methodologie/ dans sa balise title : « Méthodologie des calculs · calculateurs.ch ». */
+		methodologyTitle: "Méthodologie des calculs",
 		data: "Données et sources",
 		legal: "Mentions légales",
 		privacy: "Politique de confidentialité",
@@ -232,9 +234,11 @@ export const fr = {
 	},
 
 	familyPage: {
-		/** Page de famille : chapeau et méta-description (155 caractères au plus), une entrée par famille publiée. */
+		/** Page de famille : title, chapeau et méta-description (de 120 à 150 caractères), une entrée par famille publiée. */
 		pension: {
-			metaDescription: "Calculateurs du 3e pilier et du 2e pilier pour la Suisse romande, avec la source et la date de chaque chiffre.",
+			/** Balise title : mot-clé en tête, moins de 60 caractères. */
+			metaTitle: `Prévoyance : calculateurs 3a et LPP · ${SITE_NAME}`,
+			metaDescription: "Calculateurs du 3e pilier et du rachat LPP en Suisse romande. L’impôt est calculé dans votre commune, avec la source et la date de chaque chiffre.",
 			lead: "Des calculateurs pour votre 3e pilier et votre caisse de pension, en Suisse romande. Chaque chiffre vient d’une source officielle, datée.",
 		},
 		guidesHeading: "Guides",
@@ -351,11 +355,11 @@ export const fr = {
 	},
 
 	guidesPage: {
-		title: `Guides · ${SITE_NAME}`,
+		title: `Guides de prévoyance et de fiscalité · ${SITE_NAME}`,
 		heading: "Guides",
 		lead: "Les règles derrière chaque calcul, expliquées et sourcées, avec un exemple chiffré.",
-		/** 155 caractères au plus. */
-		metaDescription: "Guides de prévoyance et de fiscalité pour la Suisse romande : les règles derrière chaque calculateur, expliquées et sourcées.",
+		/** De 120 à 150 caractères, sans reprendre le title. */
+		metaDescription: "Les règles derrière chaque calculateur de prévoyance et d’impôt, expliquées pour la Suisse romande avec leurs sources et un exemple chiffré.",
 	},
 
 	/** Sous le chiffre de la carte et sous la carte (docs/design-system.md § 4.4). */
@@ -382,9 +386,9 @@ export const fr = {
 	},
 
 	dataPage: {
-		/** Méta-description de /donnees/, 155 caractères au plus. */
+		/** Méta-description de /donnees/, de 120 à 150 caractères. */
 		metaDescription:
-			"Chaque source officielle utilisée sur le site, avec sa date de vérification et sa prochaine relecture.",
+			"Chaque source officielle des calculateurs, avec sa date de vérification et sa prochaine relecture. Les coefficients communaux se téléchargent en CSV.",
 		title: "Données et sources",
 		lead: "Chaque source officielle utilisée sur le site, le nombre de valeurs qu’elle alimente et l’échéance de sa prochaine relecture. Cette page est générée depuis la couche de données, si bien qu’elle ne peut pas mentir sur son propre état.",
 		summary: (tracked: number, overdue: number): string =>

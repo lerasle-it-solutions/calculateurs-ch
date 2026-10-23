@@ -95,6 +95,21 @@ limite d'un deux-points par paragraphe. Le préfixe « Exemple : » du bandeau d
 | fondation 3a, assurance 3a | prestataire 3a |
 | impôt fédéral direct | impôt fédéral (sans précision, quand il faut distinguer) |
 
+Glossaire des entités (23 octobre 2026, revue `docs/editorial-review/seo-bing-2026-10.md`) : un même
+objet porte le même nom sur tout le site, pour le lecteur comme pour les moteurs et les assistants qui
+citent le site. Les noms d'actes et de pages officielles restent tels quels.
+
+| Entité | Dire | Seulement dans | Ne pas dire |
+| --- | --- | --- | --- |
+| Le pilier en général | 3e pilier | « Le troisième pilier », titre de la page de l'OFAS | troisième pilier, 3ème pilier |
+| Le compte, le versement, le rachat | pilier 3a ; « 3a » en apposition (versement 3a, rachat 3a) | « prévoyance individuelle liée », nom de l'OPP 3 | 3e pilier A |
+| L'institution du 2e pilier | caisse de pension | « institution de prévoyance », quand la phrase cite un article (art. 80 LPP) | fonds de pension, caisse de retraite |
+| La prévoyance professionnelle | 2e pilier, LPP, rachat LPP | « prévoyance professionnelle », nom d'un acte ou formule légale | deuxième pilier, BVG |
+| L'administration fiscale fédérale | AFC ; Administration fédérale des contributions (AFC) au premier emploi d'une page | | ESTV |
+| L'impôt de la Confédération | impôt fédéral direct | « IFD », nom abrégé d'une ordonnance, références | |
+| Le multiplicateur de la commune | coefficient communal | « centimes additionnels », nom de la loi genevoise | taux communal |
+| L'âge de la retraite | âge de référence | | âge de la retraite, âge légal |
+
 ### 4.3 Tournures interdites
 
 La colonne « Motif » est une expression régulière (insensible à la casse) que
@@ -139,9 +154,11 @@ Ajouter une ligne ici l'ajoute au garde-fou. Dans la table, une barre verticale 
   « Source : Administration fédérale des contributions (AFC), simulateur fiscal, module « Rechercher
   des données de base ». Données reproduites sans garantie. »
 - **Les URL et les slugs.**
-- **Les contraintes SEO** : `title` de moins de 60 caractères, avec l'année et le bénéfice ;
-  méta-description de 155 caractères au plus ; mot-clé principal conservé dans le `title`, le H1 et
-  la description.
+- **Les contraintes SEO** : `title` de moins de 60 caractères, mot-clé principal en tête, avec
+  l'année et le bénéfice pour un calculateur ; méta-description de 120 à 150 caractères, 155 au plus,
+  qui résume la page sans reprendre le `title` ; mot-clé principal conservé dans le `title`, le H1 et
+  la description. Limites dures de Bing, qui font échouer la construction : 70 caractères de `title`,
+  160 de description (`tests/seo/bing.test.ts`, 23 octobre 2026).
 - **Les termes interdits par les conditions d'usage de l'AFC** : jamais « à jour », « exact »,
   « garanti » à propos d'une donnée.
 

@@ -240,7 +240,7 @@ export const lppBuyback: CalculatorDefinition = {
 
 	scope: {
 		forWhom: [
-			"Une personne affiliée à une institution de prévoyance professionnelle. Il peut s’agir d’un salarié ou d’un indépendant affilié à titre facultatif, car seule compte l’affiliation, pas le statut (art. 4 et 44 LPP).",
+			"Une personne affiliée à une caisse de pension. Il peut s’agir d’un salarié ou d’un indépendant affilié à titre facultatif, car seule compte l’affiliation, pas le statut (art. 4 et 44 LPP).",
 			"Elle réside dans un canton romand et y est imposée au régime ordinaire. Son certificat de prévoyance, ou une attestation de sa caisse, indique un potentiel de rachat.",
 			"Au Valais, seules les personnes seules sans enfant domiciliées dans une commune dont l’indexation est relevée sont couvertes, soit Sion aujourd’hui.",
 		],

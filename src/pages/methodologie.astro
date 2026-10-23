@@ -14,7 +14,7 @@ import { pillar3aContributionDeadline } from "../calculators/contribution-deadli
 import { fr } from "../i18n/fr";
 import { formatChf, formatPercent, formatSwissNumber } from "../lib/format/chf";
 
-const title = fr.site.pageTitle(fr.footer.methodology);
+const title = fr.site.pageTitle(fr.footer.methodologyTitle);
 // Texte d'attribution du module de données de base de l'AFC, tel que le registre le porte
 const [estvAttribution] = attributionTextsFor(["estv-base-data-module"]);
 const description =
@@ -395,7 +395,7 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				<strong>Un plafond selon l’affiliation, pas selon le statut.</strong>{" "}
 				Le statut de salarié ou d’indépendant ne joue aucun rôle ; seule compte
 				l’affiliation à un 2e pilier (art. 7 al. 1 OPP 3).
-				Une personne affiliée à une institution de prévoyance, à titre
+				Une personne affiliée à une caisse de pension, à titre
 				obligatoire ou facultatif, déduit au plus la « petite » cotisation
 				({formatChf(taxSavingPillar3a.smallContributionCap.value)}&nbsp;CHF en{" "}
 				{taxSavingYear}). Une personne sans caisse de pension déduit au plus{" "}
@@ -465,7 +465,7 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 			<h3 id="rachat-lpp" class="text-subheading">Rachat dans la caisse de pension (LPP)</h3>
 			<p class="max-w-reading text-body">
 				<strong>Ce que calcule le calculateur.</strong> Il s’adresse à une
-				personne affiliée à une institution de prévoyance professionnelle,
+				personne affiliée à une caisse de pension,
 				salariée ou indépendante affiliée à titre facultatif, car seule compte
 				l’affiliation, pas le statut (art. 4 et 44 LPP). Le potentiel
 				saisi doit tenir compte des réductions prévues par l’OPP 2 (art. 60a
