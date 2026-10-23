@@ -12,7 +12,8 @@ Le slug à vérifier est `$ARGUMENTS` : le slug français de l'URL publique (ex.
 4. Lance `npx vitest run tests/design` et rapporte le résultat tel quel.
 5. Lance `npm run fold` (après `npm run build` si `dist/` manque ou date d'avant tes dernières
    lectures ; première fois : `npx playwright install chromium`) et rapporte tel quel les lignes de la
-   page : elles tranchent le point du premier écran (§ 4.1), à 375 × 667 et à 320 × 568.
+   page : 375 × 667 tranche le point du premier écran (§ 4.1) ; un écart à 320 × 568 se signale, ce
+   n'est pas un écart à la liste tant que le montant de la barre mobile reste visible.
 
 Rends un tableau : point, état, `chemin:ligne`, constat. Termine par le nombre de points conformes, d'écarts, sans objet et non vérifiables.
 

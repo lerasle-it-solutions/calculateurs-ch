@@ -3,11 +3,15 @@
  * Garde-fou du premier écran (`npm run fold`, après `npm run build`).
  *
  * Sert dist/ en local, ouvre chaque page dans le Chromium de Playwright, en
- * mobile à 375 × 667 et à 320 × 568, et échoue si :
- *   - sur une page de calculateur, le premier champ du formulaire n'est pas
- *     entièrement visible au-dessus de la barre de résultat mobile ;
- *   - sur l'accueil, le montant du cas exemple n'est pas entièrement visible.
- * Critère du design system, § 4.1 (arbitrage du mainteneur, 23.10.2026).
+ * mobile, et mesure :
+ *   - sur une page de calculateur, que le premier champ du formulaire est
+ *     entièrement visible au-dessus de la barre de résultat mobile, et que le
+ *     montant de cette barre est dans l'écran ;
+ *   - sur l'accueil, que le montant du cas exemple est entièrement visible.
+ * Critère du design system, § 4.1 (arbitrages du mainteneur, 23.10.2026) :
+ * bloquant à 375 × 667, où un écart fait échouer le script ; à 320 × 568,
+ * signalé dans le rapport sans faire échouer (le montant reste visible dans la
+ * barre mobile, le premier champ peut demander un défilement).
  *
  * Ne tourne pas au build Cloudflare : Playwright est une dépendance de
  * développement, sans navigateur installé là-bas. À lancer avant une mise en
@@ -79,7 +83,10 @@ const measure = (kind: FoldKind) => {
 	const bar = [...document.querySelectorAll("[data-result-card]")].find((element) => getComputedStyle(element).position === "fixed" && visible(element));
 	const limit = bar ? bar.getBoundingClientRect().top : window.innerHeight;
 	const box = target && visible(target) ? target.getBoundingClientRect() : null;
+	const barValue = bar?.querySelector("[data-result-value]");
+	const barBox = barValue && visible(barValue) ? barValue.getBoundingClientRect() : null;
 	return {
+		barAmountVisible: barBox ? barBox.top >= 0 && barBox.bottom <= window.innerHeight : null,
 		label: target ? (target.getAttribute("name") ?? target.textContent?.trim() ?? "") : "",
 		box: box ? { top: Math.round(box.top), bottom: Math.round(box.bottom) } : null,
 		limit: Math.round(limit),
@@ -90,13 +97,15 @@ const measure = (kind: FoldKind) => {
 const targets = foldTargets(indexablePages(DIST));
 const browser = await chromium.launch();
 const failures: string[] = [];
+const reported: string[] = [];
 try {
 	for (const viewport of FOLD_VIEWPORTS) {
 		const context = await browser.newContext({ viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: "fr-CH" });
 		// tsx (esbuild) ajoute un appel à `__name` dans les fonctions transmises à la page
 		await context.addInitScript({ content: "globalThis.__name = (target) => target;" });
 		const page = await context.newPage();
-		console.log(`— ${viewport.width} × ${viewport.height}`);
+		const size = `${viewport.width} × ${viewport.height}`;
+		console.log(`— ${size}${viewport.blocking ? " (bloquant)" : " (signalé, sans échec)"}`);
 		for (const { path, kind } of targets) {
 			await page.goto(`${origin}${path}`, { waitUntil: "load" });
 			await page.evaluate(() => document.fonts.ready);
@@ -105,8 +114,10 @@ try {
 			const what = kind === "amount" ? "montant de l'exemple" : `premier champ (${result.label})`;
 			const where = result.box ? `${result.box.top} → ${result.box.bottom} px` : "introuvable";
 			const limit = `${result.bar ? "barre mobile" : "bas de l'écran"} à ${result.limit} px`;
-			console.log(`${ok ? "ok    " : "ÉCHEC "} ${path} : ${what} ${where}, ${limit}`);
-			if (!ok) failures.push(`${viewport.width} × ${viewport.height} ${path}`);
+			const barAmount = result.barAmountVisible === null ? "" : `, montant de la barre ${result.barAmountVisible ? "visible" : "hors de l'écran"}`;
+			const status = ok ? "ok    " : viewport.blocking ? "ÉCHEC " : "écart ";
+			console.log(`${status} ${path} : ${what} ${where}, ${limit}${barAmount}`);
+			if (!ok) (viewport.blocking ? failures : reported).push(`${size} ${path}`);
 		}
 		await context.close();
 	}
@@ -115,5 +126,6 @@ try {
 	server.close();
 }
 
-console.log(failures.length === 0 ? "\nPremier écran conforme sur toutes les pages mesurées." : `\n${failures.length} échec(s) :\n  ${failures.join("\n  ")}`);
+if (reported.length > 0) console.log(`\nSignalé, sans échec (premier champ sous la barre, défilement admis) :\n  ${reported.join("\n  ")}`);
+console.log(failures.length === 0 ? "\nPremier écran conforme à la taille bloquante." : `\n${failures.length} échec(s) :\n  ${failures.join("\n  ")}`);
 process.exitCode = failures.length === 0 ? 0 : 1;

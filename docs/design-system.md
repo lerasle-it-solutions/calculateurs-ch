@@ -590,12 +590,14 @@ blocage d'un rachat LPP, retrait en capital, solde d'une lacune 3a perdu. Les au
 Entre le H1 et le premier champ, rien d'autre que la promesse, la ligne de périmètre et le bandeau
 du cas exemple (§ 4.2). Les blocs 1 à 3 forment le héros compact (§ 3.2).
 
-**Critère vérifiable** : à 375 × 667 px et à 320 × 568 px, le premier champ est visible sans
-défiler, au-dessus de la barre de résultat mobile ; dès `lg`, la carte résultat l'est aussi. Sur
-l'accueil, le montant du cas exemple est visible sans défiler aux deux tailles. `npm run fold`
-(scripts/fold-check.ts, Playwright) le mesure sur `dist/` ; il ne tourne pas au build Cloudflare et se
-lance avant chaque mise en ligne (arbitrage du 23.10.2026). Sous `md`, les marges du héros sont
-réduites (`Section tightTop`) ; dès `md`, le rendu ne change pas.
+**Critère vérifiable** : à 375 × 667 px, le premier champ est visible sans défiler, au-dessus de la
+barre de résultat mobile ; dès `lg`, la carte résultat l'est aussi. Sur l'accueil, le montant du cas
+exemple est visible sans défiler. Critère bloquant à 375 × 667. À 320 × 568, le montant reste visible
+dans la barre mobile ; le premier champ peut demander un défilement (arbitrage du 23.10.2026).
+`npm run fold` (scripts/fold-check.ts, Playwright) le mesure sur `dist/` : il échoue sur un écart à
+375 × 667 et signale, sans échouer, ceux de 320 × 568. Il ne tourne pas au build Cloudflare et se lance
+avant chaque mise en ligne. Sous `md`, les marges du héros sont réduites (`Section tightTop`) ; dès `md`,
+le rendu ne change pas.
 
 Le périmètre est annoncé avant la saisie, jamais après (P5) : la ligne de périmètre l'annonce, le
 détail « Ce que ce calcul suppose » le développe, et **toute exclusion qui s'applique à la saisie
@@ -745,7 +747,7 @@ Obligatoire pour tout calculateur, nouveau ou repris. `/ux-check <slug>` la vér
 
 - [ ] H1, puis une phrase de promesse, puis une ligne de périmètre avec lien vers « Ce que ce calcul suppose ».
 - [ ] Rien d'autre entre le H1 et le premier champ que la promesse, la ligne de périmètre et le bandeau d'exemple.
-- [ ] Héros compact (`py-xl md:py-2xl`, haut réduit sous `md`) : à 375 × 667 et à 320 × 568 px, le premier champ est visible sans défiler, au-dessus de la barre mobile ; dès `lg`, la carte résultat aussi ; `npm run fold` passe.
+- [ ] Héros compact (`py-xl md:py-2xl`, haut réduit sous `md`) : à 375 × 667 px, le premier champ est visible sans défiler, au-dessus de la barre mobile ; dès `lg`, la carte résultat aussi ; à 320 × 568, le montant reste visible dans la barre mobile ; `npm run fold` passe.
 - [ ] Formulaire et carte résultat collante, barre mobile sous `lg`.
 - [ ] Points de vigilance courts, sous le formulaire : une phrase visible chacun, texte complet dans « En savoir plus » ; avertissement renforcé pour ce qui peut faire perdre la déduction ou de l'argent, avis informatif pour le reste.
 - [ ] Détail ligne par ligne, puis graphiques.

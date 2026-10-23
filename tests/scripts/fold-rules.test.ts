@@ -8,10 +8,10 @@ import { FOLD_VIEWPORTS, foldTargets, foldVerdict } from "../../scripts/fold-rul
  * la barre mobile ; sur l'accueil, le montant de l'exemple dans l'écran.
  */
 describe("FOLD_VIEWPORTS", () => {
-	it("mesure à 375 × 667 et à 320 × 568", () => {
+	it("bloque à 375 × 667 ; à 320 × 568, signale sans faire échouer (design system § 4.1, 23.10.2026)", () => {
 		expect(FOLD_VIEWPORTS).toEqual([
-			{ width: 375, height: 667 },
-			{ width: 320, height: 568 },
+			{ width: 375, height: 667, blocking: true },
+			{ width: 320, height: 568, blocking: false },
 		]);
 	});
 });
