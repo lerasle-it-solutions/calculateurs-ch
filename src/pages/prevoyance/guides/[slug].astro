@@ -2,7 +2,8 @@
 /**
  * Guides de la famille Prévoyance : /prevoyance/guides/{slug}/ (CLAUDE.md § 6).
  * Un article MDX de la collection `articles`, rendu à la construction : aucun
- * JavaScript. En tête, la date de mise à jour et la durée de lecture ; en fin,
+ * JavaScript. En tête, les dates de publication et de mise à jour (lues dans le
+ * frontmatter, reprises telles quelles par le JSON-LD) et la durée de lecture ; en fin,
  * les sources (lues dans le registre quand elles y sont) et la réserve datée.
  * Fil d'Ariane : Accueil › Prévoyance › article — /prevoyance/guides/ n'existe pas.
  */
@@ -41,11 +42,19 @@ const sources = article.sources.map((source) =>
 const date = new Intl.DateTimeFormat("fr-CH", { day: "numeric", month: "long", year: "numeric" });
 const updatedOn = date.format(article.updatedOn);
 const updatedIso = article.updatedOn.toISOString().slice(0, 10);
+const publishedOn = date.format(article.publishedOn);
+const publishedIso = article.publishedOn.toISOString().slice(0, 10);
 ---
 
 <BaseLayout title={article.metaTitle ?? article.title} description={article.description}>
 	<Fragment slot="head">
-		<ArticleSchema headline={article.title} url={url} updatedOn={article.updatedOn} />
+		<ArticleSchema
+			headline={article.title}
+			description={article.description}
+			url={url}
+			publishedIso={publishedIso}
+			updatedIso={updatedIso}
+		/>
 		<BreadcrumbSchema trail={trail} />
 	</Fragment>
 
@@ -58,7 +67,8 @@ const updatedIso = article.updatedOn.toISOString().slice(0, 10);
 			<header class="flex max-w-reading flex-col gap-sm">
 				<h1 class="text-title">{article.title}</h1>
 				<p class="text-fine text-ink-muted">
-					{fr.article.updatedOn} <time datetime={updatedIso}>{updatedOn}</time>
+					{fr.article.publishedOn} <time datetime={publishedIso}>{publishedOn}</time>
+					{" · "}{fr.article.updatedOnInline} <time datetime={updatedIso}>{updatedOn}</time>
 					{article.readingMinutes && <> · {fr.article.readingTime(article.readingMinutes)}</>}
 				</p>
 			</header>

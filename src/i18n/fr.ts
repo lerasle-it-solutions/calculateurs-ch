@@ -247,8 +247,11 @@ export const fr = {
 	},
 
 	article: {
-		/** Avant la date de mise à jour, en tête d'article. */
+		/** Avant la date de mise à jour, sur les cartes de guide (accueil, /guides/). */
 		updatedOn: "Mis à jour le",
+		/** Ligne sous le titre d'un guide : « Publié le … · mis à jour le … ». */
+		publishedOn: "Publié le",
+		updatedOnInline: "mis à jour le",
 		readingTime: (minutes: number): string => `Lecture : ${minutes} minutes`,
 		sourcesHeading: "Sources officielles",
 		/** Réserve en fin d'article, datée de sa mise à jour. */

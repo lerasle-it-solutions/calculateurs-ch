@@ -265,9 +265,12 @@ describe("données structurées", () => {
 		Answer: ["text"],
 		BreadcrumbList: ["itemListElement"],
 		ListItem: ["position", "name", "item"],
-		Article: ["headline", "url", "dateModified", "author", "publisher"],
+		Article: ["headline", "description", "url", "datePublished", "dateModified", "author", "publisher"],
 	};
-	/** Propriétés textuelles qui affirment un contenu : elles doivent se lire sur la page. */
+	/**
+	 * Propriétés textuelles qui affirment un contenu : elles doivent se lire sur la page. Seule
+	 * exception, une `description` identique à la méta-description (Article, arbitrage du 23.10.2026).
+	 */
 	const CONTENT_PROPERTIES = ["name", "headline", "description", "text", "addressLocality"];
 
 	it("chaque JSON-LD est un JSON valide, en contexte schema.org, de types connus et complets", () => {
@@ -306,6 +309,7 @@ describe("données structurées", () => {
 			for (const node of schemasOf(page.html).flatMap(nodesOf)) {
 				for (const key of CONTENT_PROPERTIES) {
 					const value = node[key];
+					if (key === "description" && value === descriptionOf(page.html)) continue;
 					if (typeof value === "string" && !visible.includes(squash(value))) offenders.push(`${page.path} : ${String(node["@type"])}.${key} « ${value.slice(0, 80)} » absent de la page`);
 				}
 				for (const key of ["datePublished", "dateModified"]) {
@@ -332,6 +336,18 @@ describe("données structurées", () => {
 			const section = page.html.slice(heading, page.html.indexOf("</section>", heading));
 			const shown = [...section.matchAll(/<details\b[^>]*>\s*<summary\b[^>]*>([\s\S]*?)<\/summary>\s*<p\b[^>]*>([\s\S]*?)<\/p>\s*<\/details>/g)].map(([, question, answer]) => [textOf(question!), textOf(answer!)]);
 			expect(declared, page.path).toEqual(shown);
+		}
+	});
+
+	it("un guide : description = méta-description, dates = ligne « Publié le … · mis à jour le … » affichée", () => {
+		const guides = indexable.filter((page) => schemasOf(page.html).some((schema) => schema["@type"] === "Article"));
+		expect(guides.length).toBeGreaterThan(0);
+		for (const page of guides) {
+			const article = schemasOf(page.html).find((schema) => schema["@type"] === "Article")!;
+			const line = page.html.match(new RegExp(`${fr.article.publishedOn}\\s*<time datetime="([^"]+)">[\\s\\S]*?${fr.article.updatedOnInline}\\s*<time datetime="([^"]+)">`));
+			expect(line, `${page.path} : ligne de dates sous le titre`).not.toBeNull();
+			expect([article.datePublished, article.dateModified], page.path).toEqual([line![1], line![2]]);
+			expect(article.description, page.path).toBe(descriptionOf(page.html));
 		}
 	});
 
