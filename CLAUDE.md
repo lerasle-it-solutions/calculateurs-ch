@@ -837,7 +837,7 @@ daté.
 | Ids de calculateur               | `family.name`, **anglais**                    | `pension.pillar-3a-buyback`                  |
 | Ids de source                    | `kebab-case`, acronymes officiels conservés   | `opp3-art-7a`, `vd-li`                       |
 | Chaînes d'interface              | **français**, dans `src/i18n/fr.ts`           | —                                            |
-| Messages de commit               | **anglais**, préfixés de la semaine ; hors semaine du plan, préfixe `UX - `, toujours en anglais | `W06 - publish pillar-3a buyback calculator`, `UX - document calculator page patterns` |
+| Messages de commit               | **anglais**, préfixés de la semaine ; hors semaine du plan, préfixe `UX - ` (interface et textes) ou `SEO - ` (référencement : balises, sitemap, données structurées), toujours en anglais | `W06 - publish pillar-3a buyback calculator`, `UX - document calculator page patterns`, `SEO - date sitemap lastmod from git history` |
 | Variables CSS                    | tokens `@theme` dans `tokens.css`             | `--color-accent`                             |
 
 **Toutes les chaînes d'interface dans `src/i18n/fr.ts` dès le jour 1.** Ça ne coûte
