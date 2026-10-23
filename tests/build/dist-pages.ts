@@ -1,5 +1,5 @@
 import { readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** Utilitaires partagés des tests post-construction (tests/build/). */
@@ -11,6 +11,14 @@ export const htmlFiles = (dir: string): string[] =>
 		const path = join(dir, entry);
 		return statSync(path).isDirectory() ? htmlFiles(path) : path.endsWith(".html") ? [path] : [];
 	});
+
+/** Chemin public d'un fichier de dist/ : `a/b/index.html` → `/a/b/`, `404.html` → `/404/`. */
+export const publicPath = (file: string): string => {
+	const parts = relative(DIST, file).split(sep);
+	const last = parts.pop() as string;
+	if (last !== "index.html") parts.push(last.replace(/\.html$/, ""));
+	return parts.length === 0 ? "/" : `/${parts.join("/")}/`;
+};
 
 const ENTITIES: Record<string, string> = { "&nbsp;": " ", "&#39;": "'", "&#x27;": "'", "&apos;": "'", "&amp;": "&", "&#8239;": " ", "&#160;": " " };
 
