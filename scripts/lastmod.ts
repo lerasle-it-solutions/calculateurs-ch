@@ -8,6 +8,11 @@
  * courantes, à l'heure de Zurich ; une page disparue est retirée. Le sitemap
  * lit ce fichier à la construction suivante : reconstruire, puis commiter le
  * fichier avec le changement de contenu.
+ *
+ * Seul compte le texte visible de <main>. Une méta-description, un title, un
+ * JSON-LD, l'en-tête ou le pied de page modifiés ne sont pas un changement de
+ * contenu et ne redatent pas la page ; le balisage ou le style non plus, tant
+ * que le texte et son ordre restent les mêmes.
  */
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
