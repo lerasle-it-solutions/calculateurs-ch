@@ -17,6 +17,7 @@
     "predeploy": "npm run test && astro check",
     "smoke": "tsx scripts/smoke-check.ts",
     "lastmod": "tsx scripts/lastmod.ts",
+    "fold": "tsx scripts/fold-check.ts",
     "copy:report": "tsx scripts/copy-report.ts",
     "import:estv-tax-data": "tsx scripts/import-estv-tax-data.ts",
     "read:estv-exports": "tsx scripts/read-estv-exports.ts"
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "playwright": "^1.64.1",
     "read-excel-file": "^9.3.10",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",

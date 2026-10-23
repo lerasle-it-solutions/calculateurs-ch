@@ -392,6 +392,7 @@ calculateurs.ch/
 │   ├── fetch-private-data.ts            ★ injecte le dépôt privé (prebuild, pretest)
 │   ├── verify-data.ts                   ← rapport de fraîcheur
 │   ├── lastmod.ts                       ← met à jour seo/lastmod.json depuis dist/
+│   ├── fold-check.ts                    ← premier écran mobile mesuré sur dist/ (npm run fold)
 │   └── new-year.ts                      ← rituel du 1er janvier
 │
 ├── imports/estv/{année}/{ct}/           ← exports AFC bruts — HORS DÉPÔT
@@ -881,6 +882,7 @@ export default defineConfig({
   "postbuild": "VITEST_DIST=1 vitest run", // tests/build/, tests/content/editorial.test.ts et tests/seo/bing.test.ts sur dist/ (vitest.config.ts) ; no-leak y viendra
   "smoke": "tsx scripts/smoke-check.ts", // à la main après une mise en ligne : statuts, canonical, redirections, 404, Bingbot
   "lastmod": "tsx scripts/lastmod.ts", // après un build qui change un texte : met à jour seo/lastmod.json (empreinte de <main> → date), à commiter
+  "fold": "tsx scripts/fold-check.ts", // à la main avant une mise en ligne : premier écran à 375 × 667 et 320 × 568 (Playwright), jamais au build
   "copy:report": "tsx scripts/copy-report.ts", // rapport de style du texte visible, indicatif (docs/editorial-style.md § 6.2)
   "verify-data": "tsx scripts/verify-data.ts", // à venir : rapport de fraîcheur, rituel du 1er janvier (§ 1.5)
   "new-year": "tsx scripts/new-year.ts", // à venir : rituel du 1er janvier (§ 1.5)
@@ -891,7 +893,8 @@ export default defineConfig({
 Dépendances : `astro@7`, `@astrojs/sitemap`, `@tailwindcss/vite`, `tailwindcss@4`,
 `@fontsource/figtree`, `zod`, `vitest`, `tsx`,
 `@astrojs/check`, `typescript`, `@astrojs/mdx` (composants Astro dans les articles
-(figures, tableaux générés depuis src/data/)). **Ni `@astrojs/preact`, ni `preact`, ni aucune
+(figures, tableaux générés depuis src/data/)), `playwright` (développement seulement, pour
+`npm run fold` ; aucun navigateur installé au build Cloudflare). **Ni `@astrojs/preact`, ni `preact`, ni aucune
 bibliothèque de composants.**
 
 Node.js : **24.21.0** (LTS), fixé par `.node-version`, la même version en local et pour la
