@@ -16,7 +16,7 @@ export const WITHDRAWAL_WINDOW_ASSUMPTION =
 export const LPP_STEPS = "Étapes du retrait du capital LPP";
 export const LPP_STEPS_ASSUMPTION =
 	"Une étape regroupe tous les retraits en capital d'une même année civile (art. 13a al. 2 LPP). Le règlement de votre caisse peut admettre un premier retrait plus faible (art. 13a al. 3 LPP) ou imposer un retrait total : vérifiez-le.";
-export const SAME_YEAR_TOTAL = "Prestations en capital de l'année, additionnées";
+export const SAME_YEAR_TOTAL = "Prestations en capital additionnées en";
 export const SAME_YEAR_TOTAL_LAW = "Règle de la loi cantonale : les prestations en capital d'une même année civile s'additionnent, 2e et 3e piliers compris.";
 export const SAME_YEAR_TOTAL_METHOD =
 	"Méthode. Aucun article ne le dit en toutes lettres : l'addition découle de l'impôt annuel entier fixé par année fiscale (art. 38 al. 1 et 1bis LIFD).";
@@ -64,3 +64,21 @@ export const STAGGERING_SAVING = "Économie de l'échelonnement, par rapport à 
 export const PLAN_EXTRA_TAX = "Impôt de votre calendrier, au-delà du calendrier optimal";
 export const HOUSEHOLD_NOT_COVERED =
 	"Ce calcul couvre les personnes seules sans enfant. Pour un couple, les retraits des deux époux d'une même année s'additionnent ; pour une famille, des règles cantonales propres s'appliquent.";
+
+// Valeurs à relever que le moteur recense (MissingTaxDataError)
+export const NEED_REDUCTION_APPLIES = "Réduction de l'impôt de base sur l'impôt sur le capital";
+export const NEED_CHURCH_MULTIPLIER = "Coefficient paroissial sur l'impôt sur le capital";
+export const NEED_CANTONAL_MULTIPLIER = "Coefficient cantonal sur l'impôt sur le capital";
+export const NEED_COMMUNAL_MULTIPLIER = "Coefficient communal sur l'impôt sur le capital";
+export const NEED_UNREDUCED_MULTIPLIER = "Part du coefficient cantonal hors réduction, pour le capital";
+export const NEED_ANNUITY_ROUNDING = "Arrondi de la rente déterminante pour le taux";
+export const NEED_CANTONAL_INDEXATION = "Indexation du barème cantonal, pour le taux de la rente";
+export const NEED_FAMILY_QUOTIENT = "Quotient familial d'une personne seule, pour le capital";
+export const NEED_FEDERAL_MINIMUM = "Montant minimal perçu de l'impôt fédéral sur le capital";
+export const NEED_COMMUNAL_BOUNDS = "Borne du taux communal de base";
+export const NEED_COMMUNAL_INDEXATION = "Indexation du barème communal, pour le taux de la rente";
+export const NEED_BASE_TAX_REDUCTION = "Taux de la réduction de l'impôt de base, pour le capital";
+export const NEED_DIVISOR_HOUSEHOLDS = "Ménages au revenu divisé, pour le capital";
+export const NEED_FEDERAL_MAXIMUM_RATE = "Taux maximal de l'impôt fédéral, pour le capital";
+export const NEED_FEDERAL_ROUNDING = "Arrondi de l'impôt fédéral sur le capital";
+export const NEED_FEDERAL_SCALE = "Barème de l'impôt fédéral, pour le capital";

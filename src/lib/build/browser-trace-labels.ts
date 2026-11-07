@@ -23,18 +23,22 @@ import { fileURLToPath } from "node:url";
 import type { Plugin } from "vite";
 
 import * as grossToTaxableLabels from "../calculations/gross-to-taxable-labels";
+import * as capitalWithdrawalLabels from "../calculations/pension/capital-withdrawal-labels";
 import * as lppBuybackLabels from "../calculations/pension/lpp-buyback-labels";
 import * as pillar3aBuybackLabels from "../calculations/pension/pillar-3a-buyback-labels";
 import * as pillar3aTaxSavingLabels from "../calculations/pension/pillar-3a-tax-saving-labels";
 import * as engineLabels from "../calculations/trace-labels";
+import * as taxScaleLabels from "../calculations/tax-scale-labels";
 
 /** Modules de libellés : fichier source (relatif à ce module) et espace de noms. */
 const TRACE_LABEL_MODULES = {
 	engine: { file: "../calculations/trace-labels.ts", labels: engineLabels },
+	"tax-scale": { file: "../calculations/tax-scale-labels.ts", labels: taxScaleLabels },
 	"pillar-3a-buyback": { file: "../calculations/pension/pillar-3a-buyback-labels.ts", labels: pillar3aBuybackLabels },
 	"pillar-3a-tax-saving": { file: "../calculations/pension/pillar-3a-tax-saving-labels.ts", labels: pillar3aTaxSavingLabels },
 	"gross-to-taxable": { file: "../calculations/gross-to-taxable-labels.ts", labels: grossToTaxableLabels },
 	"lpp-buyback": { file: "../calculations/pension/lpp-buyback-labels.ts", labels: lppBuybackLabels },
+	"capital-withdrawal": { file: "../calculations/pension/capital-withdrawal-labels.ts", labels: capitalWithdrawalLabels },
 } as const;
 
 export type TraceLabelModule = keyof typeof TRACE_LABEL_MODULES;

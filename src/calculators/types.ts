@@ -20,7 +20,8 @@ type FieldBase = {
 	required?: boolean;
 	/**
 	 * Champ affiché seulement si toutes ces conditions sont remplies (réponses
-	 * d'autres champs) ; masqué, il n'est ni exigé ni lu.
+	 * d'autres champs) ; masqué, il n'est ni exigé ni lu. `canton` désigne le
+	 * canton de la commune saisie (code officiel), déduit et non saisi.
 	 */
 	shownWhen?: { field: string; value: string }[];
 };
@@ -83,9 +84,25 @@ export type ChildAgesFieldDefinition = FieldBase & {
 	itemLabel: string;
 };
 
+/**
+ * Liste de comptes : un groupe de champs par compte, généré depuis le champ du
+ * nombre de comptes, comme un champ par enfant (§ 4.3) ; p. ex. un montant et
+ * une année par compte 3a. Le `name` de chaque champ du groupe contient « {n} »,
+ * remplacé par le rang du compte.
+ */
+export type AccountListFieldDefinition = FieldBase & {
+	kind: "accountList";
+	/** Champ du nombre de comptes. */
+	countField: string;
+	/** Légende de chaque groupe, « {n} » remplacé par le rang du compte. FRANÇAIS. */
+	itemLegend: string;
+	itemFields: NumberFieldDefinition[];
+};
+
 export type FieldDefinition =
 	| NumberFieldDefinition
 	| ChildAgesFieldDefinition
+	| AccountListFieldDefinition
 	| SelectFieldDefinition
 	| CantonFieldDefinition
 	| MunicipalityFieldDefinition
@@ -149,6 +166,8 @@ export type VigilancePoint = {
 	title?: string;
 	text?: string;
 	items?: string[];
+	/** Lien affiché sous la phrase visible, p. ex. vers un autre calculateur. FRANÇAIS. */
+	link?: { label: string; url: string };
 };
 
 export type CalculatorDefinition = {

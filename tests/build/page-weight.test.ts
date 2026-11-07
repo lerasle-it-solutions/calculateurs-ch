@@ -39,7 +39,13 @@ describe("poids des pages de calculateur et du fichier de données", () => {
 
 	it("chaque calculateur publié, et l'accueil, chargent un fichier de données", () => {
 		const pages = calculatingPages().map((entry) => entry.page);
-		for (const page of ["/index.html", "/prevoyance/rachat-3a-retroactif/index.html", "/prevoyance/economie-impot-3a/index.html", "/prevoyance/rachat-lpp/index.html"]) {
+		for (const page of [
+			"/index.html",
+			"/prevoyance/rachat-3a-retroactif/index.html",
+			"/prevoyance/economie-impot-3a/index.html",
+			"/prevoyance/rachat-lpp/index.html",
+			"/prevoyance/retrait-capital-lpp-3a/index.html",
+		]) {
 			expect(pages).toContain(page);
 		}
 	});

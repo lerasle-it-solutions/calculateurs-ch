@@ -1,0 +1,102 @@
+---
+/**
+ * A4 — Retrait en capital LPP et 3a : impôt et échelonnement.
+ *
+ * Le calcul se fait dans le navigateur, en JavaScript natif : impôt du
+ * calendrier saisi, année par année, par computeCapitalWithdrawalPlan ; la
+ * comparaison des échelonnements vient du module chargé à la demande
+ * (capital-withdrawal-visuals.ts, décision n° 22). Les barèmes et les règles
+ * du retrait en capital arrivent par le fichier de données de l'année, chargé
+ * à la première interaction (src/lib/display/tax-data.ts) ; l'année est l'année
+ * fiscale des données, jamais l'horloge du visiteur.
+ */
+import CalculatorLayout from "../../layouts/CalculatorLayout.astro";
+import CalculatorShell from "../../components/calculator/CalculatorShell.astro";
+import ResultTable from "../../components/ui/ResultTable.astro";
+import {
+	capitalWithdrawal,
+	capitalWithdrawalIntro,
+	capitalWithdrawalTaxYear,
+	capitalWithdrawalTexts,
+	capitalWithdrawalVerifiedOn,
+} from "../../calculators/pension/capital-withdrawal";
+import {
+	capitalWithdrawalPageData as pageData,
+	capitalWithdrawalPagePart as pagePart,
+} from "../../calculators/pension/capital-withdrawal-page-data";
+import { pageDataJson } from "../../calculators/page-data";
+import { exampleFormValues } from "../../calculators/field-values";
+import { publishedCalculators } from "../../calculators/catalog";
+import { readCapitalWithdrawalForm } from "../../lib/display/capital-withdrawal-core";
+import { capitalWithdrawalTableRows } from "../../lib/display/capital-withdrawal-tables";
+import { fr } from "../../i18n/fr";
+
+const texts = capitalWithdrawalTexts;
+// Cas exemple calculé au build par le moteur (docs/design-system.md § 4.2)
+const initial = readCapitalWithdrawalForm(exampleFormValues(capitalWithdrawal), pageData);
+const shown = initial.shown;
+const tables = capitalWithdrawalTableRows(shown?.engine ?? null, pagePart.tableTexts);
+---
+
+<CalculatorLayout definition={capitalWithdrawal}>
+	<CalculatorShell
+		definition={capitalWithdrawal}
+		intro={capitalWithdrawalIntro}
+		resultLabel={texts.resultLabel}
+		resultNote={texts.disclaimer}
+		notice={
+			capitalWithdrawalTaxYear.isFallback
+				? fr.taxYearFallback.capitalWithdrawal(capitalWithdrawalTaxYear.year, capitalWithdrawalTaxYear.calendarYear)
+				: undefined
+		}
+		verifiedOn={capitalWithdrawalVerifiedOn}
+		catalog={publishedCalculators("pension")}
+		initial={initial}
+		taxDataUrl={pagePart.taxDataUrl}
+		vigilanceId="capital-withdrawal-warnings"
+	>
+		<div slot="result" class="mt-md flex flex-col gap-xl">
+			<div id="capital-withdrawal-result" class="flex max-w-reading flex-col gap-md" hidden={shown === null}>
+				<ResultTable
+					id="capital-withdrawal-years"
+					heading={texts.years.heading}
+					caption={texts.years.caption}
+					rows={tables.years}
+					columns={[
+						{ label: texts.years.columns.year },
+						{ label: texts.years.columns.withdrawals },
+						{ label: texts.years.columns.federal, align: "right" },
+						{ label: texts.years.columns.cantonal, align: "right" },
+						{ label: texts.years.columns.municipal, align: "right" },
+						{ label: texts.years.columns.total, align: "right" },
+					]}
+				/>
+
+				<ResultTable
+					id="capital-withdrawal-scenarios"
+					heading={texts.scenarios.heading}
+					caption={texts.scenarios.caption}
+					rows={tables.scenarios}
+					columns={[
+						{ label: texts.scenarios.columns.scenario },
+						{ label: texts.scenarios.columns.calendar },
+						{ label: texts.scenarios.columns.total, align: "right" },
+						{ label: texts.scenarios.columns.difference, align: "right" },
+					]}
+				>
+					<p id="capital-withdrawal-optimal" class="text-label font-bold">{tables.optimal}</p>
+					<p class="text-fine text-ink-muted">{texts.scenarios.rules}</p>
+				</ResultTable>
+			</div>
+		</div>
+	</CalculatorShell>
+
+	<script type="application/json" id="capital-withdrawal-data" set:html={pageDataJson(pagePart)} />
+</CalculatorLayout>
+
+<script>
+	// Seul script au chargement : le résultat du cas exemple est rendu à la construction ;
+	// le calcul se charge à la première interaction (CLAUDE.md § 3).
+	import { onFirstInteraction } from "../../lib/display/first-interaction";
+	onFirstInteraction(() => import("../../lib/display/capital-withdrawal-page"));
+</script>

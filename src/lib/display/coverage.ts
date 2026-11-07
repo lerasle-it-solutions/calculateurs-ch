@@ -4,7 +4,8 @@
  * dès que le canton, la commune, l'état civil et le nombre d'enfants sont
  * connus (`coverageStatusOf`) : la page l'affiche sans attendre les revenus.
  */
-import { assertTaxCoverage, PartialCoverageError, type TaxInput, type TaxScales } from "../calculations/tax";
+import type { TaxInput, TaxScales } from "../calculations/tax";
+import { assertTaxCoverage, PartialCoverageError } from "../calculations/tax-scale";
 import type { ResultStatus, StatusLink } from "./result-card";
 
 export type CoverageTexts = {

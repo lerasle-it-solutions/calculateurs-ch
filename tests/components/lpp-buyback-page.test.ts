@@ -50,11 +50,9 @@ describe("définition d'A3", () => {
 		const cases = lppBuyback.scope.notCovered;
 		const of = (start: string) => cases.find((entry) => entry.case.startsWith(start))?.alternative;
 		expect(of("Calcul du potentiel de rachat")).toEqual({ label: "Le certificat de prévoyance annuel, ou une demande écrite à la caisse." });
-		expect(of("Imposition du capital à la sortie")).toEqual({
-			// Texte réécrit le 18.10.2026 (docs/editorial-style.md), même renvoi
-			label: "Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie.",
-			url: "/methodologie/#rachat-lpp",
-		});
+		// Renvoi vers A4, le calculateur du retrait en capital, depuis sa construction (W11, demande du
+		// mainteneur du 7.11.2026, règle de fin de W09 : texte changé, but du test inchangé)
+		expect(of("Imposition du capital à la sortie")).toBe("pension.capital-withdrawal");
 		expect(of("Rachat consécutif à un divorce")).toBeDefined();
 		expect(of("Personnes imposées à la source")).toEqual({ label: "Renseignez-vous auprès de l’administration fiscale de votre canton." });
 		// Renvoi vers l'article 2 depuis W10 (maillage réciproque, docs/plan/W10.md), et non plus vers A2

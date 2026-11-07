@@ -5,9 +5,12 @@
  */
 import type { FormOutcome } from "../lib/display/calculator-form";
 import { exampleFormValues } from "./field-values";
+import { readCapitalWithdrawalForm } from "../lib/display/capital-withdrawal-core";
 import { readLppBuybackForm } from "../lib/display/lpp-buyback-form";
 import { readPillar3aBuybackForm } from "../lib/display/pillar-3a-buyback-form";
 import { readPillar3aTaxSavingForm } from "../lib/display/pillar-3a-tax-saving-form";
+import { CAPITAL_WITHDRAWAL_ID, capitalWithdrawal } from "./pension/capital-withdrawal";
+import { capitalWithdrawalPageData } from "./pension/capital-withdrawal-page-data";
 import { LPP_BUYBACK_ID, lppBuyback } from "./pension/lpp-buyback";
 import { lppBuybackPageData } from "./pension/lpp-buyback-page-data";
 import { PILLAR_3A_BUYBACK_ID, pillar3aBuyback } from "./pension/pillar-3a-buyback";
@@ -19,6 +22,7 @@ const RUNS: Record<string, () => FormOutcome<unknown>> = {
 	[PILLAR_3A_BUYBACK_ID]: () => readPillar3aBuybackForm(exampleFormValues(pillar3aBuyback), pillar3aBuybackPageData),
 	[PILLAR_3A_TAX_SAVING_ID]: () => readPillar3aTaxSavingForm(exampleFormValues(pillar3aTaxSaving), pillar3aTaxSavingPageData),
 	[LPP_BUYBACK_ID]: () => readLppBuybackForm(exampleFormValues(lppBuyback), lppBuybackPageData),
+	[CAPITAL_WITHDRAWAL_ID]: () => readCapitalWithdrawalForm(exampleFormValues(capitalWithdrawal), capitalWithdrawalPageData),
 };
 
 export function exampleOutcome(id: string): FormOutcome<unknown> {

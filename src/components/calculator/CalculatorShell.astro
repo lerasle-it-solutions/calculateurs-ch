@@ -47,6 +47,7 @@ import { eligibilityState } from "../../lib/display/eligibility";
 import type { FormOutcome } from "../../lib/display/calculator-form";
 import { exampleFormValues } from "../../calculators/field-values";
 import { fillSummary } from "../../lib/display/result-summary";
+import { getMunicipalMultipliers } from "../../data";
 
 interface Props {
 	definition: CalculatorDefinition;
@@ -113,6 +114,11 @@ const deferred = taxDataUrl !== undefined;
 
 /** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
 const filled = exampleFormValues(definition);
+// Canton de la commune du cas exemple : condition d'affichage `canton` (shownWhen), déduite et non saisie
+const exampleMunicipality = (getMunicipalMultipliers()?.multipliers ?? []).find(
+	(entry) => entry.municipality === filled.municipality || `${entry.municipality} (${entry.canton})` === filled.municipality,
+);
+if (exampleMunicipality && filled.canton === undefined) filled.canton = exampleMunicipality.canton;
 
 // Profils (§ 4.3) : les questions d'un groupe ne s'affichent que pour « Autre situation »
 const profileGroups = definition.profiles ?? [];

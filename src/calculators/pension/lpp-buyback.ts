@@ -252,10 +252,8 @@ export const lppBuyback: CalculatorDefinition = {
 			},
 			{
 				case: "Imposition du capital à la sortie, et donc le point mort entre l’économie d’aujourd’hui et l’impôt au retrait.",
-				alternative: {
-					label: "Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie.",
-					url: "/methodologie/#rachat-lpp",
-				},
+				// Le calculateur du retrait en capital (A4), au lieu du renvoi à la méthodologie (W11, 7.11.2026)
+				alternative: CAPITAL_WITHDRAWAL_ID,
 			},
 			{
 				case: "Rachat consécutif à un divorce ou à la dissolution d’un partenariat enregistré.",

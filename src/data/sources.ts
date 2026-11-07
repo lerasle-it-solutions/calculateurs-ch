@@ -29,9 +29,9 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1991/1256_1256_1256/fr",
 		legalReference:
-			"RS 642.14, art. 1 al. 3 et art. 9, dont art. 9 al. 2 let. d (déduction du rachat LPP) et let. e (déduction des cotisations au pilier 3a) ; art. 7 al. 1 (prestations de prévoyance professionnelle imposables) ; art. 11 al. 3 (prestations en capital de la prévoyance imposées séparément)",
+			"RS 642.14, art. 1 al. 3 et art. 9, dont art. 9 al. 2 let. d (déduction du rachat LPP) et let. e (déduction des cotisations au pilier 3a) ; art. 7 al. 1 (prestations de prévoyance professionnelle imposables) ; art. 11 al. 3 (prestations en capital de la prévoyance imposées séparément) ; art. 3 al. 3 (revenus des époux vivant en ménage commun additionnés)",
 		cadence: "irregular",
-		verifiedOn: "2026-09-23",
+		verifiedOn: "2026-11-06",
 		dataClass: "public",
 		nature: "official",
 		requiresAttribution: false,
@@ -44,7 +44,7 @@ export const SOURCES = defineSources([
 		authority: "Confédération",
 		url: "https://www.fedlex.admin.ch/eli/cc/1991/1184_1184_1184/fr",
 		legalReference:
-			"RS 642.11, art. 22 al. 1 (revenus de la prévoyance professionnelle imposables), art. 33 et 35 (déductions), dont art. 33 al. 1 let. d (déduction du rachat LPP) et let. e (déduction des cotisations au pilier 3a), art. 36 (barème IFD), art. 36 al. 3 (montant minimal perçu), art. 38 al. 1, 1bis, 2 et 3 (prestations en capital : imposition séparée, impôt annuel entier fixé pour l'année d'acquisition, cinquième des barèmes de l'art. 36 al. 1, 2 et 2bis première phrase, sans déduction sociale)",
+			"RS 642.11, art. 9 al. 1 (revenus des époux vivant en ménage commun additionnés), art. 22 al. 1 (revenus de la prévoyance professionnelle imposables), art. 33 et 35 (déductions), dont art. 33 al. 1 let. d (déduction du rachat LPP) et let. e (déduction des cotisations au pilier 3a), art. 36 (barème IFD), art. 36 al. 3 (montant minimal perçu), art. 38 al. 1, 1bis, 2 et 3 (prestations en capital : imposition séparée, impôt annuel entier fixé pour l'année d'acquisition, cinquième des barèmes de l'art. 36 al. 1, 2 et 2bis première phrase, sans déduction sociale)",
 		cadence: "irregular",
 		verifiedOn: "2026-11-06",
 		dataClass: "public",

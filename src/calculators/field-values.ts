@@ -21,6 +21,7 @@ export function fieldValueError(field: FieldDefinition, raw: string): string | n
 			return ROMANDE_CANTONS.some((canton) => canton.code === raw) ? null : "canton inconnu";
 		case "text":
 		case "childAges":
+		case "accountList":
 			return null;
 	}
 }
@@ -53,7 +54,14 @@ export function exampleProblems(definition: CalculatorDefinition): string[] {
 	for (const [name, raw] of Object.entries(values)) {
 		// Âge d'un enfant : un champ généré par enfant (childAge1, childAge2…)
 		const childAges = definition.fields.find((candidate) => candidate.kind === "childAges");
-		const field = fields.get(name) ?? (childAges && /^childAge\d+$/.test(name) ? ({ kind: "number", name, label: "", min: 0, step: 1 } as const) : undefined);
+		// Champ d'un compte d'une liste : le nom du champ du groupe, « {n} » remplacé par un rang
+		const accountField = definition.fields
+			.flatMap((candidate) => (candidate.kind === "accountList" ? candidate.itemFields : []))
+			.find((item) => new RegExp(`^${item.name.replace("{n}", "\\d+")}$`).test(name));
+		const field =
+			fields.get(name) ??
+			accountField ??
+			(childAges && /^childAge\d+$/.test(name) ? ({ kind: "number", name, label: "", min: 0, step: 1 } as const) : undefined);
 		const group = groups.get(name);
 		const error = field
 			? fieldValueError(field, raw)

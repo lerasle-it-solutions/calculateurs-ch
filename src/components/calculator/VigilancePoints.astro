@@ -36,6 +36,11 @@ const { id, points } = Astro.props;
 					{point.level === "warning" && <strong class="font-bold text-warning">{fr.calculator.warningPrefix}</strong>}{" "}
 					{point.summary}
 				</p>
+				{point.link && (
+					<p>
+						<a href={point.link.url} class="font-bold">{point.link.label}</a>
+					</p>
+				)}
 				{(point.title || point.text || (point.items && point.items.length > 0)) && (
 					<details>
 						<summary class="flex min-h-3xl cursor-pointer items-center font-bold text-accent underline">{fr.calculator.vigilanceMore}</summary>

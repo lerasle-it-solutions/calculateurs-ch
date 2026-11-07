@@ -10,8 +10,9 @@
  * une règle sans facteur bornée par un taux maximal, qui convertit le capital en
  * rente selon le tableau de l'AFC.
  */
-import type { CapitalTaxModel, CapitalWithdrawalScales } from "../lib/calculations/pension/capital-withdrawal";
-import { getCantonData, getCapitalAnnuityConversion, getCapitalWithdrawalDerivation, getFederalData } from "./index";
+import { packCapitalWithdrawalBundle, type CapitalWithdrawalBundle } from "../lib/calculations/pension/capital-withdrawal-bundle";
+import type { CapitalTaxModel, CapitalWithdrawalScales } from "../lib/calculations/pension/capital-withdrawal-plan";
+import { getCantonData, getCapitalAnnuityConversion, getCapitalWithdrawalDerivation, getFederalData, getMunicipalMultipliers } from "./index";
 import { getTaxScales, sourced, sourcedOrPending, toTables, type TaxScalesQuery } from "./tax-scales";
 
 /**
@@ -78,4 +79,21 @@ export function getCapitalWithdrawalScales(query: TaxScalesQuery): CapitalWithdr
 		},
 		ruleSources: RULE_SOURCES,
 	};
+}
+
+/**
+ * Règles du retrait en capital des cantons demandés, pour le fichier de données
+ * de l'année (src/lib/calculations/pension/capital-withdrawal-bundle.ts) ;
+ * `null` si l'année n'a pas ses valeurs fédérales du retrait en capital.
+ */
+export function getCapitalWithdrawalBundle(taxYear: number, cantons: readonly TaxScalesQuery["canton"][]): CapitalWithdrawalBundle | null {
+	if (getFederalData(taxYear).capitalWithdrawal === undefined) return null;
+	const rules: Parameters<typeof packCapitalWithdrawalBundle>[1] = {};
+	for (const canton of cantons) {
+		const municipality = getMunicipalMultipliers()?.multipliers.find((entry) => entry.canton === canton);
+		if (!municipality) continue;
+		const { tax: _, ...cantonRules } = getCapitalWithdrawalScales({ taxYear, canton, municipalityOfsId: municipality.bfsId });
+		rules[canton] = cantonRules;
+	}
+	return packCapitalWithdrawalBundle(taxYear, rules);
 }
