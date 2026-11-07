@@ -41,13 +41,21 @@
 		},
 		"VS": {
 			"derivedFrom": "incomeTaxScale",
+			"minimumRatePercent": {
+				"value": 2,
+				"unit": "%",
+				"sourceId": "vs-lf",
+				"verifiedOn": "2026-11-06",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 32 al. 1 LF : le taux de l'impôt sur le revenu est fixé entre 2 et 14 % ; art. 33b al. 1 : l'impôt sur le capital est calculé au moins au taux minimum prévu. Le dossier fiscal de l'AFC donne aussi 2 %."
+			},
 			"maximumRatePercent": {
 				"value": 4,
 				"unit": "%",
 				"sourceId": "vs-lf",
 				"verifiedOn": "2026-09-24",
 				"effectiveFrom": "2026-01-01",
-				"note": "Art. 33b LF : taux applicable aux prestations périodiques, plafonné. Pas de facteur : l'art. 33b al. 1 LF applique le taux des prestations périodiques, plafonné à 4 % (al. 4), avec une réduction de 2 % pour les couples mariés, au maximum 2 450 CHF. Cette réduction n'est pas encore modélisée."
+				"note": "Art. 33b al. 1 LF : pas de facteur. L'impôt est calculé au taux qui serait applicable à des prestations périodiques, au moins au taux minimum prévu et au plus au taux maximum de 4 %, sans les déductions sociales des art. 31, 31a et 32 LF. La réduction de l'al. 4 est une autre règle (coupleReduction)."
 			},
 			"coupleReduction": {
 				"value": {
@@ -57,7 +65,7 @@
 				"sourceId": "vs-lf",
 				"verifiedOn": "2026-09-28",
 				"effectiveFrom": "2026-01-01",
-				"note": "Art. 33b LF : réduction de 2 % pour les couples mariés, au maximum 2 450 CHF. Assiette de la réduction (impôt ou taux) à préciser avant modélisation ; pas encore appliquée par le moteur."
+				"note": "Art. 33b al. 4 LF : l'impôt dû est réduit de 2 %, au maximum 2 450 CHF, pour les contribuables mariés vivant en ménage commun et pour les contribuables veufs, séparés, divorcés ou célibataires qui font ménage commun avec des enfants ou des personnes nécessiteuses dont ils assurent pour l'essentiel l'entretien (couples mariés et familles monoparentales). Plafond indexé (art. 236 al. 1 LF). Hors du périmètre de la v1 d'A4 (personnes seules sans enfant), donc pas appliquée par le moteur ; le plafond sera sourcé avec les couples."
 			}
 		}
 	}

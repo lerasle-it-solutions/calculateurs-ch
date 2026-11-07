@@ -77,7 +77,7 @@ type DataScale = {
 	}>;
 };
 
-const toTables = (scales: DataScale[], what: string): ScaleTable[] =>
+export const toTables = (scales: DataScale[], what: string): ScaleTable[] =>
 	scales.map(({ taxpayerGroup, table }) => {
 		const households = TAXPAYER_GROUP_HOUSEHOLDS[taxpayerGroup];
 		if (households === undefined) {
@@ -99,9 +99,9 @@ const isTodo = (candidate: unknown): candidate is Todo =>
 
 const pending = (todo: Todo): Pending => ({ pending: todo.todo, sourceId: todo.sourceId });
 
-const sourced = <T>(value: Value<T>): Sourced<T> => ({ value: value.value, sourceId: value.sourceId });
+export const sourced = <T>(value: Value<T>): Sourced<T> => ({ value: value.value, sourceId: value.sourceId });
 
-const sourcedOrPending = <T>(candidate: Value<T> | Todo): SourcedOrPending<T> =>
+export const sourcedOrPending = <T>(candidate: Value<T> | Todo): SourcedOrPending<T> =>
 	isTodo(candidate) ? pending(candidate) : sourced(candidate);
 
 const nullable = <T>(candidate: Value<T> | Todo | null): SourcedOrPending<T> | null =>
