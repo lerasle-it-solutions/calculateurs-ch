@@ -43,6 +43,16 @@ const TRACE_LABEL_MODULES = {
 
 export type TraceLabelModule = keyof typeof TRACE_LABEL_MODULES;
 
+/**
+ * Modules de libellés propres à un calculateur qui a son propre fichier de données
+ * (src/calculators/calculator-data-file.ts) : ils voyagent dans ce fichier, pas dans
+ * le fichier commun de l'année, que chargent toutes les pages.
+ */
+export const CALCULATOR_TRACE_LABEL_MODULES: Record<string, TraceLabelModule[]> = {
+	"pension.capital-withdrawal": ["capital-withdrawal"],
+};
+const calculatorModules = new Set(Object.values(CALCULATOR_TRACE_LABEL_MODULES).flat());
+
 /** Identifiant de l'élément `<script type="application/json">` qui porte les libellés du moteur. */
 export const TRACE_LABELS_ELEMENT_ID = "trace-labels";
 
@@ -66,9 +76,17 @@ const names = (module: TraceLabelModule): string[] => Object.keys(labelsOf(modul
 export const traceLabelValues = (module: TraceLabelModule = "engine"): string[] =>
 	names(module).map((name) => labelsOf(module)[name]!);
 
-/** Libellés de tous les modules, par identifiant d'élément : ce que le fichier de données transmet. */
+/** Libellés des modules communs, par identifiant d'élément : ce que le fichier de données de l'année transmet. */
 export const allTraceLabels = (): Record<string, string[]> =>
-	Object.fromEntries((Object.keys(TRACE_LABEL_MODULES) as TraceLabelModule[]).map((module) => [traceLabelsElementId(module), traceLabelValues(module)]));
+	Object.fromEntries(
+		(Object.keys(TRACE_LABEL_MODULES) as TraceLabelModule[])
+			.filter((module) => !calculatorModules.has(module))
+			.map((module) => [traceLabelsElementId(module), traceLabelValues(module)]),
+	);
+
+/** Libellés propres à un calculateur : ce que son fichier de données transmet. */
+export const calculatorTraceLabels = (calculatorId: string): Record<string, string[]> =>
+	Object.fromEntries((CALCULATOR_TRACE_LABEL_MODULES[calculatorId] ?? []).map((module) => [traceLabelsElementId(module), traceLabelValues(module)]));
 
 /**
  * Source du module qui remplace un module de libellés dans le navigateur. Une

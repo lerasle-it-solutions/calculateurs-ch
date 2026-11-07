@@ -19,8 +19,18 @@ import { DIST, htmlFiles } from "./dist-pages";
  *   dit rien de la saisie —, sous 600 000 octets bruts et 25 000 octets en
  *   gzip (niveau 9). Mesure du 17.10.2026 : 500 791 octets bruts, 20 917 en
  *   gzip, 14 760 en brotli.
+ * - Fichier propre à un calculateur (décision du mainteneur du 7.11.2026,
+ *   src/calculators/calculator-data-file.ts) : identique pour tous les
+ *   visiteurs, chargé par la seule page de son calculateur, sous 100 000 octets
+ *   bruts et 10 000 octets en gzip (niveau 9), plafond proposé le 7.11.2026, à
+ *   valider avec CLAUDE.md § 3. Mesure du 7.11.2026 pour A4 : 11 582 octets
+ *   bruts, 3 384 en gzip.
  */
-export const PAGE_BUDGETS = { htmlGzip: 30_000, dataRaw: 600_000, dataGzip: 25_000 } as const;
+export const PAGE_BUDGETS = { htmlGzip: 30_000, dataRaw: 600_000, dataGzip: 25_000, calculatorDataRaw: 100_000, calculatorDataGzip: 10_000 } as const;
+
+/** Fichier commun de l'année ; fichier propre à un calculateur (préfixe français, c'est une URL). */
+const ANNUAL_FILE = /^baremes-(\d{4})\.[0-9a-f]{10}\.json$/;
+const CALCULATOR_FILE = /^([a-z0-9-]+)-(\d{4})\.[0-9a-f]{10}\.json$/;
 
 const DATA_DIR = join(DIST, "donnees/calcul");
 
@@ -29,7 +39,8 @@ const calculatingPages = () =>
 	htmlFiles(DIST).flatMap((file) => {
 		const html = readFileSync(file, "utf8");
 		const url = html.match(/\sdata-tax-data="([^"]+)"/)?.[1];
-		return url ? [{ page: `/${relative(DIST, file)}`, html, url }] : [];
+		const own = html.match(/\sdata-calculator-data="([^"]+)"/)?.[1];
+		return url ? [{ page: `/${relative(DIST, file)}`, html, url, own }] : [];
 	});
 
 describe("poids des pages de calculateur et du fichier de données", () => {
@@ -50,6 +61,18 @@ describe("poids des pages de calculateur et du fichier de données", () => {
 		}
 	});
 
+	it("A4 charge en plus son fichier propre, et lui seul le charge", () => {
+		const owners = calculatingPages().filter((entry) => entry.own !== undefined);
+		expect(owners.map((entry) => entry.page)).toEqual(["/prevoyance/retrait-capital-lpp-3a/index.html"]);
+		const own = owners[0]!.own!;
+		expect(own).toMatch(/^\/donnees\/calcul\/retrait-capital-\d{4}\.[0-9a-f]{10}\.json$/);
+		expect(existsSync(join(DIST, own))).toBe(true);
+		// Les règles du retrait en capital et les libellés de sa trace ne sont plus dans le fichier commun
+		const annual = readFileSync(join(DIST, owners[0]!.url), "utf8");
+		expect(annual).not.toContain('"capitalWithdrawal"');
+		expect(annual).not.toContain("trace-labels-capital-withdrawal");
+	});
+
 	it("le HTML de chaque page reste sous 30 000 octets transférés (gzip)", () => {
 		const over = htmlFiles(DIST)
 			.map((file) => ({ page: `/${relative(DIST, file)}`, bytes: gzipSync(readFileSync(file)).length }))
@@ -65,11 +88,18 @@ describe("poids des pages de calculateur et du fichier de données", () => {
 		expect(embedding).toEqual([]);
 	});
 
-	it("un seul fichier de données par année, le même pour toutes les pages", () => {
+	it("un seul fichier commun par année, le même pour toutes les pages ; les autres sont propres à un calculateur", () => {
 		const files = readdirSync(DATA_DIR);
-		const years = files.map((name) => name.match(/^baremes-(\d{4})\.[0-9a-f]{10}\.json$/)?.[1]);
-		expect(years.every(Boolean), files.join(", ")).toBe(true);
-		expect(new Set(years).size).toBe(files.length);
+		const annual = files.filter((name) => ANNUAL_FILE.test(name));
+		const years = annual.map((name) => name.match(ANNUAL_FILE)![1]);
+		expect(new Set(years).size).toBe(annual.length);
+		const others = files.filter((name) => !ANNUAL_FILE.test(name));
+		expect(others.every((name) => CALCULATOR_FILE.test(name)), others.join(", ")).toBe(true);
+		// Chaque fichier propre est chargé par une seule page
+		for (const name of others) {
+			const loaders = calculatingPages().filter((entry) => entry.own === `/donnees/calcul/${name}`);
+			expect(loaders.length, name).toBe(1);
+		}
 		for (const { page, url } of calculatingPages()) {
 			expect(existsSync(join(DIST, url)), `${page} → ${url}`).toBe(true);
 		}
@@ -79,9 +109,12 @@ describe("poids des pages de calculateur et du fichier de données", () => {
 		const over = readdirSync(DATA_DIR).flatMap((name) => {
 			const body = readFileSync(join(DATA_DIR, name));
 			const gzip = gzipSync(body, { level: 9 }).length;
+			const [raw, compressed] = ANNUAL_FILE.test(name)
+				? [PAGE_BUDGETS.dataRaw, PAGE_BUDGETS.dataGzip]
+				: [PAGE_BUDGETS.calculatorDataRaw, PAGE_BUDGETS.calculatorDataGzip];
 			return [
-				...(body.length > PAGE_BUDGETS.dataRaw ? [`${name} : ${body.length} octets bruts`] : []),
-				...(gzip > PAGE_BUDGETS.dataGzip ? [`${name} : ${gzip} octets en gzip`] : []),
+				...(body.length > raw ? [`${name} : ${body.length} octets bruts`] : []),
+				...(gzip > compressed ? [`${name} : ${gzip} octets en gzip`] : []),
 			];
 		});
 		expect(over).toEqual([]);

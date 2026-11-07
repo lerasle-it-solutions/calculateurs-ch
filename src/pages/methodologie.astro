@@ -11,6 +11,7 @@ import { PILLAR_3A_BUYBACK_ID } from "../calculators/pension/pillar-3a-buyback";
 import { PILLAR_3A_TAX_SAVING_ID } from "../calculators/pension/pillar-3a-tax-saving";
 import { lppBuybackLockPeriod, lppBuybackYear } from "../calculators/pension/lpp-buyback";
 import { capitalWithdrawalYear } from "../calculators/pension/capital-withdrawal";
+import { capitalWithdrawalLink, capitalWithdrawalPublished } from "../calculators/pension/capital-withdrawal-link";
 import { SCENARIO_TRANCHE_COUNTS } from "../lib/calculations/pension/capital-withdrawal-scenarios";
 import { pillar3aContributionDeadline } from "../calculators/contribution-deadline";
 import { fr } from "../i18n/fr";
@@ -562,8 +563,8 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID).
 				L’économie affichée n’est donc pas un gain net. Le point mort entre
 				l’économie d’aujourd’hui et l’impôt au retrait dépend des barèmes de
-				l’impôt sur les prestations en capital ; il sera ajouté avec le
-				calculateur du retrait en capital LPP/3a, en préparation.
+				l’impôt sur les prestations en capital ; il sera ajouté avec le{" "}
+				{capitalWithdrawalPublished ? <a href={capitalWithdrawalLink.url}>calculateur du retrait en capital LPP/3a</a> : "calculateur du retrait en capital LPP/3a, en préparation"}.
 			</p>
 			<h3 id="retrait-capital" class="text-subheading">Retrait en capital du 2<sup>e</sup> pilier et du 3a</h3>
 			<p class="max-w-reading text-body">

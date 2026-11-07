@@ -3,10 +3,10 @@
  * src/calculators/, et celles qui sont publiées, c'est-à-dire dont la page
  * existe dans src/pages/ à l'URL de leur `slug`.
  */
+import { pageExists } from "./page-exists";
 import type { CalculatorDefinition } from "./types";
 
 const definitionModules = import.meta.glob<Record<string, unknown>>("./*/*.ts", { eager: true });
-const pages = import.meta.glob("../pages/**/*.astro");
 
 const isCalculatorDefinition = (candidate: unknown): candidate is CalculatorDefinition =>
 	typeof candidate === "object" &&
@@ -21,8 +21,7 @@ export const allCalculators: CalculatorDefinition[] = Object.values(definitionMo
 	.filter(isCalculatorDefinition);
 
 /** Vrai si la page du calculateur existe : « /prevoyance/x/ » ↔ src/pages/prevoyance/x.astro. */
-export const isPublished = (definition: CalculatorDefinition): boolean =>
-	`../pages${definition.slug.replace(/\/$/, "")}.astro` in pages;
+export const isPublished = (definition: CalculatorDefinition): boolean => pageExists(definition.slug);
 
 export const publishedCalculators = (family: CalculatorDefinition["family"]): CalculatorDefinition[] =>
 	allCalculators.filter((definition) => definition.family === family && isPublished(definition));

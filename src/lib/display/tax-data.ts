@@ -19,7 +19,6 @@
  * fois. Sans DOM.
  */
 import type { GrossToTaxableRuleSet } from "../calculations/gross-to-taxable";
-import type { CapitalWithdrawalBundle } from "../calculations/pension/capital-withdrawal-bundle";
 import type { TaxInput } from "../calculations/tax";
 import type { TaxScalesBundle } from "../calculations/tax-scales-bundle";
 import type { HouseholdPageData } from "./calculator-form";
@@ -31,8 +30,6 @@ export type TaxDataFile = {
 	bundle: TaxScalesBundle;
 	/** Règles de l'estimateur du salaire brut ; `null` si elles ne sont pas relevées pour l'année. */
 	estimator: GrossToTaxableRuleSet | null;
-	/** Règles du retrait en capital par canton (A4) ; `null` si elles ne sont pas relevées pour l'année. */
-	capitalWithdrawal: CapitalWithdrawalBundle | null;
 	/**
 	 * Libellés fixes de la trace, par identifiant d'élément (src/lib/build/browser-trace-labels.ts) :
 	 * le chargeur en crée les `<script type="application/json">` avant d'importer le cœur.

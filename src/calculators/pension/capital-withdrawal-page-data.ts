@@ -1,9 +1,12 @@
 /** A4 — données de la page (src/calculators/page-data.ts). */
 import { buildPageData, householdPagePart } from "../page-data";
-import { taxDataFile } from "../tax-data-file";
+import { calculatorDataFile, calculatorDataFileUrl } from "../calculator-data-file";
 import { capitalWithdrawal, capitalWithdrawalTexts as texts, capitalWithdrawalYear } from "./capital-withdrawal";
 
 const household = householdPagePart(capitalWithdrawalYear, capitalWithdrawal.scope.cantonsCovered, texts);
+
+/** Adresse du fichier de données propre à A4 (règles du retrait en capital, libellés de sa trace). */
+export const capitalWithdrawalDataUrl = calculatorDataFileUrl(capitalWithdrawal.id, capitalWithdrawalYear);
 
 /** Partie propre à la page, en JSON dans le HTML. */
 export const capitalWithdrawalPagePart = {
@@ -26,10 +29,10 @@ export const capitalWithdrawalPagePart = {
 };
 
 /**
- * Données complètes, à la construction (cas exemple) : celles de la page et du fichier de données,
- * plus les règles du retrait en capital du même fichier, que le script de la page ajoute de même.
+ * Données complètes, à la construction (cas exemple) : celles de la page et du fichier de l'année,
+ * plus les règles du fichier propre à A4, que le script de la page ajoute de même.
  */
 export const capitalWithdrawalPageData = {
 	...buildPageData(capitalWithdrawalPagePart),
-	capitalWithdrawal: taxDataFile(capitalWithdrawalYear).capitalWithdrawal,
+	capitalWithdrawal: calculatorDataFile(capitalWithdrawal.id, capitalWithdrawalYear).capitalWithdrawal,
 };

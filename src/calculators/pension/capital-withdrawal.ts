@@ -15,11 +15,12 @@ import { municipalityOptions } from "../municipalities";
 import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition, VigilancePoint } from "../types";
+import { CAPITAL_WITHDRAWAL_ID, CAPITAL_WITHDRAWAL_SLUG } from "./capital-withdrawal-link";
 import { LPP_BUYBACK_ID, lppBuyback } from "./lpp-buyback";
 import { pillar3aBuybackTexts } from "./pillar-3a-buyback";
 import { PILLAR_3A_TAX_SAVING_ID } from "./pillar-3a-tax-saving";
 
-export const CAPITAL_WITHDRAWAL_ID = "pension.capital-withdrawal";
+export { CAPITAL_WITHDRAWAL_ID };
 
 /**
  * Année de calcul : l'année civile de la construction si toutes les données
@@ -204,7 +205,7 @@ const HOUSEHOLD_NOT_COVERED =
 export const capitalWithdrawal: CalculatorDefinition = {
 	id: CAPITAL_WITHDRAWAL_ID,
 	family: "pension",
-	slug: "/prevoyance/retrait-capital-lpp-3a/",
+	slug: CAPITAL_WITHDRAWAL_SLUG,
 	title: "Retrait en capital LPP et 3a : impôt et échelonnement",
 	metaDescription:
 		"Estimez l’impôt sur le capital de votre caisse de pension et de vos comptes 3a, et ce qu’un retrait échelonné vous fait économiser.",

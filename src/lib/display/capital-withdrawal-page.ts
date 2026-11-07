@@ -9,12 +9,13 @@
  *
  * Deux compléments propres à A4, hors du code commun des calculateurs : le
  * canton de la commune saisie, dans un champ caché `canton`, dont dépend
- * l'affichage de l'âge et du sexe (Valais) ; les règles du retrait en capital du
- * fichier de données, ajoutées aux données de la page.
+ * l'affichage de l'âge et du sexe (Valais) ; les règles du retrait en capital,
+ * lues dans le fichier de données propre à A4 et ajoutées aux données de la page.
  */
 import type { GrossToTaxableRuleSet } from "../calculations/gross-to-taxable";
 import { municipalityKey } from "./calculator-form";
 import { startCalculator } from "./calculator-runtime";
+import type { CapitalWithdrawalDataFile } from "../../calculators/calculator-data-file";
 import { hydratePageData, type HouseholdPagePart, type TaxDataFile } from "./tax-data";
 import { readCapitalWithdrawalForm, type CapitalWithdrawalCoreDisplay, type CapitalWithdrawalPageData } from "./capital-withdrawal-core";
 import type { CapitalWithdrawalTableTexts } from "./capital-withdrawal-tables";
@@ -22,7 +23,7 @@ import { SHARE_PREFIX } from "./share-state";
 
 const DATA_ID = "capital-withdrawal-data";
 
-export const start = (clicked: Element | null, file: TaxDataFile): void => {
+export const start = (clicked: Element | null, file: TaxDataFile, own: CapitalWithdrawalDataFile): void => {
 	const form = document.querySelector<HTMLFormElement>("[data-calculator]")!;
 	const resultBlock = document.getElementById("capital-withdrawal-result")!;
 	// Canton de la commune saisie, lu par les conditions d'affichage `canton` (shownWhen), avant chaque recalcul
@@ -54,7 +55,7 @@ export const start = (clicked: Element | null, file: TaxDataFile): void => {
 	startCalculator<CapitalWithdrawalPageData & { estimator: GrossToTaxableRuleSet | null; municipalityOptions: string[] }, CapitalWithdrawalCoreDisplay>(
 		{
 			dataId: DATA_ID,
-			read: (values, data) => readCapitalWithdrawalForm(values, { ...data, capitalWithdrawal: file.capitalWithdrawal }),
+			read: (values, data) => readCapitalWithdrawalForm(values, { ...data, capitalWithdrawal: own.capitalWithdrawal }),
 			show: (shown, data) => {
 				// Commune restaurée d'un état partagé, sans saisie : un recalcul avec son canton
 				if (syncCanton()) queueMicrotask(() => form.dispatchEvent(new Event("input")));

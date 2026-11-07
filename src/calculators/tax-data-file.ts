@@ -7,7 +7,6 @@
  */
 import { createHash } from "node:crypto";
 
-import { getCapitalWithdrawalBundle } from "../data/capital-withdrawal-scales";
 import { getGrossToTaxableRuleSet } from "../data/gross-to-taxable";
 import { getTaxScalesBundle } from "../data/tax-scales";
 import { allTraceLabels } from "../lib/build/browser-trace-labels";
@@ -35,8 +34,6 @@ const build = (taxYear: number) => {
 				return null;
 			}
 		})(),
-		// Retrait en capital (A4) : règles par canton, si l'année a ses valeurs fédérales
-		capitalWithdrawal: getCapitalWithdrawalBundle(taxYear, cantons),
 		traceLabels: allTraceLabels(),
 	};
 	const json = JSON.stringify(file);

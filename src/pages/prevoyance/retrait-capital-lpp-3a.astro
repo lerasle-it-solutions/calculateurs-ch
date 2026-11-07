@@ -21,6 +21,7 @@ import {
 	capitalWithdrawalVerifiedOn,
 } from "../../calculators/pension/capital-withdrawal";
 import {
+	capitalWithdrawalDataUrl,
 	capitalWithdrawalPageData as pageData,
 	capitalWithdrawalPagePart as pagePart,
 } from "../../calculators/pension/capital-withdrawal-page-data";
@@ -53,6 +54,7 @@ const tables = capitalWithdrawalTableRows(shown?.engine ?? null, pagePart.tableT
 		catalog={publishedCalculators("pension")}
 		initial={initial}
 		taxDataUrl={pagePart.taxDataUrl}
+		calculatorDataUrl={capitalWithdrawalDataUrl}
 		vigilanceId="capital-withdrawal-warnings"
 	>
 		<div slot="result" class="mt-md flex flex-col gap-xl">

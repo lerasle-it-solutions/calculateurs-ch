@@ -94,6 +94,11 @@ interface Props {
 	 * est remplie à ce moment-là.
 	 */
 	taxDataUrl?: string;
+	/**
+	 * Adresse du fichier de données propre au calculateur, s'il en a un
+	 * (src/calculators/calculator-data-file.ts), chargé avec celui de l'année.
+	 */
+	calculatorDataUrl?: string;
 }
 
 const {
@@ -109,6 +114,7 @@ const {
 	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
 	vigilanceId: vigilanceIdProp,
 	taxDataUrl,
+	calculatorDataUrl,
 } = Astro.props;
 const deferred = taxDataUrl !== undefined;
 
@@ -222,7 +228,7 @@ const resultFor = definition.fields
 		</p>
 	</header>
 
-	<div data-calculator-root data-tax-data={taxDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+	<div data-calculator-root data-tax-data={taxDataUrl} data-calculator-data={calculatorDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
 		<div class="flex min-w-0 flex-col gap-lg md:gap-xl lg:self-start">
 		<p data-example-banner class="rounded-panel bg-tint p-md text-label md:p-lg">
 			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label}. {fr.calculator.exampleReplace}{hasIncomePaths ? (
