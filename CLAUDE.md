@@ -698,8 +698,14 @@ les bibliothèques de composants, et que nous n'avons pas.
 Budget de performance, vérifié en CI : LCP < 1,5 s en 4G simulée — le critère final —, HTML
 d'au plus 30 000 octets transférés (gzip) par page (décision n° 22), moins de 30 kb de JS
 par page (minifié, non compressé, préchargement compris), polices auto-hébergées, **aucune requête vers un domaine tiers**.
-Les données des calculateurs fiscaux ne sont pas dans le HTML : un fichier par année de calcul,
-identique pour tous les visiteurs et tous les cantons, au nom haché, chargé avec le cœur.
+Les données des calculateurs fiscaux ne sont pas dans le HTML. Elles vivent dans un fichier commun
+par année de calcul, identique pour tous les visiteurs et tous les cantons, au nom haché, chargé avec
+le cœur : au plus 25 000 octets en gzip (décision n° 22). Un calculateur qui a des données propres
+(règles, tableaux, libellés de sa trace) les reçoit dans un second fichier,
+`/donnees/calcul/<préfixe>-<année>.<empreinte>.json`. Ce fichier est identique pour tous les
+visiteurs, ne dépend d'aucune saisie, n'est chargé que par la page de ce calculateur, en même temps
+que le fichier commun, et pèse au plus 10 000 octets en gzip (décision du 7.11.2026). Jamais un
+fichier par canton ni par saisie : le demander révélerait ce que le visiteur a saisi.
 
 Un script chargé à la demande, déclenché par une action de l'utilisateur, a son propre budget et
 ne compte pas dans celui de la page. Le code qui le charge, lui, compte dans la page (décision du
