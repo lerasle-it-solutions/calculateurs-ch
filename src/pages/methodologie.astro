@@ -76,7 +76,7 @@ const lppLock = lppBuybackLockPeriod.value;
 // Retrait en capital : valeurs de l'année de calcul d'A4, lues dans les données (R2)
 const capitalRules = getFederalData(capitalWithdrawalYear).capitalWithdrawal;
 const capitalDerivation = getCapitalWithdrawalDerivation().cantons;
-const fractionWords: Record<number, string> = { 4: "le quart", 5: "le cinquième" };
+const fractionWords: Record<number, string> = { 4: "quart", 5: "cinquième" };
 const fractionOf = (factor: number | undefined): string | null => (factor === undefined ? null : (fractionWords[Math.round(1 / factor)] ?? null));
 const capitalFederalFraction = fractionOf(capitalRules?.federalScaleFactor.value);
 const capitalVaud = fractionOf(capitalDerivation.VD?.factor?.value);
@@ -87,6 +87,11 @@ const capitalValais = capitalDerivation.VS;
 const capitalFribourgExemption = getCantonData("FR").capitalWithdrawalExemption?.value.exemptBelow;
 const capitalMaxYears = Math.max(...SCENARIO_TRANCHE_COUNTS);
 const capitalLock = getFederalData(capitalWithdrawalYear).lppBuyback?.lockPeriodYears.value;
+// Pourcentage du texte courant, à la française : virgule décimale, espace insécable avant « % »
+const textPercent = (value: number | undefined): string => (value === undefined ? "" : `${String(value).replace(".", ",")}\u00a0%`);
+// Réduction genevoise de l'impôt de base, lue dans les données (TODO tant que son effet sur le capital n'est pas établi)
+const genevaReduction = getCantonData("GE").baseTaxReduction;
+const genevaReductionPercent = genevaReduction && "value" in genevaReduction ? textPercent(genevaReduction.value.ratePercent) : "";
 
 // Partie générée : sources des calculateurs de prévoyance, d'après `usedBy`
 const UNOFFICIAL_NATURES = ["self-regulation", "industry", "association"];
@@ -571,24 +576,31 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				<strong>Une imposition séparée.</strong> Le capital de prévoyance est imposé
 				séparément des autres revenus, par un impôt annuel entier, l’année de son
 				versement (art. 38 al. 1 et 1bis LIFD ; art. 11 al. 3 LHID), sans déduction
-				sociale. L’impôt fédéral se calcule à partir de {capitalFederalFraction} du
-				barème d’une personne seule (art. 36 al. 1 et art. 38 al. 2 LIFD). Le
-				calculateur couvre pour l’instant les personnes seules sans enfant.
+				sociale. L’impôt fédéral se calcule au {capitalFederalFraction} des taux du barème
+				applicable aux personnes seules (art. 38 al. 2 LIFD, qui renvoie à l’art. 36 al. 1),
+				sans aucune déduction sociale (art. 38 al. 3 LIFD). Le calculateur couvre pour
+				l’instant les personnes seules sans enfant.
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Une règle par canton.</strong> Fribourg et le Jura ont un barème propre
-				aux prestations en capital (art. 39 LICD ; art. 37 LI). Vaud et Genève
-				appliquent {capitalVaud} et {capitalGeneva} de leur barème du revenu (art. 49 LI ;
-				art. 45 LIPP), Neuchâtel {capitalNeuchatel}, au taux minimal de
-				{capitalNeuchatelMinimum} % (art. 42 LCdir). Au Valais, le capital est converti en
-				rente viagère selon le tableau de l’AFC, d’après l’âge et le sexe, et le taux
-				du barème du revenu lu sur cette rente, borné entre
-				{capitalValais?.minimumRatePercent?.value} % et {capitalValais?.maximumRatePercent?.value} %,
+				aux prestations en capital (art. 39 LICD ; art. 37 LI).{" "}
+				{capitalVaud === capitalGeneva ? (
+					<>Vaud et Genève appliquent le {capitalVaud} des taux de leur barème de l’impôt sur le revenu (art. 49 LI VD ; art. 45 LIPP GE).</>
+				) : (
+					<>Vaud applique le {capitalVaud} des taux de son barème de l’impôt sur le revenu (art. 49 LI VD), Genève le {capitalGeneva} (art. 45 LIPP GE).</>
+				)}{" "}
+				Neuchâtel applique le {capitalNeuchatel} du taux de son barème du revenu, avec un taux de
+				base d’au moins {textPercent(capitalNeuchatelMinimum)} (art. 42 LCdir). Au Valais, le
+				capital est converti en rente viagère selon le tableau de l’AFC, d’après l’âge et le
+				sexe, et le taux du barème du revenu lu sur cette rente, borné entre{" "}
+				{textPercent(capitalValais?.minimumRatePercent?.value)} et {textPercent(capitalValais?.maximumRatePercent?.value)},
 				s’applique au capital (art. 33b al. 1 LF). Les coefficients cantonal et
 				communal s’appliquent comme à l’impôt sur le revenu, sauf à Fribourg, où les
 				taux de la loi sont fixes (art. 2 al. 2 LICD). Fribourg exonère un total
 				annuel inférieur à {capitalFribourgExemption && formatChf(capitalFribourgExemption)} francs
-				(art. 39 al. 4 LICD).
+				(art. 39 al. 4 LICD). Coefficient communal de Fribourg sur le capital : TODO(relevés AFC).
+				Réduction genevoise de {genevaReductionPercent} sur l’impôt sur le capital : TODO(relevés AFC).
+				Impôt paroissial sur le capital : TODO(relevés AFC).
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Le cumul des retraits d’une même année.</strong> Tous les retraits en
@@ -606,15 +618,21 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				ch. 6.2.a). Pour échelonner le 3a, il faut donc plusieurs comptes. Le capital LPP
 				se retire en {capitalRules?.lppMaximumSteps.value} étapes au plus, une étape
 				regroupant les retraits d’une même année civile, et le premier retrait partiel
-				représente au moins {capitalRules?.lppMinimumFirstPartialPercent.value} % de la
+				représente au moins {textPercent(capitalRules?.lppMinimumFirstPartialPercent.value)} de la
 				prestation, sauf si le règlement de la caisse admet moins (art. 13a al. 2 et 3
 				LPP). Pour chaque nombre d’années, le calendrier retenu est celui qui coûte le
-				moins d’impôt, comptes 3a entiers et capital LPP réparti au franc près. Les
-				barèmes de l’année de calcul ({capitalWithdrawalYear}) s’appliquent à toutes les
-				années, et les années de retrait sont supposées admises par l’art. 3 al. 1
-				OPP 3 et par le règlement de la caisse. Aucun retrait en capital n’a lieu
-				dans les {capitalLock} ans qui suivent un rachat LPP (art. 79b al. 3 LPP), sinon
-				la déduction du rachat est refusée (ATF 142 II 399 consid. 4.1).
+				moins d’impôt, comptes 3a entiers et capital LPP réparti au franc près. Pour les
+				années à venir, le calculateur applique les barèmes et coefficients de{" "}
+				{capitalWithdrawalYear}, les seuls connus. C’est une hypothèse : l’impôt réel
+				dépendra de leur évolution. Les années de retrait sont supposées admises par
+				l’art. 3 al. 1 OPP 3 et par le règlement de la caisse.
+			</p>
+			<p class="max-w-reading text-body">
+				<strong>Le délai après un rachat.</strong> Les prestations issues d’un rachat LPP ne
+				peuvent pas être retirées en capital pendant {capitalLock} ans (art. 79b al. 3 LPP).
+				Le Tribunal fédéral applique ce délai quel que soit le motif du retrait (arrêt
+				2C_6/2021) ; le fisc refuse alors après coup la déduction du rachat. Les rachats
+				qui suivent un divorce font exception (art. 79b al. 4 LPP).
 			</p>
 			<p class="max-w-reading text-body">
 				Sources rattachées aux calculateurs de prévoyance ; l’ensemble des
@@ -765,6 +783,9 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 						demandent l’avis d’un professionnel de la prévoyance ou de la fiscalité.
 						Un second encart rappelle le délai de {capitalLock} ans qui suit un rachat
 						LPP.
+						Le choix entre rente et capital est souvent irrévocable une fois passé le délai
+						fixé par le règlement de votre caisse. Avant de décider, faites vérifier votre
+						situation par votre caisse et par un professionnel.
 					</p>
 				</div>
 			</div>
