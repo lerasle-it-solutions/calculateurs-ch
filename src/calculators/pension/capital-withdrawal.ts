@@ -69,6 +69,7 @@ const sourceIds = [
 		"opp3-art-7a",
 		"afc-circular-18a",
 		"atf-142-ii-399",
+		"bger-2c-6-2021",
 		"estv-capital-annuity-conversion",
 		"estv-capital-benefits-dossier-2025",
 	]),
@@ -181,7 +182,7 @@ const vigilance: VigilancePoint[] = [
 		level: "warning",
 		summary: `Aucun retrait en capital du 2e pilier, quel qu’en soit le motif, dans les ${lock} ans qui suivent chaque rachat : sinon la déduction est refusée.`,
 		title: "Rachat LPP récent.",
-		text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En principe, tout versement en capital dans ce délai est réputé abusif, et le rachat n’est pas déductible, sans autre examen (ATF 142 II 399 consid. 4.1).`,
+		text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En cas de retrait dans ce délai, la déduction du rachat est refusée après coup, sans examen d’une évasion fiscale (ATF 142 II 399 consid. 4.1), quel que soit le motif du retrait et même si le capital vient d’une autre caisse ou d’un compte de libre passage (arrêt 2C_6/2021 consid. 2.2.1 et 2.2.2). Le pilier 3a n’est pas concerné.`,
 		link: { label: "Vérifier le délai d’un rachat LPP", url: lppBuyback.slug },
 	},
 	{
