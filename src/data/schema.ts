@@ -354,6 +354,19 @@ const lppBuybackSchema = z
 	})
 	.strict();
 
+/**
+ * Retrait en capital (A4) : facteur des barèmes de l'IFD sur les prestations en
+ * capital (art. 38 al. 2 LIFD) et bornes du retrait du capital LPP en plusieurs
+ * étapes (art. 13a al. 2 et 3 LPP).
+ */
+const capitalWithdrawalFederalSchema = z
+	.object({
+		federalScaleFactor: valueSchema(z.number().positive().max(1)),
+		lppMaximumSteps: valueSchema(z.number().int().positive()),
+		lppMinimumFirstPartialPercent: valueSchema(z.number().positive().max(100)),
+	})
+	.strict();
+
 export const federalDataSchema = z
 	.object({
 		year: z.number().int(),
@@ -365,12 +378,45 @@ export const federalDataSchema = z
 		averageHealthInsurancePremiums: z.union([averageHealthInsurancePremiumsSchema, todoSchema]).optional(),
 		// Rachat LPP (A3) : absent tant qu'une année n'est pas relevée
 		lppBuyback: lppBuybackSchema.optional(),
+		// Retrait en capital (A4) : absent tant qu'une année n'est pas relevée
+		capitalWithdrawal: capitalWithdrawalFederalSchema.optional(),
 		// Date limite du versement 3a de l'année (compte à rebours de l'accueil), au format MM-JJ. Hors de
 		// `pillar3a` : un TODO n'y rend pas l'année indisponible pour A1 et A2 (src/data/tax-years.ts).
 		pillar3aContributionDeadline: z.union([valueSchema(z.string().regex(/^\d{2}-\d{2}$/)), todoSchema]).optional(),
 	})
 	.passthrough();
 export type FederalData = z.infer<typeof federalDataSchema>;
+
+/**
+ * Tableau de conversion des prestations en capital en rentes viagères (AFC),
+ * src/data/federal/capital-annuity-conversion.json : rente annuelle pour
+ * `capitalAmount` CHF de capital, par âge révolu et par sexe. Valais, art. 33b
+ * al. 1 LF. Pas un fichier d'année.
+ */
+export const CAPITAL_ANNUITY_CONVERSION_FILE = "federal/capital-annuity-conversion.json";
+
+const annuityConversionRowSchema = z
+	.object({ age: z.number().int().nonnegative(), male: z.number().positive(), female: z.number().positive() })
+	.strict();
+
+export const capitalAnnuityConversionFileSchema = z
+	.object({
+		$comment: z.string().optional(),
+		capitalAnnuityConversion: valueSchema(
+			z
+				.object({
+					capitalAmount: z.number().positive(),
+					rows: z
+						.array(annuityConversionRowSchema)
+						.min(1)
+						// Âges consécutifs depuis 0 : une ligne manquante se verrait comme une lecture fausse
+						.refine((rows) => rows.every((row, index) => row.age === index), "âges consécutifs depuis 0 attendus"),
+				})
+				.strict(),
+		),
+	})
+	.strict();
+export type CapitalAnnuityConversionFile = z.infer<typeof capitalAnnuityConversionFileSchema>;
 
 /**
  * Règles de dérivation des prestations en capital, écrites à la main dans
@@ -390,6 +436,17 @@ export const capitalWithdrawalDerivationFileSchema = z
 					factor: valueSchema(z.number()).optional(),
 					minimumRatePercent: valueSchema(z.number()).optional(),
 					maximumRatePercent: valueSchema(z.number()).optional(),
+					// Stade de chaque borne du taux : taux de base, avant le coefficient, ou taux effectif, après
+					rateBounds: z
+						.union([
+							valueSchema(
+								z
+									.object({ minimum: z.enum(["baseRate", "effectiveRate"]), maximum: z.enum(["baseRate", "effectiveRate"]) })
+									.strict(),
+							),
+							todoSchema,
+						])
+						.optional(),
 					coupleReduction: z
 						.union([
 							valueSchema(
@@ -617,6 +674,27 @@ const maximumTaxBurdenSchema = z
 	.strict();
 
 /**
+ * Coefficients appliqués à l'impôt de base sur les prestations en capital,
+ * saisis à la main et conservés par le lecteur d'exports. `true` : le
+ * coefficient de l'impôt sur le revenu s'applique ; `false` : il ne s'applique
+ * pas (taux fixes, Fribourg). `baseTaxReduction` vaut `null` si le canton n'a
+ * pas de réduction de l'impôt de base. Un TODO fait refuser le calcul du canton
+ * par le moteur (R3).
+ */
+const appliesSchema = z.union([valueSchema(z.boolean()), todoSchema]);
+const capitalWithdrawalMultipliersSchema = z
+	.object({
+		cantonal: appliesSchema,
+		communal: appliesSchema,
+		church: appliesSchema,
+		baseTaxReduction: appliesSchema.nullable(),
+	})
+	.strict();
+
+/** Prestations en capital exonérées quand le total de l'année est inférieur à `exemptBelow` (Fribourg, art. 39 al. 4 LICD). */
+const capitalWithdrawalExemptionSchema = z.object({ exemptBelow: z.number().positive() }).strict();
+
+/**
  * Clés obligatoires d'un fichier canton. Les 6 cantons romands doivent porter
  * exactement le même jeu de clés — vérifié par `tests/data/coverage.test.ts`.
  * `otherDeductions` est facultative : Vaud n'a pas d'export « Autres déductions ».
@@ -639,6 +717,9 @@ export const REQUIRED_CANTON_KEYS = [
 	"maximumTaxBurden", // charge fiscale maximale (Genève), null ailleurs
 	"incomeTaxRounding", // arrondi de l'impôt sur le revenu (Valais), null ailleurs
 	"communalScale", // barème communal propre (Valais), null ailleurs
+	"capitalWithdrawalMultipliers", // coefficients appliqués à l'impôt sur les prestations en capital, saisis à la main
+	"capitalWithdrawalExemption", // exonération propre aux prestations en capital (Fribourg), null ailleurs
+	"capitalWithdrawalAggregation", // article qui additionne les prestations d'une même année (Fribourg), null ailleurs
 	"deductions", // déductions
 	"realEstateGainsTax", // gains immobiliers
 	"imputedRentalValue", // valeur locative
@@ -677,6 +758,10 @@ export const cantonDataSchema = z
 			})
 			.strict()
 			.nullable(),
+		capitalWithdrawalMultipliers: capitalWithdrawalMultipliersSchema,
+		capitalWithdrawalExemption: valueSchema(capitalWithdrawalExemptionSchema).nullable(),
+		// `null` : aucun article ne le dit en toutes lettres, l'addition est une méthode (impôt annuel entier)
+		capitalWithdrawalAggregation: valueSchema(z.literal("calendarYear")).nullable(),
 		deductions: valueSchema(z.array(deductionSchema).min(1)),
 		otherDeductions: valueSchema(z.array(degressiveDeductionSchema).min(1)).optional(),
 		realEstateGainsTax: todoSchema,

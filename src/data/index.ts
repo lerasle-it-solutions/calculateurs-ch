@@ -7,10 +7,14 @@
  * / `eachValue` / `cantonFiles` donnent un accès brut, utilisé par les tests.
  */
 import {
+	capitalAnnuityConversionFileSchema,
+	capitalWithdrawalDerivationFileSchema,
 	cantonDataSchema,
 	federalDataSchema,
 	municipalMultipliersDataSchema,
 	sourceSchema,
+	type CapitalAnnuityConversionFile,
+	type CapitalWithdrawalDerivationFile,
 	type CantonData,
 	type FederalData,
 	type MunicipalMultipliersData,
@@ -56,9 +60,15 @@ export const sourceRegistry = (): ReadonlyMap<string, Source> => {
 	return merged;
 };
 
-const federalModules = import.meta.glob<RawModule>("./federal/*.json", {
-	eager: true,
-});
+// Fichiers d'année (2026.json…) ; le tableau de conversion en rentes n'est pas une année.
+const federalModules = import.meta.glob<RawModule>(
+	["./federal/*.json", "!./federal/capital-annuity-conversion.json"],
+	{ eager: true },
+);
+const capitalAnnuityConversionModules = import.meta.glob<RawModule>(
+	"./federal/capital-annuity-conversion.json",
+	{ eager: true },
+);
 // Deux lettres : les fichiers cantonaux (vd.json…), pas les fichiers transverses du dossier.
 const cantonModules = import.meta.glob<RawModule>("./cantons/??.json", {
 	eager: true,
@@ -94,6 +104,7 @@ export interface CantonFile {
 export const allDataFiles = (): DataFile[] =>
 	[
 		...Object.entries(federalModules),
+		...Object.entries(capitalAnnuityConversionModules),
 		...Object.entries(cantonModules),
 		...Object.entries(capitalWithdrawalDerivationModules),
 		...Object.entries(municipalityModules),
@@ -211,4 +222,22 @@ export const getMunicipalMultipliers = (): MunicipalMultipliersData | undefined 
 	const [mod] = Object.values(municipalityModules);
 	municipalMultipliers = mod ? municipalMultipliersDataSchema.parse(mod.default) : null;
 	return municipalMultipliers ?? undefined;
+};
+
+let capitalAnnuityConversion: CapitalAnnuityConversionFile["capitalAnnuityConversion"] | undefined;
+
+/** Tableau de conversion des prestations en capital en rentes viagères (AFC), validé. */
+export const getCapitalAnnuityConversion = (): CapitalAnnuityConversionFile["capitalAnnuityConversion"] => {
+	if (capitalAnnuityConversion) return capitalAnnuityConversion;
+	const [mod] = Object.values(capitalAnnuityConversionModules);
+	if (!mod) throw new Error("Tableau de conversion en rentes absent : src/data/federal/capital-annuity-conversion.json.");
+	capitalAnnuityConversion = capitalAnnuityConversionFileSchema.parse(mod.default).capitalAnnuityConversion;
+	return capitalAnnuityConversion;
+};
+
+/** Règles de dérivation des prestations en capital (cantons sans barème propre), validées. */
+export const getCapitalWithdrawalDerivation = (): CapitalWithdrawalDerivationFile => {
+	const [mod] = Object.values(capitalWithdrawalDerivationModules);
+	if (!mod) throw new Error("Règles de dérivation absentes : src/data/cantons/capital-withdrawal-derivation.json.");
+	return capitalWithdrawalDerivationFileSchema.parse(mod.default);
 };

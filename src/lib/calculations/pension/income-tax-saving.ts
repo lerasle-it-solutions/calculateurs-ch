@@ -12,6 +12,7 @@ import type { BreakdownLine } from "../../utils/breakdown";
 import { formatNumber } from "../../utils/format-number";
 import { computeTaxSavingOnDeduction, type TaxInput, type TaxResult, type TaxScales } from "../tax";
 import * as labels from "../trace-labels";
+import { ZERO_BASE } from "../tax-scale-labels";
 
 export type IncomeTaxSaving = {
 	/** Impôt sur le revenu avant moins après la déduction, composantes arrondies au franc. */
@@ -66,7 +67,7 @@ export function computeIncomeTaxSaving(
 	const lines: BreakdownLine[] = [];
 	for (const line of saving?.breakdown ?? []) {
 		// Impôt sur une fortune nulle : sans objet, la fortune n'est pas saisie
-		if (line.formula === labels.ZERO_BASE && line.label.includes("fortune")) continue;
+		if (line.formula === ZERO_BASE && line.label.includes("fortune")) continue;
 		if (line.label === labels.TAX_SAVING) continue;
 		if (line.label.startsWith(labels.TOTAL_TAX)) {
 			const { components, total } = line.label === labels.TOTAL_TAX ? before : after;

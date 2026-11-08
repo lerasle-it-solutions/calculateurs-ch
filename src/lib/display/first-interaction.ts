@@ -12,6 +12,10 @@
  * chargement, la carte garde le résultat de l'exemple : aucun état vide, aucun
  * indicateur.
  *
+ * Une page dont le calculateur a son propre fichier de données
+ * (`data-calculator-data`, src/calculators/calculator-data-file.ts) le charge en
+ * même temps, de la même façon, et le passe au cœur en troisième argument.
+ *
  * Un état partagé dans le fragment d'URL (share-state.ts) se restaure sans
  * attendre d'interaction : le chargement part aussitôt.
  *
@@ -22,7 +26,7 @@
 import { SHARE_PREFIX } from "./share-state";
 
 // Signature de méthode : le cœur type ses données (TaxDataFile), le chargeur ne les lit pas
-export type PageScript = { start(clicked: Element | null, data: unknown): void };
+export type PageScript = { start(clicked: Element | null, data: unknown, calculatorData?: unknown): void };
 
 // « click » : seulement pour retenir le bouton pressé ; le focus ou le pointeur l'a précédé
 const EVENTS = ["focusin", "pointerdown", "touchstart", "click"];
@@ -59,23 +63,26 @@ export function onFirstInteraction(load: () => Promise<PageScript>): void {
 		if (loading) return;
 		loading = true;
 		if (failed) showFailure((failed = false));
-		const data = fetch(root.dataset.taxData!)
-			.then((response) => (response.ok ? response.json() : Promise.reject(response.status)))
-			.then((file: { traceLabels: Record<string, string[]> }) => {
-				for (const [id, labels] of Object.entries(file.traceLabels)) {
-					if (document.getElementById(id)) continue;
-					const element = document.createElement("script");
-					element.type = "application/json";
-					element.id = id;
-					element.textContent = JSON.stringify(labels);
-					document.body.append(element);
-				}
-				return file;
-			});
+		const fetchFile = (url: string) =>
+			fetch(url)
+				.then((response) => (response.ok ? response.json() : Promise.reject(response.status)))
+				.then((file: { traceLabels: Record<string, string[]> }) => {
+					for (const [id, labels] of Object.entries(file.traceLabels)) {
+						if (document.getElementById(id)) continue;
+						const element = document.createElement("script");
+						element.type = "application/json";
+						element.id = id;
+						element.textContent = JSON.stringify(labels);
+						document.body.append(element);
+					}
+					return file;
+				});
+		const own = root.dataset.calculatorData;
+		const data = Promise.all([fetchFile(root.dataset.taxData!), own ? fetchFile(own) : undefined]);
 		Promise.all([data.then(load), data]).then(
-			([script, file]) => {
+			([script, [file, calculatorData]]) => {
 				for (const type of EVENTS) root.removeEventListener(type, handle);
-				script.start(clicked, file);
+				script.start(clicked, file, calculatorData);
 			},
 			() => {
 				loading = false;

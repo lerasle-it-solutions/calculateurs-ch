@@ -70,17 +70,23 @@ export type CalculatorCard = { id: string; slug: string; title: string; question
 export function calculatorCards(): CalculatorCard[] {
 	return published().map((definition) => {
 		const outcome = exampleOutcome(definition.id);
-		const { municipality, cantonalTaxableIncome } = definition.example.values;
+		const { municipality, cantonalTaxableIncome, lppCapital, pillar3aAmount1 } = definition.example.values;
 		const income = Number(cantonalTaxableIncome);
+		// Retrait en capital (A4) : le capital de l'exemple, retiré la même année, et son impôt
+		const capital = Number(lppCapital ?? 0) + Number(pillar3aAmount1 ?? 0);
 		return {
 			id: definition.id,
 			slug: definition.slug,
 			title: definition.title,
 			question: definition.question ?? definition.title,
 			typical:
-				outcome.status === null && municipality && Number.isFinite(income)
-					? fr.home.typicalResult(municipality, `${formatChf(income)} CHF`, outcome.value)
-					: null,
+				outcome.status !== null || !municipality
+					? null
+					: Number.isFinite(income)
+						? fr.home.typicalResult(municipality, `${formatChf(income)} CHF`, outcome.value)
+						: capital > 0
+							? fr.home.typicalCapitalTax(municipality, `${formatChf(capital)} CHF`, outcome.value)
+							: null,
 		};
 	});
 }

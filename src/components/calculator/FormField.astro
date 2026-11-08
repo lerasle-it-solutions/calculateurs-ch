@@ -10,6 +10,9 @@
  *   d'un libellé tapé (R2) ; masqué sans plafond.
  * - `childAges` : un champ par enfant, généré depuis le nombre d'enfants ; le
  *   `<template>` sert au script pour en ajouter.
+ * - `accountList` : un groupe de champs par compte, généré depuis le nombre de
+ *   comptes, avec les mêmes attributs que `childAges` : le script de la page
+ *   les ajoute et les retire de la même façon.
  */
 import NumberField from "../ui/NumberField.astro";
 import SelectField from "../ui/SelectField.astro";
@@ -35,7 +38,10 @@ interface Props {
 
 const { field, id, values, cantonsCovered, maximum = null, deferredOptions = false } = Astro.props;
 const value = values[field.name];
-const childCount = field.kind === "childAges" ? Math.max(0, Math.trunc(Number(values[field.countField] ?? 0)) || 0) : 0;
+const childCount =
+	field.kind === "childAges" || field.kind === "accountList" ? Math.max(0, Math.trunc(Number(values[field.countField] ?? 0)) || 0) : 0;
+/** Rang d'un compte d'une liste dans un nom, un identifiant ou un libellé. */
+const ranked = (text: string, n: number | string) => text.replaceAll("{n}", String(n));
 const childLabel = (n: number | string) => (field.kind === "childAges" ? field.itemLabel.replace("{n}", String(n)) : "");
 ---
 
@@ -109,6 +115,49 @@ const childLabel = (n: number | string) => (field.kind === "childAges" ? field.i
 			</div>
 			<template data-child-age-template>
 				<NumberField id={`${id}-__N__`} name="childAge__N__" label={childLabel("__N__")} unit="ans" min={0} step={1} required />
+			</template>
+		</fieldset>
+	) : field.kind === "accountList" ? (
+		<fieldset data-child-ages data-count-field={field.countField} hidden={childCount === 0} class="flex flex-col gap-md">
+			<legend class="text-label font-bold">{field.label}</legend>
+			<div data-child-ages-list class="flex flex-col gap-md">
+				{Array.from({ length: childCount }, (_, index) => (
+					<fieldset class="flex flex-col gap-md rounded-panel bg-tint p-lg">
+						<legend class="text-label font-bold">{ranked(field.itemLegend, index + 1)}</legend>
+						{field.itemFields.map((item) => (
+							<NumberField
+								id={`${id}-${ranked(item.name, index + 1)}`}
+								name={ranked(item.name, index + 1)}
+								label={item.label}
+								value={values[ranked(item.name, index + 1)]}
+								min={item.min}
+								max={item.max}
+								step={item.step}
+								unit={item.unit}
+								hint={item.hint}
+								required={item.required}
+							/>
+						))}
+					</fieldset>
+				))}
+			</div>
+			<template data-child-age-template>
+				<fieldset class="flex flex-col gap-md rounded-panel bg-tint p-lg">
+					<legend class="text-label font-bold">{ranked(field.itemLegend, "__N__")}</legend>
+					{field.itemFields.map((item) => (
+						<NumberField
+							id={`${id}-${ranked(item.name, "__N__")}`}
+							name={ranked(item.name, "__N__")}
+							label={item.label}
+							min={item.min}
+							max={item.max}
+							step={item.step}
+							unit={item.unit}
+							hint={item.hint}
+							required={item.required}
+						/>
+					))}
+				</fieldset>
 			</template>
 		</fieldset>
 	) : (

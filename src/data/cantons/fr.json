@@ -239,13 +239,8 @@
 					"brackets": [
 						{
 							"threshold": 0,
-							"ratePercent": 0,
-							"baseAmount": 0
-						},
-						{
-							"threshold": 10001,
 							"ratePercent": 1,
-							"baseAmount": 100
+							"baseAmount": 0
 						},
 						{
 							"threshold": 50000,
@@ -270,9 +265,9 @@
 					]
 				},
 				"sourceId": "fr-licd",
-				"verifiedOn": "2026-09-26",
+				"verifiedOn": "2026-11-06",
 				"effectiveFrom": "2026-01-01",
-				"collectedFrom": "estv-base-data-module"
+				"note": "Art. 39 al. 2 LICD (version du 1.1.2025), saisi à la main : 1 % pour les premiers 50 000 francs, 2, 3 et 4 % pour chacune des trois tranches suivantes de 50 000 francs, 5 % au-delà. Conservé par le lecteur (LAW_SCALES) : la table de l'export commençait à 10 001 francs, confondant le barème et l'exonération de l'al. 4 (capitalWithdrawalExemption)."
 			}
 		}
 	],
@@ -323,6 +318,44 @@
 	"maximumTaxBurden": null,
 	"incomeTaxRounding": null,
 	"communalScale": null,
+	"capitalWithdrawalMultipliers": {
+		"cantonal": {
+			"value": false,
+			"sourceId": "fr-licd",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 2 al. 2 LICD : pour l'impôt sur les prestations en capital imposées séparément, les taux de la loi sont fixes ; le coefficient annuel (art. 1 LCA 2026) ne s'applique pas. Le dossier fiscal de l'AFC parle de taux « effectifs »."
+		},
+		"communal": {
+			"value": true,
+			"sourceId": "fr-lico",
+			"verifiedOn": "2026-11-08",
+			"effectiveFrom": "2026-01-01",
+			"note": "Le coefficient communal de la commune s'applique à l'impôt cantonal de base sur les prestations en capital (art. 3 al. 3 LICo : coefficient en pour-cent de l'impôt cantonal de base). Décision du mainteneur du 8.11.2026, d'après les relevés AFC de Fribourg ; la feuille cantonale ne le dit pas pour le capital. Le coefficient est lu dans municipalities/multipliers.json, jamais ici."
+		},
+		"church": {
+			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : non relevé. L'impôt paroissial n'est pas couvert par la v1 d'A4, qui retient la confession « aucune » (décision du mainteneur du 8.11.2026).",
+			"sourceId": null
+		},
+		"baseTaxReduction": null
+	},
+	"capitalWithdrawalExemption": {
+		"value": {
+			"exemptBelow": 10000
+		},
+		"unit": "CHF",
+		"sourceId": "fr-licd",
+		"verifiedOn": "2026-11-06",
+		"effectiveFrom": "2026-01-01",
+		"note": "Art. 39 al. 4 LICD : les prestations en capital dont le total annuel net est inférieur à 10 000 francs sont exonérées. 10 000 CHF tout juste sont imposables. Appliquée au total de l'année, avant le barème."
+	},
+	"capitalWithdrawalAggregation": {
+		"value": "calendarYear",
+		"sourceId": "fr-licd",
+		"verifiedOn": "2026-11-06",
+		"effectiveFrom": "2026-01-01",
+		"note": "Art. 39 al. 4 LICD : toutes les prestations en capital acquises pendant la même année civile sont additionnées."
+	},
 	"deductions": {
 		"value": [
 			{

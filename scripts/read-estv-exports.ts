@@ -469,6 +469,9 @@ const NON_EXPORT_KEYS = [
 	"personalTax",
 	"maximumTaxBurden",
 	"incomeTaxRounding",
+	"capitalWithdrawalMultipliers",
+	"capitalWithdrawalExemption",
+	"capitalWithdrawalAggregation",
 	"realEstateGainsTax",
 	"imputedRentalValue",
 ] as const;
@@ -535,6 +538,18 @@ const nonExportDefaults = (canton: CantonCode) => {
 				: null,
 		maximumTaxBurden: null, // relevé à la main (Genève, art. 60 LIPP), jamais écrasé
 		incomeTaxRounding: null, // relevé à la main (Valais), jamais écrasé
+		// Coefficients appliqués à l'impôt sur les prestations en capital : saisis à la main, jamais écrasés
+		capitalWithdrawalMultipliers: {
+			cantonal: todo("Coefficient cantonal appliqué ou non à l'impôt sur les prestations en capital : à relever.", taxLaw),
+			communal: todo("Coefficient communal appliqué ou non à l'impôt sur les prestations en capital : à relever.", taxLaw),
+			church: todo("Coefficient paroissial appliqué ou non à l'impôt sur les prestations en capital : à relever.", null),
+			baseTaxReduction:
+				reduction === null
+					? null
+					: todo("Réduction de l'impôt cantonal de base appliquée ou non à l'impôt sur les prestations en capital : à relever.", reduction),
+		},
+		capitalWithdrawalExemption: null, // relevé à la main (Fribourg, art. 39 al. 4 LICD), jamais écrasé
+		capitalWithdrawalAggregation: null, // relevé à la main (Fribourg, art. 39 al. 4 LICD), jamais écrasé
 		realEstateGainsTax: todo("Impôt sur les gains immobiliers : source à inscrire au registre, valeurs à relever.", null),
 		imputedRentalValue: todo("Valeur locative : source à inscrire au registre, méthode à relever.", null),
 	};
@@ -607,8 +622,12 @@ const readCommunalScale = (
  * fait foi et n'est jamais écrasée. Valais : l'export ne reproduit ni l'annexe 1
  * à l'art. 32 al. 1 LF ni toutes les classes de l'art. 178.
  */
-const LAW_SCALES: Partial<Record<CantonCode, ("incomeTaxScale" | "communalIncomeScale")[]>> = {
+type LawScaleKey = "incomeTaxScale" | "communalIncomeScale" | "capitalWithdrawalTax";
+const LAW_SCALES: Partial<Record<CantonCode, LawScaleKey[]>> = {
 	VS: ["incomeTaxScale", "communalIncomeScale"],
+	// Fribourg : la table de l'export commence à 10 001 francs et confond le barème de l'art. 39
+	// al. 2 LICD avec l'exonération de l'al. 4, saisie à part (capitalWithdrawalExemption)
+	FR: ["capitalWithdrawalTax"],
 };
 
 /** La note écrite à la main sur une valeur du fichier existant, conservée à la relance (décisions du mainteneur). */
@@ -621,7 +640,7 @@ const existingCantonFile = (path: string): Record<string, unknown> =>
 	existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>) : {};
 
 /** La table relevée dans la loi si le fichier existant la porte ; sinon, celle de l'export. */
-const keepLawScale = (canton: CantonCode, key: "incomeTaxScale" | "communalIncomeScale", manual: unknown, fromExport: TaxScale): TaxScale => {
+const keepLawScale = (canton: CantonCode, key: LawScaleKey, manual: unknown, fromExport: TaxScale): TaxScale => {
 	if (!LAW_SCALES[canton]?.includes(key)) return fromExport;
 	if (manual === undefined || todoSchema.safeParse(manual).success) {
 		flag(canton, `${key} : barème à relever dans la loi (LAW_SCALES), absent du fichier cantonal — l'export ne fait pas foi`);
@@ -668,6 +687,8 @@ const readCanton = async (
 		remarks.push(`${canton} — ${wealth.file} : barème communal de la fortune livré par l'export, lu comme celui du revenu (découverte, pas une anomalie)`);
 	}
 
+	const path = join(DATA_DIR, "cantons", `${canton.toLowerCase()}.json`);
+	const existing = existingCantonFile(path);
 	let capitalWithdrawalTax: CantonData["capitalWithdrawalTax"];
 	if (capitalIsDerived) {
 		capitalWithdrawalTax = { definedIn: CAPITAL_WITHDRAWAL_DERIVATION_FILE };
@@ -677,7 +698,7 @@ const readCanton = async (
 		if (capitalScales.Commune.length > 0) {
 			flag(canton, `${capital?.file} : barème communal des prestations en capital, non prévu`);
 		}
-		capitalWithdrawalTax = capitalScales.Canton;
+		capitalWithdrawalTax = keepLawScale(canton, "capitalWithdrawalTax", existing.capitalWithdrawalTax, capitalScales.Canton);
 	}
 
 	const multipliers = readMultipliers(canton, coefficients);
@@ -685,8 +706,6 @@ const readCanton = async (
 	const cantonalNote = CANTONAL_MULTIPLIER_NOTES[canton];
 
 	const otherDeductionsSheet = sheets.get("autres-deductions");
-	const path = join(DATA_DIR, "cantons", `${canton.toLowerCase()}.json`);
-	const existing = existingCantonFile(path);
 	const communalScale = readCommunalScale(canton, path, incomeScales.Commune, wealthScales.Commune);
 	const data = {
 		canton,

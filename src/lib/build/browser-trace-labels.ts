@@ -23,21 +23,35 @@ import { fileURLToPath } from "node:url";
 import type { Plugin } from "vite";
 
 import * as grossToTaxableLabels from "../calculations/gross-to-taxable-labels";
+import * as capitalWithdrawalLabels from "../calculations/pension/capital-withdrawal-labels";
 import * as lppBuybackLabels from "../calculations/pension/lpp-buyback-labels";
 import * as pillar3aBuybackLabels from "../calculations/pension/pillar-3a-buyback-labels";
 import * as pillar3aTaxSavingLabels from "../calculations/pension/pillar-3a-tax-saving-labels";
 import * as engineLabels from "../calculations/trace-labels";
+import * as taxScaleLabels from "../calculations/tax-scale-labels";
 
 /** Modules de libellés : fichier source (relatif à ce module) et espace de noms. */
 const TRACE_LABEL_MODULES = {
 	engine: { file: "../calculations/trace-labels.ts", labels: engineLabels },
+	"tax-scale": { file: "../calculations/tax-scale-labels.ts", labels: taxScaleLabels },
 	"pillar-3a-buyback": { file: "../calculations/pension/pillar-3a-buyback-labels.ts", labels: pillar3aBuybackLabels },
 	"pillar-3a-tax-saving": { file: "../calculations/pension/pillar-3a-tax-saving-labels.ts", labels: pillar3aTaxSavingLabels },
 	"gross-to-taxable": { file: "../calculations/gross-to-taxable-labels.ts", labels: grossToTaxableLabels },
 	"lpp-buyback": { file: "../calculations/pension/lpp-buyback-labels.ts", labels: lppBuybackLabels },
+	"capital-withdrawal": { file: "../calculations/pension/capital-withdrawal-labels.ts", labels: capitalWithdrawalLabels },
 } as const;
 
 export type TraceLabelModule = keyof typeof TRACE_LABEL_MODULES;
+
+/**
+ * Modules de libellés propres à un calculateur qui a son propre fichier de données
+ * (src/calculators/calculator-data-file.ts) : ils voyagent dans ce fichier, pas dans
+ * le fichier commun de l'année, que chargent toutes les pages.
+ */
+export const CALCULATOR_TRACE_LABEL_MODULES: Record<string, TraceLabelModule[]> = {
+	"pension.capital-withdrawal": ["capital-withdrawal"],
+};
+const calculatorModules = new Set(Object.values(CALCULATOR_TRACE_LABEL_MODULES).flat());
 
 /** Identifiant de l'élément `<script type="application/json">` qui porte les libellés du moteur. */
 export const TRACE_LABELS_ELEMENT_ID = "trace-labels";
@@ -62,9 +76,17 @@ const names = (module: TraceLabelModule): string[] => Object.keys(labelsOf(modul
 export const traceLabelValues = (module: TraceLabelModule = "engine"): string[] =>
 	names(module).map((name) => labelsOf(module)[name]!);
 
-/** Libellés de tous les modules, par identifiant d'élément : ce que le fichier de données transmet. */
+/** Libellés des modules communs, par identifiant d'élément : ce que le fichier de données de l'année transmet. */
 export const allTraceLabels = (): Record<string, string[]> =>
-	Object.fromEntries((Object.keys(TRACE_LABEL_MODULES) as TraceLabelModule[]).map((module) => [traceLabelsElementId(module), traceLabelValues(module)]));
+	Object.fromEntries(
+		(Object.keys(TRACE_LABEL_MODULES) as TraceLabelModule[])
+			.filter((module) => !calculatorModules.has(module))
+			.map((module) => [traceLabelsElementId(module), traceLabelValues(module)]),
+	);
+
+/** Libellés propres à un calculateur : ce que son fichier de données transmet. */
+export const calculatorTraceLabels = (calculatorId: string): Record<string, string[]> =>
+	Object.fromEntries((CALCULATOR_TRACE_LABEL_MODULES[calculatorId] ?? []).map((module) => [traceLabelsElementId(module), traceLabelValues(module)]));
 
 /**
  * Source du module qui remplace un module de libellés dans le navigateur. Une

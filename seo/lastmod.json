@@ -1,27 +1,27 @@
 {
 	"https://calculateurs.ch/": {
-		"hash": "839ad6cfbf0f0e226babeb65a076c3b411a1f8fc23e7ba0c7d0c8c5d097c2717",
-		"lastmod": "2026-10-23T09:21:12+02:00"
+		"hash": "ba137723ef7480194fa97476660f9fbc8c06633d37a575bb7f89e782cf20f970",
+		"lastmod": "2026-11-08T11:30:48+01:00"
 	},
 	"https://calculateurs.ch/donnees/": {
-		"hash": "8b20f3e1706edc2c48ab4187abfe2cd055dcef8ef3f7b491fc47ba25aaa7cd41",
-		"lastmod": "2026-11-08T11:25:44+01:00"
+		"hash": "729bd7702b1ed882222812ebbf5521b2178f345f356defee8ad2b5a90f67bb06",
+		"lastmod": "2026-11-08T16:03:55+01:00"
 	},
 	"https://calculateurs.ch/guides/": {
 		"hash": "becbfabc00fd14b49362cfeb588e7f62d414912ae24d87937c587dc6acbb8bc2",
 		"lastmod": "2026-10-23T08:57:31+02:00"
 	},
 	"https://calculateurs.ch/methodologie/": {
-		"hash": "a35feec4a5bcf5367cb574c4115e87c1cffebe71b89f8ea1f49cca986a9de64e",
-		"lastmod": "2026-11-08T11:25:44+01:00"
+		"hash": "00fe1c9e5122feec425ec874426e3b51ab9ccc4ebf4102d589929fba39d7e38e",
+		"lastmod": "2026-11-08T17:43:02+01:00"
 	},
 	"https://calculateurs.ch/prevoyance/": {
-		"hash": "52980ae5aebfcf9ff58cb00ce2439afa361ab3d3a33790cf26d5da9073abcc34",
-		"lastmod": "2026-10-23T09:18:13+02:00"
+		"hash": "c8f2c7cac9436506d724e5e6034ebbf2f6685545ca3c7d88c6ebf59dd7d9b219",
+		"lastmod": "2026-11-08T11:30:48+01:00"
 	},
 	"https://calculateurs.ch/prevoyance/economie-impot-3a/": {
-		"hash": "b1193e2f1b5efaa75b92c7e12afbf3e096ace1e11af0c5bd481389d38fb6edfb",
-		"lastmod": "2026-11-08T08:33:15+01:00"
+		"hash": "47c64dad0a6f620a576b638b62169d5006bca5b4dfe4c0a349e9f37e762d90d9",
+		"lastmod": "2026-11-08T11:30:48+01:00"
 	},
 	"https://calculateurs.ch/prevoyance/guides/3a-ou-rachat-lpp/": {
 		"hash": "309ca6c677f247373294f5f80a75d9739636355636638962985efb999265c27f",
@@ -36,7 +36,11 @@
 		"lastmod": "2026-11-08T08:33:15+01:00"
 	},
 	"https://calculateurs.ch/prevoyance/rachat-lpp/": {
-		"hash": "4c76960e7500b379fc4f4e41775e49790762c744f2fd2340d64f610e92508fd4",
-		"lastmod": "2026-11-08T11:26:37+01:00"
+		"hash": "765a04002b415a88fb7eba30b3761ecc235f8d9da84306dfe7069e5dc4ca01ca",
+		"lastmod": "2026-11-08T11:30:48+01:00"
+	},
+	"https://calculateurs.ch/prevoyance/retrait-capital-lpp-3a/": {
+		"hash": "7fb48fe5d3f0434141bcfff0ce182dfbd249f24c73a148c7cefa8ef4282d39cb",
+		"lastmod": "2026-11-08T16:58:05+01:00"
 	}
 }

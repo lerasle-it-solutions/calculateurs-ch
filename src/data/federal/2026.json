@@ -398,6 +398,31 @@
 			"note": "LPP (RS 831.40), art. 79b al. 3, 1re phrase : les prestations résultant d'un rachat ne peuvent être versées sous forme de capital avant l'échéance d'un délai de trois ans. Relevé W09 (docs/plan/releve-W09.md) ; PDF archivé dans sources/pdf/2026/ du dépôt privé."
 		}
 	},
+	"capitalWithdrawal": {
+		"federalScaleFactor": {
+			"value": 0.2,
+			"sourceId": "fedlex-lifd",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2014-01-01",
+			"note": "LIFD (RS 642.11, état au 2.9.2026), art. 38 al. 2 : l'impôt sur les prestations en capital est calculé sur la base de taux représentant le cinquième des barèmes de l'art. 36 al. 1, 2 et 2bis, première phrase. Teneur en vigueur depuis le 1.1.2014. Lu le 06.11.2026."
+		},
+		"lppMaximumSteps": {
+			"value": 3,
+			"unit": "étapes",
+			"sourceId": "fedlex-lpp",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2024-01-01",
+			"note": "LPP (RS 831.40), art. 13a al. 2 : la prestation de vieillesse perçue en capital se retire en trois étapes au plus ; une étape comprend l'ensemble des retraits en capital d'une même année civile. Introduit par AVS 21, en vigueur depuis le 1.1.2024. Lu le 06.11.2026 dans les versions au 1.1.2025 et au 1.1.2027, inchangé."
+		},
+		"lppMinimumFirstPartialPercent": {
+			"value": 20,
+			"unit": "%",
+			"sourceId": "fedlex-lpp",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2024-01-01",
+			"note": "LPP (RS 831.40), art. 13a al. 3 : le premier retrait partiel représente au moins 20 % de la prestation de vieillesse ; l'institution de prévoyance peut autoriser un pourcentage minimal moins élevé. Lu le 06.11.2026 dans les versions au 1.1.2025 et au 1.1.2027, inchangé."
+		}
+	},
 	"pillar3aContributionDeadline": {
 		"value": "12-31",
 		"sourceId": "afc-circular-18a",

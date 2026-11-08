@@ -357,6 +357,29 @@
 	"maximumTaxBurden": null,
 	"incomeTaxRounding": null,
 	"communalScale": null,
+	"capitalWithdrawalMultipliers": {
+		"cantonal": {
+			"value": true,
+			"sourceId": "ju-li",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 2 al. 1 et 3 LI (état au 1.1.2026, lue le 6.11.2026) : la quotité vaut pour tous les impôts, prestations en capital comprises (note du registre, entrée ju-li)."
+		},
+		"communal": {
+			"value": true,
+			"sourceId": "ju-li",
+			"verifiedOn": "2026-11-08",
+			"effectiveFrom": "2026-01-01",
+			"note": "Quotité communale (art. 105 et 106 LI) appliquée à l'impôt sur les prestations en capital : décision du mainteneur du 07.11.2026, d'après la note du registre ju-li et le dossier fiscal de l'AFC, confirmée par les relevés AFC de Delémont du 8.11.2026."
+		},
+		"church": {
+			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : non relevé. L'impôt paroissial n'est pas couvert par la v1 d'A4, qui retient la confession « aucune » (décision du mainteneur du 8.11.2026).",
+			"sourceId": null
+		},
+		"baseTaxReduction": null
+	},
+	"capitalWithdrawalExemption": null,
+	"capitalWithdrawalAggregation": null,
 	"deductions": {
 		"value": [
 			{

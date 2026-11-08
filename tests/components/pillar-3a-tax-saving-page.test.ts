@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { CAPITAL_WITHDRAWAL_SLUG, capitalWithdrawalPublished } from "../../src/calculators/pension/capital-withdrawal-link";
 
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
@@ -21,15 +22,22 @@ const render = async (page: string, path: string): Promise<string> => {
 const decode = (html: string): string => html.replace(/&#39;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"');
 
 describe("page d'A2", () => {
-	it("chaque résultat rappelle l'imposition au retrait, le 31 décembre et l'année de cessation ; A4 et A3 annoncés sans lien", async () => {
+	// Réécrit le 7.11.2026 (demande du mainteneur, règle de fin de W09) : la mention d'A4 dépend de sa
+	// publication ; le but reste le même, jamais de lien vers un calculateur qui n'existe pas, jamais
+	// « en préparation » pour un calculateur publié.
+	it("chaque résultat rappelle l'imposition au retrait, le 31 décembre et l'année de cessation ; A4 annoncé tant qu'il n'est pas publié, lié ensuite", async () => {
 		const html = decode(await render("economie-impot-3a", pillar3aTaxSaving.slug));
 		for (const reminder of pillar3aTaxSavingTexts.reminders) expect(html).toContain(reminder);
 		expect(html).toMatch(/imposé à son retrait/);
-		expect(html).toMatch(/retrait en capital LPP\/3a est en préparation/);
 		expect(html).not.toMatch(/en préparation[^.]*rachat LPP|rachat LPP[^.]*en préparation/i);
-		// Aucun lien vers un calculateur qui n'existe pas encore
 		expect(html).toContain('href="/prevoyance/rachat-lpp/"');
-		expect(html).not.toMatch(/href="\/prevoyance\/retrait-capital-lpp-3a\/"/);
+		if (capitalWithdrawalPublished) {
+			expect(html).not.toMatch(/retrait en capital LPP\/3a est en préparation/);
+			expect(html).toContain(`href="${CAPITAL_WITHDRAWAL_SLUG}"`);
+		} else {
+			expect(html).toMatch(/retrait en capital LPP\/3a est en préparation/);
+			expect(html).not.toContain(`href="${CAPITAL_WITHDRAWAL_SLUG}"`);
+		}
 		// Rappels dans le bloc du résultat, sous la carte
 		const result = html.slice(html.indexOf("data-result-card"), html.indexOf("detail-du-calcul"));
 		expect(result).toContain(pillar3aTaxSavingTexts.reminders[0]!);

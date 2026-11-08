@@ -86,6 +86,8 @@ export const fr = {
 		calculatorsHeading: "Les calculateurs",
 		/** Résultat type d'une carte, calculé au build sur le cas exemple. */
 		typicalResult: (municipality: string, income: string, saving: string): string => `${municipality}, ${income} : ${saving} d’impôt en moins`,
+		/** Retrait en capital : commune, capital retiré la même année, impôt. */
+		typicalCapitalTax: (municipality: string, capital: string, tax: string): string => `${municipality}, ${capital} retirés : ${tax} d’impôt`,
 		openCalculator: "Calculer",
 		whyHeading: "Comment ces chiffres sont calculés",
 		why: [
@@ -237,6 +239,8 @@ export const fr = {
 			`Ce calcul porte sur un versement effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
 		lppBuyback: (year: number, calendarYear: number): string =>
 			`Ce calcul porte sur un rachat effectué en ${year} : les barèmes de ${calendarYear} ne sont pas encore relevés.`,
+		capitalWithdrawal: (year: number, calendarYear: number): string =>
+			`Ce calcul applique les barèmes de ${year} : ceux de ${calendarYear} ne sont pas encore relevés.`,
 	},
 
 	familyPage: {

@@ -435,6 +435,29 @@
 			"note": "Art. 179 LF : l'impôt communal sur la fortune se calcule d'après les taux de l'art. 60, le barème cantonal de la fortune ; l'art. 178 al. 4 s'applique par analogie, coefficient communal compris."
 		}
 	},
+	"capitalWithdrawalMultipliers": {
+		"cantonal": {
+			"value": true,
+			"sourceId": "estv-capital-benefits-dossier-2025",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2026-01-01",
+			"note": "Dossier fiscal de l'AFC « Imposition des prestations en capital » (période 2025) : ses taux sont des taux de base, à multiplier par le coefficient cantonal ; c'est le coefficient de l'impôt sur le revenu qui s'applique."
+		},
+		"communal": {
+			"value": true,
+			"sourceId": "vs-lf",
+			"verifiedOn": "2026-11-06",
+			"effectiveFrom": "2026-01-01",
+			"note": "Art. 176 al. 1 LF : l'impôt communal est perçu sur les mêmes bases que l'impôt cantonal ; barème communal de l'art. 178, indexation de la commune, puis coefficient communal, comme pour le revenu."
+		},
+		"church": {
+			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : non relevé. L'impôt paroissial n'est pas couvert par la v1 d'A4, qui retient la confession « aucune » (décision du mainteneur du 8.11.2026).",
+			"sourceId": null
+		},
+		"baseTaxReduction": null
+	},
+	"capitalWithdrawalExemption": null,
+	"capitalWithdrawalAggregation": null,
 	"deductions": {
 		"value": [
 			{

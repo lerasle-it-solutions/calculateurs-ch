@@ -16,6 +16,7 @@ import { taxEngineCoverage } from "../tax-coverage";
 import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition } from "../types";
 import { PILLAR_3A_BUYBACK_ID, pillar3aBuybackTexts } from "./pillar-3a-buyback";
+import { CAPITAL_WITHDRAWAL_ID, capitalWithdrawalLink, capitalWithdrawalPublished } from "./capital-withdrawal-link";
 
 export const PILLAR_3A_TAX_SAVING_ID = "pension.pillar-3a-tax-saving";
 
@@ -208,7 +209,8 @@ const deadlineSentence = deadline
 	: null;
 
 const reminders = [
-	"Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit. L’économie affichée n’en tient pas compte. Le calculateur du retrait en capital LPP/3a est en préparation.",
+	// A4 annoncé en préparation tant que sa page n'existe pas ; publié, le point de vigilance y mène (décision du 7.11.2026)
+	`Le capital 3a sera imposé à son retrait, séparément de vos autres revenus et à taux réduit. L’économie affichée n’en tient pas compte.${capitalWithdrawalPublished ? "" : " Le calculateur du retrait en capital LPP/3a est en préparation."}`,
 	...(deadlineSentence ? [`Pour être déductible en ${year}, ${deadlineSentence}`] : []),
 	"Si vous cessez votre activité lucrative en cours d’année, la cotisation entière reste déductible, à condition d’être versée avant la fin de l’activité (art. 7 al. 4 OPP 3).",
 ];
@@ -256,9 +258,10 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			},
 			{
 				case: "L’imposition du capital à son retrait.",
-				alternative: {
-					label: "Chaque résultat la rappelle. Le calculateur du retrait en capital LPP/3a est en préparation.",
-				},
+				// Le calculateur du retrait en capital (A4) dès sa publication (décision du 7.11.2026)
+				alternative: capitalWithdrawalPublished
+					? CAPITAL_WITHDRAWAL_ID
+					: { label: "Chaque résultat la rappelle. Le calculateur du retrait en capital LPP/3a est en préparation." },
 			},
 			{
 				case: "Les personnes imposées à la source.",
@@ -375,6 +378,7 @@ export const pillar3aTaxSaving: CalculatorDefinition = {
 			level: "warning",
 			summary: "L’économie affichée n’est pas un gain net, car le capital 3a sera imposé à son retrait.",
 			text: reminders[0],
+			...(capitalWithdrawalPublished ? { link: capitalWithdrawalLink } : {}),
 		},
 		...reminders.slice(1).map((summary) => ({ level: "warning" as const, summary })),
 	],
@@ -392,7 +396,7 @@ export const pillar3aTaxSavingTexts = {
 	/** Avertissement de la règle 7, « {amount} » remplacé par l'excédent. */
 	excessWarning:
 		"Les {amount} versés au-delà du plafond ne sont pas déductibles, et votre fondation doit vous les rembourser (circulaire AFC n° 18a, ch. 9.1).",
-	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 sans lien), points de vigilance de la page. */
+	/** Rappels affichés avec chaque résultat (règles 5 et 8, imposition au retrait, A4 annoncé tant qu'il n'est pas publié), points de vigilance de la page. */
 	reminders,
 	outOfScope: pillar3aBuybackTexts.outOfScope,
 	outOfScopeMunicipality: pillar3aBuybackTexts.outOfScopeMunicipality,

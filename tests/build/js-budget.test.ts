@@ -142,6 +142,17 @@ describe("budget de JavaScript des pages construites", () => {
 		expect(existsSync(DIST)).toBe(true);
 	});
 
+	it("A4 : démarrage, cœur du calendrier saisi et module de l'échelonnement, chacun sous son plafond", () => {
+		const page = "/prevoyance/retrait-capital-lpp-3a/index.html";
+		const loads = pageLoads(readFileSync(join(DIST, page), "utf8"), page, distFiles);
+		const of = (kind: Load["kind"], chunk = "") => loads.filter((load) => load.kind === kind && load.label.includes(chunk));
+		expect(of("startup")).toHaveLength(1);
+		expect(of("core", "capital-withdrawal-page")).toHaveLength(1);
+		// La comparaison des échelonnements est hors du cœur (décision n° 22)
+		expect(of("module", "capital-withdrawal-visuals")).toHaveLength(1);
+		expect(overBudget(loads), "Budget de JavaScript d'A4 dépassé").toEqual([]);
+	});
+
 	it("chaque chargement, au démarrage ou à la demande, reste sous son plafond", () => {
 		const loads = htmlFiles(DIST).flatMap((file) => pageLoads(readFileSync(file, "utf8"), `/${relative(DIST, file)}`, distFiles));
 		expect(loads.length).toBeGreaterThan(0);

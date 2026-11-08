@@ -47,6 +47,7 @@ import { eligibilityState } from "../../lib/display/eligibility";
 import type { FormOutcome } from "../../lib/display/calculator-form";
 import { exampleFormValues } from "../../calculators/field-values";
 import { fillSummary } from "../../lib/display/result-summary";
+import { getMunicipalMultipliers } from "../../data";
 
 interface Props {
 	definition: CalculatorDefinition;
@@ -57,6 +58,8 @@ interface Props {
 	intro: string | string[];
 	/** Libellé de la ResultCard. FRANÇAIS. */
 	resultLabel: string;
+	/** Libellé court de la barre mobile, si `resultLabel` y passerait sur deux lignes (§ 4.1, premier écran) ; sinon `resultLabel`. FRANÇAIS. */
+	barLabel?: string;
 	/** Réserve affichée sous le résultat (estimation indicative…). FRANÇAIS. */
 	resultNote?: string;
 	/** Annonce rendue au build dans la ligne de périmètre, au-dessus du formulaire (année de calcul antérieure). FRANÇAIS. */
@@ -93,12 +96,18 @@ interface Props {
 	 * est remplie à ce moment-là.
 	 */
 	taxDataUrl?: string;
+	/**
+	 * Adresse du fichier de données propre au calculateur, s'il en a un
+	 * (src/calculators/calculator-data-file.ts), chargé avec celui de l'année.
+	 */
+	calculatorDataUrl?: string;
 }
 
 const {
 	definition,
 	intro,
 	resultLabel,
+	barLabel,
 	resultNote,
 	notice,
 	guide,
@@ -108,11 +117,17 @@ const {
 	initial = { value: fr.common.emptyValue, breakdown: [], status: null, note: null },
 	vigilanceId: vigilanceIdProp,
 	taxDataUrl,
+	calculatorDataUrl,
 } = Astro.props;
 const deferred = taxDataUrl !== undefined;
 
 /** Saisie au chargement : celle du cas exemple, sinon la valeur par défaut du champ. */
 const filled = exampleFormValues(definition);
+// Canton de la commune du cas exemple : condition d'affichage `canton` (shownWhen), déduite et non saisie
+const exampleMunicipality = (getMunicipalMultipliers()?.multipliers ?? []).find(
+	(entry) => entry.municipality === filled.municipality || `${entry.municipality} (${entry.canton})` === filled.municipality,
+);
+if (exampleMunicipality && filled.canton === undefined) filled.canton = exampleMunicipality.canton;
 
 // Profils (§ 4.3) : les questions d'un groupe ne s'affichent que pour « Autre situation »
 const profileGroups = definition.profiles ?? [];
@@ -216,7 +231,7 @@ const resultFor = definition.fields
 		</p>
 	</header>
 
-	<div data-calculator-root data-tax-data={taxDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
+	<div data-calculator-root data-tax-data={taxDataUrl} data-calculator-data={calculatorDataUrl} class="grid min-w-0 gap-2xl lg:grid-cols-[2fr_3fr]">
 		<div class="flex min-w-0 flex-col gap-lg md:gap-xl lg:self-start">
 		<p data-example-banner class="rounded-panel bg-tint p-md text-label md:p-lg">
 			<strong class="font-bold">{fr.calculator.examplePrefix}</strong> {definition.example.label}. {fr.calculator.exampleReplace}{hasIncomePaths ? (
@@ -455,7 +470,7 @@ const resultFor = definition.fields
 	>
 		<div class="mx-auto flex max-w-page items-center justify-between gap-md">
 			<div class="flex min-w-0 flex-col">
-				<span class="text-fine font-bold">{resultLabel}</span>
+				<span class="text-fine font-bold">{barLabel ?? resultLabel}</span>
 				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
 			</div>
 			<span class="flex flex-col items-end" aria-hidden="true">

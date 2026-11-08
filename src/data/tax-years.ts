@@ -38,6 +38,13 @@ export const CALCULATOR_DATA_REQUIREMENTS: Readonly<Record<string, DataRequireme
 		cantonal: TAX_ENGINE_CANTONAL_KEYS,
 		municipalMultipliers: true,
 	},
+	// Les coefficients sur le capital (capitalWithdrawalMultipliers) n'en font pas partie : leurs TODO font
+	// refuser le seul canton concerné par le moteur, ils ne rendent pas l'année indisponible.
+	"pension.capital-withdrawal": {
+		federal: ["directFederalTax", "lppBuyback", "capitalWithdrawal"],
+		cantonal: [...TAX_ENGINE_CANTONAL_KEYS, "capitalWithdrawalTax", "capitalWithdrawalExemption", "capitalWithdrawalAggregation"],
+		municipalMultipliers: true,
+	},
 };
 
 /** Les données parmi lesquelles chercher, en argument pour rester testable. */

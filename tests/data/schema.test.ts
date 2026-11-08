@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { allDataFiles } from "../../src/data";
 import {
+	CAPITAL_ANNUITY_CONVERSION_FILE,
 	CAPITAL_WITHDRAWAL_DERIVATION_FILE,
+	capitalAnnuityConversionFileSchema,
 	capitalWithdrawalDerivationFileSchema,
 	cantonDataSchema,
 	federalDataSchema,
@@ -39,6 +41,11 @@ describe("conformité de schéma des fichiers de données", () => {
 		for (const file of files) {
 			if (file.path === CAPITAL_WITHDRAWAL_DERIVATION_FILE) {
 				const result = capitalWithdrawalDerivationFileSchema.safeParse(file.data);
+				expect(result.success, `${file.path} : ${result.error?.message}`).toBe(
+					true,
+				);
+			} else if (file.path === CAPITAL_ANNUITY_CONVERSION_FILE) {
+				const result = capitalAnnuityConversionFileSchema.safeParse(file.data);
 				expect(result.success, `${file.path} : ${result.error?.message}`).toBe(
 					true,
 				);

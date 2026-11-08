@@ -16,8 +16,7 @@
  * déclare dans TRACE_LABEL_MODULES (src/lib/build/browser-trace-labels.ts).
  */
 
-// Moteur fiscal (tax.ts)
-export const ZERO_BASE = "assiette nulle";
+// Moteur fiscal (tax.ts) ; « assiette nulle » : tax-scale-labels.ts
 export const ZERO_RATE_INCOME = "revenu déterminant pour le taux nul";
 export const FEDERAL_SITUATION_MARRIED = "époux vivant en ménage commun";
 export const FEDERAL_SITUATION_WITH_DEPENDANTS = "contribuable veuf, séparé, divorcé ou célibataire vivant en ménage commun avec des enfants ou des personnes nécessiteuses dont il assume pour l'essentiel l'entretien";

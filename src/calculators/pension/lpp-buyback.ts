@@ -16,12 +16,12 @@ import { taxEngineSourceIds } from "../tax-engine-sources";
 import type { CalculatorDefinition, FieldDefinition, VigilancePoint } from "../types";
 import { PILLAR_3A_BUYBACK_ID, pillar3aBuybackTexts } from "./pillar-3a-buyback";
 import { PILLAR_3A_TAX_SAVING_ID } from "./pillar-3a-tax-saving";
+// Retrait en capital LPP/3a (A4) : variante, et lien dès sa publication
+import { CAPITAL_WITHDRAWAL_ID, capitalWithdrawalLink, capitalWithdrawalPublished } from "./capital-withdrawal-link";
 
 export const LPP_BUYBACK_ID = "pension.lpp-buyback";
 /** Article 2, « 3a ou rachat LPP » : lien « guide » et alternative de la comparaison avec le 3a. */
 const LPP_BUYBACK_GUIDE_URL = "/prevoyance/guides/3a-ou-rachat-lpp/";
-/** Retrait en capital LPP/3a (A4), variante dès sa publication. */
-const CAPITAL_WITHDRAWAL_ID = "pension.capital-withdrawal";
 
 /**
  * Année de calcul : l'année civile de la construction si toutes les données
@@ -183,8 +183,10 @@ const lppBuybackWarnings = [
 		level: "warning",
 		summary: "Le capital issu du rachat sera imposé à son retrait : l'économie affichée n'est pas un gain net.",
 		title: "Imposition à la sortie.",
-		text: "Les prestations issues du rachat seront imposées à leur versement. En capital, elles le sont séparément du reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID). En rente, elles s’ajoutent au revenu de chaque année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID). L’économie affichée n’est donc pas un gain net. Le calculateur du retrait en capital LPP/3a est en préparation.",
+		// A4 annoncé en préparation tant que sa page n'existe pas, puis lié (décision du 7.11.2026)
+		text: `Les prestations issues du rachat seront imposées à leur versement. En capital, elles le sont séparément du reste du revenu (art. 38 LIFD ; art. 11 al. 3 LHID). En rente, elles s’ajoutent au revenu de chaque année (art. 22 al. 1 LIFD ; art. 7 al. 1 LHID). L’économie affichée n’est donc pas un gain net.${capitalWithdrawalPublished ? "" : " Le calculateur du retrait en capital LPP/3a est en préparation."}`,
 		items: [],
+		...(capitalWithdrawalPublished ? { link: capitalWithdrawalLink } : {}),
 	},
 	{
 		level: "info",
@@ -221,8 +223,8 @@ export const lppBuyback: CalculatorDefinition = {
 	promise: "Ce qu’un rachat LPP vous fait économiser d’impôt, en une fois ou échelonné.",
 	exitTaxReminder: {
 		text: "Le capital issu du rachat sera imposé à son retrait, cette économie n’est donc pas un gain net.",
-		// Lien existant de « Ce que ça ne couvre pas », en attendant le calculateur du retrait en capital
-		link: { label: "En savoir plus", url: "/methodologie/#rachat-lpp" },
+		// Méthodologie en attendant le calculateur du retrait en capital, puis ce calculateur (décision du 7.11.2026)
+		link: capitalWithdrawalPublished ? capitalWithdrawalLink : { label: "En savoir plus", url: "/methodologie/#rachat-lpp" },
 	},
 	scopeLine: `Pour un rachat en ${lppBuybackYear}, par une personne affiliée à une caisse de pension et imposée au régime ordinaire en Suisse romande.`,
 	example: {
@@ -252,10 +254,10 @@ export const lppBuyback: CalculatorDefinition = {
 			},
 			{
 				case: "Imposition du capital à la sortie, et donc le point mort entre l’économie d’aujourd’hui et l’impôt au retrait.",
-				alternative: {
-					label: "Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie.",
-					url: "/methodologie/#rachat-lpp",
-				},
+				// Le calculateur du retrait en capital (A4) dès sa publication, sinon la méthodologie (W11, 7.11.2026)
+				alternative: capitalWithdrawalPublished
+					? CAPITAL_WITHDRAWAL_ID
+					: { label: "Le calculateur du retrait en capital LPP/3a est en préparation. D’ici là, voyez la méthodologie.", url: "/methodologie/#rachat-lpp" },
 			},
 			{
 				case: "Rachat consécutif à un divorce ou à la dissolution d’un partenariat enregistré.",
