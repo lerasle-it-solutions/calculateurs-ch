@@ -58,6 +58,8 @@ interface Props {
 	intro: string | string[];
 	/** Libellé de la ResultCard. FRANÇAIS. */
 	resultLabel: string;
+	/** Libellé court de la barre mobile, si `resultLabel` y passerait sur deux lignes (§ 4.1, premier écran) ; sinon `resultLabel`. FRANÇAIS. */
+	barLabel?: string;
 	/** Réserve affichée sous le résultat (estimation indicative…). FRANÇAIS. */
 	resultNote?: string;
 	/** Annonce rendue au build dans la ligne de périmètre, au-dessus du formulaire (année de calcul antérieure). FRANÇAIS. */
@@ -105,6 +107,7 @@ const {
 	definition,
 	intro,
 	resultLabel,
+	barLabel,
 	resultNote,
 	notice,
 	guide,
@@ -467,7 +470,7 @@ const resultFor = definition.fields
 	>
 		<div class="mx-auto flex max-w-page items-center justify-between gap-md">
 			<div class="flex min-w-0 flex-col">
-				<span class="text-fine font-bold">{resultLabel}</span>
+				<span class="text-fine font-bold">{barLabel ?? resultLabel}</span>
 				<a href="#detail-du-calcul" class="text-fine font-bold">{fr.calculator.seeBreakdown}</a>
 			</div>
 			<span class="flex flex-col items-end" aria-hidden="true">

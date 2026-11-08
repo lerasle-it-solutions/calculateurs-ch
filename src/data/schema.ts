@@ -436,6 +436,17 @@ export const capitalWithdrawalDerivationFileSchema = z
 					factor: valueSchema(z.number()).optional(),
 					minimumRatePercent: valueSchema(z.number()).optional(),
 					maximumRatePercent: valueSchema(z.number()).optional(),
+					// Stade de chaque borne du taux : taux de base, avant le coefficient, ou taux effectif, après
+					rateBounds: z
+						.union([
+							valueSchema(
+								z
+									.object({ minimum: z.enum(["baseRate", "effectiveRate"]), maximum: z.enum(["baseRate", "effectiveRate"]) })
+									.strict(),
+							),
+							todoSchema,
+						])
+						.optional(),
 					coupleReduction: z
 						.union([
 							valueSchema(

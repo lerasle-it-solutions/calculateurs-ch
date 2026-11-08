@@ -539,7 +539,7 @@
 			"note": "Dossier fiscal de l'AFC « Imposition des prestations en capital » (période 2025) : ses taux sont des taux de base, à multiplier par le coefficient communal ; c'est le coefficient de l'impôt sur le revenu qui s'applique."
 		},
 		"church": {
-			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : à trancher par les relevés AFC. Sans effet tant que les calculateurs retiennent la confession « aucune », convention d'A1 à A3.",
+			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : non relevé. L'impôt paroissial n'est pas couvert par la v1 d'A4, qui retient la confession « aucune » (décision du mainteneur du 8.11.2026).",
 			"sourceId": null
 		},
 		"baseTaxReduction": {

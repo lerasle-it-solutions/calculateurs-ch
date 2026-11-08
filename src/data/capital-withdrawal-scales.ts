@@ -53,6 +53,11 @@ export function getCapitalWithdrawalScales(query: TaxScalesQuery): CapitalWithdr
 				type: "periodicBenefitRate",
 				minimumRatePercent: sourced(rule.minimumRatePercent),
 				maximumRatePercent: sourced(rule.maximumRatePercent),
+				// Absent : à relever, jamais supposé (R3)
+				rateBounds:
+					rule.rateBounds === undefined
+						? { pending: `${query.canton} : stade des bornes du taux, avant ou après le coefficient, à relever.`, sourceId: null }
+						: sourcedOrPending(rule.rateBounds),
 				conversion: sourced(conversion),
 			};
 		} else {

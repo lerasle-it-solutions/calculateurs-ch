@@ -312,7 +312,9 @@ export const capitalWithdrawal: CalculatorDefinition = {
 
 /** Textes de la page propres à A4, en français. */
 export const capitalWithdrawalTexts = {
-	resultLabel: "Impôt sur le capital retiré",
+	resultLabel: "Impôt sur le capital retiré, hors impôt paroissial",
+	/** Barre mobile : sur une ligne à 375 px, le premier champ reste au-dessus (§ 4.1). */
+	barLabel: "Impôt sur le capital retiré",
 	/** Réserve sous le résultat (checklist, point 13), l'année fiscale des données. */
 	disclaimer: `Ce montant est une estimation indicative, établie d’après les barèmes ${capitalWithdrawalYear} et vos saisies. Il ne constitue pas un conseil fiscal ou en prévoyance, et ne remplace pas votre décision de taxation.`,
 	householdNotCovered: HOUSEHOLD_NOT_COVERED,

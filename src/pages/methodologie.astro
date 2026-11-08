@@ -89,7 +89,7 @@ const capitalMaxYears = Math.max(...SCENARIO_TRANCHE_COUNTS);
 const capitalLock = getFederalData(capitalWithdrawalYear).lppBuyback?.lockPeriodYears.value;
 // Pourcentage du texte courant, à la française : virgule décimale, espace insécable avant « % »
 const textPercent = (value: number | undefined): string => (value === undefined ? "" : `${String(value).replace(".", ",")}\u00a0%`);
-// Réduction genevoise de l'impôt de base, lue dans les données (TODO tant que son effet sur le capital n'est pas établi)
+// Réduction genevoise de l'impôt de base, lue dans les données ; elle s'applique au capital (ge.json, capitalWithdrawalMultipliers)
 const genevaReduction = getCantonData("GE").baseTaxReduction;
 const genevaReductionPercent = genevaReduction && "value" in genevaReduction ? textPercent(genevaReduction.value.ratePercent) : "";
 
@@ -598,9 +598,12 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				communal s’appliquent comme à l’impôt sur le revenu, sauf à Fribourg, où les
 				taux de la loi sont fixes (art. 2 al. 2 LICD). Fribourg exonère un total
 				annuel inférieur à {capitalFribourgExemption && formatChf(capitalFribourgExemption)} francs
-				(art. 39 al. 4 LICD). Coefficient communal de Fribourg sur le capital : TODO(relevés AFC).
-				Réduction genevoise de {genevaReductionPercent} sur l’impôt sur le capital : TODO(relevés AFC).
-				Impôt paroissial sur le capital : TODO(relevés AFC).
+				(art. 39 al. 4 LICD). À {capitalFribourgExemption && formatChf(capitalFribourgExemption)} CHF tout juste,
+				le calculateur applique l’art. 39 al. 4 LICD : la prestation est imposable. Le coefficient
+				communal de Fribourg s’applique pourtant à l’impôt cantonal de base sur le capital. À Genève,
+				la diminution de {genevaReductionPercent} de l’impôt sur le revenu s’applique aussi à l’impôt
+				cantonal sur le capital, pas aux centimes communaux (art. 1 LDIRPP). Les résultats
+				s’entendent hors impôt paroissial, que cette version ne calcule pas.
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Le cumul des retraits d’une même année.</strong> Tous les retraits en

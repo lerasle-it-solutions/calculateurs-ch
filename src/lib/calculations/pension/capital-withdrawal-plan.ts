@@ -69,14 +69,17 @@ export type CapitalWithdrawalInput = {
 export type CapitalWithdrawalOptions = {
 	/** Impôt minimal de l'IFD (art. 36 al. 3 LIFD) appliqué au capital ; non par défaut. */
 	applyFederalMinimumLeviedTax?: boolean;
-	/**
-	 * Barème communal propre (Valais) : la borne du taux cantonal s'applique-t-elle
-	 * au taux communal de base ? Sans réponse, le calcul est refusé (R3).
-	 */
-	communalRateBounds?: "sameAsCantonal" | "none";
 };
 
 // --- Barèmes et règles reçus en argument --------------------------------------------
+
+/**
+ * Stade où s'applique une borne du taux : au taux de base lu sur le barème,
+ * avant le coefficient, ou au taux effectif, impôt après coefficient rapporté au
+ * capital. Une règle par borne, la même pour l'impôt cantonal et l'impôt communal.
+ */
+export type RateBoundStage = "baseRate" | "effectiveRate";
+export type RateBounds = { minimum: RateBoundStage; maximum: RateBoundStage };
 
 /** Rente viagère annuelle pour `capitalAmount` CHF de capital, par âge révolu et par sexe. */
 export type AnnuityConversion = { capitalAmount: number; rows: { age: number; male: number; female: number }[] };
@@ -99,6 +102,8 @@ export type CapitalTaxModel =
 			type: "periodicBenefitRate";
 			minimumRatePercent: Sourced<number>;
 			maximumRatePercent: Sourced<number>;
+			/** Stade de chaque borne ; à relever, le calcul est refusé (R3). */
+			rateBounds: SourcedOrPending<RateBounds>;
 			conversion: Sourced<AnnuityConversion>;
 	  };
 
@@ -199,10 +204,72 @@ type YearAmounts = Omit<CapitalWithdrawalYear, "year" | "withdrawals" | "total">
 
 const ZERO: YearAmounts = { federalTax: 0, cantonalTax: 0, municipalTax: 0, churchTax: 0, totalTax: 0 };
 
+type PeriodicModel = Extract<CapitalTaxModel, { type: "periodicBenefitRate" }>;
+
+/** Hypothèse de la trace : le stade de chaque borne, tel que les données le fixent. */
+const boundsAssumption = (bounds: RateBounds): string =>
+	`${bounds.minimum === "baseRate" ? labels.MINIMUM_ON_BASE_RATE : labels.MINIMUM_ON_EFFECTIVE_RATE} ; ${
+		bounds.maximum === "baseRate" ? labels.MAXIMUM_ON_BASE_RATE : labels.MAXIMUM_ON_EFFECTIVE_RATE
+	}`;
+
+/** Taux de base lu sur la rente, borné aux bornes que les données placent avant le coefficient. */
+const boundBaseRate = (model: PeriodicModel, bounds: Sourced<RateBounds>, ratePercent: number, label: string, line: Line): number => {
+	const minimum = bounds.value.minimum === "baseRate" ? model.minimumRatePercent.value : null;
+	const maximum = bounds.value.maximum === "baseRate" ? model.maximumRatePercent.value : null;
+	const bounded = clamp(ratePercent, minimum ?? -Infinity, maximum ?? Infinity);
+	const range =
+		minimum !== null && maximum !== null
+			? `borné entre ${fmt(minimum)} % et ${fmt(maximum)} %`
+			: minimum !== null
+				? `au moins ${fmt(minimum)} %`
+				: maximum !== null
+					? `au plus ${fmt(maximum)} %`
+					: "sans borne avant le coefficient";
+	line({
+		label,
+		operands: { ratePercent, minimumRatePercent: minimum ?? 0, maximumRatePercent: maximum ?? 0 },
+		formula: `${fmt(ratePercent)} %, ${range}`,
+		value: bounded,
+		unit: "%",
+		sourceId: bounds.sourceId,
+		assumption: boundsAssumption(bounds.value),
+	});
+	return bounded;
+};
+
+/**
+ * Impôt après coefficient, borné aux bornes que les données placent sur le taux
+ * effectif : `total` × taux minimal au moins, `total` × taux maximal au plus.
+ * Sans effet hors du modèle de la rente équivalente.
+ */
+const boundEffectiveRate = (ctx: Context, total: number, tax: number, label: string, line: Line): number => {
+	const model = ctx.scales.model;
+	if (model.type !== "periodicBenefitRate" || isPending(model.rateBounds)) return tax;
+	const bounds = model.rateBounds;
+	const floor = bounds.value.minimum === "effectiveRate" ? (total * model.minimumRatePercent.value) / 100 : null;
+	const ceiling = bounds.value.maximum === "effectiveRate" ? (total * model.maximumRatePercent.value) / 100 : null;
+	if (floor === null && ceiling === null) return tax;
+	const bounded = clamp(tax, floor ?? -Infinity, ceiling ?? Infinity);
+	const parts = [
+		...(floor === null ? [] : [`au moins ${fmt(total)} × ${fmt(model.minimumRatePercent.value)} % = ${fmt(floor)}`]),
+		...(ceiling === null ? [] : [`au plus ${fmt(total)} × ${fmt(model.maximumRatePercent.value)} % = ${fmt(ceiling)}`]),
+	];
+	line({
+		label,
+		operands: { tax, total, floor: floor ?? 0, ceiling: ceiling ?? 0 },
+		formula: `${fmt(tax)}, ${parts.join(", ")}`,
+		value: bounded,
+		unit: "CHF",
+		sourceId: bounds.sourceId,
+		assumption: boundsAssumption(bounds.value),
+	});
+	return bounded;
+};
+
 /** Taux de base du Valais : rente équivalente au capital, taux du barème lu sur la rente. */
 const annuityRateIncome = (
 	ctx: Context,
-	model: Extract<CapitalTaxModel, { type: "periodicBenefitRate" }>,
+	model: PeriodicModel,
 	year: number,
 	total: number,
 	line: Line,
@@ -341,18 +408,12 @@ const cantonalBaseTax = (
 					? undefined
 					: ctx.need(scales.tax.canton.incomeScaleIndexation, labels.NEED_CANTONAL_INDEXATION);
 			if (rateIncome === undefined || (scales.tax.canton.incomeScaleIndexation !== null && !deflation)) return undefined;
+			const bounds = ctx.need(model.rateBounds, labels.NEED_RATE_BOUNDS);
+			if (!bounds) return undefined;
 			const table = singleTable(scales.tax.canton.income, labels.CANTONAL_RATE_ON_ANNUITY);
 			const rate = rateOn(table, rateIncome, deflation);
 			line({ label: labels.CANTONAL_RATE_ON_ANNUITY, operands: { rateIncome }, formula: rate.formula, value: rate.ratePercent, unit: "%", sourceId: table.sourceId });
-			const bounded = clamp(rate.ratePercent, model.minimumRatePercent.value, model.maximumRatePercent.value);
-			line({
-				label: labels.BOUNDED_RATE,
-				operands: { ratePercent: rate.ratePercent, minimumRatePercent: model.minimumRatePercent.value, maximumRatePercent: model.maximumRatePercent.value },
-				formula: `${fmt(rate.ratePercent)} % borné entre ${fmt(model.minimumRatePercent.value)} % et ${fmt(model.maximumRatePercent.value)} %`,
-				value: bounded,
-				unit: "%",
-				sourceId: model.maximumRatePercent.sourceId,
-			});
+			const bounded = boundBaseRate(model, bounds, rate.ratePercent, labels.BOUNDED_RATE, line);
 			const rounding = scales.tax.canton.incomeTaxRounding;
 			const raw = (total * bounded) / 100;
 			const base = rounding ? roundToNearest(raw, rounding.value) : raw;
@@ -370,7 +431,7 @@ const cantonalBaseTax = (
 };
 
 /** Impôt cantonal : coefficient annuel et réduction de l'impôt de base, si les données les appliquent au capital. */
-const cantonalTaxOf = (ctx: Context, base: number, line: Line): number | undefined => {
+const cantonalTaxOf = (ctx: Context, total: number, base: number, line: Line): number | undefined => {
 	const { scales } = ctx;
 	const applies = ctx.need(scales.multipliers.cantonal, labels.NEED_CANTONAL_MULTIPLIER);
 	const reductionApplies =
@@ -403,7 +464,7 @@ const cantonalTaxOf = (ctx: Context, base: number, line: Line): number | undefin
 		unit: "CHF",
 		sourceId: canton.multiplier.income.sourceId,
 	});
-	return cantonalTax;
+	return boundEffectiveRate(ctx, total, cantonalTax, labels.CANTONAL_TAX_EFFECTIVE_BOUND, line);
 };
 
 const municipalTaxOf = (
@@ -432,18 +493,13 @@ const municipalTaxOf = (
 			unit: "CHF",
 			sourceId: multiplier.sourceId,
 		});
-		return municipalTax;
+		return boundEffectiveRate(ctx, total, municipalTax, labels.MUNICIPAL_TAX_EFFECTIVE_BOUND, line);
 	}
 	// Barème communal propre : taux lu sur la même rente que le taux cantonal (« sur les mêmes bases »)
 	const model = scales.model;
 	if (model.type !== "periodicBenefitRate") throw new Error("Barème communal propre sans rente équivalente : non prévu.");
-	if (ctx.options.communalRateBounds === undefined) {
-		ctx.need(
-			{ pending: "Borne du taux cantonal appliquée ou non au taux communal de base : à trancher par les relevés AFC de Sion.", sourceId: null },
-			labels.NEED_COMMUNAL_BOUNDS,
-		);
-		return undefined;
-	}
+	const bounds = ctx.need(model.rateBounds, labels.NEED_RATE_BOUNDS);
+	if (!bounds) return undefined;
 	if (rateIncome === null) return 0; // total exonéré : aucun impôt de base
 	const deflation =
 		municipality.incomeScaleIndexation === null ? undefined : ctx.need(municipality.incomeScaleIndexation, labels.NEED_COMMUNAL_INDEXATION);
@@ -451,23 +507,7 @@ const municipalTaxOf = (
 	const table = singleTable(municipality.income, labels.COMMUNAL_RATE_ON_ANNUITY);
 	const rate = rateOn(table, rateIncome, deflation);
 	line({ label: labels.COMMUNAL_RATE_ON_ANNUITY, operands: { rateIncome }, formula: rate.formula, value: rate.ratePercent, unit: "%", sourceId: table.sourceId });
-	const bounded =
-		ctx.options.communalRateBounds === "sameAsCantonal"
-			? clamp(rate.ratePercent, model.minimumRatePercent.value, model.maximumRatePercent.value)
-			: rate.ratePercent;
-	line({
-		label: ctx.options.communalRateBounds === "sameAsCantonal" ? labels.BOUNDED_RATE : labels.UNBOUNDED_COMMUNAL_RATE,
-		operands: { ratePercent: rate.ratePercent },
-		formula:
-			ctx.options.communalRateBounds === "sameAsCantonal"
-				? `${fmt(rate.ratePercent)} % borné entre ${fmt(model.minimumRatePercent.value)} % et ${fmt(model.maximumRatePercent.value)} %`
-				: `${fmt(rate.ratePercent)} %`,
-		value: bounded,
-		unit: "%",
-		sourceId: ctx.options.communalRateBounds === "sameAsCantonal" ? model.maximumRatePercent.sourceId : table.sourceId,
-		assumption:
-			ctx.options.communalRateBounds === "sameAsCantonal" ? labels.BOUNDED_COMMUNAL_RATE_ASSUMPTION : labels.UNBOUNDED_COMMUNAL_RATE_ASSUMPTION,
-	});
+	const bounded = boundBaseRate(model, bounds, rate.ratePercent, labels.COMMUNAL_BOUNDED_RATE, line);
 	const rounding = scales.tax.canton.incomeTaxRounding;
 	const round = (value: number): number => (rounding ? roundToNearest(value, rounding.value) : value);
 	const communalBase = round((total * bounded) / 100);
@@ -489,7 +529,7 @@ const municipalTaxOf = (
 		unit: "CHF",
 		sourceId: multiplier.sourceId,
 	});
-	return municipalTax;
+	return boundEffectiveRate(ctx, total, municipalTax, labels.MUNICIPAL_TAX_EFFECTIVE_BOUND, line);
 };
 
 const churchTaxOf = (ctx: Context, base: number, line: Line): number | undefined => {
@@ -569,7 +609,7 @@ const yearTax = (ctx: Context, year: number, total: number, line: Line): YearAmo
 	// Chaque étape s'exécute même si une précédente manque : toutes les valeurs à relever sont recensées
 	const cantonal = cantonalBaseTax(ctx, year, total, line);
 	const base = cantonal?.base ?? 0;
-	const cantonalTax = cantonalTaxOf(ctx, base, line);
+	const cantonalTax = cantonalTaxOf(ctx, total, base, line);
 	const municipalTax = municipalTaxOf(ctx, total, base, cantonal?.rateIncome ?? null, line);
 	const churchTax = churchTaxOf(ctx, base, line);
 	const federalTax = federalTaxOf(ctx, total, line);

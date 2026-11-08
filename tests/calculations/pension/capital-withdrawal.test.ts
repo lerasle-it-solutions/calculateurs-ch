@@ -9,6 +9,7 @@ import {
 	type CapitalWithdrawalInput,
 	type CapitalWithdrawalOptions,
 	type CapitalWithdrawalScales,
+	type RateBounds,
 } from "../../../src/lib/calculations/pension/capital-withdrawal";
 import * as labels from "../../../src/lib/calculations/pension/capital-withdrawal-labels";
 import {
@@ -89,7 +90,7 @@ describe("données du retrait en capital", () => {
 });
 
 describe("Fribourg : art. 39 LICD", () => {
-	// Le coefficient communal sur le capital est encore à relever (TODO) : valeur fictive « non » pour isoler l'impôt cantonal.
+	// Valeur fictive « non » pour isoler l'impôt cantonal.
 	const withoutCommunal = (input: CapitalWithdrawalInput): CapitalWithdrawalScales => {
 		const scales = realScales(input);
 		return { ...scales, multipliers: { ...scales.multipliers, communal: { value: false, sourceId: "fixture" } } };
@@ -124,9 +125,28 @@ describe("Fribourg : art. 39 LICD", () => {
 		expect(line.assumption).toBe(labels.SAME_YEAR_TOTAL_LAW);
 	});
 
-	it("avec les données réelles, le calcul est refusé tant que le coefficient communal est à relever (R3)", () => {
-		const input = inputFor("Fribourg", "FR", [lpp(100_000)]);
-		expect(() => computeCapitalWithdrawal(input, realScales(input))).toThrow(MissingTaxDataError);
+	// Décision du mainteneur du 8.11.2026, d'après les relevés AFC : le coefficient de la commune s'applique
+	const fribourgMultiplier = (getMunicipalMultipliers()?.multipliers ?? []).find((entry) => entry.bfsId === ofsIdOf("Fribourg", "FR"))!.income.municipal.value;
+	const realYear = (amount: number) => {
+		const input = inputFor("Fribourg", "FR", [lpp(amount)]);
+		return computeCapitalWithdrawal(input, realScales(input)).plan!.years[0]!;
+	};
+
+	it("avec les données réelles, l'impôt communal applique le coefficient de la commune à l'impôt cantonal de base", () => {
+		for (const amount of [100_000, 300_000]) {
+			const year = realYear(amount);
+			expect(year.municipalTax).toBe(Math.round((cantonalTaxOn(amount) * fribourgMultiplier) / 100));
+		}
+	});
+
+	it("valeur légale à 10 000 et 10 001 CHF (art. 39 al. 4 LICD) : 100 CHF de cantonal, 80 CHF de communal pour la ville de Fribourg", () => {
+		expect(fribourgMultiplier).toBe(80);
+		for (const amount of [10_000, 10_001]) {
+			const year = realYear(amount);
+			expect(year.cantonalTax).toBe(100);
+			expect(year.municipalTax).toBe(80);
+		}
+		expect(realYear(9_999).totalTax).toBe(0);
 	});
 });
 
@@ -192,9 +212,18 @@ describe("Vaud, Genève, Neuchâtel : fraction du barème du revenu", () => {
 		expect(year.municipalTax).toBe(Math.round(base * 0.65));
 	});
 
-	it("Genève : refusé tant que la diminution de 12 % sur le capital est à relever (R3)", () => {
+	it("Genève : un cinquième, la diminution de 12 % sur l'impôt cantonal, pas sur les centimes communaux (art. 45 LIPP, art. 1 LDIRPP)", () => {
 		const input = inputFor("Genève", "GE", [lpp(100_000)]);
-		expect(() => computeCapitalWithdrawal(input, realScales(input))).toThrow(MissingTaxDataError);
+		const year = computeCapitalWithdrawal(input, realScales(input)).plan!.years[0]!;
+		const tables = getTaxScales({ taxYear: YEAR, canton: "GE", municipalityOfsId: input.municipalityOfsId }).canton.income;
+		const base = evaluateScale(tables.find((table) => table.households.includes("single"))!, 100_000).tax * 0.2;
+		const ge = getCantonData("GE");
+		const reduction = (ge.baseTaxReduction as { value: { ratePercent: number } }).value.ratePercent;
+		const unreduced = (ge.unreducedCantonalMultiplier as { value: { income: number } }).value.income;
+		expect(reduction).toBe(12);
+		expect(year.cantonalTax).toBe(Math.round(base * (1 - reduction / 100) * (ge.cantonalMultiplier.income.value / 100) + (base * unreduced) / 100));
+		const communal = (getMunicipalMultipliers()?.multipliers ?? []).find((entry) => entry.bfsId === input.municipalityOfsId)!.income.municipal.value;
+		expect(year.municipalTax).toBe(Math.round((base * communal) / 100));
 	});
 });
 
@@ -204,22 +233,35 @@ describe("Valais : taux d'une rente équivalente (art. 33b al. 1 LF)", () => {
 
 	it("sans âge ni sexe, le calcul est hors périmètre", () => {
 		const { annuityProfile: _, ...withoutProfile } = input;
-		expect(() => computeCapitalWithdrawal(withoutProfile, realScales(input), { communalRateBounds: "none" })).toThrow(OutOfScopeError);
+		expect(() => computeCapitalWithdrawal(withoutProfile, realScales(input))).toThrow(OutOfScopeError);
 	});
 
-	it("tant que les relevés de Sion n'ont pas tranché la borne du taux communal, le calcul est refusé (R3)", () => {
-		expect(() => computeCapitalWithdrawal(input, realScales(input))).toThrow(MissingTaxDataError);
-	});
-
-	it("rente : 100 000 × 50,77 / 1 000 = 5 077, taux lu à 5 000 et borné entre 2 % et 4 %", () => {
-		for (const bounds of ["sameAsCantonal", "none"] as const) {
-			const { breakdown } = computeCapitalWithdrawal(input, realScales(input), { communalRateBounds: bounds });
-			expect(breakdown.find((entry) => entry.label === labels.EQUIVALENT_ANNUITY)!.value).toBeCloseTo(5_077, 6);
-			expect(breakdown.find((entry) => entry.label === labels.RATE_DETERMINING_ANNUITY)!.value).toBe(5_000);
-			const bounded = breakdown.find((entry) => entry.label === labels.BOUNDED_RATE)!.value;
-			expect(bounded).toBeGreaterThanOrEqual(2);
-			expect(bounded).toBeLessThanOrEqual(4);
+	it("sans le stade des bornes du taux dans les données, le calcul est refusé (R3)", () => {
+		const scales = realScales(input);
+		if (scales.model.type !== "periodicBenefitRate") throw new Error("Modèle valaisan attendu.");
+		const pendingBounds = { ...scales, model: { ...scales.model, rateBounds: { pending: "fictif", sourceId: null } } };
+		try {
+			computeCapitalWithdrawal(input, pendingBounds);
+			expect.unreachable();
+		} catch (error) {
+			expect(error).toBeInstanceOf(MissingTaxDataError);
+			expect((error as MissingTaxDataError).missing.map((item) => item.label)).toEqual([labels.NEED_RATE_BOUNDS]);
 		}
+	});
+
+	it("données réelles : taux minimal sur le taux de base, taux maximal sur le taux effectif (art. 33b al. 1 LF, lecture du 8.11.2026)", () => {
+		const scales = realScales(input);
+		if (scales.model.type !== "periodicBenefitRate") throw new Error("Modèle valaisan attendu.");
+		expect(scales.model.rateBounds).toEqual({ value: { minimum: "baseRate", maximum: "effectiveRate" }, sourceId: "vs-lf" });
+	});
+
+	it("rente : 100 000 × 50,77 / 1 000 = 5 077, taux lu à 5 000, au moins le taux minimal et au plus le taux maximal", () => {
+		const { breakdown } = computeCapitalWithdrawal(input, realScales(input));
+		expect(breakdown.find((entry) => entry.label === labels.EQUIVALENT_ANNUITY)!.value).toBeCloseTo(5_077, 6);
+		expect(breakdown.find((entry) => entry.label === labels.RATE_DETERMINING_ANNUITY)!.value).toBe(5_000);
+		const bounded = breakdown.find((entry) => entry.label === labels.BOUNDED_RATE)!.value;
+		expect(bounded).toBeGreaterThanOrEqual(2);
+		expect(bounded).toBeLessThanOrEqual(4);
 	});
 });
 
@@ -386,6 +428,8 @@ describe("modèles cantonaux, barèmes fictifs", () => {
 				type: "periodicBenefitRate",
 				minimumRatePercent: { value: 2, sourceId: "fixture" },
 				maximumRatePercent: { value: 4, sourceId: "fixture" },
+				// Les deux bornes avant le coefficient (cantonal et communal à 100 % ou sans effet ici)
+				rateBounds: { value: { minimum: "baseRate", maximum: "baseRate" }, sourceId: "fixture" },
 				conversion: { value: { capitalAmount: 1_000, rows: [{ age: 65, male: 50, female: 45 }, { age: 66, male: 60, female: 50 }, { age: 67, male: 70, female: 55 }, { age: 68, male: 80, female: 60 }] }, sourceId: "fixture" },
 			},
 			multipliers: { cantonal: { value: true, sourceId: "fixture" }, communal: { value: true, sourceId: "fixture" }, church: { pending: "fictif", sourceId: null }, baseTaxReduction: null },
@@ -408,17 +452,29 @@ describe("modèles cantonaux, barèmes fictifs", () => {
 		expect(periodic(150_000, periodicScales(), {}, YEAR + 1).cantonalTax).toBe(3_000); // rente 9 000 : 1 % → 2 %
 	});
 
-	it("barème communal propre : les deux variantes de la borne du taux communal", () => {
-		const communal = periodicScales({
-			model: "communalScale",
-			income: [table("averageRate", [[0, 4.5, 0]])],
-			wealth: [],
-			incomeScaleIndexation: null,
-			multiplier: { income: { value: 100, sourceId: "fixture" }, wealth: { value: 100, sourceId: "fixture" } },
-		});
-		expect(periodic(100_000, communal, { communalRateBounds: "sameAsCantonal" }).municipalTax).toBe(4_000);
-		expect(periodic(100_000, communal, { communalRateBounds: "none" }).municipalTax).toBe(4_500);
-		expect(() => periodic(100_000, communal)).toThrow(MissingTaxDataError);
+	it("barème communal propre, coefficient de 110 % : le stade de chaque borne, lu dans les données, change l'impôt communal", () => {
+		const communalAt = (ratePercent: number, rateBounds: RateBounds | null): CapitalWithdrawalScales => {
+			const scales = periodicScales({
+				model: "communalScale",
+				income: [table("averageRate", [[0, ratePercent, 0]])],
+				wealth: [],
+				incomeScaleIndexation: null,
+				multiplier: { income: { value: 110, sourceId: "fixture" }, wealth: { value: 110, sourceId: "fixture" } },
+			});
+			if (scales.model.type !== "periodicBenefitRate") throw new Error("Modèle de la rente attendu.");
+			return {
+				...scales,
+				model: { ...scales.model, rateBounds: rateBounds ? { value: rateBounds, sourceId: "fixture" } : { pending: "fictif", sourceId: null } },
+			};
+		};
+		const municipal = (ratePercent: number, rateBounds: RateBounds) => periodic(100_000, communalAt(ratePercent, rateBounds)).municipalTax;
+		// Taux de 4,5 % : 4 % × 1,1 = 4 400 si le maximum borne le taux de base ; 4,5 % × 1,1 = 4 950, ramené à 4 000, s'il borne le taux effectif
+		expect(municipal(4.5, { minimum: "baseRate", maximum: "baseRate" })).toBe(4_400);
+		expect(municipal(4.5, { minimum: "baseRate", maximum: "effectiveRate" })).toBe(4_000);
+		// Taux de 1 % : 2 % × 1,1 = 2 200 si le minimum borne le taux de base ; 1 % × 1,1 = 1 100, relevé à 2 000, s'il borne le taux effectif
+		expect(municipal(1, { minimum: "baseRate", maximum: "effectiveRate" })).toBe(2_200);
+		expect(municipal(1, { minimum: "effectiveRate", maximum: "effectiveRate" })).toBe(2_000);
+		expect(() => periodic(100_000, communalAt(4.5, null))).toThrow(MissingTaxDataError);
 	});
 });
 

@@ -12,9 +12,9 @@ import { checkMeta, repeatsTitle } from "../../src/lib/seo/meta-rules";
 /**
  * A4 — définition et page (W11, 7.11.2026) : v1 pour les personnes seules sans
  * enfant, bornes légales lues dans les données, page construite sur le cas
- * exemple, refus propres tant que les relevés manquent, comparaison des
+ * exemple, refus propres quand une valeur est à relever, comparaison des
  * échelonnements hors du cœur. Les montants ne sont pas comparés ici aux
- * relevés de l'AFC (tests/calculations/private/, après les relevés).
+ * relevés de l'AFC (tests/calculations/capital-withdrawal-references.engine.test.ts).
  */
 const federal = getFederalData(capitalWithdrawalYear);
 const lock = federal.lppBuyback!.lockPeriodYears.value;
@@ -96,14 +96,29 @@ describe("lecture du formulaire", () => {
 		}
 	});
 
-	it("Fribourg, Genève et le Valais : refus propre, donnée manquante, sans chiffre (R3)", () => {
+	it("Fribourg, Genève et le Valais, relevés AFC du 8.11.2026 intégrés : un montant et sa trace", () => {
 		const cases: Record<string, string>[] = [{ municipality: "Fribourg" }, { municipality: "Genève" }, { municipality: "Sion", sex: "male", age: "65" }];
 		for (const overrides of cases) {
 			const outcome = read(overrides);
-			expect(outcome.value, overrides.municipality).toBe("—");
-			expect(outcome.status?.text, overrides.municipality).toBe(capitalWithdrawalTexts.missingData);
-			expect(outcome.breakdown, overrides.municipality).toEqual([]);
+			expect(outcome.status, overrides.municipality).toBeNull();
+			expect(outcome.value, overrides.municipality).not.toBe("—");
+			expect(outcome.breakdown.length, overrides.municipality).toBeGreaterThan(0);
 		}
+	});
+
+	it("une valeur encore à relever : refus propre, donnée manquante, sans chiffre (R3)", () => {
+		// Valais privé du stade des bornes du taux, dans le fichier de données de la page
+		const bundle = capitalWithdrawalPageData.capitalWithdrawal!;
+		const valais = bundle.cantons.VS!;
+		if (valais.model.type !== "periodicBenefitRate") throw new Error("Modèle valaisan attendu.");
+		const data = {
+			...capitalWithdrawalPageData,
+			capitalWithdrawal: { ...bundle, cantons: { ...bundle.cantons, VS: { ...valais, model: { ...valais.model, rateBounds: { pending: "fictif", sourceId: null } } } } },
+		};
+		const outcome = readCapitalWithdrawalForm({ ...exampleFormValues(capitalWithdrawal), municipality: "Sion", sex: "male", age: "65" }, data);
+		expect(outcome.value).toBe("—");
+		expect(outcome.status?.text).toBe(capitalWithdrawalTexts.missingData);
+		expect(outcome.breakdown).toEqual([]);
 	});
 
 	it("Valais : l'âge et le sexe sont demandés avant le calcul", () => {

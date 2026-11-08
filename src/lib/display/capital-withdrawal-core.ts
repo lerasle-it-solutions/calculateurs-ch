@@ -31,10 +31,10 @@ import type { CapitalWithdrawalTableTexts } from "./capital-withdrawal-tables";
 import type { ResultStatus } from "./result-card";
 
 /**
- * Options du moteur tant que les relevés de l'AFC ne les ont pas tranchées
- * (docs/plan/W11-W12.md, point 5) : pas d'impôt minimal de l'IFD sur le
- * capital ; borne du taux communal valaisan non choisie, le Valais est donc
- * refusé avec une donnée manquante.
+ * Options du moteur : pas d'impôt minimal de l'IFD sur le capital, l'art. 38
+ * al. 2 LIFD ne renvoyant pas à l'art. 36 al. 3 (décision du mainteneur,
+ * confirmée par les relevés AFC du 8.11.2026). Le stade des bornes du taux
+ * valaisan est une donnée (rateBounds), pas une option.
  */
 export const CAPITAL_WITHDRAWAL_OPTIONS: CapitalWithdrawalOptions = {};
 

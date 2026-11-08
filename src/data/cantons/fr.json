@@ -327,11 +327,14 @@
 			"note": "Art. 2 al. 2 LICD : pour l'impôt sur les prestations en capital imposées séparément, les taux de la loi sont fixes ; le coefficient annuel (art. 1 LCA 2026) ne s'applique pas. Le dossier fiscal de l'AFC parle de taux « effectifs »."
 		},
 		"communal": {
-			"todo": "Coefficient communal sur l'impôt sur les prestations en capital : la feuille cantonale (art. 3 LICo) ne le dit pas ; à trancher par les relevés AFC de Fribourg.",
-			"sourceId": null
+			"value": true,
+			"sourceId": "fr-lico",
+			"verifiedOn": "2026-11-08",
+			"effectiveFrom": "2026-01-01",
+			"note": "Le coefficient communal de la commune s'applique à l'impôt cantonal de base sur les prestations en capital (art. 3 al. 3 LICo : coefficient en pour-cent de l'impôt cantonal de base). Décision du mainteneur du 8.11.2026, d'après les relevés AFC de Fribourg ; la feuille cantonale ne le dit pas pour le capital. Le coefficient est lu dans municipalities/multipliers.json, jamais ici."
 		},
 		"church": {
-			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : à trancher par les relevés AFC. Sans effet tant que les calculateurs retiennent la confession « aucune », convention d'A1 à A3.",
+			"todo": "Coefficient paroissial sur l'impôt sur les prestations en capital : non relevé. L'impôt paroissial n'est pas couvert par la v1 d'A4, qui retient la confession « aucune » (décision du mainteneur du 8.11.2026).",
 			"sourceId": null
 		},
 		"baseTaxReduction": null

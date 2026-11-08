@@ -57,6 +57,16 @@
 				"effectiveFrom": "2026-01-01",
 				"note": "Art. 33b al. 1 LF : pas de facteur. L'impôt est calculé au taux qui serait applicable à des prestations périodiques, au moins au taux minimum prévu et au plus au taux maximum de 4 %, sans les déductions sociales des art. 31, 31a et 32 LF. La réduction de l'al. 4 est une autre règle (coupleReduction)."
 			},
+			"rateBounds": {
+				"value": {
+					"minimum": "baseRate",
+					"maximum": "effectiveRate"
+				},
+				"sourceId": "vs-lf",
+				"verifiedOn": "2026-11-08",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 33b al. 1 LF, avec l'art. 176 al. 1 pour la commune. Le taux minimal s'applique au taux de base lu sur le barème cantonal ou communal, avant le coefficient. Le taux maximal de 4 % s'applique au taux effectif, impôt cantonal ou communal après coefficient rapporté au capital. Lecture du mainteneur du 8.11.2026, vérifiée sur les quatre relevés AFC de Sion. Une autre lecture les reproduit aussi, les deux bornes sur le taux effectif : elle ne diffère que pour l'impôt communal d'une commune au coefficient supérieur à 100 %, quand la rente déterminante, arrondie à la centaine inférieure, est nulle et que le barème ne donne aucun taux."
+			},
 			"coupleReduction": {
 				"value": {
 					"reductionPercent": 2,

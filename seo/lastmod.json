@@ -4,16 +4,16 @@
 		"lastmod": "2026-11-08T11:30:48+01:00"
 	},
 	"https://calculateurs.ch/donnees/": {
-		"hash": "9350b622522f25047d6bd246d7275a03447820866cb31f82c3a3c9920613c80a",
-		"lastmod": "2026-11-08T11:30:48+01:00"
+		"hash": "729bd7702b1ed882222812ebbf5521b2178f345f356defee8ad2b5a90f67bb06",
+		"lastmod": "2026-11-08T16:03:55+01:00"
 	},
 	"https://calculateurs.ch/guides/": {
 		"hash": "becbfabc00fd14b49362cfeb588e7f62d414912ae24d87937c587dc6acbb8bc2",
 		"lastmod": "2026-10-23T08:57:31+02:00"
 	},
 	"https://calculateurs.ch/methodologie/": {
-		"hash": "4f6d2b6134e75259b0d7aa5404bdb0ec50d285f06047463ddb0571b1989d02c0",
-		"lastmod": "2026-11-08T11:30:48+01:00"
+		"hash": "a6e3f2f6e6bc90e30172b0ee18ec19cbadde4b14c90458e8861fa2a7d9be1591",
+		"lastmod": "2026-11-08T16:03:55+01:00"
 	},
 	"https://calculateurs.ch/prevoyance/": {
 		"hash": "c8f2c7cac9436506d724e5e6034ebbf2f6685545ca3c7d88c6ebf59dd7d9b219",
@@ -40,7 +40,7 @@
 		"lastmod": "2026-11-08T11:30:48+01:00"
 	},
 	"https://calculateurs.ch/prevoyance/retrait-capital-lpp-3a/": {
-		"hash": "e45be48712e33c992d03989ad6650933c98f7de36a0a8e936e84998c1e7ce3fa",
-		"lastmod": "2026-11-08T11:30:48+01:00"
+		"hash": "41b2cd6941475a4f0293bce5161f01ad129a9dae7f79dbe2c0521710f39aac6d",
+		"lastmod": "2026-11-08T16:06:02+01:00"
 	}
 }
