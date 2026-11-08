@@ -736,7 +736,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["tax-engine"],
-		note: "Version consolidée, sans segment de version épinglée. Art. 3 al. 3 et art. 4 : coefficient en pour-cent de l'impôt cantonal de base, plafond 100 %, exceptionnellement 125 % ; coefficients revenu et fortune identiques.",
+		note: "Version consolidée, sans segment de version épinglée. Art. 3 al. 3 et art. 4 : coefficient en pour-cent de l'impôt cantonal de base, plafond 100 %, exceptionnellement 125 % ; coefficients revenu et fortune identiques. Impôt sur les prestations en capital : application au capital constatée sur le calculateur de l'AFC le 8.11.2026 ; aucun texte ne la mentionne expressément.",
 	},
 	{
 		id: "fr-lee",

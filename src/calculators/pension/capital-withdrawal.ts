@@ -264,7 +264,7 @@ export const capitalWithdrawal: CalculatorDefinition = {
 			"Chaque canton applique son barème des prestations en capital, ou une fraction de son barème du revenu, et ses coefficients cantonal et communal quand sa loi les applique au capital.",
 			...(valais?.minimumRatePercent && valais.maximumRatePercent
 				? [
-						`Au Valais, le capital est converti en rente viagère selon le tableau de l’AFC, d’après votre âge et votre sexe. Le taux du barème du revenu lu sur cette rente, borné entre ${valais.minimumRatePercent.value} % et ${valais.maximumRatePercent.value} %, s’applique au capital (art. 33b al. 1 LF).`,
+						`Au Valais, le capital est converti en rente viagère selon le tableau de l’AFC, d’après votre âge et votre sexe. Le taux du barème du revenu lu sur cette rente s’applique au capital. Le taux de base est d’au moins ${valais.minimumRatePercent.value} % ; le taux effectif, coefficient communal compris, ne dépasse pas ${valais.maximumRatePercent.value} % (art. 33b al. 1 LF).`,
 					]
 				: []),
 			"La confession n’est pas demandée, et l’impôt paroissial n’est pas compté.",

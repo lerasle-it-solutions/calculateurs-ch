@@ -592,18 +592,19 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				Neuchâtel applique le {capitalNeuchatel} du taux de son barème du revenu, avec un taux de
 				base d’au moins {textPercent(capitalNeuchatelMinimum)} (art. 42 LCdir). Au Valais, le
 				capital est converti en rente viagère selon le tableau de l’AFC, d’après l’âge et le
-				sexe, et le taux du barème du revenu lu sur cette rente, borné entre{" "}
-				{textPercent(capitalValais?.minimumRatePercent?.value)} et {textPercent(capitalValais?.maximumRatePercent?.value)},
-				s’applique au capital (art. 33b al. 1 LF). Les coefficients cantonal et
+				sexe, et le taux du barème du revenu lu sur cette rente s’applique au capital. Le taux de base
+				est d’au moins {textPercent(capitalValais?.minimumRatePercent?.value)} ; le taux effectif, coefficient communal
+				compris, ne dépasse pas {textPercent(capitalValais?.maximumRatePercent?.value)} (art. 33b al. 1 LF). Les coefficients cantonal et
 				communal s’appliquent comme à l’impôt sur le revenu, sauf à Fribourg, où les
 				taux de la loi sont fixes (art. 2 al. 2 LICD). Fribourg exonère un total
 				annuel inférieur à {capitalFribourgExemption && formatChf(capitalFribourgExemption)} francs
-				(art. 39 al. 4 LICD). À {capitalFribourgExemption && formatChf(capitalFribourgExemption)} CHF tout juste,
-				le calculateur applique l’art. 39 al. 4 LICD : la prestation est imposable. Le coefficient
-				communal de Fribourg s’applique pourtant à l’impôt cantonal de base sur le capital. À Genève,
-				la diminution de {genevaReductionPercent} de l’impôt sur le revenu s’applique aussi à l’impôt
-				cantonal sur le capital, pas aux centimes communaux (art. 1 LDIRPP). Les résultats
-				s’entendent hors impôt paroissial, que cette version ne calcule pas.
+				(art. 39 al. 4 LICD). À Fribourg, l’impôt cantonal sur le capital est calculé aux taux fixes de
+				l’art. 39 al. 2 LICD, sans coefficient annuel (art. 2 al. 2 LICD) ; l’impôt communal s’y ajoute,
+				au coefficient de la commune. À {capitalFribourgExemption && formatChf(capitalFribourgExemption)} CHF tout juste,
+				le calculateur applique l’art. 39 al. 4 LICD : la prestation est imposable. À Genève, la réduction
+				de {genevaReductionPercent} s’applique à l’impôt cantonal sur le capital, pas aux centimes additionnels
+				communaux (art. 1 LDIRPP). Les résultats s’entendent hors impôt paroissial, que cette version ne
+				calcule pas.
 			</p>
 			<p class="max-w-reading text-body">
 				<strong>Le cumul des retraits d’une même année.</strong> Tous les retraits en
