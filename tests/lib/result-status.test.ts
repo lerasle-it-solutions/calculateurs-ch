@@ -9,13 +9,13 @@ import { pillar3aBuyback } from "../../src/calculators/pension/pillar-3a-buyback
 import { pillar3aBuybackPageData } from "../../src/calculators/pension/pillar-3a-buyback-page-data";
 import { pillar3aTaxSaving } from "../../src/calculators/pension/pillar-3a-tax-saving";
 import { pillar3aTaxSavingPageData } from "../../src/calculators/pension/pillar-3a-tax-saving-page-data";
-import { getMunicipalMultipliers } from "../../src/data";
 import { fr } from "../../src/i18n/fr";
 import { classifyDisplayStatus, invalidInputStatus } from "../../src/lib/display/calculator-form";
 import { readLppBuybackForm } from "../../src/lib/display/lpp-buyback-form";
 import { readPillar3aBuybackForm } from "../../src/lib/display/pillar-3a-buyback-form";
 import { readPillar3aTaxSavingForm } from "../../src/lib/display/pillar-3a-tax-saving-form";
 import { applyResult, statusTone, type ResultStatus } from "../../src/lib/display/result-card";
+import { UNINDEXED, withUnindexedMunicipality } from "../fixtures/unindexed-municipality";
 
 /**
  * Typologie des messages qui remplacent le montant dans la carte
@@ -27,15 +27,19 @@ import { applyResult, statusTone, type ResultStatus } from "../../src/lib/displa
 const a1 = exampleFormValues(pillar3aBuyback);
 const a2 = exampleFormValues(pillar3aTaxSaving);
 const a3 = exampleFormValues(lppBuyback);
-const uncovered = (getMunicipalMultipliers()?.multipliers ?? []).find(
-	(entry) => entry.canton === "VS" && entry.communalScaleIndexation === undefined,
-)!.municipality;
+// Commune hors périmètre : la fixture partagée, Brig-Glis sans indexation (tests/fixtures/unindexed-municipality.ts,
+// décision du mainteneur du 7.11.2026), avec les données de page construites sur elle.
+const uncovered = UNINDEXED.municipality;
+const fixture = await withUnindexedMunicipality(async () => ({
+	a1: (await import("../../src/calculators/pension/pillar-3a-buyback-page-data")).pillar3aBuybackPageData,
+	a3: (await import("../../src/calculators/pension/lpp-buyback-page-data")).lppBuybackPageData,
+}));
 
 const cases: { name: string; status: ResultStatus | null; tone: "neutral" | "error" | "warning"; link?: boolean }[] = [
 	{ name: "commune inconnue (A1)", status: readPillar3aBuybackForm({ ...a1, municipality: "Atlantis" }, pillar3aBuybackPageData).status, tone: "error" },
-	{ name: "commune hors périmètre (A1)", status: readPillar3aBuybackForm({ ...a1, municipality: uncovered }, pillar3aBuybackPageData).status, tone: "warning", link: true },
+	{ name: "commune hors périmètre (A1)", status: readPillar3aBuybackForm({ ...a1, municipality: uncovered }, fixture.a1).status, tone: "warning", link: true },
 	{ name: "ménage hors périmètre (A2)", status: readPillar3aTaxSavingForm({ ...a2, municipality: "Sion", maritalStatus: "married" }, pillar3aTaxSavingPageData).status, tone: "warning", link: true },
-	{ name: "commune hors périmètre (A3)", status: readLppBuybackForm({ ...a3, municipality: uncovered }, lppBuybackPageData).status, tone: "warning", link: true },
+	{ name: "commune hors périmètre (A3)", status: readLppBuybackForm({ ...a3, municipality: uncovered }, fixture.a3).status, tone: "warning", link: true },
 	{ name: "salaire brut à saisir (A3)", status: readLppBuybackForm(a3, lppBuybackPageData, { missing: "grossSalary" }).status, tone: "neutral" },
 	{ name: "âge à saisir (A1)", status: readPillar3aBuybackForm(a1, pillar3aBuybackPageData, { missing: "age" }).status, tone: "neutral" },
 	{ name: "âges des enfants à saisir (A2)", status: readPillar3aTaxSavingForm(a2, pillar3aTaxSavingPageData, { status: "Indiquez l'âge de chaque enfant." }).status, tone: "neutral" },

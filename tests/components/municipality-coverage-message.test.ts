@@ -6,14 +6,16 @@ import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import { coverageStatusOf, type CoverageTexts } from "../../src/lib/display/coverage";
 import { applyResult, coverageOnly, type ResultDetail, type StatusLink } from "../../src/lib/display/result-card";
-import { renderedPageData } from "../setup/rendered-page-data";
+import { fixturePageData, UNINDEXED, UNINDEXED_FIELD_VALUE } from "../fixtures/unindexed-municipality";
 
 /**
  * Limite de couverture au moment du choix (revue UX du 16.10.2026) : dès que la
  * commune saisie est hors couverture, le message et le lien vers la calculette
  * du canton s'affichent sous le champ commune, et le statut dans la carte
  * résultat. La couverture est lue dans les données que la page embarque
- * (src/calculators/tax-coverage.ts, src/data/), jamais recopiée ici.
+ * (src/calculators/tax-coverage.ts, src/data/), jamais recopiée ici. La commune
+ * non couverte est la fixture partagée, Brig-Glis sans indexation
+ * (tests/fixtures/unindexed-municipality.ts, décision du mainteneur du 7.11.2026).
  */
 type PageData = {
 	bundle: TaxScalesBundle;
@@ -33,9 +35,6 @@ const renderPage = async (page: string): Promise<string> => {
 	const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
 	return container.renderToString(Page, { request: new Request(`https://calculateurs.ch/prevoyance/${page}/`) });
 };
-
-const pageData = (html: string, dataId: string): PageData =>
-	renderedPageData<PageData>(html, dataId);
 
 /** Statut établi par le script de la page dès la commune choisie : personne seule, sans enfant. */
 const statusFor = (data: PageData, municipality: string) => {
@@ -57,14 +56,14 @@ const officialUrl = official && "url" in official ? official.url : undefined;
 
 describe.each(PAGES)("$calculator : couverture du Valais au choix de la commune", ({ page, dataId }) => {
 	it("Brig-Glis, non couverte : message et lien sous le champ, statut dans la carte", async () => {
-		const data = pageData(await renderPage(page), dataId);
-		const status = statusFor(data, "Brig-Glis (VS)");
+		const data = await fixturePageData<PageData>(() => renderPage(page), dataId);
+		const status = statusFor(data, UNINDEXED_FIELD_VALUE);
 		expect(status?.kind).toBe("coverage");
 
 		const field = fieldSlots();
 		applyFieldCoverage(field, { value: "—", status });
 		expect(field.message.hidden).toBe(false);
-		expect(field.messageText.textContent).toBe(data.texts.outOfScopeMunicipality["Brig-Glis"]);
+		expect(field.messageText.textContent).toBe(data.texts.outOfScopeMunicipality[UNINDEXED.municipality]);
 		expect(field.messageLink.hidden).toBe(false);
 		expect(field.messageLink.href).toBe(officialUrl);
 
@@ -75,11 +74,13 @@ describe.each(PAGES)("$calculator : couverture du Valais au choix de la commune"
 	});
 
 	it("Sion, couverte : aucun message sous le champ, et un message précédent s'efface", async () => {
-		const data = pageData(await renderPage(page), dataId);
+		const data = await fixturePageData<PageData>(() => renderPage(page), dataId);
 		expect(statusFor(data, "Sion (VS)")).toBeNull();
 
 		const field = fieldSlots();
-		applyFieldCoverage(field, { value: "—", status: statusFor(data, "Brig-Glis (VS)") });
+		applyFieldCoverage(field, { value: "—", status: statusFor(data, UNINDEXED_FIELD_VALUE) });
+		// Le message de la fixture est bien affiché avant d'être effacé : le test ne passe pas à vide
+		expect(field.message.hidden).toBe(false);
 		applyFieldCoverage(field, { value: "—", status: statusFor(data, "Sion (VS)") });
 		expect(field.message.hidden).toBe(true);
 	});

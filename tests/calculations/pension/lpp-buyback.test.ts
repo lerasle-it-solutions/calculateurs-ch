@@ -10,6 +10,7 @@ import {
 } from "../../../src/lib/calculations/pension/lpp-buyback";
 import * as labels from "../../../src/lib/calculations/pension/lpp-buyback-labels";
 import { computeTaxSavingOnDeduction, PartialCoverageError, type TaxInput, type TaxResult } from "../../../src/lib/calculations/tax";
+import { UNINDEXED, unindexedScales } from "../../fixtures/unindexed-municipality";
 
 /**
  * A3 — moteur du rachat LPP (W09, prompt 3). Délai de blocage lu dans les
@@ -179,11 +180,15 @@ describe("délai de blocage", () => {
 	});
 });
 
+// Commune sans indexation relevée : barèmes fictifs de la fixture partagée, passés en argument, sans mock
+// (tests/fixtures/unindexed-municipality.ts, décision du mainteneur du 7.11.2026).
+const unindexed = taxInput(UNINDEXED.municipality, UNINDEXED.canton);
+
 describe("hors périmètre", () => {
 	it.each([
-		["couple marié à Sion", taxInput("Sion", "VS", { maritalStatus: "married" })],
-		["commune valaisanne sans indexation relevée", taxInput("Brig-Glis", "VS")],
-	])("%s : aucune économie chiffrée", (_, input) => {
-		expect(() => computeLppBuyback(params(input))).toThrow(PartialCoverageError);
+		["couple marié à Sion", params(taxInput("Sion", "VS", { maritalStatus: "married" }))],
+		["commune valaisanne sans indexation relevée", params(unindexed, { scales: unindexedScales(params(unindexed).scales) })],
+	])("%s : aucune économie chiffrée", (_, buyback) => {
+		expect(() => computeLppBuyback(buyback)).toThrow(PartialCoverageError);
 	});
 });

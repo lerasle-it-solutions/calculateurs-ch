@@ -6,13 +6,16 @@ import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import { coverageStatusOf, type CoverageTexts } from "../../src/lib/display/coverage";
 import type { StatusLink } from "../../src/lib/display/result-card";
+import { fixturePageData, UNINDEXED, UNINDEXED_FIELD_VALUE } from "../fixtures/unindexed-municipality";
 import { renderedPageData } from "../setup/rendered-page-data";
 
 /**
  * Message hors périmètre affiché tôt, dans A1 et A2 : dès le canton, la commune
  * et l'état civil (nombre d'enfants à sa valeur par défaut, 0), sans aucun
  * revenu, le message de couverture et le lien officiel sont établis à partir des
- * seules données que la page embarque. Un retour à un cas couvert l'efface.
+ * seules données que la page embarque. Un retour à un cas couvert l'efface. La
+ * commune non couverte est la fixture partagée, Brig-Glis sans indexation
+ * (tests/fixtures/unindexed-municipality.ts, décision du mainteneur du 7.11.2026).
  */
 type PageData = {
 	bundle: TaxScalesBundle;
@@ -26,12 +29,12 @@ const PAGES = [
 	{ calculator: "A2", page: "economie-impot-3a", dataId: "pillar3a-saving-data" },
 ];
 
-const renderPageData = async (page: string, dataId: string): Promise<PageData> => {
+const renderHtml = async (page: string): Promise<string> => {
 	const { default: Page } = await import(`../../src/pages/prevoyance/${page}.astro`);
 	const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
-	const html = await container.renderToString(Page, { request: new Request(`https://calculateurs.ch/prevoyance/${page}/`) });
-	return renderedPageData<PageData>(html, dataId);
+	return container.renderToString(Page, { request: new Request(`https://calculateurs.ch/prevoyance/${page}/`) });
 };
+const renderPageData = async (page: string, dataId: string): Promise<PageData> => renderedPageData<PageData>(await renderHtml(page), dataId);
 
 /** Ce que le script de la page établit avec canton, commune et état civil seulement. */
 const earlyStatus = (data: PageData, municipality: string, maritalStatus: TaxInput["maritalStatus"]) => {
@@ -52,10 +55,10 @@ describe.each(PAGES)("$calculator : message hors périmètre sans les revenus", 
 	});
 
 	it("Brig-Glis, personne seule : message de la commune et lien officiel", async () => {
-		const data = await renderPageData(page, dataId);
-		const status = earlyStatus(data, "Brig-Glis (VS)", "single");
-		expect(status?.text).toBe(data.texts.outOfScopeMunicipality["Brig-Glis"]);
-		expect(status?.text).toContain("Brig-Glis");
+		const data = await fixturePageData<PageData>(() => renderHtml(page), dataId);
+		const status = earlyStatus(data, UNINDEXED_FIELD_VALUE, "single");
+		expect(status?.text).toBe(data.texts.outOfScopeMunicipality[UNINDEXED.municipality]);
+		expect(status?.text).toContain(UNINDEXED.municipality);
 		expect(status?.link?.url).toBe(officialUrl);
 	});
 
