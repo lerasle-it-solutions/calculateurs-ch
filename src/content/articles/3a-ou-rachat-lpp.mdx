@@ -28,6 +28,9 @@ sources:
   - sourceId: atf-142-ii-399
     name: "ATF 142 II 399, consid. 4.1"
     publisher: Tribunal fédéral
+  - sourceId: bger-2c-6-2021
+    name: "Arrêt 2C_6/2021, consid. 2.2.1"
+    publisher: Tribunal fédéral
 ---
 
 import { buybackYearColumn, compatibleFromColumn, differenceColumn, example1Amount, example1CantonalIncome, example1FederalIncome, example1LppCantonal, example1LppFederal, example1LppMunicipal, example1LppNetCost, example1LppTotal, example1Municipality, example1Pillar3aCantonal, example1Pillar3aFederal, example1Pillar3aMunicipal, example1Pillar3aNetCost, example1Pillar3aTotal, example1Potential, example1Share, example2Amount, example2CantonalIncome, example2Children, example2CompatibleFrom1, example2CompatibleFrom2, example2CompatibleFrom3, example2Difference, example2DifferenceAmount, example2FederalIncome, example2LastTrancheYear, example2LockEnds1, example2LockEnds2, example2LockEnds3, example2LockYear1, example2LockYear2, example2LockYear3, example2Municipality, example2Potential, example2SingleCantonal, example2SingleFederal, example2SingleMunicipal, example2SingleSaving, example2SingleShare, example2SpreadSaving, example2SpreadShare, example2TrancheAmount, example2TrancheCount, example2Tranches, example2TrancheSaving, example2Year, firstBuybackYear, firstGapYear, largeCap2026, largeCapRate2026, lockAssumption, lockEndsColumn, lockYears, scenarioColumn, singleLabel, smallCap2026, spreadLabel, totalColumn, tranchesColumn } from "../../lib/articles/3a-ou-rachat-lpp";
@@ -58,7 +61,7 @@ Les deux colonnes sont identiques au franc près. Les deux montants se retranche
 
 | Votre situation | Ce qui s’applique | Base |
 | --- | --- | --- |
-| Un retrait en capital du 2e pilier est prévu dans les {lockYears} ans qui suivent le rachat (retraite, logement, départ à l’étranger). | Pendant {lockYears} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital. En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise. Selon la pratique fiscale, le retrait compte quel que soit son motif. | art. 79b al. 3 LPP ; ATF 142 II 399 consid. 4.1 |
+| Un retrait en capital du 2e pilier est prévu dans les {lockYears} ans qui suivent le rachat (retraite, logement, départ à l’étranger). | Pendant {lockYears} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital. En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise. Selon la pratique fiscale, le retrait compte quel que soit son motif. | art. 79b al. 3 LPP ; ATF 142 II 399 consid. 4.1 ; arrêt 2C_6/2021 consid. 2.2.1 |
 | Vous avez reçu un versement anticipé pour le logement, pas encore remboursé. | En règle générale, le rachat LPP n’est possible qu’après le remboursement. Lorsque le remboursement n’est plus possible, en principe à l’approche de la retraite, le règlement de votre caisse peut autoriser des rachats dans certaines limites. | art. 79b al. 3 LPP ; art. 60d OPP 2 |
 | Vous voulez déduire plus que la petite cotisation, {smallCap2026} francs en 2026. | Avec une caisse de pension, le 3a se déduit au plus à hauteur de la petite cotisation. Le rachat LPP n’a pas ce plafond, car votre caisse le permet jusqu’à hauteur des prestations de son règlement. | art. 7 al. 1 let. a OPP 3 ; art. 79b al. 1 LPP |
 | Vous n’êtes affilié à aucune caisse de pension. | Le rachat se fait dans votre caisse de pension, à hauteur des prestations prévues par son règlement. Sans caisse de pension, il reste le 3a. Son plafond passe alors à {largeCapRate2026} du revenu de l’activité lucrative, au plus {largeCap2026} francs en 2026. | art. 79b al. 1 LPP ; art. 7 al. 1 let. b OPP 3 |

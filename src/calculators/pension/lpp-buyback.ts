@@ -58,6 +58,7 @@ const sourceIds = [
 		"fedlex-lifd",
 		"fedlex-lhid",
 		"atf-142-ii-399",
+		"bger-2c-6-2021",
 	]),
 ];
 
@@ -173,9 +174,9 @@ const lppBuybackWarnings = [
 		text: `Pendant ${lock} ans après un rachat, les prestations qui en résultent ne peuvent pas être versées en capital (art. 79b al. 3 LPP). En droit fiscal, l’interdiction est plus large :`,
 		items: [
 			`en principe, tout versement en capital dans les ${lock} ans est réputé abusif, et le rachat n’est pas déductible, sans autre examen (ATF 142 II 399 consid. 4.1) ;`,
-			"selon la pratique fiscale, le retrait compte quel que soit son motif (retraite, logement, départ à l’étranger) et quelle que soit l’institution qui verse le capital ;",
+			"selon la pratique fiscale, le retrait compte quel que soit son motif (retraite, logement, départ à l’étranger) et quelle que soit l’institution qui verse le capital (arrêt 2C_6/2021 consid. 2.2.1 et 2.2.2) ;",
 			"chaque versement fait courir son propre délai, si bien qu’échelonner ses rachats repousse la date du premier retrait en capital possible (art. 79b al. 3 LPP) ;",
-			"respecter le délai n’exclut pas un contrôle pour évasion fiscale (même arrêt, consid. 4.1).",
+			"respecter le délai n’exclut pas un contrôle pour évasion fiscale (ATF 142 II 399 consid. 4.1).",
 		],
 	},
 	{
@@ -313,7 +314,7 @@ export const lppBuyback: CalculatorDefinition = {
 		{
 			question: `Que se passe-t-il si je retire un capital dans les ${lock} ans ?`,
 			answer:
-				"En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise (ATF 142 II 399 consid. 4.1). Selon la pratique fiscale, cela vaut quelle que soit l’institution qui verse le capital, et quel que soit le motif du retrait.",
+				"En principe, la déduction du rachat est refusée, ou corrigée après coup si elle avait été admise (ATF 142 II 399 consid. 4.1). Selon la pratique fiscale, cela vaut quelle que soit l’institution qui verse le capital, et quel que soit le motif du retrait (arrêt 2C_6/2021 consid. 2.2.1 et 2.2.2).",
 		},
 		{
 			question: "J’ai retiré de l’argent pour acheter mon logement. Puis-je racheter ?",
