@@ -595,8 +595,7 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				sexe, et le taux du barème du revenu lu sur cette rente s’applique au capital. Le taux de base
 				est d’au moins {textPercent(capitalValais?.minimumRatePercent?.value)} ; le taux effectif, coefficient communal
 				compris, ne dépasse pas {textPercent(capitalValais?.maximumRatePercent?.value)} (art. 33b al. 1 LF). Les coefficients cantonal et
-				communal s’appliquent comme à l’impôt sur le revenu, sauf à Fribourg, où les
-				taux de la loi sont fixes (art. 2 al. 2 LICD). Fribourg exonère un total
+				communal s’appliquent comme à l’impôt sur le revenu. Fribourg exonère un total
 				annuel inférieur à {capitalFribourgExemption && formatChf(capitalFribourgExemption)} francs
 				(art. 39 al. 4 LICD). À Fribourg, l’impôt cantonal sur le capital est calculé aux taux fixes de
 				l’art. 39 al. 2 LICD, sans coefficient annuel (art. 2 al. 2 LICD) ; l’impôt communal s’y ajoute,

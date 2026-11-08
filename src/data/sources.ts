@@ -883,7 +883,7 @@ export const SOURCES = defineSources([
 		nature: "official",
 		requiresAttribution: false,
 		usedBy: ["pension.capital-withdrawal"],
-		note: "Rente viagère annuelle, en CHF, pour 1 000 CHF de capital, par âge (0 à 104 ans révolus) et par sexe. Sert au Valais, art. 33b al. 1 LF : taux de la prestation périodique équivalente (brochure AFC « Imposition des prestations en capital », période 2025). PDF trilingue, URL telle que relevée le 06.11.2026. Valeurs dans src/data/federal/capital-annuity-conversion.json.",
+		note: "Rente viagère annuelle, en CHF, pour 1 000 CHF de capital, par âge (0 à 104 ans révolus) et par sexe. Sert au Valais, art. 33b al. 1 LF : taux de la prestation périodique équivalente (brochure AFC « Imposition des prestations en capital », période 2025). Document trilingue (de, fr, it), URL telle que relevée le 06.11.2026. Valeurs dans src/data/federal/capital-annuity-conversion.json.",
 	},
 	{
 		id: "estv-capital-benefits-dossier-2025",
