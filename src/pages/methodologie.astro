@@ -49,10 +49,8 @@ const vaudParts =
 		: null;
 
 // Valais : communes couvertes, celles dont l'indexation du barème communal est relevée
-const valaisCovered = (getMunicipalMultipliers()?.multipliers ?? [])
-	.filter((entry) => entry.canton === "VS" && entry.communalScaleIndexation !== undefined)
-	.map((entry) => entry.municipality)
-	.sort((a, b) => a.localeCompare(b, "fr"));
+const valaisMunicipalities = (getMunicipalMultipliers()?.multipliers ?? []).filter((entry) => entry.canton === "VS");
+const valaisCoveredCount = valaisMunicipalities.filter((entry) => entry.communalScaleIndexation !== undefined).length;
 
 // Rachat 3a : règles lues dans les données fédérales
 // Année de calcul d'A1 : les règles décrites sont celles que le calculateur applique.
@@ -194,8 +192,11 @@ const pensionRuleSources = ruleSourcesReport(publishedCalculators("pension"));
 				Le Valais n’est couvert qu’en partie. Le moteur ne reproduit pas
 				encore l’abattement accordé aux couples mariés et aux familles
 				monoparentales. Il ne calcule donc que pour les personnes seules sans
-				enfant, et seulement dans les communes dont l’indexation du barème
-				communal a été relevée ({valaisCovered.join(", ")}). Pour les autres
+				enfant,{" "}
+				{valaisCoveredCount === valaisMunicipalities.length
+					? "dans toutes les communes du canton."
+					: `dans ${valaisCoveredCount} des ${valaisMunicipalities.length} communes du canton ; pour les autres, il le signale sous le champ de la commune.`}{" "}
+				Pour les autres
 				situations, il ne rend aucun résultat et renvoie à la calculette
 				officielle du canton. Le cas de référence valaisan d’un couple marié
 				avec enfant est conservé : il vérifie que le moteur refuse bien de

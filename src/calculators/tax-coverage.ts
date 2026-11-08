@@ -22,6 +22,8 @@ export type TaxEngineCoverage = {
 	notCovered: Scope["notCovered"];
 	/** Noms des cantons en couverture partielle, annoncés dans la ligne de périmètre (§ 4.1). */
 	partialCantons: string[];
+	/** Pour qui, dans les cantons couverts pour certains ménages seulement : ménages et, s'il y a lieu, communes couverts. */
+	forWhom: string[];
 };
 
 /**
@@ -33,6 +35,7 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 	const cantonsCovered: CantonCode[] = [];
 	const notCovered: Scope["notCovered"] = [];
 	const partialCantons: string[] = [];
+	const forWhom: string[] = [];
 	for (const { code, name } of ROMANDE_CANTONS) {
 		const file = cantonFiles().find((candidate) => candidate.code === code);
 		const data = file ? cantonDataSchema.parse(file.data) : undefined;
@@ -64,6 +67,8 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 				: someMunicipalitiesUncovered
 					? fr.partialCoverage.coveredHouseholdsAndMunicipalitiesCase(name, coveredHouseholdsText, coveredMunicipalities)
 					: fr.partialCoverage.notCoveredHouseholdsCase(name, householdsText);
+		if (householdsText !== undefined)
+			forWhom.push(fr.partialCoverage.forWhom(name, coveredHouseholdsText, someMunicipalitiesUncovered ? coveredMunicipalities : null));
 		const official = coverage.officialCalculator;
 		notCovered.push(
 			"url" in official
@@ -71,5 +76,5 @@ export function taxEngineCoverage(): TaxEngineCoverage {
 				: { case: `${text} ${fr.partialCoverage.useOfficialCalculator}` },
 		);
 	}
-	return { cantonsCovered, notCovered, partialCantons };
+	return { cantonsCovered, notCovered, partialCantons, forWhom };
 }

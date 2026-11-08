@@ -186,7 +186,10 @@ export const fr = {
 		/** Couverture limitée à certains ménages et aux communes dont le barème communal est relevé. */
 		coveredHouseholdsAndMunicipalitiesCase: (canton: string, households: string, covered: string[]): string =>
 			`${canton} : nous ne couvrons pour l’instant que ${households}, et seulement dans ${covered.length > 1 ? "les communes de" : "la commune de"} ${covered.join(", ")}. Pour les autres situations, utilisez la calculette officielle du canton.`,
-		/** Ménages couverts, dans la phrase ci-dessus. */
+		/** « Pour qui » : ménages couverts et, si toutes ne le sont pas, communes couvertes. */
+		forWhom: (canton: string, households: string, covered: string[] | null): string =>
+			`${canton} : seules ${households}${covered === null ? "" : ` domiciliées dans ${covered.length > 1 ? "les communes de" : "la commune de"} ${covered.join(", ")}`} sont couvertes.`,
+		/** Ménages couverts, dans les phrases ci-dessus. */
 		coveredHouseholds: {
 			single: "les personnes seules sans enfant",
 			singleWithChildren: "les personnes seules avec enfants",
