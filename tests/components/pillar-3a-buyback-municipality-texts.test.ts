@@ -1,10 +1,10 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 
+import { UNINDEXED_FIELD_VALUE, fixturePageData } from "../fixtures/unindexed-municipality";
 import { renderedPageData } from "../setup/rendered-page-data";
 
 import { pillar3aBuybackTexts } from "../../src/calculators/pension/pillar-3a-buyback";
-import { getMunicipalMultipliers } from "../../src/data";
 import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
 import {
@@ -17,7 +17,10 @@ import {
  * Textes hors périmètre embarqués pour les seules communes non couvertes
  * (W08, étape 0, piste D). Une commune couverte et une commune hors périmètre
  * affichent exactement les mêmes textes qu'avant l'allègement : le texte attendu
- * de Brig-Glis est celui de la page construite sur main (fbcb7e5).
+ * de Brig-Glis est celui de la page construite sur main (fbcb7e5). Depuis le
+ * relevé du 7.11.2026, Brig-Glis a son indexation : la commune hors périmètre est
+ * la fixture partagée, Brig-Glis sans indexation (tests/fixtures/unindexed-municipality.ts,
+ * décision du mainteneur du 7.11.2026).
  */
 type Sourced = { value: number; sourceId: string };
 type PageData = {
@@ -31,14 +34,14 @@ type PageData = {
 	texts: Pillar3aBuybackDisplayTexts;
 };
 
-const renderPageData = async (): Promise<PageData> => {
+const renderHtml = async (): Promise<string> => {
 	const { default: Page } = await import("../../src/pages/prevoyance/rachat-3a-retroactif.astro");
 	const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
-	const html = await container.renderToString(Page, {
+	return container.renderToString(Page, {
 		request: new Request("https://calculateurs.ch/prevoyance/rachat-3a-retroactif/"),
 	});
-	return renderedPageData<PageData>(html, "pillar3a-data");
 };
+const renderPageData = async (): Promise<PageData> => renderedPageData<PageData>(await renderHtml(), "pillar3a-data");
 
 /** Personne seule, revenus imposables 65 167 / 67 927, lacune 2025 entière. */
 const show = (data: PageData, municipality: string) => {
@@ -77,7 +80,7 @@ const show = (data: PageData, municipality: string) => {
 
 describe("A1, textes hors périmètre des communes", () => {
 	it("seules les communes non couvertes en entier ont un texte, celui d'avant l'allègement", async () => {
-		const data = await renderPageData();
+		const data = await fixturePageData<PageData>(renderHtml, "pillar3a-data");
 		const notCovered = data.bundle.municipalities.flatMap(({ coverage }) =>
 			coverage?.municipality === undefined ? [] : [coverage.municipality],
 		);
@@ -92,10 +95,8 @@ describe("A1, textes hors périmètre des communes", () => {
 	});
 
 	it("commune hors périmètre : même message qu'avant, lien officiel, aucune économie", async () => {
-		const data = await renderPageData();
-		const brig = (getMunicipalMultipliers()?.multipliers ?? []).find((entry) => entry.municipality === "Brig-Glis");
-		expect(brig?.communalScaleIndexation, "Brig-Glis a désormais une indexation : choisir une autre commune").toBeUndefined();
-		const shown = show(data, "Brig-Glis (VS)");
+		const data = await fixturePageData<PageData>(renderHtml, "pillar3a-data");
+		const shown = show(data, UNINDEXED_FIELD_VALUE);
 		expect(shown.status?.text).toBe(
 			// Texte réécrit le 18.10.2026 (docs/editorial-style.md), même message : commune non couverte, donnée non relevée, renvoi à la calculette
 			"Ce calculateur ne couvre pas encore la commune de Brig-Glis, faute d’une donnée communale relevée pour le calcul. Utilisez la calculette du canton\u202f:",

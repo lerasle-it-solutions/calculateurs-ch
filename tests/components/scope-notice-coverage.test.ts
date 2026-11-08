@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import CalculatorShell from "../../src/components/calculator/CalculatorShell.astro";
 import { pillar3aBuyback } from "../../src/calculators/pension/pillar-3a-buyback";
 import { taxEngineCoverage } from "../../src/calculators/tax-coverage";
-import { getMunicipalMultipliers } from "../../src/data";
 import { fr } from "../../src/i18n/fr";
+import { UNINDEXED, withUnindexedMunicipality } from "../fixtures/unindexed-municipality";
 
 /**
  * Le périmètre est annoncé avant la saisie, jamais après (P5, docs/design-system.md
@@ -22,17 +22,24 @@ const visibleText = (html: string): string =>
 		.replace(/\s+/g, " ")
 		.trim();
 
-describe("bandeau de périmètre d'A1, Valais", () => {
-	it("la ligne de périmètre, avant le formulaire, annonce la couverture partielle et renvoie au détail, qui nomme les communes valaisannes couvertes", async () => {
-		const covered = (getMunicipalMultipliers()?.multipliers ?? [])
-			.filter((entry) => entry.canton === "VS" && entry.communalScaleIndexation !== undefined)
-			.map((entry) => entry.municipality);
-		expect(covered.length).toBeGreaterThan(0);
+/** Rendu du Shell d'A1 : ligne de périmètre avant le formulaire, et texte de l'<aside> du détail « Ce que ce calcul suppose ». */
+const renderShell = async (Shell: typeof CalculatorShell, definition: typeof pillar3aBuyback) => {
+	const container = await AstroContainer.create();
+	const html = await container.renderToString(Shell, {
+		props: { definition, intro: "", resultLabel: "", verifiedOn: "2026-01-01" },
+	});
+	const detailsStart = html.indexOf('<details id="ce-que-ce-calcul-suppose"');
+	const asideStart = html.indexOf("<aside", detailsStart);
+	const asideEnd = html.indexOf("</aside>", asideStart);
+	return { html, detailsStart, asideStart, asideEnd, notice: visibleText(html.slice(asideStart, asideEnd)) };
+};
 
-		const container = await AstroContainer.create();
-		const html = await container.renderToString(CalculatorShell, {
-			props: { definition: pillar3aBuyback, intro: "", resultLabel: "", verifiedOn: "2026-01-01" },
-		});
+// Réécriture autorisée par le mainteneur le 7.11.2026 (R7) : deux cas, sans condition. Sur les données réelles,
+// toutes les communes valaisannes ont leur indexation et le détail n'en dresse aucune liste ; sur la fixture
+// partagée (tests/fixtures/unindexed-municipality.ts), une commune en manque et le détail nomme les communes couvertes.
+describe("bandeau de périmètre d'A1, Valais", () => {
+	it("la ligne de périmètre, avant le formulaire, annonce la couverture partielle et renvoie au détail, qui ne dresse aucune liste de communes valaisannes", async () => {
+		const { html, detailsStart, asideStart, asideEnd, notice } = await renderShell(CalculatorShell, pillar3aBuyback);
 		const formStart = html.indexOf("<form");
 		// Ligne de périmètre avant le formulaire : couverture partielle lue dans tax-coverage.ts, lien vers le détail
 		const partial = taxEngineCoverage().partialCantons;
@@ -44,18 +51,32 @@ describe("bandeau de périmètre d'A1, Valais", () => {
 		expect(html.slice(0, formStart)).toContain('href="#ce-que-ce-calcul-suppose"');
 
 		// Détail « Ce que ce calcul suppose » : l'<aside> est dans ce <details>, après la carte résultat
-		const detailsStart = html.indexOf('<details id="ce-que-ce-calcul-suppose"');
-		const asideStart = html.indexOf("<aside", detailsStart);
-		const asideEnd = html.indexOf("</aside>", asideStart);
 		expect(detailsStart).toBeGreaterThan(html.search(/<output\b[^>]*data-result-card/));
 		expect(asideStart).toBeGreaterThan(detailsStart);
 		expect(asideEnd).toBeLessThan(html.indexOf("</details>", detailsStart));
 
-		const notice = visibleText(html.slice(asideStart, asideEnd));
+		expect(notice).toContain("Valais");
+		expect(notice).not.toMatch(/dans (la commune|les communes) de/);
+		expect(pillar3aBuyback.scope.notCovered).toHaveLength(6);
+	});
+
+	it("fixture, une commune valaisanne sans indexation : le détail nomme les communes valaisannes couvertes", async () => {
+		const { notice, covered } = await withUnindexedMunicipality(async () => {
+			const [{ default: Shell }, { pillar3aBuyback: definition }, { getMunicipalMultipliers }] = await Promise.all([
+				import("../../src/components/calculator/CalculatorShell.astro"),
+				import("../../src/calculators/pension/pillar-3a-buyback"),
+				import("../../src/data"),
+			]);
+			const covered = (getMunicipalMultipliers()?.multipliers ?? [])
+				.filter((entry) => entry.canton === "VS" && entry.communalScaleIndexation !== undefined)
+				.map((entry) => entry.municipality);
+			return { notice: (await renderShell(Shell, definition)).notice, covered };
+		});
+		expect(covered.length).toBeGreaterThan(0);
+		expect(covered).not.toContain(UNINDEXED.municipality);
 		expect(notice).toContain("Valais");
 		for (const name of covered) expect(notice, `${name} absente du bandeau`).toContain(name);
 		// Texte réécrit le 18.10.2026 (docs/editorial-style.md) : un seul deux-points, communes toujours nommées
-		expect(notice).toContain(covered.length > 1 ? "dans les communes de" : "dans la commune de");
-		expect(pillar3aBuyback.scope.notCovered).toHaveLength(6);
+		expect(notice).toContain("dans les communes de");
 	});
 });

@@ -9,7 +9,7 @@
  * le moteur le signale s'il en a besoin, sans jamais supposer de valeur.
  */
 import { getCantonData, getFederalData, getMunicipalMultipliers } from "./index";
-import type { TaxScalesBundle } from "../lib/calculations/tax-scales-bundle";
+import { CHURCH_ORDER, type TaxScalesBundle } from "../lib/calculations/tax-scales-bundle";
 import { SOURCE_BY_CANTON } from "./sources";
 import type { CantonData, Todo, Value } from "./schema";
 import type {
@@ -284,22 +284,72 @@ export function getFederalTaxScales(taxYear: number): FederalTaxScales {
 /**
  * Paquet de barèmes d'une page de calculateur (src/lib/calculations/tax-scales-bundle.ts) :
  * toutes les communes des cantons demandés, chacune reconstituable par
- * `taxScalesFromBundle` à l'identique de `getTaxScales`.
+ * `taxScalesFromBundle` à l'identique de `getTaxScales`. Ce qui se répète dans
+ * un canton y est écrit une fois ; une source qui varierait d'une commune à
+ * l'autre arrête la construction plutôt que d'être perdue.
  */
 export function getTaxScalesBundle(taxYear: number, cantons: readonly TaxInput["canton"][]): TaxScalesBundle {
-	const bundle: TaxScalesBundle = { taxYear, cantons: {}, municipalities: [] };
+	const bundle: TaxScalesBundle = { taxYear, cantons: {}, municipalSources: {}, municipalities: [] };
+	type Commune = { entry: { bfsId: number; municipality: string; canton: TaxInput["canton"] }; scales: TaxScales };
+	const all: Commune[] = [];
+	const byCanton = new Map<TaxInput["canton"], Commune[]>();
 	for (const entry of getMunicipalMultipliers()?.multipliers ?? []) {
 		if (!cantons.includes(entry.canton)) continue;
 		const scales = getTaxScales({ taxYear, canton: entry.canton, municipalityOfsId: entry.bfsId });
 		bundle.cantons[entry.canton] ??= scales;
+		all.push({ entry, scales });
+		byCanton.set(entry.canton, [...(byCanton.get(entry.canton) ?? []), { entry, scales }]);
+	}
+	const coverageKeys = new Map<TaxInput["canton"], string>();
+	const only = <T>(values: T[], what: string): T => {
+		const distinct = [...new Set(values.map((value) => JSON.stringify(value)))];
+		if (distinct.length !== 1) throw new Error(`Paquet de barèmes : ${what} varie d'une commune à l'autre (${distinct.join(", ")}).`);
+		return values[0]!;
+	};
+	for (const [canton, communes] of byCanton) {
+		const sources = communes.map(({ scales }) => scales);
+		const multiplier = only(sources.flatMap((scales) => [scales.municipality.multiplier.income.sourceId, scales.municipality.multiplier.wealth.sourceId]), `${canton}, source du coefficient communal`);
+		const church = only(
+			sources.flatMap((scales) => (["income", "wealth"] as const).flatMap((tax) => CHURCH_ORDER.map((denomination) => scales.church[tax][denomination].sourceId))),
+			`${canton}, source des coefficients paroissiaux`,
+		);
+		const indexations = sources.flatMap((scales) =>
+			scales.municipality.model === "communalScale" && scales.municipality.incomeScaleIndexation !== null && !("pending" in scales.municipality.incomeScaleIndexation)
+				? [scales.municipality.incomeScaleIndexation]
+				: [],
+		);
+		const indexation =
+			indexations.length === 0
+				? undefined
+				: {
+						sourceId: only(indexations.map((item) => item.sourceId), `${canton}, source de l'indexation`),
+						stepPercent: only(indexations.map((item) => item.value.stepPercent), `${canton}, pas de la déflation`),
+					};
+		// Couverture du canton : la plus fréquente parmi celles qui ne visent pas une commune (une
+		// couverture de commune reste toujours sur sa commune) ; les autres communes gardent la leur
+		const counts = new Map<string, number>([["null", 0]]);
+		for (const scales of sources) {
+			if (scales.coverage?.municipality !== undefined) continue;
+			const key = JSON.stringify(scales.coverage);
+			counts.set(key, (counts.get(key) ?? 0) + 1);
+		}
+		const coverageKey = [...counts].sort((a, b) => b[1] - a[1])[0]![0];
+		bundle.municipalSources[canton] = { multiplier, church, ...(indexation ? { indexation } : {}), coverage: JSON.parse(coverageKey) as TaxScales["coverage"] };
+		coverageKeys.set(canton, coverageKey);
+	}
+	// Communes dans l'ordre des données : c'est celui de la liste du champ commune
+	for (const { entry, scales } of all) {
+		const coverageKey = coverageKeys.get(entry.canton)!;
+		const model = scales.municipality;
+		const own = model.model === "communalScale" ? model.incomeScaleIndexation : null;
 		bundle.municipalities.push({
 			ofsId: entry.bfsId,
 			name: entry.municipality,
 			canton: entry.canton,
-			multiplier: scales.municipality.multiplier,
-			church: scales.church,
-			communalIndexation: scales.municipality.model === "communalScale" ? scales.municipality.incomeScaleIndexation : null,
-			coverage: scales.coverage,
+			multiplier: [model.multiplier.income.value, model.multiplier.wealth.value],
+			church: (["income", "wealth"] as const).flatMap((tax) => CHURCH_ORDER.map((denomination) => scales.church[tax][denomination].value)),
+			...(own === null ? {} : { communalIndexation: "pending" in own ? own : own.value.indexPercent }),
+			...(JSON.stringify(scales.coverage) === coverageKey ? {} : { coverage: scales.coverage }),
 		});
 	}
 	return bundle;

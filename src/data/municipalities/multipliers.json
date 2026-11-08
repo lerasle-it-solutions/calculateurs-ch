@@ -23873,6 +23873,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Brig-Glis."
 			}
 		},
 		{
@@ -23942,6 +23950,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 133,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Eggerberg."
 			}
 		},
 		{
@@ -24011,6 +24027,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Naters."
 			}
 		},
 		{
@@ -24080,6 +24104,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 170,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ried-Brig."
 			}
 		},
 		{
@@ -24149,6 +24181,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Simplon."
 			}
 		},
 		{
@@ -24218,6 +24258,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Termen."
 			}
 		},
 		{
@@ -24287,6 +24335,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Zwischbergen."
 			}
 		},
 		{
@@ -24356,6 +24412,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ardon."
 			}
 		},
 		{
@@ -24425,6 +24489,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 143,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Chamoson."
 			}
 		},
 		{
@@ -24494,6 +24566,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 163,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Conthey."
 			}
 		},
 		{
@@ -24563,6 +24643,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Nendaz."
 			}
 		},
 		{
@@ -24632,6 +24720,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 163,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Vétroz."
 			}
 		},
 		{
@@ -24701,6 +24797,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bourg-Saint-Pierre."
 			}
 		},
 		{
@@ -24770,6 +24874,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 143,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Liddes."
 			}
 		},
 		{
@@ -24839,6 +24951,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 150,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Orsières."
 			}
 		},
 		{
@@ -24908,6 +25028,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 155,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Sembrancher."
 			}
 		},
 		{
@@ -24977,6 +25105,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Val de Bagnes."
 			}
 		},
 		{
@@ -25046,6 +25182,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 160,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bellwald."
 			}
 		},
 		{
@@ -25115,6 +25259,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Binn."
 			}
 		},
 		{
@@ -25184,6 +25336,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ernen."
 			}
 		},
 		{
@@ -25253,6 +25413,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 160,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Fiesch."
 			}
 		},
 		{
@@ -25322,6 +25490,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Fieschertal."
 			}
 		},
 		{
@@ -25391,6 +25567,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 163,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Lax."
 			}
 		},
 		{
@@ -25460,6 +25644,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Obergoms."
 			}
 		},
 		{
@@ -25529,6 +25721,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 173,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Goms."
 			}
 		},
 		{
@@ -25598,6 +25798,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 158,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ayent."
 			}
 		},
 		{
@@ -25667,6 +25875,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 140,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Evolène."
 			}
 		},
 		{
@@ -25736,6 +25952,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Hérémence."
 			}
 		},
 		{
@@ -25805,6 +26029,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 150,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saint-Martin (VS)."
 			}
 		},
 		{
@@ -25874,6 +26106,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Vex."
 			}
 		},
 		{
@@ -25943,6 +26183,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 148,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Mont-Noble."
 			}
 		},
 		{
@@ -26012,6 +26260,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 153,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Agarn."
 			}
 		},
 		{
@@ -26081,6 +26337,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 145,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Albinen."
 			}
 		},
 		{
@@ -26150,6 +26414,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ergisch."
 			}
 		},
 		{
@@ -26219,6 +26491,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 136,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Inden."
 			}
 		},
 		{
@@ -26288,6 +26568,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Leuk."
 			}
 		},
 		{
@@ -26357,6 +26645,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 151,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Leukerbad."
 			}
 		},
 		{
@@ -26426,6 +26722,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Oberems."
 			}
 		},
 		{
@@ -26495,6 +26799,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 136,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Salgesch."
 			}
 		},
 		{
@@ -26564,6 +26876,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Varen."
 			}
 		},
 		{
@@ -26633,6 +26953,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 148,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Guttet-Feschel."
 			}
 		},
 		{
@@ -26702,6 +27030,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 151,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Gampel-Bratsch."
 			}
 		},
 		{
@@ -26771,6 +27107,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Turtmann-Unterems."
 			}
 		},
 		{
@@ -26840,6 +27184,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bovernier."
 			}
 		},
 		{
@@ -26909,6 +27261,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 165,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Fully."
 			}
 		},
 		{
@@ -26978,6 +27338,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 138,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Isérables."
 			}
 		},
 		{
@@ -27047,6 +27415,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Leytron."
 			}
 		},
 		{
@@ -27116,6 +27492,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Martigny."
 			}
 		},
 		{
@@ -27185,6 +27569,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 163,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Martigny-Combe."
 			}
 		},
 		{
@@ -27254,6 +27646,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 153,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Riddes."
 			}
 		},
 		{
@@ -27323,6 +27723,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saillon."
 			}
 		},
 		{
@@ -27392,6 +27800,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saxon."
 			}
 		},
 		{
@@ -27461,6 +27877,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Trient."
 			}
 		},
 		{
@@ -27530,6 +27954,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 141,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Champéry."
 			}
 		},
 		{
@@ -27599,6 +28031,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 171,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Collombey-Muraz."
 			}
 		},
 		{
@@ -27668,6 +28108,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 170,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Monthey."
 			}
 		},
 		{
@@ -27737,6 +28185,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 170,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Port-Valais."
 			}
 		},
 		{
@@ -27806,6 +28262,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 133,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saint-Gingolph."
 			}
 		},
 		{
@@ -27875,6 +28339,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Troistorrents."
 			}
 		},
 		{
@@ -27944,6 +28416,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 151,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Val-d'Illiez."
 			}
 		},
 		{
@@ -28013,6 +28493,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 153,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Vionnaz."
 			}
 		},
 		{
@@ -28082,6 +28570,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 158,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Vouvry."
 			}
 		},
 		{
@@ -28151,6 +28647,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bister."
 			}
 		},
 		{
@@ -28220,6 +28724,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bitsch."
 			}
 		},
 		{
@@ -28289,6 +28801,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Grengiols."
 			}
 		},
 		{
@@ -28358,6 +28878,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 138,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Riederalp."
 			}
 		},
 		{
@@ -28427,6 +28955,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 138,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ausserberg."
 			}
 		},
 		{
@@ -28496,6 +29032,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 136,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Blatten."
 			}
 		},
 		{
@@ -28565,6 +29109,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bürchen."
 			}
 		},
 		{
@@ -28634,6 +29186,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Eischoll."
 			}
 		},
 		{
@@ -28703,6 +29263,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 151,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Ferden."
 			}
 		},
 		{
@@ -28772,6 +29340,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 136,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Kippel."
 			}
 		},
 		{
@@ -28841,6 +29417,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Niedergesteln."
 			}
 		},
 		{
@@ -28910,6 +29494,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 165,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Raron."
 			}
 		},
 		{
@@ -28979,6 +29571,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 138,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Unterbäch."
 			}
 		},
 		{
@@ -29048,6 +29648,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Wiler (Lötschen)."
 			}
 		},
 		{
@@ -29117,6 +29725,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 140,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Mörel-Filet."
 			}
 		},
 		{
@@ -29186,6 +29802,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Steg-Hohtenn."
 			}
 		},
 		{
@@ -29255,6 +29879,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 136,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Bettmeralp."
 			}
 		},
 		{
@@ -29324,6 +29956,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 165,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Collonges."
 			}
 		},
 		{
@@ -29393,6 +30033,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 161,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Dorénaz."
 			}
 		},
 		{
@@ -29462,6 +30110,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Evionnaz."
 			}
 		},
 		{
@@ -29531,6 +30187,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Finhaut."
 			}
 		},
 		{
@@ -29600,6 +30264,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 168,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Massongex."
 			}
 		},
 		{
@@ -29669,6 +30341,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 163,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saint-Maurice."
 			}
 		},
 		{
@@ -29738,6 +30418,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 173,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Salvan."
 			}
 		},
 		{
@@ -29807,6 +30495,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Vernayaz."
 			}
 		},
 		{
@@ -29876,6 +30572,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 153,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Vérossaz."
 			}
 		},
 		{
@@ -29945,6 +30649,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Chalais."
 			}
 		},
 		{
@@ -30014,6 +30726,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Chippis."
 			}
 		},
 		{
@@ -30083,6 +30803,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 143,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Grône."
 			}
 		},
 		{
@@ -30152,6 +30880,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Icogne."
 			}
 		},
 		{
@@ -30221,6 +30957,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Lens."
 			}
 		},
 		{
@@ -30290,6 +31034,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 158,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saint-Léonard."
 			}
 		},
 		{
@@ -30359,6 +31111,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 161,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Sierre."
 			}
 		},
 		{
@@ -30428,6 +31188,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Anniviers."
 			}
 		},
 		{
@@ -30497,6 +31265,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Crans-Montana."
 			}
 		},
 		{
@@ -30566,6 +31342,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Noble-Contrée."
 			}
 		},
 		{
@@ -30635,6 +31419,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 146,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Arbaz."
 			}
 		},
 		{
@@ -30704,6 +31496,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 163,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Grimisuat."
 			}
 		},
 		{
@@ -30773,6 +31573,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 156,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Savièse."
 			}
 		},
 		{
@@ -30919,6 +31727,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 110,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Veysonnaz."
 			}
 		},
 		{
@@ -30988,6 +31804,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 166,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Baltschieder."
 			}
 		},
 		{
@@ -31057,6 +31881,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Eisten."
 			}
 		},
 		{
@@ -31126,6 +31958,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 158,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Embd."
 			}
 		},
 		{
@@ -31195,6 +32035,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 135,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Grächen."
 			}
 		},
 		{
@@ -31264,6 +32112,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 158,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Lalden."
 			}
 		},
 		{
@@ -31333,6 +32189,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Randa."
 			}
 		},
 		{
@@ -31402,6 +32266,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 150,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saas-Almagell."
 			}
 		},
 		{
@@ -31471,6 +32343,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 153,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saas-Balen."
 			}
 		},
 		{
@@ -31540,6 +32420,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 145,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saas-Fee."
 			}
 		},
 		{
@@ -31609,6 +32497,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 133,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Saas-Grund."
 			}
 		},
 		{
@@ -31678,6 +32574,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 160,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de St. Niklaus."
 			}
 		},
 		{
@@ -31747,6 +32651,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 171,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Stalden (VS)."
 			}
 		},
 		{
@@ -31816,6 +32728,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Staldenried."
 			}
 		},
 		{
@@ -31885,6 +32805,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 155,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Täsch."
 			}
 		},
 		{
@@ -31954,6 +32882,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Törbel."
 			}
 		},
 		{
@@ -32023,6 +32959,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Visp."
 			}
 		},
 		{
@@ -32092,6 +33036,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 150,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Visperterminen."
 			}
 		},
 		{
@@ -32161,6 +33113,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 151,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Zeneggen."
 			}
 		},
 		{
@@ -32230,6 +33190,14 @@
 						"collectedFrom": "estv-base-data-module"
 					}
 				}
+			},
+			"communalScaleIndexation": {
+				"value": 176,
+				"unit": "%",
+				"sourceId": "vs-municipal-multipliers",
+				"verifiedOn": "2026-11-07",
+				"effectiveFrom": "2026-01-01",
+				"note": "Art. 178 al. 4 et 5 LF, tableau officiel « Coefficients et indexations des communes 2022-2027 » : indexation du barème communal de Zermatt."
 			}
 		},
 		{

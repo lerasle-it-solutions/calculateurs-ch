@@ -14,6 +14,7 @@ import { pillar3aTaxSavingTexts } from "../../../src/calculators/pension/pillar-
 import { formatChfAmount } from "../../../src/lib/display/pillar-3a-buyback";
 import { displayPillar3aTaxSaving } from "../../../src/lib/display/pillar-3a-tax-saving";
 import type { StatusLink } from "../../../src/lib/display/result-card";
+import { UNINDEXED, unindexedScales } from "../../fixtures/unindexed-municipality";
 
 /**
  * A2 — règles 1 à 8 de la fiche validée le 07.10.2026, chacune par au moins un
@@ -92,7 +93,7 @@ const expectedSaving = (input: TaxInput, deduction: number) =>
 
 const texts = {
 	outOfScope: { VS: pillar3aTaxSavingTexts.outOfScope("Valais") },
-	outOfScopeMunicipality: { "Brig-Glis": pillar3aTaxSavingTexts.outOfScopeMunicipality("Brig-Glis") },
+	outOfScopeMunicipality: { [UNINDEXED.municipality]: pillar3aTaxSavingTexts.outOfScopeMunicipality(UNINDEXED.municipality) },
 	missingData: pillar3aTaxSavingTexts.missingData,
 	outOfScopeShort: pillar3aTaxSavingTexts.outOfScopeShort,
 	missingDataShort: pillar3aTaxSavingTexts.missingDataShort,
@@ -293,9 +294,13 @@ describe("A2, hors périmètre valaisan", () => {
 	});
 
 	it("commune sans indexation relevée, même sans déduction : message de la commune", () => {
-		const input = taxInput("Brig-Glis", "VS");
-		const shown = displayPillar3aTaxSaving(params(input, [affiliated(0, { hasAvsIncome: false })]), texts, officialCalculators);
-		expect(shown.status?.text).toBe(texts.outOfScopeMunicipality["Brig-Glis"]);
+		// Barèmes fictifs de la fixture partagée, passés en argument, sans mock
+		// (tests/fixtures/unindexed-municipality.ts, décision du mainteneur du 7.11.2026)
+		const input = taxInput(UNINDEXED.municipality, UNINDEXED.canton);
+		const contributors = [affiliated(0, { hasAvsIncome: false })];
+		const scales = unindexedScales(params(input, contributors).scales);
+		const shown = displayPillar3aTaxSaving(params(input, contributors, { scales }), texts, officialCalculators);
+		expect(shown.status?.text).toBe(texts.outOfScopeMunicipality[UNINDEXED.municipality]);
 	});
 });
 

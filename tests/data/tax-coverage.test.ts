@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { cantonFiles, getMunicipalMultipliers } from "../../src/data";
+import { cantonFiles } from "../../src/data";
 import { cantonDataSchema } from "../../src/data/schema";
-import { getTaxScales, getTaxScalesBundle } from "../../src/data/tax-scales";
-import { taxScalesFromBundle } from "../../src/lib/calculations/tax-scales-bundle";
+import { getTaxScales } from "../../src/data/tax-scales";
 import { taxEngineCoverage } from "../../src/calculators/tax-coverage";
 import { computeIncomeAndWealthTax, PartialCoverageError, type TaxInput } from "../../src/lib/calculations/tax";
+import { UNINDEXED, withUnindexedMunicipality } from "../fixtures/unindexed-municipality";
 
 /**
  * Couverture partielle déclarée dans la couche de données : le périmètre des
@@ -61,16 +61,21 @@ describe("couverture partielle d'un canton", () => {
 });
 
 describe("Valais : commune sans indexation communale relevée", () => {
-	const commune = (getMunicipalMultipliers()?.multipliers ?? []).find(
-		(entry) => entry.canton === "VS" && entry.communalScaleIndexation === undefined,
-	);
-
-	it("une commune valaisanne autre que Sion, sans indexation relevée, est hors périmètre pour tout ménage, par les deux chemins de barèmes", () => {
-		expect(commune, "aucune commune valaisanne sans indexation relevée").toBeDefined();
-		expect(commune!.bfsId).not.toBe(6266);
-		const input = sion({ municipalityOfsId: commune!.bfsId });
-		const direct = getTaxScales({ taxYear: 2026, canton: "VS", municipalityOfsId: commune!.bfsId });
-		const viaBundle = taxScalesFromBundle(getTaxScalesBundle(2026, ["VS"]), commune!.bfsId);
+	// Fixture partagée (tests/fixtures/unindexed-municipality.ts, décision du mainteneur du 7.11.2026) :
+	// depuis le relevé du 7.11.2026, aucune commune valaisanne réelle n'est sans indexation.
+	it("une commune valaisanne autre que Sion, sans indexation relevée, est hors périmètre pour tout ménage, par les deux chemins de barèmes", async () => {
+		const { direct, viaBundle, sionViaBundle } = await withUnindexedMunicipality(async () => {
+			const { getTaxScales, getTaxScalesBundle } = await import("../../src/data/tax-scales");
+			const { taxScalesFromBundle } = await import("../../src/lib/calculations/tax-scales-bundle");
+			const bundle = getTaxScalesBundle(2026, ["VS"]);
+			return {
+				direct: getTaxScales({ taxYear: 2026, canton: "VS", municipalityOfsId: UNINDEXED.ofsId }),
+				viaBundle: taxScalesFromBundle(bundle, UNINDEXED.ofsId),
+				sionViaBundle: taxScalesFromBundle(bundle, 6266),
+			};
+		});
+		expect(UNINDEXED.ofsId).not.toBe(6266);
+		const input = sion({ municipalityOfsId: UNINDEXED.ofsId });
 		for (const scales of [direct, viaBundle]) {
 			let error: unknown;
 			try {
@@ -79,10 +84,10 @@ describe("Valais : commune sans indexation communale relevée", () => {
 				error = thrown;
 			}
 			expect(error).toBeInstanceOf(PartialCoverageError);
-			expect((error as PartialCoverageError).municipality).toBe(commune!.municipality);
-			expect((error as Error).message).toMatch(new RegExp(`Commune ${commune!.municipality}`));
+			expect((error as PartialCoverageError).municipality).toBe(UNINDEXED.municipality);
+			expect((error as Error).message).toMatch(new RegExp(`Commune ${UNINDEXED.municipality}`));
 		}
 		// Sion reste couverte pour une personne seule
-		expect(() => computeIncomeAndWealthTax(sion({}), taxScalesFromBundle(getTaxScalesBundle(2026, ["VS"]), 6266))).not.toThrow();
+		expect(() => computeIncomeAndWealthTax(sion({}), sionViaBundle)).not.toThrow();
 	});
 });

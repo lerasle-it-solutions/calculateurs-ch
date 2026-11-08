@@ -1,9 +1,10 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 
+import { UNINDEXED, UNINDEXED_FIELD_VALUE, fixturePageData } from "../fixtures/unindexed-municipality";
 import { renderedPageData } from "../setup/rendered-page-data";
 
-import { getCantonData, getMunicipalMultipliers } from "../../src/data";
+import { getCantonData } from "../../src/data";
 import type { Pillar3aGapsParams } from "../../src/lib/calculations/pension/pillar-3a-buyback";
 import type { TaxInput } from "../../src/lib/calculations/tax";
 import { taxScalesFromBundle, type TaxScalesBundle } from "../../src/lib/calculations/tax-scales-bundle";
@@ -31,14 +32,14 @@ type PageData = {
 	texts: Pillar3aBuybackDisplayTexts;
 };
 
-const renderPageData = async (): Promise<PageData> => {
+const renderHtml = async (): Promise<string> => {
 	const { default: Page } = await import("../../src/pages/prevoyance/rachat-3a-retroactif.astro");
 	const container = await AstroContainer.create({ astroConfig: { site: "https://calculateurs.ch" } });
-	const html = await container.renderToString(Page, {
+	return container.renderToString(Page, {
 		request: new Request("https://calculateurs.ch/prevoyance/rachat-3a-retroactif/"),
 	});
-	return renderedPageData<PageData>(html, "pillar3a-data");
 };
+const renderPageData = async (): Promise<PageData> => renderedPageData<PageData>(await renderHtml(), "pillar3a-data");
 
 const show = (data: PageData, municipality: string, household: Partial<TaxInput>, gaps: Partial<Pillar3aGapsParams> = {}) => {
 	const { ofsId, canton } = data.municipalities[municipality]!;
@@ -102,14 +103,12 @@ describe("A1, ménage hors périmètre", () => {
 	});
 
 	it("commune valaisanne sans indexation relevée : message de la commune, avec ou sans montant rachetable", async () => {
-		const data = await renderPageData();
-		const commune = (getMunicipalMultipliers()?.multipliers ?? []).find(
-			(entry) => entry.canton === "VS" && entry.communalScaleIndexation === undefined,
-		)!;
-		const text = data.texts.outOfScopeMunicipality[commune.municipality]!;
-		expect(text).toContain(commune.municipality);
-		expectCoverageMessage(show(data, `${commune.municipality} (VS)`, {}), text);
-		expectCoverageMessage(show(data, `${commune.municipality} (VS)`, {}, { receivedOldAgeBenefit: true }), text);
+		// Fixture partagée (tests/fixtures/unindexed-municipality.ts, décision du mainteneur du 7.11.2026)
+		const data = await fixturePageData<PageData>(renderHtml, "pillar3a-data");
+		const text = data.texts.outOfScopeMunicipality[UNINDEXED.municipality]!;
+		expect(text).toContain(UNINDEXED.municipality);
+		expectCoverageMessage(show(data, UNINDEXED_FIELD_VALUE, {}), text);
+		expectCoverageMessage(show(data, UNINDEXED_FIELD_VALUE, {}, { receivedOldAgeBenefit: true }), text);
 	});
 
 	it("un ménage couvert sans montant rachetable voit une économie nulle, sans message", async () => {

@@ -38,5 +38,16 @@ export default defineConfig({
     // Libellés fixes de la trace lus dans le JSON de la page, hors du script, et import() à la
     // demande sans helper de préchargement (budget JavaScript).
     plugins: [tailwindcss(), browserTraceLabels(), directDynamicImport()],
+    build: {
+      rolldownOptions: {
+        output: {
+          // Formateurs des montants, partagés par tous les cœurs et leurs modules : un seul morceau,
+          // au lieu de trois de quelques dizaines d'octets, chacun importé à part (budget JavaScript)
+          codeSplitting: {
+            groups: [{ name: "format", test: /src[\\/]lib[\\/](format[\\/]chf|display[\\/]amounts|utils[\\/]format-number)\.ts$/ }],
+          },
+        },
+      },
+    },
   },
 });
